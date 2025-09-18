@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 export default function BlogPage() {
   return (
     <main className="p-8">

@@ -1,3 +1,5 @@
+import { useTranslations } from "next-intl";
+
 export default function ContactPage() {
   return (
     <main className="p-8">
