@@ -4,6 +4,9 @@
   "description": "Ce projet est un site vitrine Jamstack pour présenter les œuvres et projets photo de Han-Noah MASSENGO.",
   "main": "index.js",
   "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -12,6 +15,7 @@
   "dependencies": {
     "@portabletext/react": "^4.0.3",
     "@sanity/client": "^7.11.2",
+    "@tailwindcss/postcss": "^4.1.13",
     "autoprefixer": "^10.4.21",
     "framer-motion": "^12.23.15",
     "next": "^15.5.3",
