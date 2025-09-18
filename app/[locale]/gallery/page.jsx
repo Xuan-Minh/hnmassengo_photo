@@ -1,8 +1,22 @@
-export default function GalleryPage() {
+"use client";
+import { useState } from "react";
+import Lightbox from "yet-another-react-lightbox";
+import "yet-another-react-lightbox/styles.css";
+import { motion } from "framer-motion";
+import { useTranslations } from "next-intl";
+
+export default function Galerie() {
+  const [isOpen, setIsOpen] = useState(false);
+  const images = [{ src: "/images/photo1.jpg" }, { src: "/images/photo2.jpg" }];
+
   return (
-    <main className="p-8">
-      <h2 className="text-3xl font-bold mb-4">Galerie</h2>
-      <p>Découvrez les projets photo et la galerie d’images.</p>
-    </main>
+    <>
+      <div>
+        {images.map((img, idx) => (
+          <img key={idx} src={img.src} alt="" onClick={() => setIsOpen(true)} />
+        ))}
+      </div>
+      <Lightbox open={isOpen} close={() => setIsOpen(false)} slides={images} />
+    </>
   );
 }
