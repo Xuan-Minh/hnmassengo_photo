@@ -3,6 +3,7 @@
 Ce projet est un site vitrine Jamstack pour présenter les œuvres et projets photo de Han-Noah MASSENGO.
 
 ## Stack technique
+
 - Next.js 14+ (App Router)
 - Tailwind CSS
 - Framer Motion
@@ -14,6 +15,7 @@ Ce projet est un site vitrine Jamstack pour présenter les œuvres et projets ph
 - Déploiement Vercel
 
 ## Fonctionnalités
+
 - Blog multilingue
 - Galerie photo animée
 - Vente de tirages

@@ -1,0 +1,27 @@
+{
+  "name": "hnmassengo_photo",
+  "version": "1.0.0",
+  "description": "Ce projet est un site vitrine Jamstack pour présenter les œuvres et projets photo de Han-Noah MASSENGO.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@portabletext/react": "^4.0.3",
+    "@sanity/client": "^7.11.2",
+    "autoprefixer": "^10.4.21",
+    "framer-motion": "^12.23.15",
+    "next": "^15.5.3",
+    "next-intl": "^4.3.9",
+    "postcss": "^8.5.6",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
+    "react-hook-form": "^7.62.0",
+    "snipcart": "^0.0.1",
+    "tailwindcss": "^4.1.13",
+    "yet-another-react-lightbox": "^3.25.0"
+  }
+}
