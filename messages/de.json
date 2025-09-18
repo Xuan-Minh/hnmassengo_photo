@@ -1,10 +1,18 @@
 {
-  "home.title": "Portfolio Han-Noah MASSENGO",
-  "home.welcome": "Willkommen auf der offiziellen Website des Fotografen Han-Noah MASSENGO.",
-  "blog.title": "Blog",
-  "blog.description": "Hier finden Sie Artikel und Neuigkeiten des Fotografen.",
-  "gallery.title": "Galerie",
-  "gallery.description": "Entdecken Sie Fotoprojekte und die Bildergalerie.",
-  "contact.title": "Kontakt",
-  "contact.description": "Für Anfragen nutzen Sie bitte das Kontaktformular."
+  "home": {
+    "title": "Portfolio Han-Noah MASSENGO",
+    "welcome": "Willkommen auf der offiziellen Website des Fotografen Han-Noah MASSENGO."
+  },
+  "blog": {
+    "title": "Blog",
+    "description": "Hier finden Sie Artikel und Neuigkeiten des Fotografen."
+  },
+  "gallery": {
+    "title": "Galerie",
+    "description": "Entdecken Sie Fotoprojekte und die Bildergalerie."
+  },
+  "contact": {
+    "title": "Kontakt",
+    "description": "Für Anfragen nutzen Sie bitte das Kontaktformular."
+  }
 }
