@@ -14,5 +14,9 @@
   "contact": {
     "title": "Contact",
     "description": "For any request, use the contact form."
+  },
+  "legal": {
+    "title": "Legal Notice",
+    "description": "Information on legal notices and privacy policy."
   }
 }

@@ -14,5 +14,9 @@
   "contact": {
     "title": "Contact",
     "description": "Pour toute demande, utilisez le formulaire de contact."
+  },
+  "legal": {
+    "title": "Mentions légales",
+    "description": "Informations sur les mentions légales et la politique de confidentialité."
   }
 }

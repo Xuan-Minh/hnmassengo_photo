@@ -14,5 +14,9 @@
   "contact": {
     "title": "Kontakt",
     "description": "Für Anfragen nutzen Sie bitte das Kontaktformular."
+  },
+  "legal": {
+    "title": "Rechtliche Hinweise",
+    "description": "Informationen zu rechtlichen Hinweisen und Datenschutz."
   }
 }
