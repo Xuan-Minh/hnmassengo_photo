@@ -12,5 +12,9 @@ export default function LocaleLayout({ children, params }) {
 
   if (!messages) notFound();
 
-  return <Providers messages={messages} locale={locale}>{children}</Providers>;
+  return (
+    <Providers messages={messages} locale={locale}>
+      {children}
+    </Providers>
+  );
 }

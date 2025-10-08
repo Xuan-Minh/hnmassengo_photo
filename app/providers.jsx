@@ -1,5 +1,5 @@
 "use client";
-import { NextIntlClientProvider } from 'next-intl';
+import { NextIntlClientProvider } from "next-intl";
 
 export default function Providers({ children, messages, locale }) {
   return (
