@@ -27,5 +27,8 @@
     "snipcart": "^0.0.1",
     "tailwindcss": "^4.1.13",
     "yet-another-react-lightbox": "^3.25.0"
+  },
+  "devDependencies": {
+    "@netlify/plugin-nextjs": "^5.13.5"
   }
 }

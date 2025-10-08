@@ -1,4 +1,4 @@
-import Providers from "../../providers";
+import Providers from "../providers";
 import { notFound } from "next/navigation";
 import fr from "../../messages/fr.json";
 import en from "../../messages/en.json";
@@ -12,5 +12,5 @@ export default function LocaleLayout({ children, params }) {
 
   if (!messages) notFound();
 
-  return <Providers messages={messages}>{children}</Providers>;
+  return <Providers messages={messages} locale={locale}>{children}</Providers>;
 }
