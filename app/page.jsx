@@ -1,3 +1,3 @@
 export default function Page() {
-  return <div>Bienvenue sur le site Han-Noah Massengo !</div>;
+  return <div>Hello I'm Han Noah Massengo</div>;
 }

@@ -1,19 +1,13 @@
-"use client";
-import { useState } from "react";
-import LoadingScreen from "../components/LoadingScreen";
+import "../globals.css";
+import Navbar from "../components/Navbar";
+import FooterContact from "../components/FooterContact";
+import LanguageSwitcher from "../components/LanguageSwitcher";
+import PageTransition from "../components/PageTransition";
 
 export default function RootLayout({ children }) {
-  const [isLoading, setIsLoading] = useState(true);
-
   return (
     <html lang="fr">
-      <body>
-        {isLoading ? (
-          <LoadingScreen onFinish={() => setIsLoading(false)} />
-        ) : (
-          children
-        )}
-      </body>
+      <body>{children}</body>
     </html>
   );
 }

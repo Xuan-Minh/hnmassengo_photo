@@ -5,13 +5,11 @@ const locales = ["fr", "en", "de"];
 const defaultLocale = "fr";
 
 function getLocaleFromHeader(acceptLanguage) {
-  if (!acceptLanguage) return defaultLocale;
-  const langs = acceptLanguage.split(",").map((s) => s.split(";")[0].trim());
-  const short = langs.map((l) => l.slice(0, 2));
-  return short.find((l) => locales.includes(l)) || defaultLocale;
+  // Toujours retourner 'fr' pour forcer la langue par défaut
+  return defaultLocale;
 }
 
-export function proxy(request) {
+export function middleware(request) {
   const { pathname } = request.nextUrl;
 
   if (

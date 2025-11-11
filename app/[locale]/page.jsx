@@ -1,7 +1,14 @@
 "use client";
-import { useTranslations } from "next-intl";
+import { useParams } from "next/navigation";
+import fr from "../../messages/fr.json";
+import en from "../../messages/en.json";
+import de from "../../messages/de.json";
 
+const messages = { fr, en, de };
 export default function HomePage() {
+  const params = useParams();
+  const { locale } = params;
+  const t = messages[locale] || messages.fr; // fallback fr
   return (
     <main className="flex min-h-screen items-center justify-center bg-gray-50">
       <h1 className="text-4xl font-bold text-center">
