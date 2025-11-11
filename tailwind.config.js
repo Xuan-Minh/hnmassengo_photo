@@ -1,3 +1,5 @@
+const { text, head } = require("framer-motion/client");
+
 module.exports = {
   content: [
     "./app/**/*.{js,jsx,ts,tsx}",
@@ -6,11 +8,21 @@ module.exports = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        text: ["'Playfair Display', serif"],
+        heading: ["'Lexend Semibold', sans-serif"],
+        nameproject: ["'Playfair Display', serif"],
+      },
+      letterspacing: {
+        text: ".1em",
+      },
       colors: {
-        primary: "#1a202c", // Exemple : bleu foncé
-        secondary: "#fbbf24", // Exemple : jaune
-        accent: "#e53e3e", // Exemple : rouge
-        background: "#f7fafc", // Exemple : gris clair
+        black: "#0A0A0A",
+        white: "#F4F3F2",
+        accent: "#C8C7C6",
+        accentHover: "#D9D9D9",
+        backgroundWhite: "#F4F3F2",
+        backgroundBlack: "#222222",
       },
     },
   },

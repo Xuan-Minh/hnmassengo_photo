@@ -46,3 +46,39 @@ Remarques :
 
 - Le plugin `@netlify/plugin-nextjs` est installé en devDependency et Netlify l'utilisera automatiquement si `netlify.toml` est présent.
 - Tu peux configurer les redirects ou headers supplémentaires dans `netlify.toml` si nécessaire.
+
+## Développement local ✅
+
+Pour démarrer le serveur de développement :
+
+```bash
+npm install
+npm run dev
+```
+
+Note : si le port `3000` est déjà utilisé, Next choisira automatiquement un autre port (ex. `3001`). Pour forcer l'utilisation du port 3000, arrêtez le processus qui occupe le port (`lsof -i :3000`) ou démarrez avec :
+
+```bash
+PORT=3000 npm run dev
+```
+
+Netlify CLI : la CLI Netlify est installée globalement pour ce projet (préféré pour éviter des dépendances optionnelles dans `node_modules`). Si vous ne l'avez pas :
+
+```bash
+npm install -g netlify-cli
+netlify login
+netlify dev
+```
+
+## Tailwind CSS
+
+Le projet utilise Tailwind CSS avec PostCSS. La configuration Tailwind se trouve dans `tailwind.config.js` ; les chemins `content` incluent :
+
+```
+./app/**/*.{js,jsx,ts,tsx}
+./pages/**/*.{js,jsx,ts,tsx}
+./components/**/*.{js,jsx,ts,tsx}
+```
+
+Assurez-vous que vos composants et pages respectent ces emplacements pour que Tailwind purge correctement les classes en production.
+
