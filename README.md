@@ -81,4 +81,3 @@ Le projet utilise Tailwind CSS avec PostCSS. La configuration Tailwind se trouve
 ```
 
 Assurez-vous que vos composants et pages respectent ces emplacements pour que Tailwind purge correctement les classes en production.
-

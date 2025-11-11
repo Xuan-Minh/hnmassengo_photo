@@ -1,6 +1,9 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Lexend:wght@600&display=swap");
+.font-playfair {
+  font-family: "Playfair Display", serif !important;
+}
+.bg-red-500 {
+  background-color: #ef4444 !important;
+}

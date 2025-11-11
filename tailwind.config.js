@@ -1,28 +1,37 @@
 const { text, head } = require("framer-motion/client");
 
 module.exports = {
-  content: [
-    "./app/**/*.{js,jsx,ts,tsx}",
-    "./pages/**/*.{js,jsx,ts,tsx}",
-    "./components/**/*.{js,jsx,ts,tsx}",
+  content: ["./app/**/*.{js,jsx,ts,tsx}", "./components/**/*.{js,jsx,ts,tsx}"],
+  safelist: [
+    "font-playfair",
+    "font-lexend",
+    "bg-red-500",
+    "bg-blue-500",
+    "bg-green-500",
+    "bg-yellow-500",
+    "bg-purple-500",
+    "bg-red-200",
+    "bg-blue-200",
+    "bg-green-200",
+    "bg-yellow-200",
+    "bg-purple-200",
+    "text-[24px]",
+    "md:text-[36px]",
+    "tracking-[-0.05em]",
+    "italic",
   ],
   theme: {
     extend: {
       fontFamily: {
-        text: ["'Playfair Display', serif"],
-        heading: ["'Lexend Semibold', sans-serif"],
-        nameproject: ["'Playfair Display', serif"],
+        playfair: ["var(--font-playfair)", "serif"],
+        lexend: ["var(--font-lexend)", "sans-serif"],
       },
-      letterspacing: {
-        text: ".1em",
+      fontSize: {
+        // nom personnalisé pour 24px
+        "playfair-24": ["1.5rem", { lineHeight: "1.2" }], // 24px = 1.5rem si base 16px
       },
-      colors: {
-        black: "#0A0A0A",
-        white: "#F4F3F2",
-        accent: "#C8C7C6",
-        accentHover: "#D9D9D9",
-        backgroundWhite: "#F4F3F2",
-        backgroundBlack: "#222222",
+      letterSpacing: {
+        "neg-05": "-0.05em", // -5%
       },
     },
   },
