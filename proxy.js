@@ -11,7 +11,7 @@ function getLocaleFromHeader(acceptLanguage) {
   return short.find((l) => locales.includes(l)) || defaultLocale;
 }
 
-export function middleware(request) {
+export function proxy(request) {
   const { pathname } = request.nextUrl;
 
   if (

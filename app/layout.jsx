@@ -1,32 +1,18 @@
-import "../globals.css";
-import Navbar from "../components/Navbar";
-import FooterContact from "../components/FooterContact";
-import LanguageSwitcher from "../components/LanguageSwitcher";
-import PageTransition from "../components/PageTransition";
+"use client";
+import { useState } from "react";
+import LoadingScreen from "../components/LoadingScreen";
 
 export default function RootLayout({ children }) {
+  const [isLoading, setIsLoading] = useState(true);
+
   return (
     <html lang="fr">
-      <head>
-        {/* Snipcart CSS (CDN) - configure NEXT_PUBLIC_SNIPCART_API_KEY in .env */}
-        <link
-          rel="stylesheet"
-          href="https://cdn.snipcart.com/themes/v3.0.31/default/snipcart.css"
-        />
-      </head>
       <body>
-        {children}
-
-        {/* Snipcart element and script - replace NEXT_PUBLIC_SNIPCART_API_KEY in .env */}
-        <div
-          hidden
-          id="snipcart"
-          data-api-key={process.env.NEXT_PUBLIC_SNIPCART_API_KEY}
-        ></div>
-        <script
-          async
-          src="https://cdn.snipcart.com/themes/v3.0.31/default/snipcart.js"
-        ></script>
+        {isLoading ? (
+          <LoadingScreen onFinish={() => setIsLoading(false)} />
+        ) : (
+          children
+        )}
       </body>
     </html>
   );
