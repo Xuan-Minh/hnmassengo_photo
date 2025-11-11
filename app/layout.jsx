@@ -15,10 +15,8 @@ export default function RootLayout({ children }) {
         />
       </head>
       <body>
-        <Navbar />
-        <LanguageSwitcher />
-        <PageTransition>{children}</PageTransition>
-        <FooterContact />
+        {children}
+
         {/* Snipcart element and script - replace NEXT_PUBLIC_SNIPCART_API_KEY in .env */}
         <div
           hidden

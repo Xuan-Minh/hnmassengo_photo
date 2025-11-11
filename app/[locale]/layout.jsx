@@ -6,8 +6,8 @@ import de from "../../messages/de.json";
 
 const messagesMap = { fr, en, de };
 
-export default function LocaleLayout({ children, params }) {
-  const { locale } = params;
+export default async function LocaleLayout({ children, params }) {
+  const { locale } = await params;
   const messages = messagesMap[locale];
 
   if (!messages) notFound();
