@@ -21,6 +21,7 @@ export default function HomePage() {
           <h1 className="text-[24px] md:text-[36px] font-playfair tracking-[-0.05em]">
             {t.home?.title ?? "Section 1"}
           </h1>
+          <div className="test-lexend text-2xl">Test Lexend direct</div>
           <div className="font-playfair ">HN Massengo</div>
           <p className="mt-2 playfairTitle">
             {t.home?.subtitle ?? "Teaser section 1"}
