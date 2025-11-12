@@ -21,8 +21,12 @@ export default function HomePage() {
 
   const handleChangeLang = (lang) => {
     if (lang === locale) return;
-    // Remplace la locale dans l'URL
-    const newPath = pathname.replace(/^\/[a-z]{2}/, `/${lang}`);
+    let newPath;
+    if (/^\/[a-z]{2}/.test(pathname)) {
+      newPath = pathname.replace(/^\/[a-z]{2}/, `/${lang}`);
+    } else {
+      newPath = `/${lang}${pathname}`;
+    }
     router.push(newPath);
   };
 
