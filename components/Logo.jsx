@@ -1,9 +1,15 @@
 export default function Logo() {
   return (
-    <div className="flex flex-col gap-2 items-start">
-      <div className="test-playfair text-2xl">Test Playfair direct</div>
-      <div className="test-lexend text-2xl">Test Lexend direct</div>
-      <div className="font-playfair">Texte en Playfair</div>
+    <div
+      data-layer="HAN-NOAH MASSENGO"
+      className="fixed top-0 left-0 w-full flex justify-center items-center space-x-2 mt-4 z-50 bg-transparent pointer-events-none hidden sm:flex md:text-[36px]  "
+    >
+      <span className=" text-accent font-normal font-playfair italic  pointer-events-auto">
+        HAN-NOAH
+      </span>
+      <span className="text-accent font-normal font-lexend pointer-events-auto">
+        MASSENGO
+      </span>
     </div>
   );
 }
