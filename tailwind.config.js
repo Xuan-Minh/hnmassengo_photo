@@ -18,7 +18,7 @@ module.exports = {
         whiteCustom: "#F4F3F2",
         background: "#F4F3F2",
         accent: "#C8C7C6",
-        accentHover: "D9D9D9",
+  accentHover: "#D9D9D9",
         blackCustom: "#222222",
         formBG: "323232",
       },
