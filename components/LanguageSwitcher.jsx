@@ -17,6 +17,11 @@ export default function LanguageSwitcher({ isDarkBackground }) {
 
   const handleChangeLang = (lang) => {
     if (lang === locale) return;
+    try {
+      if (typeof window !== "undefined") {
+        localStorage.setItem("scrollY", String(window.scrollY || 0));
+      }
+    } catch {}
     router.replace(pathname, { locale: lang, scroll: false });
   };
 
