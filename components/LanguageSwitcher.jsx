@@ -1,8 +1,7 @@
 "use client";
 import React from "react";
 
-import { useParams } from "next/navigation";
-import { usePathname, useRouter } from "../src/i18n/navigation";
+import { useParams, usePathname, useRouter } from "next/navigation";
 
 export default function LanguageSwitcher({ isDarkBackground }) {
   const langs = ["fr", "en", "de"];
@@ -17,14 +16,12 @@ export default function LanguageSwitcher({ isDarkBackground }) {
 
   const handleChangeLang = (lang) => {
     if (lang === locale) return;
-    try {
-      if (typeof window !== "undefined") {
-        const el = document.getElementById("scroll-root");
-        const y = el ? el.scrollTop : window.scrollY || 0;
-        localStorage.setItem("scrollY", String(y));
-      }
-    } catch {}
-    router.replace(pathname, { locale: lang, scroll: false });
+    // Calcule le chemin sans préfixe locale, puis laisse next-intl router ajouter la nouvelle locale
+    const current = pathname || "/";
+    let base = current.replace(/^\/(fr|en|de)(?=\/|$)/, "");
+    if (base === "") base = "/";
+    const href = `/${lang}${base === "/" ? "" : base}`;
+    router.replace(href, { scroll: false });
   };
 
   return (

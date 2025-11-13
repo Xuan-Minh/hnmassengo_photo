@@ -15,7 +15,12 @@ export default function RootLayout({ children }) {
     <html lang="fr">
       <body>
         <Logo />
-        {children}
+        <main
+          id="scroll-root"
+          className="h-screen overflow-y-scroll snap-y snap-mandatory scroll-smooth"
+        >
+          {children}
+        </main>
       </body>
     </html>
   );

@@ -1,7 +1,7 @@
 "use client";
 
 import { useParams, useRouter, usePathname } from "next/navigation";
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { useTranslations } from "next-intl";
 import LanguageSwitcher from "../../components/LanguageSwitcher";
 
@@ -11,33 +11,18 @@ export default function HomePage() {
   const pathname = usePathname();
   const { locale } = params;
   const t = useTranslations();
-  const mainRef = useRef(null);
 
   // Détecte si le fond est foncé (exemple simple, à adapter selon ta logique)
   // Ici, on considère que la première section est claire, tu peux adapter selon le scroll ou le contexte
   const isDarkBackground = false;
 
-  // Restaure la position de scroll du conteneur principal si enregistrée
-  useEffect(() => {
-    try {
-      const y = localStorage.getItem("scrollY");
-      if (y && mainRef.current) {
-        mainRef.current.scrollTop = Number(y);
-        localStorage.removeItem("scrollY");
-      }
-    } catch {}
-  }, []);
+  // Pas de restauration manuelle: le conteneur scroll est dans le RootLayout et persiste
 
   // plus besoin de handleChangeLang, LanguageSwitcher gère le changement de langue
 
   return (
     <>
       <LanguageSwitcher isDarkBackground={isDarkBackground} />
-      <main
-        id="scroll-root"
-        ref={mainRef}
-        className="h-screen overflow-y-scroll snap-y snap-mandatory scroll-smooth"
-      >
         <section
           className="h-screen snap-start flex items-center justify-center bg-red-200"
           aria-label="Section 1"
@@ -77,7 +62,7 @@ export default function HomePage() {
         >
           <h2 className="text-3xl font-semibold">{t("section5.title")}</h2>
         </section>
-      </main>
+      
     </>
   );
 }
