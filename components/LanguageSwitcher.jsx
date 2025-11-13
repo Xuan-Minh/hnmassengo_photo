@@ -1,16 +1,24 @@
 "use client";
 import React from "react";
 
-export default function LanguageSwitcher({
-  locale,
-  onChange,
-  isDarkBackground,
-}) {
+import { useParams } from "next/navigation";
+import { usePathname, useRouter } from "../src/i18n/navigation";
+
+export default function LanguageSwitcher({ isDarkBackground }) {
   const langs = ["fr", "en", "de"];
+  const params = useParams();
+  const router = useRouter();
+  const pathname = usePathname();
+  const locale = params.locale;
   const activeColor = isDarkBackground ? "text-background" : "text-blackCustom";
   const inactiveColor = isDarkBackground
     ? "text-accentHover hover:text-background"
     : "text-accent hover:text-blackCustom";
+
+  const handleChangeLang = (lang) => {
+    if (lang === locale) return;
+    router.replace(pathname, { locale: lang, scroll: false });
+  };
 
   return (
     <div className="fixed text-[20px] bottom-10 right-20 z-50 flex items-center space-x-2">
@@ -19,7 +27,7 @@ export default function LanguageSwitcher({
           <button
             className={`uppercase font-bold transition-all duration-300 ease-in-out relative
               ${locale === lang ? activeColor : inactiveColor}`}
-            onClick={() => onChange(lang)}
+            onClick={() => handleChangeLang(lang)}
             aria-current={locale === lang ? "true" : undefined}
             style={{
               transitionProperty:

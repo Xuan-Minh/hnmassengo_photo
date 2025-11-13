@@ -1,20 +1,27 @@
-import Providers from "../providers";
+import { NextIntlClientProvider } from "next-intl";
 import { notFound } from "next/navigation";
-import fr from "../../messages/fr.json";
-import en from "../../messages/en.json";
-import de from "../../messages/de.json";
-
-const messagesMap = { fr, en, de };
+import { setRequestLocale } from "next-intl/server";
+import { routing } from "../../src/i18n/routing";
 
 export default async function LocaleLayout({ children, params }) {
   const { locale } = await params;
-  const messages = messagesMap[locale];
-
-  if (!messages) notFound();
-
+  if (!routing.locales.includes(locale)) {
+    notFound();
+  }
+  setRequestLocale(locale);
+  let messages;
+  try {
+    messages = (await import(`../../messages/${locale}.json`)).default;
+  } catch (error) {
+    notFound();
+  }
   return (
-    <Providers messages={messages} locale={locale}>
+    <NextIntlClientProvider locale={locale} messages={messages}>
       {children}
-    </Providers>
+    </NextIntlClientProvider>
   );
+}
+
+export function generateStaticParams() {
+  return routing.locales.map((locale) => ({ locale }));
 }
