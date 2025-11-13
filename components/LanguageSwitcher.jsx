@@ -19,7 +19,9 @@ export default function LanguageSwitcher({ isDarkBackground }) {
     if (lang === locale) return;
     try {
       if (typeof window !== "undefined") {
-        localStorage.setItem("scrollY", String(window.scrollY || 0));
+        const el = document.getElementById("scroll-root");
+        const y = el ? el.scrollTop : window.scrollY || 0;
+        localStorage.setItem("scrollY", String(y));
       }
     } catch {}
     router.replace(pathname, { locale: lang, scroll: false });

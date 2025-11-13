@@ -1,9 +1,7 @@
 "use client";
 
-"use client";
-
 import { useParams, useRouter, usePathname } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useTranslations } from "next-intl";
 import LanguageSwitcher from "../../components/LanguageSwitcher";
 
@@ -13,27 +11,21 @@ export default function HomePage() {
   const pathname = usePathname();
   const { locale } = params;
   const t = useTranslations();
+  const mainRef = useRef(null);
 
   // Détecte si le fond est foncé (exemple simple, à adapter selon ta logique)
   // Ici, on considère que la première section est claire, tu peux adapter selon le scroll ou le contexte
   const isDarkBackground = false;
 
-  // Restaure la position de scroll après un changement de langue
+  // Restaure la position de scroll du conteneur principal si enregistrée
   useEffect(() => {
-    const y = localStorage.getItem("scrollY");
-    if (y) {
-      window.scrollTo({ top: Number(y), behavior: "auto" });
-      localStorage.removeItem("scrollY");
-    }
-  }, []);
-
-  // Restaure la position de scroll après un changement de langue
-  useEffect(() => {
-    const y = localStorage.getItem("scrollY");
-    if (y) {
-      window.scrollTo({ top: Number(y), behavior: "auto" });
-      localStorage.removeItem("scrollY");
-    }
+    try {
+      const y = localStorage.getItem("scrollY");
+      if (y && mainRef.current) {
+        mainRef.current.scrollTop = Number(y);
+        localStorage.removeItem("scrollY");
+      }
+    } catch {}
   }, []);
 
   // plus besoin de handleChangeLang, LanguageSwitcher gère le changement de langue
@@ -41,7 +33,11 @@ export default function HomePage() {
   return (
     <>
       <LanguageSwitcher isDarkBackground={isDarkBackground} />
-      <main className="h-screen overflow-y-scroll snap-y snap-mandatory scroll-smooth">
+      <main
+        id="scroll-root"
+        ref={mainRef}
+        className="h-screen overflow-y-scroll snap-y snap-mandatory scroll-smooth"
+      >
         <section
           className="h-screen snap-start flex items-center justify-center bg-red-200"
           aria-label="Section 1"
