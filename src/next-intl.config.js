@@ -1,6 +1,6 @@
 const config = {
-  locales: ['fr', 'en', 'de'],
-  defaultLocale: 'fr'
+  locales: ["fr", "en", "de"],
+  defaultLocale: "fr",
 };
 
 export default config;
