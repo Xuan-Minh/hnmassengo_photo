@@ -23,46 +23,45 @@ export default function HomePage() {
   return (
     <>
       <LanguageSwitcher isDarkBackground={isDarkBackground} />
-        <section
-          className="h-screen snap-start flex items-center justify-center bg-red-200"
-          aria-label="Section 1"
-        >
-          <div className="text-center">
-            <h1 className="text-[24px] md:text-[36px] font-playfair tracking-[-0.05em]">
-              {t("home.title")}
-            </h1>
-            <p className="mt-2 playfairTitle">{t("home.subtitle")}</p>
-          </div>
-        </section>
+      <section
+        className="h-screen snap-start flex items-center justify-center bg-red-200"
+        aria-label="Section 1"
+      >
+        <div className="text-center">
+          <h1 className="text-[24px] md:text-[36px] font-playfair tracking-[-0.05em]">
+            {t("home.title")}
+          </h1>
+          <p className="mt-2 playfairTitle">{t("home.subtitle")}</p>
+        </div>
+      </section>
 
-        <section
-          className="h-screen snap-start flex items-center justify-center bg-yellow-200"
-          aria-label="Section 2"
-        >
-          <h2 className="text-3xl font-semibold">{t("section2.title")}</h2>
-        </section>
+      <section
+        className="h-screen snap-start flex items-center justify-center bg-yellow-200"
+        aria-label="Section 2"
+      >
+        <h2 className="text-3xl font-semibold">{t("section2.title")}</h2>
+      </section>
 
-        <section
-          className="h-screen snap-start flex items-center justify-center bg-green-200"
-          aria-label="Section 3"
-        >
-          <h2 className="text-3xl font-semibold">{t("section3.title")}</h2>
-        </section>
+      <section
+        className="h-screen snap-start flex items-center justify-center bg-green-200"
+        aria-label="Section 3"
+      >
+        <h2 className="text-3xl font-semibold">{t("section3.title")}</h2>
+      </section>
 
-        <section
-          className="h-screen snap-start flex items-center justify-center bg-blue-200"
-          aria-label="Section 4"
-        >
-          <h2 className="text-3xl font-semibold">{t("section4.title")}</h2>
-        </section>
+      <section
+        className="h-screen snap-start flex items-center justify-center bg-blue-200"
+        aria-label="Section 4"
+      >
+        <h2 className="text-3xl font-semibold">{t("section4.title")}</h2>
+      </section>
 
-        <section
-          className="h-screen snap-start flex items-center justify-center bg-purple-200"
-          aria-label="Section 5"
-        >
-          <h2 className="text-3xl font-semibold">{t("section5.title")}</h2>
-        </section>
-      
+      <section
+        className="h-screen snap-start flex items-center justify-center bg-purple-200"
+        aria-label="Section 5"
+      >
+        <h2 className="text-3xl font-semibold">{t("section5.title")}</h2>
+      </section>
     </>
   );
 }
