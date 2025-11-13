@@ -1,9 +1,14 @@
 import "../globals.css";
 
 import Logo from "../components/Logo";
-import Navbar from "../components/Navbar";
+import Menu from "../components/Menu";
 import LanguageSwitcher from "../components/LanguageSwitcher";
 import PageTransition from "../components/PageTransition";
+
+export const metadata = {
+  title: "Han-Noah MASSENGO",
+  description: "Portfolio Han-Noah Massengo",
+};
 
 export default function RootLayout({ children }) {
   return (

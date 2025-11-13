@@ -2,6 +2,7 @@
 
 "use client";
 import { useParams, useRouter, usePathname } from "next/navigation";
+import { useEffect } from "react";
 import LanguageSwitcher from "../../components/LanguageSwitcher";
 import fr from "../../messages/fr.json";
 import en from "../../messages/en.json";
@@ -19,8 +20,18 @@ export default function HomePage() {
   // Ici, on considère que la première section est claire, tu peux adapter selon le scroll ou le contexte
   const isDarkBackground = false;
 
+  // Restaure la position de scroll après un changement de langue
+  useEffect(() => {
+    const y = localStorage.getItem("scrollY");
+    if (y) {
+      window.scrollTo({ top: Number(y), behavior: "auto" });
+      localStorage.removeItem("scrollY");
+    }
+  }, []);
+
   const handleChangeLang = (lang) => {
     if (lang === locale) return;
+    localStorage.setItem("scrollY", window.scrollY);
     let newPath;
     if (/^\/[a-z]{2}/.test(pathname)) {
       newPath = pathname.replace(/^\/[a-z]{2}/, `/${lang}`);
