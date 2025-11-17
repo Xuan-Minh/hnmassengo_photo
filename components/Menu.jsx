@@ -65,7 +65,7 @@ export default function Menu() {
                     ? "font-bold text-black/80"
                     : "font-normal text-black/50",
                   "hover:scale-110 hover:text-black/80",
-                  "text-[48px] leading-none",
+                  "md:text-[48px] leading-none",
                 ].join(" ")}
               >
                 {it.label}
