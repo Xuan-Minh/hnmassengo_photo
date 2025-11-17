@@ -4,6 +4,10 @@ import { useParams, useRouter, usePathname } from "next/navigation";
 import { useEffect } from "react";
 import { useTranslations } from "next-intl";
 import LanguageSwitcher from "../../components/LanguageSwitcher";
+import Gallery from "../../components/Gallery";
+import Shop from "../../components/Shop";
+import ContactOverlay from "../../components/ContactOverlay";
+import Blog from "../../components/Blog";
 
 export default function HomePage() {
   const params = useParams();
@@ -42,6 +46,7 @@ export default function HomePage() {
         aria-label="Section 2"
       >
         <h2 className="text-3xl font-semibold">{t("section2.title")}</h2>
+        <Gallery />
       </section>
 
       <section
@@ -50,6 +55,7 @@ export default function HomePage() {
         aria-label="Section 3"
       >
         <h2 className="text-3xl font-semibold">{t("section3.title")}</h2>
+        <Blog />
       </section>
 
       <section
@@ -58,6 +64,7 @@ export default function HomePage() {
         aria-label="Section 4"
       >
         <h2 className="text-3xl font-semibold">{t("section4.title")}</h2>
+        <Shop />
       </section>
 
       <section
@@ -66,6 +73,7 @@ export default function HomePage() {
         aria-label="Section 5"
       >
         <h2 className="text-3xl font-semibold">{t("section5.title")}</h2>
+        <ContactOverlay />
       </section>
     </>
   );
