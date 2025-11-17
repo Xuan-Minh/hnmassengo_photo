@@ -4,18 +4,18 @@
     "subtitle": "Teaser section 1",
     "welcome": "Welcome to the official website of photographer Han-Noah MASSENGO."
   },
-    "section2": {
-      "title": "Section 2"
-    },
-    "section3": {
-      "title": "Section 3"
-    },
-    "section4": {
-      "title": "Section 4"
-    },
-    "section5": {
-      "title": "Section 5"
-    },
+  "section2": {
+    "title": "Section 2"
+  },
+  "section3": {
+    "title": "Section 3"
+  },
+  "section4": {
+    "title": "Section 4"
+  },
+  "section5": {
+    "title": "Section 5"
+  },
   "blog": {
     "title": "Blog",
     "description": "Find here articles and news from the photographer."

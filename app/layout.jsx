@@ -1,7 +1,6 @@
 import "../globals.css";
 
 import Logo from "../components/Logo";
-import Menu from "../components/Menu";
 import LanguageSwitcher from "../components/LanguageSwitcher";
 import PageTransition from "../components/PageTransition";
 
