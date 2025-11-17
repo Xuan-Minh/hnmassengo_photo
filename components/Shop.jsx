@@ -1,3 +1,3 @@
-"use react";
+"use client";
 
 export default function Shop() {}
