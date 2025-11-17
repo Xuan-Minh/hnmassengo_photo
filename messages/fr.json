@@ -31,5 +31,12 @@
   "legal": {
     "title": "Mentions légales",
     "description": "Informations sur les mentions légales et la politique de confidentialité."
+  },
+  "menu": {
+    "about": "À propos",
+    "works": "Travaux",
+    "spaces": "Espaces",
+    "shop": "Boutique",
+    "info": "Infos"
   }
 }

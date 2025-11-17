@@ -31,5 +31,12 @@
   "legal": {
     "title": "Rechtliche Hinweise",
     "description": "Informationen zu rechtlichen Hinweisen und Datenschutz."
+  },
+  "menu": {
+    "about": "Über mich",
+    "works": "Arbeiten",
+    "spaces": "Räume",
+    "shop": "Shop",
+    "info": "Infos"
   }
 }

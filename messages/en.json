@@ -31,5 +31,12 @@
   "legal": {
     "title": "Legal Notice",
     "description": "Information on legal notices and privacy policy."
+  },
+  "menu": {
+    "about": "About",
+    "works": "Works",
+    "spaces": "Spaces",
+    "shop": "Shop",
+    "info": "Info"
   }
 }

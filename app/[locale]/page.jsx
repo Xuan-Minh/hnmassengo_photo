@@ -24,6 +24,7 @@ export default function HomePage() {
     <>
       <LanguageSwitcher isDarkBackground={isDarkBackground} />
       <section
+        id="home"
         className="h-screen snap-start flex items-center justify-center bg-red-200"
         aria-label="Section 1"
       >
@@ -36,6 +37,7 @@ export default function HomePage() {
       </section>
 
       <section
+        id="works"
         className="h-screen snap-start flex items-center justify-center bg-yellow-200"
         aria-label="Section 2"
       >
@@ -43,6 +45,7 @@ export default function HomePage() {
       </section>
 
       <section
+        id="spaces"
         className="h-screen snap-start flex items-center justify-center bg-green-200"
         aria-label="Section 3"
       >
@@ -50,6 +53,7 @@ export default function HomePage() {
       </section>
 
       <section
+        id="shop"
         className="h-screen snap-start flex items-center justify-center bg-blue-200"
         aria-label="Section 4"
       >
@@ -57,6 +61,7 @@ export default function HomePage() {
       </section>
 
       <section
+        id="info"
         className="h-screen snap-start flex items-center justify-center bg-purple-200"
         aria-label="Section 5"
       >
