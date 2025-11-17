@@ -62,10 +62,10 @@ export default function Menu() {
                   "uppercase tracking-wide transition-all duration-200 ease-out",
                   "text-right origin-right",
                   isActive
-                    ? "font-bold text-black/80"
-                    : "font-normal text-black/50",
-                  "hover:scale-110 hover:text-black/80",
-                  "md:text-[48px] leading-none",
+                    ? "font-bold text-blackCustom"
+                    : "font-normal text-accent",
+                  "hover:scale-110 hover:text-blackCustom",
+                  "text-[28px] md:text-[32px] lg:text-[40px] xl:text-[48px] 2xl:text-[56px] leading-none",
                 ].join(" ")}
               >
                 {it.label}
