@@ -32,16 +32,9 @@ export default function IntroOverlay() {
   const rotateInterval = useRef(null);
   const [loadedImages, setLoadedImages] = useState([]);
 
-  // One-time gate per session
+  // Affiche toujours l'intro au chargement (plus de gating sessionStorage)
   useEffect(() => {
-    try {
-      const seen =
-        typeof window !== "undefined" &&
-        sessionStorage.getItem("introSeen") === "1";
-      if (!seen) {
-        setVisible(true);
-      }
-    } catch {}
+    setVisible(true);
     return () => {
       if (rotateInterval.current) clearInterval(rotateInterval.current);
     };
@@ -92,10 +85,6 @@ export default function IntroOverlay() {
 
   const dismiss = () => {
     if (isExiting) return;
-    try {
-      if (typeof window !== "undefined")
-        sessionStorage.setItem("introSeen", "1");
-    } catch {}
     setIsExiting(true);
   };
 
