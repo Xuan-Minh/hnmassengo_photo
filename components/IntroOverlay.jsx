@@ -140,14 +140,13 @@ export default function IntroOverlay() {
           e.stopPropagation();
           dismiss();
         }}
-        className="px-6 py-3 rounded-full text-lg font-medium font-playfair backdrop-blur-sm"
+        className="px-6 py-3 text-lg font-medium font-playfair text-[20px] md:text-[20px] lg:text-[24px] xl:text-[24px] 2xl:text-[24px]"
         style={{
           color: hovered ? "#F4F3F2" : "#C8C7C6",
-          borderColor: hovered ? "#F4F3F2" : "#C8C7C6",
-          backgroundColor: hovered ? "rgba(0,0,0,0.15)" : "rgba(0,0,0,0.05)",
+          opacity: hovered ? 1 : 0.8,
         }}
       >
-        next →
+        → next
       </button>
     </motion.div>
   );
