@@ -34,17 +34,8 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section
-        id="works"
-        className="h-screen snap-start flex items-center justify-center bg-yellow-200"
-        aria-label="Section 2"
-      >
-        <h2 className="text-3xl font-semibold">{t("section2.title")}</h2>
-        <Gallery />
-      </section>
-
+      <Gallery />
       <Blog />
-
       <Shop />
       <ContactOverlay />
     </>

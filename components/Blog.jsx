@@ -6,11 +6,13 @@ export default function Blog() {
   const t = useTranslations();
   return (
     <section
-      id="spaces"
-      className="h-screen snap-start flex items-center justify-center bg-green-200"
-      aria-label="Section 3"
+      id="blog" /* id distinct pour la détection contraste */
+      className="h-screen snap-start flex items-center justify-center bg-blackCustom"
+      aria-label="Section blog"
     >
-      <h2 className="text-3xl font-semibold">{t("section3.title")}</h2>
+      <h2 className="text-3xl font-semibold text-whiteCustom">
+        {t("section3.title")}
+      </h2>
     </section>
   );
 }
