@@ -17,10 +17,10 @@ export default function IntroOverlay() {
   // Chemins d'images optionnels (placés dans /public/loading)
   const imageSources = useMemo(
     () => [
-      "/loading/1.jpg",
-      "/loading/2.jpg",
-      "/loading/3.jpg",
-      "/loading/4.jpg",
+      "../loading/loading1.jpg",
+      "../loading/loading2.jpg",
+      "../loading/loading3.jpg",
+      "../loading/loading4.jpg",
     ],
     []
   );
