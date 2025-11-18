@@ -1,10 +1,8 @@
 "use client";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { useTranslations } from "next-intl";
 
 // Menu one-page: scroll interne vers des sections dans #scroll-root
 export default function Menu() {
-  const t = useTranslations("menu");
   const items = useMemo(
     () => [
       { id: "home", label: "About" },
@@ -13,7 +11,7 @@ export default function Menu() {
       { id: "shop", label: "shop" },
       { id: "info", label: "info" },
     ],
-    [t]
+    []
   );
 
   const [active, setActive] = useState("home");
@@ -58,6 +56,7 @@ export default function Menu() {
               <button
                 type="button"
                 onClick={() => scrollToId(it.id)}
+                aria-current={isActive ? "page" : undefined}
                 className={[
                   "uppercase tracking-wide transition-all duration-200 ease-out",
                   "text-right origin-right",
