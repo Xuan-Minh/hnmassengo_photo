@@ -16,6 +16,7 @@ export default function Menu() {
 
   const [active, setActive] = useState("home");
   const [isDarkBg, setIsDarkBg] = useState(false);
+  const [hideMenu, setHideMenu] = useState(false);
 
   const scrollToId = useCallback((targetId) => {
     const root = document.getElementById("scroll-root");
@@ -68,8 +69,34 @@ export default function Menu() {
     return () => io.disconnect();
   }, [items]);
 
+  // Hide menu when the bottom contact section (#info) is visible in viewport
+  useEffect(() => {
+    const root = document.getElementById("scroll-root");
+    const infoEl = document.getElementById("info");
+    if (!root || !infoEl) return;
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0];
+        // Hide when at least ~20% visible
+        setHideMenu(entry.isIntersecting && entry.intersectionRatio > 0.2);
+      },
+      { root, threshold: [0, 0.2, 0.4, 0.6, 0.8, 1] }
+    );
+    io.observe(infoEl);
+    return () => io.disconnect();
+  }, []);
+
   return (
-    <nav className="fixed right-8 top-1/2 -translate-y-1/2 z-50 pointer-events-auto select-none">
+    <nav
+      className={[
+        "fixed right-8 top-1/2 -translate-y-1/2 z-50 select-none transition-opacity duration-300",
+        hideMenu
+          ? "opacity-0 pointer-events-none"
+          : "opacity-100 pointer-events-auto",
+      ].join(" ")}
+      aria-hidden={hideMenu ? "true" : undefined}
+    >
       <ul className="flex flex-col items-end pr-2">
         {items.map((it, idx) => {
           const isActive = active === it.id;
@@ -79,7 +106,15 @@ export default function Menu() {
             <li key={it.id} className={idx > 0 ? "-mt-[8px]" : undefined}>
               <button
                 type="button"
-                onClick={() => scrollToId(it.id)}
+                onClick={() => {
+                  if (it.id === "info") {
+                    if (typeof window !== "undefined") {
+                      window.dispatchEvent(new Event("contact:show"));
+                    }
+                  } else {
+                    scrollToId(it.id);
+                  }
+                }}
                 aria-current={isActive ? "page" : undefined}
                 className={[
                   "uppercase tracking-wide transition-all duration-200 ease-out",
