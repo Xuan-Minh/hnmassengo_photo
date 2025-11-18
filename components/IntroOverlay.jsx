@@ -153,7 +153,7 @@ export default function IntroOverlay() {
 
         <div className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none select-none">
           <h2
-            className="text-whiteCustom flex items-end justify-center gap-2 text-3xl md:text-5xl lg:text-6xl xl:text-7xl 2xl:text-7xl mb-0"
+            className="text-whiteCustom flex items-end justify-center gap-4 text-3xl md:text-5xl lg:text-6xl xl:text-7xl 2xl:text-7xl mb-0"
             style={{ textShadow: "0 2px 12px rgba(0,0,0,0.45)" }}
           >
             <div className="font-playfair italic leading-none">Han-Noah</div>
