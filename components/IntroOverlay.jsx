@@ -134,15 +134,17 @@ export default function IntroOverlay() {
       {showImages && (
         <img
           key={loadedImages[currentIndex]}
-            src={loadedImages[currentIndex].startsWith('/loading/')
+          src={
+            loadedImages[currentIndex].startsWith("/loading/")
               ? loadedImages[currentIndex]
-              : loadedImages[currentIndex].replace(/^\.\./, '')}
+              : loadedImages[currentIndex].replace(/^\.\./, "")
+          }
           alt=""
           className="absolute inset-0 w-full h-full object-cover"
           draggable={false}
           style={{
-            pointerEvents: 'none',
-            userSelect: 'none'
+            pointerEvents: "none",
+            userSelect: "none",
           }}
         />
       )}
