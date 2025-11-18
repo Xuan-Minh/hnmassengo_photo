@@ -9,7 +9,7 @@ function ContactContent({ idSuffix = "", headingId }) {
       <div className="lg:col-span-7">
         <h2
           id={headingId}
-          className="text-whiteCustom font-playfair italic text-[42px] md:text-[56px] lg:text-[64px] leading-none mb-8"
+          className="text-whiteCustom font-playfair italic text-[42px] md:text-[46px] lg:text-[48px] leading-none mb-8"
         >
           Contact
         </h2>
@@ -21,7 +21,7 @@ function ContactContent({ idSuffix = "", headingId }) {
           <div>
             <label
               htmlFor={`fullName${idSuffix}`}
-              className="block text-whiteCustom/90 font-lexend text-sm mb-2"
+              className="block text-whiteCustom/90 font-playfair text-sm mb-2"
             >
               full name
             </label>
@@ -29,7 +29,7 @@ function ContactContent({ idSuffix = "", headingId }) {
               id={`fullName${idSuffix}`}
               name={`fullName${idSuffix}`}
               type="text"
-              className="w-full bg-transparent text-whiteCustom placeholder-whiteCustom/40 border border-whiteCustom/60 focus:border-whiteCustom outline-none px-3 py-2"
+              className="w-full bg-formBG text-whiteCustom placeholder-whiteCustom/40 border border-whiteCustom/60 focus:border-whiteCustom outline-none px-3 py-2"
             />
           </div>
 
@@ -37,7 +37,7 @@ function ContactContent({ idSuffix = "", headingId }) {
             <div>
               <label
                 htmlFor={`email${idSuffix}`}
-                className="block text-whiteCustom/90 font-lexend text-sm mb-2"
+                className="block text-whiteCustom/90 font-playfair  text-sm mb-2"
               >
                 email
               </label>
@@ -45,13 +45,13 @@ function ContactContent({ idSuffix = "", headingId }) {
                 id={`email${idSuffix}`}
                 name={`email${idSuffix}`}
                 type="email"
-                className="w-full bg-transparent text-whiteCustom placeholder-whiteCustom/40 border border-whiteCustom/60 focus:border-whiteCustom outline-none px-3 py-2"
+                className="w-full bg-formBG text-whiteCustom placeholder-whiteCustom/40 border border-whiteCustom/60 focus:border-whiteCustom outline-none px-3 py-2"
               />
             </div>
             <div>
               <label
                 htmlFor={`subject${idSuffix}`}
-                className="block text-whiteCustom/90 font-lexend text-sm mb-2"
+                className="block text-whiteCustom/90 font-playfair text-sm mb-2"
               >
                 subject
               </label>
@@ -59,7 +59,7 @@ function ContactContent({ idSuffix = "", headingId }) {
                 id={`subject${idSuffix}`}
                 name={`subject${idSuffix}`}
                 type="text"
-                className="w-full bg-transparent text-whiteCustom placeholder-whiteCustom/40 border border-whiteCustom/60 focus:border-whiteCustom outline-none px-3 py-2"
+                className="w-full bg-formBG text-whiteCustom placeholder-whiteCustom/40 border border-whiteCustom/60 focus:border-whiteCustom outline-none px-3 py-2"
               />
             </div>
           </div>
@@ -67,7 +67,7 @@ function ContactContent({ idSuffix = "", headingId }) {
           <div>
             <label
               htmlFor={`message${idSuffix}`}
-              className="block text-whiteCustom/90 font-lexend text-sm mb-2"
+              className="block text-whiteCustom/90 font-playfair text-sm mb-2"
             >
               message
             </label>
@@ -75,14 +75,14 @@ function ContactContent({ idSuffix = "", headingId }) {
               id={`message${idSuffix}`}
               name={`message${idSuffix}`}
               rows={6}
-              className="w-full bg-[#222]/60 text-whiteCustom placeholder-whiteCustom/40 border border-whiteCustom/60 focus:border-whiteCustom outline-none px-3 py-2 resize-y"
+              className="w-full bg-formBG text-whiteCustom placeholder-whiteCustom/40 border border-whiteCustom/60 focus:border-whiteCustom outline-none px-3 py-2 resize-y"
             />
           </div>
 
           <div className="pt-2">
             <button
               type="submit"
-              className="inline-flex items-center gap-3 text-whiteCustom/90 hover:text-whiteCustom transition-colors font-playfair text-xl"
+              className="inline-flex items-center gap-3 text-whiteCustom/90 hover:text-whiteCustom transition-colors font-playfair  text-xl"
               aria-label="Submit"
             >
               <span aria-hidden>→</span>
@@ -94,15 +94,22 @@ function ContactContent({ idSuffix = "", headingId }) {
 
       <div className="lg:col-span-5 text-whiteCustom/90">
         <h3 className="font-playfair italic text-3xl md:text-4xl leading-tight mb-6">
-          Mail, Instagram
+          <a
+            href="https://www.instagram.com/studio42archives/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Instagram
+          </a>
+          ,<a href="mailto:contact@hannoahmassengo.fr"> Mail</a>
         </h3>
-        <p className="font-lexend text-[15px] leading-relaxed mb-6">
+        <p className="font-playfair text-[20px] leading-relaxed mb-6">
           All images on this website are the property of Han-Noah MASSENGO and
           are protected by copyright. It is illegal to reproduce, distribute, or
           publish them, in whole or in part, without first obtaining his written
           permission.
         </p>
-        <p className="font-lexend text-[15px] leading-relaxed">
+        <p className="font-playfair text-[20px] leading-relaxed">
           Design & Development by Xuan-Minh TRAN
         </p>
       </div>
@@ -114,15 +121,15 @@ function ContactMarquee() {
   return (
     <div className="absolute inset-x-0 bottom-0 border-t border-whiteCustom/60 overflow-hidden pointer-events-none">
       <motion.div
-        className="whitespace-nowrap text-whiteCustom/90 font-playfair italic text-[42px] md:text-[56px] lg:text-[64px] py-2"
+        className="whitespace-nowrap text-whiteCustom/90 font-playfair text-[42px] md:text-[56px] lg:text-[64px] py-2 tracking-tight"
         animate={{ x: ["0%", "-50%"] }}
         transition={{ duration: 30, ease: "linear", repeat: Infinity }}
         style={{ willChange: "transform" }}
       >
-        <span className="pr-16">© Han-Noah MASSENGO 2025</span>
-        <span className="pr-16">© Han-Noah MASSENGO 2025</span>
-        <span className="pr-16">© Han-Noah MASSENGO 2025</span>
-        <span className="pr-16">© Han-Noah MASSENGO 2025</span>
+        <span className="inline-block">© Han-Noah MASSENGO 2025</span>
+        <span className="inline-block">© Han-Noah MASSENGO 2025</span>
+        <span className="inline-block">© Han-Noah MASSENGO 2025</span>
+        <span className="inline-block">© Han-Noah MASSENGO 2025</span>
       </motion.div>
     </div>
   );
@@ -248,7 +255,7 @@ export default function ContactOverlay() {
               onClick={(e) => e.stopPropagation()}
               ref={panelRef}
             >
-              <div className="relative max-w-7xl mx-auto px-6 md:px-10 lg:px-12 py-12 lg:py-16 pb-28">
+              <div className="relative max-w-7xl mx-auto px-6 md:px-10 lg:px-12 pt-12 lg:pt-16 pb-28">
                 <ContactContent
                   idSuffix="-overlay"
                   headingId="contact-title-overlay"

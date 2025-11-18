@@ -20,7 +20,7 @@ module.exports = {
         accent: "#C8C7C6",
         accentHover: "#D9D9D9",
         blackCustom: "#222222",
-        formBG: "323232",
+        formBG: "#323232",
       },
     },
   },
