@@ -109,19 +109,16 @@ export default function IntroOverlay() {
 
   if (!visible && !isExiting) return null;
 
+  // Mode sans fade: on affiche seulement l'image courante (préchargée) sans transition d'opacité.
+  const showImages = loadedImages.length > 0;
+
   return (
     <motion.div
       className="fixed inset-0 z-[100] flex items-center justify-center"
-      style={
-        loadedImages.length > 0
-          ? {
-              backgroundImage: `url(${loadedImages[currentIndex]})`,
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-              backgroundRepeat: "no-repeat",
-            }
-          : { backgroundColor: colors[currentIndex] }
-      }
+      style={{
+        backgroundColor: showImages ? "#000" : colors[currentIndex], // fond noir pour éviter le flash entre deux images
+        overflow: "hidden",
+      }}
       initial={{ y: 0, opacity: 1 }}
       animate={isExiting ? { y: "-100%", opacity: 0 } : { y: 0, opacity: 1 }}
       transition={{ duration: 0.8, ease: "easeInOut" }}
@@ -134,16 +131,33 @@ export default function IntroOverlay() {
       onMouseMove={() => setHovered(true)}
       onClick={dismiss}
     >
+      {showImages && (
+        <img
+          key={loadedImages[currentIndex]}
+            src={loadedImages[currentIndex].startsWith('/loading/')
+              ? loadedImages[currentIndex]
+              : loadedImages[currentIndex].replace(/^\.\./, '')}
+          alt=""
+          className="absolute inset-0 w-full h-full object-cover"
+          draggable={false}
+          style={{
+            pointerEvents: 'none',
+            userSelect: 'none'
+          }}
+        />
+      )}
       <button
         type="button"
         onClick={(e) => {
           e.stopPropagation();
           dismiss();
         }}
-        className="px-6 py-3 text-lg font-medium font-playfair text-[20px] md:text-[20px] lg:text-[24px] xl:text-[24px] 2xl:text-[24px]"
+        className="relative px-6 py-3 text-lg font-medium font-playfair text-[20px] md:text-[20px] lg:text-[24px] xl:text-[24px] 2xl:text-[24px]"
         style={{
           color: hovered ? "#F4F3F2" : "#C8C7C6",
-          opacity: hovered ? 1 : 0.8,
+          opacity: hovered ? 1 : 0.85,
+          transition: "color .3s, opacity .3s",
+          backdropFilter: hovered ? "blur(2px)" : "none",
         }}
       >
         → next
