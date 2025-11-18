@@ -120,7 +120,7 @@ export default function Menu() {
                   "uppercase tracking-wide transition-all duration-200 ease-out",
                   "text-right origin-right",
                   isActive
-                    ? `font-bold ${activeColor}`
+                    ? `font-bold ${activeColor} scale-110`
                     : `font-normal ${inactiveColor}`,
                   isDarkBg
                     ? "hover:scale-110 hover:text-[#F4F3F2]"
