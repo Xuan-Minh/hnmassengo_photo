@@ -42,7 +42,9 @@ export default function LanguageSwitcher({ isDarkBackground }) {
   const effectiveDark = isDarkBackground === true ? true : autoDark;
   const activeClass = effectiveDark ? "text-[#F4F3F2]" : "text-blackCustom";
   const inactiveClass = effectiveDark ? "text-[#F4F3F2]/60" : "text-accent";
-  const hoverClass = effectiveDark ? "hover:text-[#F4F3F2]" : "hover:text-blackCustom";
+  const hoverClass = effectiveDark
+    ? "hover:text-[#F4F3F2]"
+    : "hover:text-blackCustom";
 
   const handleChangeLang = (lang) => {
     if (lang === locale) return;
