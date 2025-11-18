@@ -5,8 +5,8 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        playfair: ["'Playfair Display'", "serif"],
-        lexend: ["'Lexend'", "sans-serif"],
+        playfair: ["var(--font-playfair)", "serif"],
+        lexend: ["var(--font-lexend)", "sans-serif"],
       },
       fontSize: {
         "playfair-24": ["1.5rem", { lineHeight: "1.2" }],
@@ -18,7 +18,7 @@ module.exports = {
         whiteCustom: "#F4F3F2",
         background: "#F4F3F2",
         accent: "#C8C7C6",
-  accentHover: "#D9D9D9",
+        accentHover: "#D9D9D9",
         blackCustom: "#222222",
         formBG: "323232",
       },

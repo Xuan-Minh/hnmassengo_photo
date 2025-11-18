@@ -5,3 +5,10 @@
 body {
   background-color: #f4f3f2;
 }
+
+/* Default tighter letter-spacing for Playfair Display */
+@layer components {
+  .font-playfair {
+    letter-spacing: -0.05em; /* -5% */
+  }
+}
