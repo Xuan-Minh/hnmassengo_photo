@@ -1,7 +1,5 @@
 "use client";
 
-import { useParams, useRouter, usePathname } from "next/navigation";
-import { useEffect } from "react";
 import { useTranslations } from "next-intl";
 import LanguageSwitcher from "../../components/LanguageSwitcher";
 import Gallery from "../../components/Gallery";
@@ -10,10 +8,6 @@ import ContactOverlay from "../../components/ContactOverlay";
 import Blog from "../../components/Blog";
 
 export default function HomePage() {
-  const params = useParams();
-  const router = useRouter();
-  const pathname = usePathname();
-  const { locale } = params;
   const t = useTranslations();
 
   // Détecte si le fond est foncé (exemple simple, à adapter selon ta logique)
@@ -22,7 +16,7 @@ export default function HomePage() {
 
   // Pas de restauration manuelle: le conteneur scroll est dans le RootLayout et persiste
 
-  // plus besoin de handleChangeLang, LanguageSwitcher gère le changement de langue
+  // La langue est gérée par `LanguageSwitcher`, pas besoin de hooks de navigation ici
 
   return (
     <>
@@ -49,32 +43,10 @@ export default function HomePage() {
         <Gallery />
       </section>
 
-      <section
-        id="spaces"
-        className="h-screen snap-start flex items-center justify-center bg-green-200"
-        aria-label="Section 3"
-      >
-        <h2 className="text-3xl font-semibold">{t("section3.title")}</h2>
-        <Blog />
-      </section>
+      <Blog />
 
-      <section
-        id="shop"
-        className="h-screen snap-start flex items-center justify-center bg-blue-200"
-        aria-label="Section 4"
-      >
-        <h2 className="text-3xl font-semibold">{t("section4.title")}</h2>
-        <Shop />
-      </section>
-
-      <section
-        id="info"
-        className="h-screen snap-start flex items-center justify-center bg-purple-200"
-        aria-label="Section 5"
-      >
-        <h2 className="text-3xl font-semibold">{t("section5.title")}</h2>
-        <ContactOverlay />
-      </section>
+      <Shop />
+      <ContactOverlay />
     </>
   );
 }
