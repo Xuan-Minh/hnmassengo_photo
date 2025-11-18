@@ -7,10 +7,12 @@ export default function ContactOverlay() {
   return (
     <section
       id="info"
-      className="h-screen snap-start flex items-center justify-center bg-purple-200"
-      aria-label="Section 5"
+      className="h-50 snap-start flex items-center justify-center bg-blackCustom"
+      aria-label="Section Contact"
     >
-      <h2 className="text-3xl font-semibold">{t("section5.title")}</h2>
+      <h2 className="text-3xl font-semibold text-whiteCustom">
+        {t("section5.title")}
+      </h2>
     </section>
   );
 }

@@ -1,10 +1,9 @@
 import "../globals.css";
 
 import Logo from "../components/Logo";
-import LanguageSwitcher from "../components/LanguageSwitcher";
-import PageTransition from "../components/PageTransition";
 import { Lexend } from "next/font/google";
 import IntroOverlay from "../components/IntroOverlay";
+import RevealRoot from "../components/RevealRoot";
 
 export const metadata = {
   title: "Han-Noah MASSENGO",
@@ -23,12 +22,7 @@ export default function RootLayout({ children }) {
       <body className={lexend.className}>
         <Logo />
         <IntroOverlay />
-        <main
-          id="scroll-root"
-          className="h-screen overflow-y-scroll snap-y snap-mandatory scroll-smooth"
-        >
-          {children}
-        </main>
+        <RevealRoot>{children}</RevealRoot>
       </body>
     </html>
   );
