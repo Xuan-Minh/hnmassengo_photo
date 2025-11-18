@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { motion } from "framer-motion";
+import OverlayActionButton from "./OverlayActionButton";
 
 export default function IntroOverlay() {
   // Plus de couleurs flashy: fond neutre sombre pour éviter tout flash de couleur
@@ -162,32 +163,17 @@ export default function IntroOverlay() {
         </div>
 
         <div className="absolute bottom-16 left-1/2 -translate-x-1/2 z-20">
-          <button
-            type="button"
+          <OverlayActionButton
+            label="next"
+            intent="next"
+            animate="exit"
+            isActive={isExiting}
+            activeDeltaDeg={-90}
             onClick={(e) => {
               e.stopPropagation();
               dismiss();
             }}
-            onMouseEnter={() => setHovered(true)}
-            onMouseLeave={() => setHovered(false)}
-            className="px-6 py-3 text-lg font-medium font-playfair text-[18px] md:text-[18px] lg:text-[20px] xl:text-[20px] 2xl:text-[22px]"
-            style={{
-              color: hovered ? "#F4F3F2" : "#C8C7C6",
-              opacity: hovered ? 1 : 0.85,
-              transition: "color .3s, opacity .3s",
-              backdropFilter: hovered ? "blur(2px)" : "none",
-            }}
-          >
-            <motion.span
-              className="inline-block mr-2"
-              initial={{ rotate: 0 }}
-              animate={{ rotate: isExiting ? -90 : 0 }}
-              transition={{ duration: 0.4, ease: "easeInOut" }}
-            >
-              →
-            </motion.span>
-            <span>next</span>
-          </button>
+          />
         </div>
       </div>
     </motion.div>
