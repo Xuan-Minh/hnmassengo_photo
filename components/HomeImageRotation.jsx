@@ -6,7 +6,11 @@ import Image from "next/image";
 
 // Simple rotating image component. Pass an array of filenames relative to /public/home.
 // position: "center" | "left" | "right"
-export default function HomeImageRotation({ images = [], interval = 4000, position = "center" }) {
+export default function HomeImageRotation({
+  images = [],
+  interval = 4000,
+  position = "center",
+}) {
   const [index, setIndex] = useState(0);
 
   useEffect(() => {
