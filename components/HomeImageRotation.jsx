@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
 
@@ -12,14 +12,38 @@ export default function HomeImageRotation({
   position = "center",
 }) {
   const [index, setIndex] = useState(0);
+  const [imgPosition, setImgPosition] = useState(position);
+  const lastPosition = useRef(position);
+  const [pendingPosition, setPendingPosition] = useState(null);
 
   useEffect(() => {
     if (!images.length) return;
     const id = setInterval(() => {
+      // Deux positions seulement : gauche et centre
+      const positions = ["left", "center"];
+      let nextPos = lastPosition.current;
+      let tries = 0;
+      while (nextPos === lastPosition.current && tries < 10) {
+        nextPos = positions[Math.floor(Math.random() * positions.length)];
+        tries++;
+      }
+      setPendingPosition(nextPos);
       setIndex((prev) => (prev + 1) % images.length);
     }, interval);
     return () => clearInterval(id);
   }, [images, interval]);
+
+  // Quand l'image change, on applique la nouvelle position (après le fade)
+  useEffect(() => {
+    if (pendingPosition) {
+      setTimeout(() => {
+        setImgPosition(pendingPosition);
+        lastPosition.current = pendingPosition;
+        setPendingPosition(null);
+      }, 800); // durée du fade (doit matcher AnimatePresence)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [index]);
 
   if (!images.length) {
     return null;
@@ -27,13 +51,23 @@ export default function HomeImageRotation({
 
   const current = images[index];
 
-  // Positionnement horizontal
+  // Positionnement horizontal dynamique
   let justify = "justify-center";
-  if (position === "left") justify = "justify-start";
-  if (position === "right") justify = "justify-end";
+  let marginClass = "";
+  if (imgPosition === "left") {
+    justify = "justify-start";
+    marginClass = "pl-[40px]";
+  }
+  if (imgPosition === "right") {
+    justify = "justify-end";
+    marginClass = "pr-[40px]";
+  }
+  if (imgPosition === "center") {
+    marginClass = "pl-[20px] pr-[20px]";
+  }
 
   return (
-    <div className={`flex ${justify} w-full`}>
+    <div className={`flex ${justify} w-full ${marginClass}`}>
       <div className="relative w-[420px] max-w-[60vw] aspect-[3/4] overflow-hidden">
         <AnimatePresence mode="wait">
           <motion.div

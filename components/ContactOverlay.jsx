@@ -93,7 +93,7 @@ function ContactContent({ idSuffix = "", headingId }) {
       </div>
 
       <div className="lg:col-span-5 text-whiteCustom/90">
-        <h3 className="font-playfair italic text-3xl md:text-4xl leading-tight mb-6">
+        <h3 className="font-playfair italic text-2xl md:text-3xl leading-tight mb-6">
           <a
             href="https://www.instagram.com/studio42archives/"
             target="_blank"
@@ -103,13 +103,13 @@ function ContactContent({ idSuffix = "", headingId }) {
           </a>
           ,<a href="mailto:contact@hannoahmassengo.fr"> Mail</a>
         </h3>
-        <p className="font-playfair text-[20px] leading-relaxed mb-6">
+        <p className="font-playfair text-[16px] leading-relaxed mb-6">
           All images on this website are the property of Han-Noah MASSENGO and
           are protected by copyright. It is illegal to reproduce, distribute, or
           publish them, in whole or in part, without first obtaining his written
           permission.
         </p>
-        <p className="font-playfair text-[20px] leading-relaxed">
+        <p className="font-playfair text-[16px] leading-relaxed">
           Design & Development by Xuan-Minh TRAN
         </p>
       </div>
