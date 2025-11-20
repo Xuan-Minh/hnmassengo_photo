@@ -11,7 +11,7 @@ export default function Gallery() {
       className="h-screen snap-start flex items-center justify-center bg-yellow-200"
       aria-label="Section 2"
     >
-      <h2 className="text-3xl font-semibold">{t("section2.title")}</h2>
+      <main className="grid-cols-5 grid-rows-5"></main>
     </section>
   );
 }
