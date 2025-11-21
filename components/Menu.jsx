@@ -14,7 +14,14 @@ export default function Menu() {
     []
   );
 
-  const [active, setActive] = useState("home");
+  const [active, setActive] = useState(null);
+  const [hydrated, setHydrated] = useState(false);
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setActive(sessionStorage.getItem("menuActiveSection") || "home");
+      setHydrated(true);
+    }
+  }, []);
   const [isDarkBg, setIsDarkBg] = useState(false);
   const [hideMenu, setHideMenu] = useState(false);
 
@@ -57,7 +64,12 @@ export default function Menu() {
         if (top) {
           // Active uniquement si section présente dans le menu
           if (items.some((i) => i.id === top.id)) {
-            setActive(top.id);
+            setActive((prev) => {
+              if (prev !== top.id) {
+                sessionStorage.setItem("menuActiveSection", top.id);
+              }
+              return top.id;
+            });
           }
           setIsDarkBg(computeIsDark(top));
         }
@@ -87,6 +99,7 @@ export default function Menu() {
     return () => io.disconnect();
   }, []);
 
+  if (!hydrated || !active) return null;
   return (
     <nav
       className={[

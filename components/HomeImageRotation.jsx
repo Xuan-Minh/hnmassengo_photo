@@ -9,7 +9,7 @@ import Image from "next/image";
 export default function HomeImageRotation({
   images = [],
   interval = 4000,
-  position = "center",
+  position = "left",
 }) {
   const [index, setIndex] = useState(0);
   const [imgPosition, setImgPosition] = useState(position);
@@ -56,14 +56,10 @@ export default function HomeImageRotation({
   let marginClass = "";
   if (imgPosition === "left") {
     justify = "justify-start";
-    marginClass = "pl-[40px]";
-  }
-  if (imgPosition === "right") {
-    justify = "justify-end";
-    marginClass = "pr-[40px]";
+    marginClass = "pl-[90px]";
   }
   if (imgPosition === "center") {
-    marginClass = "pl-[20px] pr-[20px]";
+    marginClass = "pl-[150px]";
   }
 
   return (
