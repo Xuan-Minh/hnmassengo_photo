@@ -88,9 +88,11 @@ export default function LanguageSwitcher({ isDarkBackground }) {
   };
 
   return (
-    <div className={`fixed text-[20px] bottom-10 right-20 z-50 flex items-center space-x-2 transition-opacity duration-300 ${
-      hideSelector ? "opacity-0 pointer-events-none" : "opacity-100"
-    }`}>
+    <div
+      className={`fixed text-[20px] bottom-10 right-20 z-50 flex items-center space-x-2 transition-opacity duration-300 ${
+        hideSelector ? "opacity-0 pointer-events-none" : "opacity-100"
+      }`}
+    >
       {langs.map((lang, i) => (
         <React.Fragment key={lang}>
           <button
