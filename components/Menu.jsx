@@ -16,14 +16,16 @@ export default function Menu() {
 
   const [active, setActive] = useState(null);
   const [hydrated, setHydrated] = useState(false);
+  const [isDarkBg, setIsDarkBg] = useState(false);
+  const [hideMenu, setHideMenu] = useState(false);
+
+  // Initialisation au montage
   useEffect(() => {
     if (typeof window !== "undefined") {
       setActive(sessionStorage.getItem("menuActiveSection") || "home");
       setHydrated(true);
     }
   }, []);
-  const [isDarkBg, setIsDarkBg] = useState(false);
-  const [hideMenu, setHideMenu] = useState(false);
 
   const scrollToId = useCallback((targetId) => {
     const root = document.getElementById("scroll-root");
@@ -71,7 +73,14 @@ export default function Menu() {
               return top.id;
             });
           }
-          setIsDarkBg(computeIsDark(top));
+          // Correction : blog (Spaces) fond foncé, works et shop fond blanc
+          if (top.id === "blog") {
+            setIsDarkBg(true);
+          } else if (["works", "shop"].includes(top.id)) {
+            setIsDarkBg(false);
+          } else {
+            setIsDarkBg(computeIsDark(top));
+          }
         }
       },
       { root, threshold: [0.4, 0.6, 0.8] }
@@ -100,6 +109,7 @@ export default function Menu() {
   }, []);
 
   if (!hydrated || !active) return null;
+  // Plus besoin de forcer, on laisse la détection automatique fonctionner
   return (
     <nav
       className={[

@@ -25,7 +25,7 @@ export default function HomePage() {
 
   return (
     <>
-      <LanguageSwitcher isDarkBackground={false} />
+      <LanguageSwitcher />
       <section
         id="home"
         className="relative h-screen snap-start bg-whiteCustom"

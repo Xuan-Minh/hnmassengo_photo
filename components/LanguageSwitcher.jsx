@@ -9,11 +9,14 @@ export default function LanguageSwitcher({ isDarkBackground }) {
   const pathname = usePathname();
   const locale = params.locale;
   const [autoDark, setAutoDark] = useState(false);
+  const [activeSection, setActiveSection] = useState(null);
+  const [hideSelector, setHideSelector] = useState(false);
 
   useEffect(() => {
     const root = document.getElementById("scroll-root");
     if (!root) return;
     const sections = Array.from(root.querySelectorAll("section[id]"));
+
     function computeIsDark(element) {
       if (!element) return false;
       const bg = window.getComputedStyle(element).backgroundColor;
@@ -25,12 +28,24 @@ export default function LanguageSwitcher({ isDarkBackground }) {
       const brightness = (r * 299 + g * 587 + b * 114) / 1000;
       return brightness < 110;
     }
+
     const io = new IntersectionObserver(
       (entries) => {
         const visible = entries
           .filter((e) => e.isIntersecting)
           .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-        if (visible?.target) setAutoDark(computeIsDark(visible.target));
+        if (visible?.target) {
+          const sectionId = visible.target.id;
+          setActiveSection(sectionId);
+          // Correction : blog fond foncé, works et shop fond blanc
+          if (sectionId === "blog") {
+            setAutoDark(true);
+          } else if (["works", "shop"].includes(sectionId)) {
+            setAutoDark(false);
+          } else {
+            setAutoDark(computeIsDark(visible.target));
+          }
+        }
       },
       { root, threshold: [0.4, 0.6, 0.8] }
     );
@@ -38,11 +53,28 @@ export default function LanguageSwitcher({ isDarkBackground }) {
     return () => io.disconnect();
   }, []);
 
-  // Ne laisser l'override que si isDarkBackground === true; false ne force pas clair.
-  const effectiveDark = isDarkBackground === true ? true : autoDark;
-  const activeClass = effectiveDark ? "text-[#F4F3F2]" : "text-blackCustom";
-  const inactiveClass = effectiveDark ? "text-[#F4F3F2]/60" : "text-accent";
-  const hoverClass = effectiveDark
+  // Hide language selector when the bottom contact section (#info) is visible in viewport
+  useEffect(() => {
+    const root = document.getElementById("scroll-root");
+    const infoEl = document.getElementById("info");
+    if (!root || !infoEl) return;
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0];
+        // Hide when at least ~20% visible
+        setHideSelector(entry.isIntersecting && entry.intersectionRatio > 0.2);
+      },
+      { root, threshold: [0, 0.2, 0.4, 0.6, 0.8, 1] }
+    );
+    io.observe(infoEl);
+    return () => io.disconnect();
+  }, []);
+
+  // Utilisation directe de autoDark calculé par l'observer
+  const activeClass = autoDark ? "text-[#F4F3F2]" : "text-blackCustom";
+  const inactiveClass = autoDark ? "text-[#F4F3F2]/60" : "text-accent";
+  const hoverClass = autoDark
     ? "hover:text-[#F4F3F2]"
     : "hover:text-blackCustom";
 
@@ -56,7 +88,9 @@ export default function LanguageSwitcher({ isDarkBackground }) {
   };
 
   return (
-    <div className="fixed text-[20px] bottom-10 right-20 z-50 flex items-center space-x-2">
+    <div className={`fixed text-[20px] bottom-10 right-20 z-50 flex items-center space-x-2 transition-opacity duration-300 ${
+      hideSelector ? "opacity-0 pointer-events-none" : "opacity-100"
+    }`}>
       {langs.map((lang, i) => (
         <React.Fragment key={lang}>
           <button
