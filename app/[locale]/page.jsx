@@ -6,6 +6,7 @@ import HomeImageRotation from "../../components/HomeImageRotation";
 import Gallery from "../../components/Gallery";
 import Blog from "../../components/Blog";
 import Shop from "../../components/Shop";
+import HomePresentation from "../../components/HomePresentation";
 import ContactOverlay from "../../components/ContactOverlay";
 import IntroOverlay from "../../components/IntroOverlay";
 
@@ -82,7 +83,7 @@ export default function HomePage() {
         </p>
       </section>
 
-      {/* Sections suivantes conservées */}
+      <HomePresentation />
       <Gallery />
       <Blog />
       <Shop />
