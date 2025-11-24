@@ -1,27 +1,38 @@
 "use client";
+import { useRouter, usePathname } from "next/navigation";
 
 export default function Logo() {
-  const triggerIntro = () => {
+  const router = useRouter();
+  const pathname = usePathname();
+
+  const handleLogoClick = () => {
+    // Si on n'est pas sur la page d'accueil, on y retourne
+    if (pathname !== "/") {
+      router.push("/");
+    }
+
+    // On lance l'animation immédiatement
     if (typeof window !== "undefined") {
       window.dispatchEvent(new Event("intro:show"));
     }
   };
+
   return (
     <div
       data-layer="HAN-NOAH MASSENGO"
       className="fixed top-0 left-0 w-full flex justify-center gap-2 items-center space-x-2 mt-4 z-50 bg-transparent pointer-events-none hidden sm:flex md:text-[36px]"
     >
       <span
-        onClick={triggerIntro}
+        onClick={handleLogoClick}
         className="text-accent font-normal font-playfair italic pointer-events-auto cursor-pointer"
-        title="Rejouer l'intro"
+        title="Retour à l'accueil"
       >
         Han-Noah
       </span>
       <span
-        onClick={triggerIntro}
+        onClick={handleLogoClick}
         className="text-accent font-normal font-lexend pointer-events-auto cursor-pointer"
-        title="Rejouer l'intro"
+        title="Retour à l'accueil"
       >
         MASSENGO
       </span>

@@ -16,6 +16,7 @@ export default function IntroOverlay() {
   const [hovered, setHovered] = useState(false);
   const rotateInterval = useRef(null);
   const [loadedImages, setLoadedImages] = useState([]);
+  const [isReTrigger, setIsReTrigger] = useState(false);
   // Survol limité au bouton uniquement (pas de dépendance au mouvement global)
 
   // Affiche toujours l'intro au chargement (plus de gating sessionStorage)
@@ -92,6 +93,7 @@ export default function IntroOverlay() {
       setCurrentIndex(0);
       setHovered(false);
       setIsExiting(false);
+      setIsReTrigger(true);
       setVisible(true);
     };
     if (typeof window !== "undefined") {
@@ -113,13 +115,14 @@ export default function IntroOverlay() {
     <motion.div
       className="fixed inset-0 z-[100]"
       style={{ backgroundColor: neutralBackground, overflow: "hidden" }}
-      initial={{ y: 0, opacity: 1 }}
+      initial={isReTrigger ? { y: "-100%", opacity: 1 } : { y: 0, opacity: 1 }}
       animate={isExiting ? { y: "-100%", opacity: 0 } : { y: 0, opacity: 1 }}
       transition={{ duration: 0.8, ease: "easeInOut" }}
       onAnimationComplete={() => {
         if (isExiting) {
           setVisible(false);
           setIsExiting(false);
+          setIsReTrigger(false); // Reset for next time
           if (typeof window !== "undefined") {
             window.dispatchEvent(new Event("intro:dismissed"));
           }

@@ -26,12 +26,17 @@ const FILTERS = [
   { label: "commissions", value: "commission" },
 ];
 
+import GalleryGridMore from "./GalleryGridMore";
+import ProjetCartel from "./ProjetCartel";
+import { AnimatePresence } from "framer-motion";
+
 export default function Gallery() {
   const [filter, setFilter] = useState("all");
   const [view, setView] = useState("grid");
   const [hoveredId, setHoveredId] = useState(null);
   const [overlayOpen, setOverlayOpen] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [selectedProject, setSelectedProject] = useState(null);
 
   // --- States pour le mode LIST ---
   const [currentProjectIndex, setCurrentProjectIndex] = useState(0);
@@ -216,126 +221,149 @@ export default function Gallery() {
   );
 
   return (
-    <section id="works" className="relative w-full h-screen overflow-hidden">
-      <div
-        className={`w-full h-full flex flex-col justify-center items-start transition-opacity duration-300 ${
-          isAnimating ? "opacity-0" : "opacity-100"
-        }`}
-      >
+    <>
+      <section id="works" className="relative w-full h-screen overflow-hidden">
         <div
-          style={{ width: "min(1100px, 90vw)", height: "min(1100px, 80vh)" }}
-          className="relative flex flex-col justify-center items-start ml-[5vw] mt-12"
+          className={`w-full h-full flex flex-col justify-center items-start transition-opacity duration-300 ${
+            isAnimating ? "opacity-0" : "opacity-100"
+          }`}
         >
-          {view === "grid" ? (
-            // --- MODE GRID ---
-            <div className="w-full h-full grid grid-cols-1 md:grid-cols-[minmax(160px,1fr)_repeat(4,1fr)] md:grid-rows-5 gap-8 overflow-y-auto pr-4">
-              {gridItems.map((item, idx) => {
-                if (idx === 0) {
-                  // Case filtres + view
+          <div
+            style={{ width: "min(1100px, 90vw)", height: "min(1100px, 80vh)" }}
+            className="relative flex flex-col justify-center items-start ml-[5vw] mt-12"
+          >
+            {view === "grid" ? (
+              // --- MODE GRID ---
+              <div className="w-full h-full grid grid-cols-1 md:grid-cols-[minmax(160px,1fr)_repeat(4,1fr)] md:grid-rows-5 gap-8 overflow-y-auto pr-4">
+                {gridItems.map((item, idx) => {
+                  if (idx === 0) {
+                    // Case filtres + view
+                    return (
+                      <div key="filters" className="">
+                        <Controls />
+                      </div>
+                    );
+                  }
+                  if (!item) return <div key={idx} />;
+                  // Case image d'un projet
+                  const imgData = item;
+                  const isHovered = hoveredId === imgData.projectId;
                   return (
-                    <div key="filters" className="">
-                      <Controls />
+                    <div
+                      key={imgData.img}
+                      className="relative group cursor-pointer"
+                      onMouseEnter={() => setHoveredId(imgData.projectId)}
+                      onMouseLeave={() => setHoveredId(null)}
+                      onClick={() => {
+                        const projectData = PROJECTS.find(
+                          (p) => p.id === imgData.projectId
+                        );
+                        setSelectedProject(projectData);
+                      }}
+                    >
+                      <img
+                        src={imgData.img}
+                        alt={imgData.name}
+                        className={`w-full h-full object-cover rounded shadow transition-opacity duration-300 ${
+                          isHovered ? "opacity-100" : "opacity-40"
+                        }`}
+                        draggable={false}
+                      />
                     </div>
                   );
-                }
-                if (!item) return <div key={idx} />;
-                // Case image d'un projet
-                const imgData = item;
-                const isHovered = hoveredId === imgData.projectId;
-                return (
-                  <div
-                    key={imgData.img}
-                    className="relative group cursor-pointer"
-                    onMouseEnter={() => setHoveredId(imgData.projectId)}
-                    onMouseLeave={() => setHoveredId(null)}
-                    onClick={() => {
-                      /* ouvrir cartel projet */
-                    }}
-                  >
-                    <img
-                      src={imgData.img}
-                      alt={imgData.name}
-                      className={`w-full h-full object-cover rounded shadow transition-opacity duration-300 ${
-                        isHovered ? "opacity-100" : "opacity-40"
-                      }`}
-                      draggable={false}
-                    />
+                })}
+              </div>
+            ) : (
+              // --- MODE LIST ---
+              <div className="w-full h-full flex flex-col md:flex-row">
+                {/* Colonne gauche : Controls */}
+                <div className="hidden md:block w-full md:w-[160px] flex-shrink-0 mb-4 md:mb-0">
+                  <Controls />
+                </div>
+
+                {/* Colonne droite : Liste projets + Slideshow */}
+                <div className="flex-1 flex flex-col h-full md:pl-8 relative">
+                  {/* Liste des projets en haut */}
+                  <div className="flex flex-wrap justify-center gap-x-8 gap-y-2 mb-8 w-full">
+                    {filteredProjects.map((p, idx) => (
+                      <button
+                        key={p.id}
+                        onClick={() => {
+                          setCurrentProjectIndex(idx);
+                          setCurrentImageIndex(0);
+                        }}
+                        className={`text-lg font-playfair transition-all duration-300 ${
+                          idx === currentProjectIndex
+                            ? "font-bold underline underline-offset-4"
+                            : "opacity-60 hover:opacity-100"
+                        }`}
+                      >
+                        {p.name}
+                      </button>
+                    ))}
                   </div>
-                );
-              })}
-            </div>
-          ) : (
-            // --- MODE LIST ---
-            <div className="w-full h-full flex flex-col md:flex-row">
-              {/* Colonne gauche : Controls */}
-              <div className="hidden md:block w-full md:w-[160px] flex-shrink-0 mb-4 md:mb-0">
-                <Controls />
-              </div>
 
-              {/* Colonne droite : Liste projets + Slideshow */}
-              <div className="flex-1 flex flex-col h-full md:pl-8 relative">
-                {/* Liste des projets en haut */}
-                <div className="flex flex-wrap justify-center gap-x-8 gap-y-2 mb-8 w-full">
-                  {filteredProjects.map((p, idx) => (
-                    <button
-                      key={p.id}
-                      onClick={() => {
-                        setCurrentProjectIndex(idx);
-                        setCurrentImageIndex(0);
-                      }}
-                      className={`text-lg font-playfair transition-all duration-300 ${
-                        idx === currentProjectIndex
-                          ? "font-bold underline underline-offset-4"
-                          : "opacity-60 hover:opacity-100"
-                      }`}
-                    >
-                      {p.name}
-                    </button>
-                  ))}
-                </div>
-
-                {/* Zone centrale image (Slideshow) */}
-                <div className="flex-1 relative w-full h-full flex items-center justify-center bg-gray-50/50">
-                  {filteredProjects.length > 0 && (
-                    <img
-                      src={
-                        filteredProjects[currentProjectIndex].images[
-                          currentImageIndex
-                        ]
-                      }
-                      alt={filteredProjects[currentProjectIndex].name}
-                      className={`max-w-full max-h-full object-contain shadow-lg cursor-pointer transition-opacity duration-300 ${
-                        isTransitioning ? "opacity-0" : "opacity-100"
-                      }`}
-                      onClick={() => setOverlayOpen(true)}
-                    />
-                  )}
+                  {/* Zone centrale image (Slideshow) */}
+                  <div className="flex-1 relative w-full h-full flex items-center justify-center bg-gray-50/50">
+                    {filteredProjects.length > 0 && (
+                      <img
+                        src={
+                          filteredProjects[currentProjectIndex].images[
+                            currentImageIndex
+                          ]
+                        }
+                        alt={filteredProjects[currentProjectIndex].name}
+                        className={`max-w-full max-h-full object-contain shadow-lg cursor-pointer transition-opacity duration-300 ${
+                          isTransitioning ? "opacity-0" : "opacity-100"
+                        }`}
+                        onClick={() =>
+                          setSelectedProject(
+                            filteredProjects[currentProjectIndex]
+                          )
+                        }
+                      />
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
-          )}
-        </div>
-
-        {/* Footer commun */}
-        <div
-          style={{ width: "min(1100px, 90vw)" }}
-          className="flex justify-between items-start ml-[5vw] mt-4"
-        >
-          <div className="text-xl font-playfair italic text-blackCustom h-8">
-            {view === "grid"
-              ? hoveredId && PROJECTS.find((p) => p.id === hoveredId)?.coords
-              : filteredProjects[currentProjectIndex]?.coords}
+            )}
           </div>
-          {view === "grid" && (
-            <button
-              className="text-lg font-playfair italic text-blackCustom underline underline-offset-2"
-              onClick={() => setOverlayOpen(true)}
-            >
-              see more →
-            </button>
-          )}
+
+          {/* Footer commun */}
+          <div
+            style={{ width: "min(1100px, 90vw)" }}
+            className="flex justify-between items-start ml-[5vw] mt-4"
+          >
+            <div className="text-xl font-playfair italic text-blackCustom h-8">
+              {view === "grid"
+                ? hoveredId && PROJECTS.find((p) => p.id === hoveredId)?.coords
+                : filteredProjects[currentProjectIndex]?.coords}
+            </div>
+            {view === "grid" && (
+              <button
+                className="text-lg font-playfair italic text-accent hover:text-accentHover transition-colors"
+                onClick={() => setOverlayOpen(true)}
+              >
+                see more
+              </button>
+            )}
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
+      <GalleryGridMore
+        open={overlayOpen}
+        onClose={() => setOverlayOpen(false)}
+        onProjectClick={(project) => setSelectedProject(project)}
+        projects={PROJECTS}
+      />
+      <AnimatePresence>
+        {selectedProject && (
+          <ProjetCartel
+            project={selectedProject}
+            onClose={() => setSelectedProject(null)}
+          />
+        )}
+      </AnimatePresence>
+    </>
   );
 }
