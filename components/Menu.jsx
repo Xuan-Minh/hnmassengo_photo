@@ -1,9 +1,22 @@
 "use client";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { useParams, usePathname, useRouter } from "next/navigation";
 
 // Menu one-page: scroll interne vers des sections dans #scroll-root
 export default function Menu() {
   const items = useMemo(
+    () => [
+      { id: "home", label: "About" },
+      { id: "works", label: "Works" },
+      { id: "blog", label: "Spaces" },
+      { id: "shop", label: "shop" },
+      // { id: "info", label: "info" }, // Removed info from mobile menu list as per screenshot usually, but let's keep it or remove it? Screenshot shows ABOUT, WORKS, SPACES, SHOP. No INFO.
+    ],
+    []
+  );
+
+  // Items for desktop (includes info)
+  const desktopItems = useMemo(
     () => [
       { id: "home", label: "About" },
       { id: "works", label: "Works" },
@@ -19,11 +32,36 @@ export default function Menu() {
   const [isDarkBg, setIsDarkBg] = useState(false);
   const [hideMenu, setHideMenu] = useState(false);
 
+  // Mobile logic
+  const [isMobile, setIsMobile] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  // Language switcher logic
+  const langs = ["fr", "en", "de"];
+  const params = useParams();
+  const router = useRouter();
+  const pathname = usePathname();
+  const locale = params.locale;
+
+  const handleChangeLang = (lang) => {
+    if (lang === locale) return;
+    const current = pathname || "/";
+    let base = current.replace(/^\/(fr|en|de)(?=\/|$)/, "");
+    if (base === "") base = "/";
+    const href = `/${lang}${base === "/" ? "" : base}`;
+    router.replace(href, { scroll: false });
+    setMobileMenuOpen(false); // Close menu after lang change
+  };
+
   // Initialisation au montage
   useEffect(() => {
     if (typeof window !== "undefined") {
       setActive(sessionStorage.getItem("menuActiveSection") || "home");
       setHydrated(true);
+      const handleResize = () => setIsMobile(window.innerWidth < 768);
+      handleResize();
+      window.addEventListener("resize", handleResize);
+      return () => window.removeEventListener("resize", handleResize);
     }
   }, []);
 
@@ -35,6 +73,7 @@ export default function Menu() {
       root.scrollTop +
       (el.getBoundingClientRect().top - root.getBoundingClientRect().top);
     root.scrollTo({ top, behavior: "smooth" });
+    setMobileMenuOpen(false); // Close mobile menu
   }, []);
 
   useEffect(() => {
@@ -65,7 +104,7 @@ export default function Menu() {
         const top = sorted[0]?.target;
         if (top) {
           // Active uniquement si section présente dans le menu
-          if (items.some((i) => i.id === top.id)) {
+          if (desktopItems.some((i) => i.id === top.id)) {
             setActive((prev) => {
               if (prev !== top.id) {
                 sessionStorage.setItem("menuActiveSection", top.id);
@@ -88,7 +127,7 @@ export default function Menu() {
 
     allSections.forEach((sec) => io.observe(sec));
     return () => io.disconnect();
-  }, [items]);
+  }, [desktopItems]);
 
   // Hide menu when the bottom contact section (#info) is visible in viewport
   useEffect(() => {
@@ -109,6 +148,81 @@ export default function Menu() {
   }, []);
 
   if (!hydrated || !active) return null;
+
+  // --- MOBILE RENDER ---
+  if (isMobile) {
+    return (
+      <>
+        {/* Bouton MENU fixe */}
+        <button
+          className={`fixed top-8 right-8 z-50 text-xl font-playfair font-bold tracking-wider mix-blend-difference text-white transition-opacity duration-300 ${
+            hideMenu && !mobileMenuOpen
+              ? "opacity-0 pointer-events-none"
+              : "opacity-100"
+          }`}
+          onClick={() => setMobileMenuOpen(true)}
+          style={{ color: isDarkBg ? "#F4F3F2" : "#1a1a1a" }} // Fallback color if mix-blend doesn't work well
+        >
+          menu
+        </button>
+
+        {/* Overlay Mobile */}
+        <div
+          className={`fixed inset-0 z-[60] bg-[#333] text-[#F4F3F2] flex flex-col items-center justify-center transition-transform duration-500 ease-in-out ${
+            mobileMenuOpen ? "translate-y-0" : "-translate-y-full"
+          }`}
+        >
+          {/* Close button */}
+          <button
+            className="absolute top-8 right-8 text-xl font-playfair italic"
+            onClick={() => setMobileMenuOpen(false)}
+          >
+            close
+          </button>
+
+          {/* Title */}
+          <div className="absolute top-24 text-center">
+            <h2 className="text-2xl font-playfair italic">HAN-NOAH MASSENGO</h2>
+          </div>
+
+          {/* Links */}
+          <ul className="flex flex-col items-center gap-6 mb-12">
+            {items.map((it) => (
+              <li key={it.id}>
+                <button
+                  onClick={() => scrollToId(it.id)}
+                  className="text-4xl font-lexend font-normal uppercase tracking-wide hover:text-gray-400 transition-colors"
+                >
+                  {it.label}
+                </button>
+              </li>
+            ))}
+          </ul>
+
+          {/* Language Switcher */}
+          <div className="flex items-center gap-4 text-xl font-bold">
+            {langs.map((lang, i) => (
+              <React.Fragment key={lang}>
+                <button
+                  onClick={() => handleChangeLang(lang)}
+                  className={`uppercase transition-colors ${
+                    locale === lang ? "text-white" : "text-gray-500"
+                  }`}
+                >
+                  {lang}
+                </button>
+                {i < langs.length - 1 && (
+                  <span className="text-gray-600">/</span>
+                )}
+              </React.Fragment>
+            ))}
+          </div>
+        </div>
+      </>
+    );
+  }
+
+  // --- DESKTOP RENDER ---
   return (
     <nav
       className={[
@@ -120,7 +234,7 @@ export default function Menu() {
       aria-hidden={hideMenu ? "true" : undefined}
     >
       <ul className="flex flex-col items-end pr-2">
-        {items.map((it, idx) => {
+        {desktopItems.map((it, idx) => {
           const isActive = active === it.id;
           const activeColor = isDarkBg ? "text-[#F4F3F2]" : "text-blackCustom";
           const inactiveColor = isDarkBg ? "text-[#F4F3F2]/60" : "text-accent";

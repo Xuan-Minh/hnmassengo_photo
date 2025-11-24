@@ -268,7 +268,7 @@ export default function Gallery() {
             // --- MODE LIST ---
             <div className="w-full h-full flex flex-col md:flex-row">
               {/* Colonne gauche : Controls */}
-              <div className="w-full md:w-[160px] flex-shrink-0 mb-4 md:mb-0">
+              <div className="hidden md:block w-full md:w-[160px] flex-shrink-0 mb-4 md:mb-0">
                 <Controls />
               </div>
 
@@ -311,33 +311,30 @@ export default function Gallery() {
                     />
                   )}
                 </div>
-
-                {/* Coordonnées en bas à gauche de la zone image */}
-                <div className="mt-4 text-xl font-playfair italic text-blackCustom">
-                  {filteredProjects[currentProjectIndex]?.coords}
-                </div>
               </div>
             </div>
           )}
         </div>
 
-        {/* Footer commun (Grid only pour les coords hover, List a ses propres coords) */}
-        {view === "grid" && (
-          <div
-            style={{ width: "min(1100px, 90vw)" }}
-            className="flex justify-between items-start ml-[5vw] mt-4"
-          >
-            <div className="text-xl font-playfair italic text-blackCustom h-8">
-              {hoveredId && PROJECTS.find((p) => p.id === hoveredId)?.coords}
-            </div>
+        {/* Footer commun */}
+        <div
+          style={{ width: "min(1100px, 90vw)" }}
+          className="flex justify-between items-start ml-[5vw] mt-4"
+        >
+          <div className="text-xl font-playfair italic text-blackCustom h-8">
+            {view === "grid"
+              ? hoveredId && PROJECTS.find((p) => p.id === hoveredId)?.coords
+              : filteredProjects[currentProjectIndex]?.coords}
+          </div>
+          {view === "grid" && (
             <button
               className="text-lg font-playfair italic text-blackCustom underline underline-offset-2"
               onClick={() => setOverlayOpen(true)}
             >
               see more →
             </button>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </section>
   );
