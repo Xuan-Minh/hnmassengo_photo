@@ -2,14 +2,15 @@
 import React, { useEffect, useState } from "react";
 import { useParams, usePathname, useRouter } from "next/navigation";
 
-export default function LanguageSwitcher({ isDarkBackground }) {
+// Sélecteur de langue avec adaptation de couleur + disparition sur la section contact
+export default function LanguageSwitcher() {
   const langs = ["fr", "en", "de"];
   const params = useParams();
   const router = useRouter();
   const pathname = usePathname();
   const locale = params.locale;
   const [autoDark, setAutoDark] = useState(false);
-  const [activeSection, setActiveSection] = useState(null);
+  // activeSection n'est plus nécessaire (uniquement adaptation colorimétrique)
   const [hideSelector, setHideSelector] = useState(false);
 
   useEffect(() => {
@@ -36,8 +37,7 @@ export default function LanguageSwitcher({ isDarkBackground }) {
           .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
         if (visible?.target) {
           const sectionId = visible.target.id;
-          setActiveSection(sectionId);
-          // Correction : blog fond foncé, works et shop fond blanc
+          // blog (Spaces) forcé clair, works/shop forcés noir, sinon calcul auto
           if (sectionId === "blog") {
             setAutoDark(true);
           } else if (["works", "shop"].includes(sectionId)) {

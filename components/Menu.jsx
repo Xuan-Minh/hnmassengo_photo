@@ -73,7 +73,7 @@ export default function Menu() {
               return top.id;
             });
           }
-          // Correction : blog (Spaces) fond foncé, works et shop fond blanc
+          // blog (Spaces) fond foncé; works & shop fond blanc; autres calcul auto
           if (top.id === "blog") {
             setIsDarkBg(true);
           } else if (["works", "shop"].includes(top.id)) {
@@ -109,7 +109,6 @@ export default function Menu() {
   }, []);
 
   if (!hydrated || !active) return null;
-  // Plus besoin de forcer, on laisse la détection automatique fonctionner
   return (
     <nav
       className={[
