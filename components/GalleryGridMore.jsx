@@ -1,7 +1,7 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useTranslations } from "next-intl";
-import OverlayActionButton from "./OverlayActionButton";
+import { motion } from "framer-motion";
 
 const FILTERS = [
   { label: "all", value: "all" },
@@ -10,7 +10,6 @@ const FILTERS = [
 ];
 
 export default function GalleryGridMore({
-  open,
   onClose,
   onProjectClick,
   projects = [],
@@ -42,48 +41,58 @@ export default function GalleryGridMore({
     onClose(); // Close the grid more overlay to show the cartel
   };
 
-  if (!open) return null;
+  // Find hovered project to display coords
+  const hoveredProject = projects.find((p) => p.id === hoveredId);
 
   return (
-    <div className="fixed inset-0 bg-whiteCustom z-[100] overflow-y-auto">
-      <OverlayActionButton
-        onClick={onClose}
-        position="fixed top-8 right-8"
-        label="close"
-      />
+    <motion.div
+      className="fixed inset-0 bg-whiteCustom z-[100] flex flex-col"
+      initial={{ x: "100%" }}
+      animate={{ x: 0 }}
+      exit={{ x: "100%" }}
+      transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+    >
+      {/* Header */}
+      <div className="relative w-full h-24 flex items-center justify-center px-8 md:px-16 shrink-0">
+        <button
+          onClick={onClose}
+          className="absolute left-8 md:left-16 text-lg font-playfair text-blackCustom/60 hover:text-blackCustom transition-colors"
+        >
+          back
+        </button>
+        <h2 className="text-4xl font-playfair italic text-blackCustom/20">
+          Gallery
+        </h2>
+      </div>
 
-      <div className="p-16 pt-24">
-        <div className="w-full max-w-7xl mx-auto">
-          {/* Filtres */}
-          <div className="flex justify-center gap-8 mb-12 font-playfair">
-            {FILTERS.map((f) => (
-              <button
-                key={f.value}
-                className={`text-xl relative group transition-opacity duration-300 ${
-                  filter === f.value
-                    ? "font-bold opacity-100"
-                    : "opacity-60 hover:opacity-100"
-                }`}
-                onClick={() => setFilter(f.value)}
-              >
-                {f.label}
-                <span
-                  className={`absolute left-0 -bottom-1 h-[1px] bg-current transition-all duration-300 ease-in-out ${
-                    filter === f.value ? "w-full" : "w-0 group-hover:w-full"
-                  }`}
-                />
-              </button>
-            ))}
-          </div>
+      {/* Main Content */}
+      <div className="flex-1 flex overflow-hidden px-8 md:px-16 pb-16">
+        {/* Sidebar Filters */}
+        <div className="w-48 flex flex-col gap-2 pt-8 shrink-0">
+          {FILTERS.map((f) => (
+            <button
+              key={f.value}
+              className={`text-lg text-left font-playfair transition-colors duration-300 ${
+                filter === f.value
+                  ? "font-bold text-blackCustom"
+                  : "text-blackCustom/60 hover:text-blackCustom"
+              }`}
+              onClick={() => setFilter(f.value)}
+            >
+              {f.label}
+            </button>
+          ))}
+        </div>
 
-          {/* Grille d'images */}
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-8">
+        {/* Grid */}
+        <div className="flex-1 overflow-y-auto pl-8">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8 gap-4 pb-16">
             {allImages.map((imgData, index) => {
               const isHovered = hoveredId === imgData.projectId;
               return (
                 <div
                   key={imgData.src + index}
-                  className="relative group cursor-pointer aspect-square"
+                  className="relative group cursor-pointer aspect-[4/3]"
                   onMouseEnter={() => setHoveredId(imgData.projectId)}
                   onMouseLeave={() => setHoveredId(null)}
                   onClick={() => handleImageClick(imgData.project)}
@@ -91,22 +100,22 @@ export default function GalleryGridMore({
                   <img
                     src={imgData.src}
                     alt={imgData.name}
-                    className={`w-full h-full object-cover rounded shadow-md transition-opacity duration-300 ${
-                      isHovered ? "opacity-100" : "opacity-60"
+                    className={`w-full h-full object-cover rounded shadow transition-opacity duration-300 ${
+                      isHovered ? "opacity-100" : "opacity-40"
                     }`}
                     draggable={false}
                   />
-                  {isHovered && (
-                    <div className="absolute bottom-2 left-2 text-white bg-black/50 px-2 py-1 rounded text-sm font-playfair">
-                      {imgData.name}
-                    </div>
-                  )}
                 </div>
               );
             })}
           </div>
         </div>
       </div>
-    </div>
+
+      {/* Footer Coords */}
+      <div className="absolute bottom-8 left-8 md:left-16 text-xl font-playfair italic text-blackCustom pointer-events-none">
+        {hoveredProject ? hoveredProject.coords : ""}
+      </div>
+    </motion.div>
   );
 }

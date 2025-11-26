@@ -353,12 +353,15 @@ export default function Gallery() {
           </div>
         </div>
       </section>
-      <GalleryGridMore
-        open={overlayOpen}
-        onClose={() => setOverlayOpen(false)}
-        onProjectClick={(project) => setSelectedProject(project)}
-        projects={PROJECTS}
-      />
+      <AnimatePresence>
+        {overlayOpen && (
+          <GalleryGridMore
+            onClose={() => setOverlayOpen(false)}
+            onProjectClick={(project) => setSelectedProject(project)}
+            projects={PROJECTS}
+          />
+        )}
+      </AnimatePresence>
       <AnimatePresence>
         {selectedProject && (
           <ProjetCartel

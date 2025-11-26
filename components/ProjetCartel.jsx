@@ -57,16 +57,16 @@ function CustomLightbox({ open, onClose, images, project }) {
       {/* Main Content */}
       <div className="flex-1 relative flex items-center justify-center overflow-hidden w-full h-full">
         {/* Prev Image */}
-        <div className="absolute left-[-15%] md:left-[-5%] w-[40%] h-[60%] opacity-30 blur-sm pointer-events-none hidden md:block">
+        <div className="absolute left-8 top-1/2 -translate-y-1/2 h-[50%] w-[15%] opacity-40 blur-[2px] pointer-events-none hidden md:block">
           <img
             src={images[prevIndex]}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-contain"
             alt="previous"
           />
         </div>
 
         {/* Main Image */}
-        <div className="relative z-10 h-[60%] md:h-[80%] w-full max-w-[80%] flex items-center justify-center">
+        <div className="relative z-10 h-[60%] md:h-[80%] w-full max-w-[60%] flex items-center justify-center">
           <motion.img
             key={currentIndex}
             src={images[currentIndex]}
@@ -79,10 +79,10 @@ function CustomLightbox({ open, onClose, images, project }) {
         </div>
 
         {/* Next Image */}
-        <div className="absolute right-[-15%] md:right-[-5%] w-[40%] h-[60%] opacity-30 blur-sm pointer-events-none hidden md:block">
+        <div className="absolute right-8 top-1/2 -translate-y-1/2 h-[50%] w-[15%] opacity-40 blur-[2px] pointer-events-none hidden md:block">
           <img
             src={images[nextIndex]}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-contain"
             alt="next"
           />
         </div>
