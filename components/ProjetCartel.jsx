@@ -1,9 +1,128 @@
 "use client";
 import React, { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import Lightbox from "yet-another-react-lightbox";
-import "yet-another-react-lightbox/styles.css";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+
+// Composant CustomLightbox
+function CustomLightbox({ open, onClose, images, project }) {
+  const [currentIndex, setCurrentIndex] = React.useState(0);
+
+  useEffect(() => {
+    if (open) setCurrentIndex(0);
+  }, [open]);
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (!open) return;
+      if (e.key === "Escape") onClose();
+      if (e.key === "ArrowRight")
+        setCurrentIndex((prev) => (prev + 1) % images.length);
+      if (e.key === "ArrowLeft")
+        setCurrentIndex((prev) => (prev - 1 + images.length) % images.length);
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [open, onClose, images.length]);
+
+  if (!open) return null;
+
+  const prevIndex = (currentIndex - 1 + images.length) % images.length;
+  const nextIndex = (currentIndex + 1) % images.length;
+
+  return (
+    <motion.div
+      className="fixed inset-0 z-[60] bg-[#1a1a1a] text-[#e5e5e5] font-playfair flex flex-col"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.3 }}
+    >
+      {/* Header */}
+      <div className="absolute top-8 left-8 md:left-16 z-40">
+        <div className="text-lg mb-2 opacity-0 pointer-events-none">
+          Placeholder
+        </div>{" "}
+        {/* Spacer to match logo height if needed, or just place back button */}
+        <button
+          onClick={onClose}
+          className="text-lg hover:text-white transition-colors"
+        >
+          back
+        </button>
+      </div>
+      <div className="absolute top-8 left-1/2 -translate-x-1/2 z-40 text-lg italic">
+        {currentIndex + 1} / {images.length}
+      </div>
+
+      {/* Main Content */}
+      <div className="flex-1 relative flex items-center justify-center overflow-hidden w-full h-full">
+        {/* Prev Image */}
+        <div className="absolute left-[-15%] md:left-[-5%] w-[40%] h-[60%] opacity-30 blur-sm pointer-events-none hidden md:block">
+          <img
+            src={images[prevIndex]}
+            className="w-full h-full object-cover"
+            alt="previous"
+          />
+        </div>
+
+        {/* Main Image */}
+        <div className="relative z-10 h-[60%] md:h-[80%] w-full max-w-[80%] flex items-center justify-center">
+          <motion.img
+            key={currentIndex}
+            src={images[currentIndex]}
+            className="max-h-full max-w-full object-contain shadow-2xl"
+            alt="current"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.3 }}
+          />
+        </div>
+
+        {/* Next Image */}
+        <div className="absolute right-[-15%] md:right-[-5%] w-[40%] h-[60%] opacity-30 blur-sm pointer-events-none hidden md:block">
+          <img
+            src={images[nextIndex]}
+            className="w-full h-full object-cover"
+            alt="next"
+          />
+        </div>
+
+        {/* Navigation Controls - Left Zone */}
+        <div
+          className="absolute left-0 top-0 h-full w-[20%] z-30 flex items-center justify-start pl-8 md:pl-16 group cursor-pointer"
+          onClick={() =>
+            setCurrentIndex(
+              (prev) => (prev - 1 + images.length) % images.length
+            )
+          }
+        >
+          <span className="text-xl italic text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            previous &larr;
+          </span>
+        </div>
+
+        {/* Navigation Controls - Right Zone */}
+        <div
+          className="absolute right-0 top-0 h-full w-[20%] z-30 flex items-center justify-end pr-8 md:pr-16 group cursor-pointer"
+          onClick={() => setCurrentIndex((prev) => (prev + 1) % images.length)}
+        >
+          <span className="text-xl italic text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            &rarr; next
+          </span>
+        </div>
+      </div>
+
+      {/* Footer */}
+      <div className="absolute bottom-20 left-0 w-full h-[1px] bg-white/20 z-20" />
+      <div className="absolute bottom-8 left-8 md:left-16 text-xl italic z-40">
+        {project.coords}
+      </div>
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 text-xl z-40">
+        {project.name} - 2024
+      </div>
+    </motion.div>
+  );
+}
 
 // Composant pour le carrousel d'images vertical
 function ImageMarquee({ images, onClick }) {
@@ -156,12 +275,16 @@ Nam dui metus, interdum vitae lobortis vel, viverra consequat neque. Praesent sa
       </motion.section>
 
       {/* Lightbox pour afficher toutes les images */}
-      <Lightbox
-        open={lightboxOpen}
-        close={() => setLightboxOpen(false)}
-        slides={slides}
-        styles={{ container: { backgroundColor: "rgba(0, 0, 0, .8)" } }}
-      />
+      <AnimatePresence>
+        {lightboxOpen && (
+          <CustomLightbox
+            open={lightboxOpen}
+            onClose={() => setLightboxOpen(false)}
+            images={project.images}
+            project={project}
+          />
+        )}
+      </AnimatePresence>
     </>
   );
 }
