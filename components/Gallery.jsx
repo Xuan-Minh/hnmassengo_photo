@@ -224,13 +224,13 @@ export default function Gallery() {
     <>
       <section id="works" className="relative w-full h-screen overflow-hidden">
         <div
-          className={`w-full h-full flex flex-col justify-center items-start transition-opacity duration-300 ${
+          className={`w-full h-full flex flex-col justify-center items-center transition-opacity duration-300 ${
             isAnimating ? "opacity-0" : "opacity-100"
           }`}
         >
           <div
             style={{ width: "min(1100px, 90vw)", height: "min(1100px, 80vh)" }}
-            className="relative flex flex-col justify-center items-start ml-[5vw] mt-12"
+            className="relative flex flex-col justify-center items-start mt-12"
           >
             {view === "grid" ? (
               // --- MODE GRID ---
@@ -281,8 +281,8 @@ export default function Gallery() {
                   <Controls />
                 </div>
 
-                {/* Colonne droite : Liste projets + Slideshow */}
-                <div className="flex-1 flex flex-col h-full md:pl-8 relative">
+                {/* Colonne centrale : Liste projets + Slideshow */}
+                <div className="flex-1 flex flex-col h-full relative">
                   {/* Liste des projets en haut */}
                   <div className="flex flex-wrap justify-center gap-x-8 gap-y-2 mb-8 w-full">
                     {filteredProjects.map((p, idx) => (
@@ -325,6 +325,9 @@ export default function Gallery() {
                     )}
                   </div>
                 </div>
+
+                {/* Spacer pour centrer le contenu */}
+                <div className="hidden md:block w-[160px] flex-shrink-0" />
               </div>
             )}
           </div>
@@ -332,7 +335,7 @@ export default function Gallery() {
           {/* Footer commun */}
           <div
             style={{ width: "min(1100px, 90vw)" }}
-            className="flex justify-between items-start ml-[5vw] mt-4"
+            className="flex justify-between items-start mt-4"
           >
             <div className="text-xl font-playfair italic text-blackCustom h-8">
               {view === "grid"
