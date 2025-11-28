@@ -2,6 +2,7 @@
 import React, { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
+import TextReveal from "./TextReveal";
 
 // Composant CustomLightbox
 function CustomLightbox({ open, onClose, images, project }) {
@@ -244,26 +245,26 @@ Nam dui metus, interdum vitae lobortis vel, viverra consequat neque. Praesent sa
           </div>
 
           <section className="flex flex-col items-start justify-center my-8">
-            <h2
-              id="project-title"
-              className="text-3xl md:text-5xl font-playfair mb-8"
-            >
-              {project.name}
+            <h2 id="project-title" className="mb-8">
+              <TextReveal
+                text={project.name}
+                className="text-3xl md:text-5xl font-playfair"
+              />
             </h2>
             <div className="font-playfair text-base md:text-lg max-w-2xl leading-relaxed space-y-4">
               {paragraphs.map((p, i) => (
-                <p key={i} className="relative">
-                  {p}
+                <div key={i} className="relative">
+                  <TextReveal text={p} delay={0.2 + i * 0.1} />
                   {i === paragraphs.length - 1 && (
                     <span className="absolute -bottom-1 -right-4 w-10 h-10 border-b border-r border-blackCustom/50"></span>
                   )}
-                </p>
+                </div>
               ))}
             </div>
           </section>
 
           <div className="font-playfair text-xl italic text-blackCustom">
-            {project.coords}
+            <TextReveal text={project.coords} delay={0.5} />
           </div>
         </main>
 

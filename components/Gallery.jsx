@@ -235,7 +235,7 @@ export default function Gallery() {
           >
             {view === "grid" ? (
               // --- MODE GRID ---
-              <div className="w-full h-full grid grid-cols-1 md:grid-cols-[minmax(160px,1fr)_repeat(4,1fr)] md:grid-rows-5 gap-8 overflow-y-auto pr-4">
+              <div className="w-full h-full grid grid-cols-1 md:grid-cols-[minmax(160px,1fr)_repeat(4,1fr)] md:grid-rows-5 gap-2 overflow-y-auto pr-2">
                 {gridItems.map((item, idx) => {
                   if (idx === 0) {
                     // Case filtres + view
