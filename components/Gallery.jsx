@@ -252,7 +252,7 @@ export default function Gallery() {
                   return (
                     <div
                       key={imgData.uniqueKey}
-                      className="relative group cursor-pointer"
+                      className="relative group cursor-pointer flex items-center justify-center w-full h-full"
                       onMouseEnter={() => setHoveredId(imgData.projectId)}
                       onMouseLeave={() => setHoveredId(null)}
                       onClick={() => {
@@ -265,7 +265,7 @@ export default function Gallery() {
                       <img
                         src={imgData.img}
                         alt={imgData.name}
-                        className={`w-full h-full object-cover rounded shadow transition-opacity duration-300 ${
+                        className={`max-w-full max-h-full object-contain shadow transition-opacity duration-300 ${
                           isHovered ? "opacity-100" : "opacity-40"
                         }`}
                         draggable={false}

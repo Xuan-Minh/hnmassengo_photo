@@ -116,8 +116,8 @@ export default function Shop() {
       {/* Produits */}
       <main className="flex-1 h-full flex items-center overflow-hidden">
         <div className="flex-1 flex justify-center">
-          <div className="w-full max-w-3xl xl:max-w-4xl 2xl:max-w-5xl p-8">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 xl:gap-10 2xl:gap-16 w-full">
+          <div className="w-full max-w-3xl xl:max-w-3xl 2xl:max-w-4xl p-16">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 xl:gap-12 2xl:gap-16 w-full">
               {products.map((product) => (
                 <ShopItem
                   key={product.id}
