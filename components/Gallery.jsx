@@ -149,7 +149,11 @@ export default function Gallery() {
 
   // Composant Controls (Filtres + Toggle View)
   const Controls = () => (
-    <div className="flex flex-col items-start justify-center p-2 font-playfair md:h-full">
+    <div
+      className={`flex flex-col items-start p-2 font-playfair md:h-full ${
+        view === "grid" ? "justify-center" : "justify-start"
+      }`}
+    >
       <div className="flex gap-4 mb-4">
         <button
           className={`relative w-6 h-6 transition-opacity duration-300 ease-in-out ${

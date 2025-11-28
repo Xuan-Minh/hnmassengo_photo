@@ -1,6 +1,7 @@
 "use client";
 import React from "react";
 import { useTranslations } from "next-intl";
+import TextReveal from "./TextReveal";
 
 export default function HomePresentation() {
   const t = useTranslations();
@@ -10,9 +11,20 @@ export default function HomePresentation() {
       className="h-[40vh] flex flex-col items-center justify-center bg-whiteCustom  "
       aria-label="Section de présentation"
     >
-      <div className="text-2xl text-center font-playfair italic mb-4 text-accent">
-        I develop my artistic sense through my clubs and where I live.
-      </div>
+      <TextReveal
+        text="I develop my artistic sense through my clubs and where I live."
+        className="text-3xl text-center font-playfair italic mb-4 text-accent"
+      />
+      <TextReveal
+        delay={1}
+        text="I am passionate about capturing moments that tell a story,"
+        className="text-3xl text-left font-playfair italic mb-4 text-accent self-start pl-[10vw]"
+      />
+      <TextReveal
+        delay={1.5}
+        text="evoke emotions, and showcase the beauty of our world."
+        className="text-3xl text-center font-playfair italic mb-4 text-blackCustom self-center"
+      />
     </section>
   );
 }

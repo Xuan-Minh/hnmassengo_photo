@@ -137,9 +137,9 @@ function ImageMarquee({ images, onClick }) {
     >
       <div className="w-full h-full overflow-hidden relative">
         <motion.div
-          className="flex flex-col space-y-8"
+          className="flex flex-col"
           animate={{
-            y: ["0%", `-${100 * (images.length / allImages.length)}%`],
+            y: ["0%", "-50%"],
           }}
           transition={{
             ease: "linear",
@@ -148,7 +148,7 @@ function ImageMarquee({ images, onClick }) {
           }}
         >
           {allImages.map((img, index) => (
-            <div key={index} className="w-full px-16 flex-shrink-0">
+            <div key={index} className="w-full px-16 pb-16 flex-shrink-0">
               <img
                 src={img}
                 alt={`Project image ${index + 1}`}
