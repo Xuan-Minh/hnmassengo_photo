@@ -4,6 +4,7 @@ import { useTranslations } from "next-intl";
 import { motion, AnimatePresence } from "framer-motion";
 import BlogArchives from "./BlogArchives";
 import BlogPostItem from "./BlogPostItem";
+import BlogPostOverlay from "./BlogPostOverlay";
 
 // Exemple de données de posts
 const POSTS = [
@@ -50,55 +51,6 @@ const POSTS = [
     layout: "image-left",
   },
 ];
-
-function BlogPostOverlay({ post, onClose }) {
-  if (!post) return null;
-  return (
-    <motion.div
-      className="fixed inset-0 z-[70] bg-blackCustom/95 flex items-center justify-center p-4 md:p-16"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      onClick={onClose}
-    >
-      <div
-        className="max-w-4xl w-full max-h-full overflow-y-auto bg-blackCustom p-8 border border-whiteCustom/10 shadow-2xl"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="flex justify-between items-start mb-8">
-          <h2 className="text-4xl md:text-5xl font-playfair italic text-whiteCustom">
-            {post.title}
-          </h2>
-          <button
-            onClick={onClose}
-            className="text-whiteCustom/60 hover:text-whiteCustom font-playfair text-lg"
-          >
-            close
-          </button>
-        </div>
-        <div className="text-xl font-playfair text-whiteCustom/60 mb-8">
-          {post.date}
-        </div>
-        {post.image && (
-          <div className="w-full mb-8">
-            <img
-              src={post.image}
-              alt={post.title}
-              className="w-full max-h-[60vh] object-contain mx-auto"
-            />
-          </div>
-        )}
-        <div className="prose prose-invert prose-lg font-playfair text-whiteCustom/90 max-w-none">
-          {post.fullContent.split("\n").map((paragraph, idx) => (
-            <p key={idx} className="mb-4">
-              {paragraph}
-            </p>
-          ))}
-        </div>
-      </div>
-    </motion.div>
-  );
-}
 
 export default function Blog() {
   const t = useTranslations();

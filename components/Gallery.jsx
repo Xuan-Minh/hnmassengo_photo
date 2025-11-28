@@ -149,7 +149,7 @@ export default function Gallery() {
 
   // Composant Controls (Filtres + Toggle View)
   const Controls = () => (
-    <div className="flex flex-col items-start justify-start p-2 font-playfair md:h-full">
+    <div className="flex flex-col items-start justify-center p-2 font-playfair md:h-full">
       <div className="flex gap-4 mb-4">
         <button
           className={`relative w-6 h-6 transition-opacity duration-300 ease-in-out ${
@@ -235,7 +235,7 @@ export default function Gallery() {
           >
             {view === "grid" ? (
               // --- MODE GRID ---
-              <div className="w-full h-full grid grid-cols-1 md:grid-cols-[minmax(160px,1fr)_repeat(4,1fr)] md:grid-rows-5 gap-2 overflow-y-auto pr-2">
+              <div className="w-full h-full grid grid-cols-1 md:grid-cols-[minmax(160px,1fr)_repeat(4,1fr)] gap-x-6 gap-y-6 overflow-y-auto pr-2 auto-rows-min">
                 {gridItems.map((item, idx) => {
                   if (idx === 0) {
                     // Case filtres + view
