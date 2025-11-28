@@ -305,7 +305,7 @@ export default function Gallery() {
                   </div>
 
                   {/* Zone centrale image (Slideshow) */}
-                  <div className="flex-1 relative w-full h-full flex items-center justify-center bg-gray-50/50">
+                  <div className="flex-1 relative w-full h-full flex items-center justify-center bg-gray-50/50 p-8 overflow-hidden">
                     {filteredProjects.length > 0 && (
                       <img
                         src={
