@@ -16,12 +16,12 @@ export default function HomePresentation() {
         className="text-3xl text-center font-playfair italic mb-4 text-accent"
       />
       <TextReveal
-        delay={1}
+        delay={0.7}
         text="I am passionate about capturing moments that tell a story,"
         className="text-3xl text-left font-playfair italic mb-4 text-accent self-start pl-[10vw]"
       />
       <TextReveal
-        delay={1.5}
+        delay={1}
         text="evoke emotions, and showcase the beauty of our world."
         className="text-3xl text-center font-playfair italic mb-4 text-blackCustom self-center"
       />

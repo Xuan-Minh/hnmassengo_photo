@@ -148,11 +148,14 @@ function ImageMarquee({ images, onClick }) {
           }}
         >
           {allImages.map((img, index) => (
-            <div key={index} className="w-full px-16 pb-16 flex-shrink-0">
+            <div
+              key={index}
+              className="w-full pb-16 flex-shrink-0 flex justify-center items-center"
+            >
               <img
                 src={img}
                 alt={`Project image ${index + 1}`}
-                className="w-full h-auto object-contain"
+                className="w-3/5 h-auto object-contain"
                 draggable={false}
               />
             </div>
