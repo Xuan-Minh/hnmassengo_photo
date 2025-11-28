@@ -1,12 +1,21 @@
 "use client";
 import React, { useState } from "react";
 
-export default function ShopItem({ imgDefault, imgHover, title, price }) {
+export default function ShopItem({
+  imgDefault,
+  imgHover,
+  title,
+  price,
+  onClick,
+}) {
   const [hovered, setHovered] = useState(false);
   return (
-    <div className="flex flex-col items-start w-[180px]">
+    <div
+      className="flex flex-col items-start w-full cursor-pointer group"
+      onClick={onClick}
+    >
       <div
-        className="relative w-full aspect-square mb-2 cursor-pointer"
+        className="relative w-full aspect-square mb-4 bg-gray-200"
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
       >

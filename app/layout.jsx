@@ -4,6 +4,7 @@ import Logo from "../components/Logo";
 import { Lexend, Playfair_Display } from "next/font/google";
 import IntroOverlay from "../components/IntroOverlay";
 import RevealRoot from "../components/RevealRoot";
+import Script from "next/script";
 
 export const metadata = {
   title: "Han-Noah MASSENGO",
@@ -27,6 +28,12 @@ const playfair = Playfair_Display({
 export default function RootLayout({ children }) {
   return (
     <html lang="fr">
+      <head>
+        <link
+          rel="stylesheet"
+          href="https://cdn.snipcart.com/themes/v3.0.31/default/snipcart.css"
+        />
+      </head>
       <body
         className={[lexend.className, lexend.variable, playfair.variable].join(
           " "
@@ -35,6 +42,18 @@ export default function RootLayout({ children }) {
         <Logo />
         <IntroOverlay />
         <RevealRoot>{children}</RevealRoot>
+
+        <div
+          hidden
+          id="snipcart"
+          data-api-key="MzhiNjU4MDUtYTA2MC00YjA5LTkwYmMtOWIyY2FjOTAyZmZlNjM4OTk4OTA5MTYxNDMxODU0"
+          data-config-modal-style="side"
+          suppressHydrationWarning
+        ></div>
+        <Script
+          src="https://cdn.snipcart.com/themes/v3.0.31/default/snipcart.js"
+          strategy="afterInteractive"
+        />
       </body>
     </html>
   );

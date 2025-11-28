@@ -15,7 +15,7 @@ const POSTS = [
       "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur posuere tincidunt lacus sit amet porttitor. Aliquam pharetra ante vel nibh accumsan, a bibendum lorem egestas. Sed ac accumsan metus, vitae finibus urna. Phasellus vel rhoncus nisl [...]",
     fullContent:
       "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur posuere tincidunt lacus sit amet porttitor. Aliquam pharetra ante vel nibh accumsan, a bibendum lorem egestas. Sed ac accumsan metus, vitae finibus urna. Phasellus vel rhoncus nisl. Vestibulum congue lacinia mi volutpat bibendum. Proin vitae odio est. Vivamus tempus pretium commodo. Nulla facilisi.\n\nNam dui metus, interdum vitae lobortis vel, viverra consequat neque. Praesent sagittis aliquet posuere. Aenean suscipit, mi quis viverra pulvinar, purus nulla placerat mi, quis mollis lectus ipsum vitae velit.",
-    image: "/gallery/m33-1.jpg", // Placeholder
+    image: "/home/home1.jpg", // Placeholder
     layout: "image-left",
   },
   {
@@ -26,7 +26,7 @@ const POSTS = [
       "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur posuere tincidunt lacus sit amet porttitor. Aliquam pharetra ante vel nibh accumsan, a bibendum lorem egestas. Sed ac accumsan metus, vitae finibus urna. Phasellus vel rhoncus nisl [...]",
     fullContent:
       "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur posuere tincidunt lacus sit amet porttitor. Aliquam pharetra ante vel nibh accumsan, a bibendum lorem egestas. Sed ac accumsan metus, vitae finibus urna. Phasellus vel rhoncus nisl.",
-    image: "/gallery/commA-1.jpg", // Placeholder
+    image: "/home/home2.jpg", // Placeholder
     layout: "image-right",
   },
   {
@@ -46,7 +46,7 @@ const POSTS = [
     date: "10 oct. 2025",
     content: "Lorem ipsum dolor sit amet...",
     fullContent: "Full content of older post...",
-    image: "/gallery/m33-2.jpg",
+    image: "/home/home3.jpg",
     layout: "image-left",
   },
 ];

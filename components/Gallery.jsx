@@ -7,14 +7,14 @@ const PROJECTS = [
     id: 1,
     name: "M33",
     type: "artwork",
-    images: ["/gallery/m33-1.jpg", "/gallery/m33-2.jpg", "/gallery/m33-3.jpg"],
+    images: ["/home/home1.jpg", "/home/home2.jpg", "/home/home3.jpg"],
     coords: "48.3705° N, 10.8978° E",
   },
   {
     id: 2,
     name: "Commission A",
     type: "commission",
-    images: ["/gallery/commA-1.jpg", "/gallery/commA-2.jpg"],
+    images: ["/home/home4.jpg", "/home/home1.jpg"],
     coords: "47.1234° N, 11.5678° E",
   },
   // ...ajoute ici les autres projets avec plusieurs images
@@ -99,6 +99,7 @@ export default function Gallery() {
   const allImages = filteredProjects.flatMap((p) =>
     p.images.map((img, idx) => ({
       projectId: p.id,
+      uniqueKey: `${p.id}-${idx}`,
       name: p.name,
       type: p.type,
       img,
@@ -109,7 +110,7 @@ export default function Gallery() {
 
   // Pour la grille 5x5, la première case est réservée aux filtres/view
   const gridItems = [
-    { type: "filters" },
+    { type: "filters", uniqueKey: "filters" },
     ...allImages.slice(0, 24), // 24 images max affichées
   ];
 
@@ -244,13 +245,13 @@ export default function Gallery() {
                       </div>
                     );
                   }
-                  if (!item) return <div key={idx} />;
+                  if (!item) return <div key={`empty-${idx}`} />;
                   // Case image d'un projet
                   const imgData = item;
                   const isHovered = hoveredId === imgData.projectId;
                   return (
                     <div
-                      key={imgData.img}
+                      key={imgData.uniqueKey}
                       className="relative group cursor-pointer"
                       onMouseEnter={() => setHoveredId(imgData.projectId)}
                       onMouseLeave={() => setHoveredId(null)}
