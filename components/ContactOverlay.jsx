@@ -21,10 +21,10 @@ function ContactContent({ idSuffix = "", headingId }) {
 
     try {
       const formData = new FormData(e.target);
-      
-      const response = await fetch('/', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+
+      const response = await fetch("/", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: new URLSearchParams(formData).toString(),
       });
 
@@ -40,7 +40,7 @@ function ContactContent({ idSuffix = "", headingId }) {
         setSubmitStatus("error");
       }
     } catch (error) {
-      console.error('Form submission error:', error);
+      console.error("Form submission error:", error);
       setSubmitStatus("error");
     } finally {
       setIsSubmitting(false);
