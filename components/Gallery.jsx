@@ -234,7 +234,7 @@ export default function Gallery() {
           }`}
         >
           <div
-            style={{ width: "min(1100px, 90vw)", height: "min(1100px, 80vh)" }}
+            style={{ width: "min(1000px, 90vw)", height: "min(1100px, 80vh)" }}
             className="relative flex flex-col justify-center items-start mt-12"
           >
             {view === "grid" ? (

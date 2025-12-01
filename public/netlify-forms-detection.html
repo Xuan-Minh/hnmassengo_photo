@@ -4,13 +4,34 @@
     <title>Netlify Forms Detection</title>
 </head>
 <body>
-    <!-- Ce fichier force Netlify à détecter le formulaire contact -->
-    <form name="contact" netlify netlify-honeypot="bot-field" hidden>
-        <input type="text" name="fullName" />
-        <input type="email" name="email" />
-        <input type="text" name="subject" />
-        <textarea name="message"></textarea>
+    <!-- Formulaire de détection pour Netlify Forms -->
+    <form name="contact" method="POST" data-netlify="true" data-netlify-honeypot="bot-field" hidden>
+        <input type="hidden" name="form-name" value="contact" />
         <input type="hidden" name="bot-field" />
+        <input type="text" name="fullName" required />
+        <input type="email" name="email" required />
+        <input type="text" name="subject" required />
+        <textarea name="message" required></textarea>
+        <button type="submit">Submit</button>
+    </form>
+    
+    <!-- Formulaire visible pour test direct -->
+    <h1>Test Contact Form</h1>
+    <form name="contact-test" method="POST" data-netlify="true" data-netlify-honeypot="bot-field-test">
+        <input type="hidden" name="form-name" value="contact-test" />
+        <input type="hidden" name="bot-field-test" />
+        <p>
+            <label>Name: <input type="text" name="name" /></label>
+        </p>
+        <p>
+            <label>Email: <input type="email" name="email" /></label>
+        </p>
+        <p>
+            <label>Message: <textarea name="message"></textarea></label>
+        </p>
+        <p>
+            <button type="submit">Send Test</button>
+        </p>
     </form>
 </body>
 </html>
