@@ -12,43 +12,41 @@ function ContactContent({ idSuffix = "", headingId }) {
   // State pour afficher le message de succès
   const [showSuccess, setShowSuccess] = useState(false);
 
-  // Fonction qui gère la soumission avec feedback immédiat
-  const handleSubmit = async (e) => {
+  // Fonction qui gère la soumission avec iframe cachée (pas de flash)
+  const handleSubmit = (e) => {
     const isNetlify =
       window.location.host.includes("netlify.app") ||
       window.location.host.includes("netlify.com") ||
       window.location.host === "hannoahmassengo.fr";
 
     if (isNetlify) {
-      // Sur Netlify : soumission AJAX pour éviter le flash de redirection
-      e.preventDefault();
+      // Sur Netlify : utiliser iframe cachée pour éviter redirection
       setIsSubmitting(true);
       
-      try {
-        const formData = new FormData(e.target);
-        const response = await fetch("/", {
-          method: "POST",
-          headers: { "Content-Type": "application/x-www-form-urlencoded" },
-          body: new URLSearchParams(formData).toString()
-        });
-        
-        if (response.ok) {
-          setShowSuccess(true);
-          e.target.reset(); // Vider le formulaire
-          // Scroll vers le message de succès
-          setTimeout(() => {
-            document.querySelector('.bg-green-600\\/20')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          }, 100);
-        } else {
-          throw new Error('Form submission failed');
-        }
-      } catch (error) {
-        console.error('Form submission error:', error);
-        // Fallback : soumission native
-        window.location.href = "/?success=true";
-      } finally {
+      // Créer iframe cachée pour la soumission
+      const iframe = document.createElement('iframe');
+      iframe.style.display = 'none';
+      iframe.name = 'hidden-form-target';
+      document.body.appendChild(iframe);
+      
+      // Modifier le target du form pour l'iframe
+      e.target.target = 'hidden-form-target';
+      
+      // Écouter le load de l'iframe pour détecter le succès
+      iframe.onload = () => {
         setIsSubmitting(false);
-      }
+        setShowSuccess(true);
+        e.target.reset(); // Vider le formulaire
+        document.body.removeChild(iframe); // Nettoyer l'iframe
+        
+        // Scroll vers le message de succès
+        setTimeout(() => {
+          document.querySelector('.bg-green-600\\/20')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 100);
+      };
+      
+      // Laisser la soumission native se faire vers l'iframe
+      return;
     } else {
       // En local : simuler le succès
       e.preventDefault();
