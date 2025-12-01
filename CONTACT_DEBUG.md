@@ -3,6 +3,7 @@
 ## 1. Vérifications côté Netlify
 
 ### Après déploiement sur Netlify :
+
 1. Allez dans votre dashboard Netlify
 2. Cliquez sur votre site
 3. Allez dans **Site settings** > **Forms**
@@ -13,6 +14,7 @@
    - Redéployez le site
 
 ### Configuration des notifications :
+
 1. Dans **Site settings** > **Forms** > **Form notifications**
 2. Cliquez sur **Add notification**
 3. Choisissez **Email notification**
@@ -23,8 +25,10 @@
 ## 2. Tests de soumission
 
 ### Console du navigateur :
+
 Ouvrez les DevTools (F12) et regardez la console lors de la soumission.
 Vous devriez voir :
+
 ```
 === FORM SUBMISSION DEBUG ===
 Environment: production
@@ -40,6 +44,7 @@ Form submitted successfully
 ```
 
 ### Si ça ne marche pas :
+
 - Vérifiez le status de la réponse (doit être 200)
 - Regardez les erreurs dans la console
 - Vérifiez l'onglet Network pour voir la requête POST
@@ -47,6 +52,7 @@ Form submitted successfully
 ## 3. Onglet Forms de Netlify
 
 Après soumission réussie :
+
 1. Allez dans **Site dashboard** > **Forms**
 2. Cliquez sur le formulaire "contact"
 3. Vous devriez voir les soumissions
@@ -55,15 +61,18 @@ Après soumission réussie :
 ## 4. Problèmes fréquents
 
 ### Le formulaire n'apparaît pas dans Netlify :
+
 - Le fichier `public/contact-form.html` doit être présent
 - Redéployez après avoir ajouté le fichier
 
 ### Emails non reçus :
+
 - Vérifiez les spams
 - Vérifiez la configuration des notifications
 - L'email `naux.pro@gmail.com` doit être correct
 
 ### Erreur 404 ou 405 :
+
 - Vous êtes probablement en local
 - Testez sur le site Netlify déployé
 

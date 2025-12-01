@@ -23,43 +23,44 @@ function ContactContent({ idSuffix = "", headingId }) {
     const formData = new FormData(form);
 
     // Debug: Log form data
-    console.log('=== FORM SUBMISSION DEBUG ===');
-    console.log('Environment:', process.env.NODE_ENV);
-    console.log('Host:', window.location.host);
+    console.log("=== FORM SUBMISSION DEBUG ===");
+    console.log("Environment:", process.env.NODE_ENV);
+    console.log("Host:", window.location.host);
     for (let [key, value] of formData.entries()) {
       console.log(`${key}: ${value}`);
     }
 
     // Vérifier si on est sur Netlify ou en local
-    const isNetlify = window.location.host.includes('netlify.app') || 
-                     window.location.host.includes('netlify.com') ||
-                     window.location.host === 'hannoahmassengo.fr';
+    const isNetlify =
+      window.location.host.includes("netlify.app") ||
+      window.location.host.includes("netlify.com") ||
+      window.location.host === "hannoahmassengo.fr";
 
-    console.log('Is Netlify:', isNetlify);
+    console.log("Is Netlify:", isNetlify);
 
     try {
       let response;
 
       if (isNetlify) {
         // Sur Netlify : utiliser Netlify Forms
-        console.log('Using Netlify Forms...');
+        console.log("Using Netlify Forms...");
         response = await fetch("/", {
           method: "POST",
           body: formData,
         });
       } else {
         // En local : utiliser notre API Next.js
-        console.log('Using local API...');
-        response = await fetch('/api/contact', {
-          method: 'POST',
+        console.log("Using local API...");
+        response = await fetch("/api/contact", {
+          method: "POST",
           body: formData,
         });
       }
 
-      console.log('Response status:', response.status);
+      console.log("Response status:", response.status);
 
       if (response.ok) {
-        console.log('Form submitted successfully');
+        console.log("Form submitted successfully");
         setSubmitStatus("success");
         // Reset form
         setFormData({
@@ -69,11 +70,16 @@ function ContactContent({ idSuffix = "", headingId }) {
           message: "",
         });
       } else {
-        let responseText = '';
+        let responseText = "";
         if (response.text) {
           responseText = await response.text();
         }
-        console.error("Response not ok:", response.status, response.statusText, responseText);
+        console.error(
+          "Response not ok:",
+          response.status,
+          response.statusText,
+          responseText
+        );
         setSubmitStatus("error");
       }
     } catch (error) {
