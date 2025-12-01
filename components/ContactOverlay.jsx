@@ -9,38 +9,55 @@ import OverlayActionButton from "./OverlayActionButton";
 function ContactContent({ idSuffix = "", headingId }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   
-  // Détecter si on revient après soumission réussie
+  // State pour afficher le message de succès
   const [showSuccess, setShowSuccess] = useState(false);
-  
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const params = new URLSearchParams(window.location.search);
-      if (params.get('success')) {
-        setShowSuccess(true);
-      }
-    }
-  }, []);
 
-  // Fonction simplifiée - laisse Netlify gérer complètement
-  const handleSubmit = (e) => {
+  // Fonction qui gère la soumission avec feedback immédiat
+  const handleSubmit = async (e) => {
     const isNetlify =
       window.location.host.includes("netlify.app") ||
       window.location.host.includes("netlify.com") ||
       window.location.host === "hannoahmassengo.fr";
 
     if (isNetlify) {
-      // Sur Netlify : aucune interférence JavaScript
-      console.log("Netlify: letting native form submission handle everything");
-      return; // Laisse le formulaire se soumettre normalement
+      // Sur Netlify : soumission AJAX pour éviter le flash de redirection
+      e.preventDefault();
+      setIsSubmitting(true);
+      
+      try {
+        const formData = new FormData(e.target);
+        const response = await fetch("/", {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: new URLSearchParams(formData).toString()
+        });
+        
+        if (response.ok) {
+          setShowSuccess(true);
+          e.target.reset(); // Vider le formulaire
+          // Scroll vers le message de succès
+          setTimeout(() => {
+            document.querySelector('.bg-green-600\\/20')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }, 100);
+        } else {
+          throw new Error('Form submission failed');
+        }
+      } catch (error) {
+        console.error('Form submission error:', error);
+        // Fallback : soumission native
+        window.location.href = "/?success=true";
+      } finally {
+        setIsSubmitting(false);
+      }
+    } else {
+      // En local : simuler le succès
+      e.preventDefault();
+      setIsSubmitting(true);
+      setTimeout(() => {
+        setIsSubmitting(false);
+        setShowSuccess(true);
+      }, 1000);
     }
-
-    // En local : empêcher la soumission et simuler
-    e.preventDefault();
-    console.log("Local: form submission prevented for development");
-    setIsSubmitting(true);
-    setTimeout(() => {
-      setIsSubmitting(false);
-    }, 1000);
   };
 
 
@@ -61,7 +78,7 @@ function ContactContent({ idSuffix = "", headingId }) {
           className="space-y-6"
           name="contact"
           method="POST"
-          action="/?success=true"
+          onSubmit={handleSubmit}
           aria-label="Contact form"
           data-netlify="true"
           data-netlify-honeypot="bot-field"
