@@ -11,8 +11,18 @@ function ContactContent({ idSuffix = "", headingId }) {
   
   // State pour afficher le message de succès
   const [showSuccess, setShowSuccess] = useState(false);
+  
+  // Détecter si on revient après soumission réussie
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('success')) {
+        setShowSuccess(true);
+      }
+    }
+  }, []);
 
-  // Fonction qui gère la soumission avec iframe cachée (pas de flash)
+  // Fonction de soumission simple - laisse Netlify gérer complètement
   const handleSubmit = (e) => {
     const isNetlify =
       window.location.host.includes("netlify.app") ||
@@ -31,48 +41,20 @@ function ContactContent({ idSuffix = "", headingId }) {
     });
 
     if (isNetlify) {
-      console.log("📡 Netlify environment detected - using iframe submission");
-      // Sur Netlify : utiliser iframe cachée pour éviter redirection
+      console.log("📡 Netlify environment - using native submission");
+      // Sur Netlify : soumission native simple
       setIsSubmitting(true);
       
-      // Créer iframe cachée pour la soumission
-      const iframe = document.createElement('iframe');
-      iframe.style.display = 'none';
-      iframe.name = 'hidden-form-target';
-      document.body.appendChild(iframe);
-      console.log("📄 Hidden iframe created:", iframe.name);
-      
-      // Modifier le target du form pour l'iframe
-      e.target.target = 'hidden-form-target';
-      console.log("🎯 Form target set to iframe");
-      
-      // Écouter le load de l'iframe pour détecter le succès
-      iframe.onload = () => {
-        console.log("✅ Iframe loaded - form submission completed");
-        console.log("📧 Form should be processed by Netlify now");
-        setIsSubmitting(false);
-        setShowSuccess(true);
-        e.target.reset(); // Vider le formulaire
-        document.body.removeChild(iframe); // Nettoyer l'iframe
-        console.log("🧹 Iframe cleaned up, form reset, success message shown");
-        
-        // Scroll vers le message de succès
-        setTimeout(() => {
-          document.querySelector('.bg-green-600\\/20')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }, 100);
-      };
-      
-      // Timeout de sécurité
+      // Afficher le message de succès après un délai
       setTimeout(() => {
-        if (document.body.contains(iframe)) {
-          console.log("⚠️ Iframe timeout - forcing success state");
-          iframe.onload();
-        }
-      }, 5000);
+        setShowSuccess(true);
+        setIsSubmitting(false);
+        console.log("✅ Success message shown - form submitted to Netlify");
+      }, 1000);
       
-      console.log("🔄 Native form submission proceeding to iframe...");
-      // Laisser la soumission native se faire vers l'iframe
-      return;
+      // Laisser la soumission native se faire normalement
+      console.log("🔄 Native form submission proceeding...");
+      return; // Laisse le formulaire se soumettre
     } else {
       console.log("💻 Local environment - simulating submission");
       // En local : simuler le succès
@@ -104,6 +86,7 @@ function ContactContent({ idSuffix = "", headingId }) {
           className="space-y-6"
           name="contact"
           method="POST"
+          action="/?success=true"
           onSubmit={handleSubmit}
           aria-label="Contact form"
           data-netlify="true"
