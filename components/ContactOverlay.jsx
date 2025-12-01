@@ -14,35 +14,13 @@ function ContactContent({ idSuffix = "", headingId }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState("");
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = (e) => {
+    // On laisse Netlify gérer nativement la soumission
     setIsSubmitting(true);
-    setSubmitStatus("");
-
-    // Utilisation de FormData pour une soumission Netlify native
-    const form = e.target;
-    const formData = new FormData(form);
-
-    try {
-      const response = await fetch("/", {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams(formData).toString(),
-      });
-
-      if (response.ok) {
-        // Redirection vers la page de succès
-        window.location.href = "/success.html";
-      } else {
-        // Redirection vers la page d'erreur
-        window.location.href = "/error.html";
-      }
-    } catch (error) {
-      // En cas d'erreur réseau, redirection vers la page d'erreur
-      window.location.href = "/error.html";
-    } finally {
-      setIsSubmitting(false);
-    }
+    
+    // Si JavaScript est activé, on peut ajouter une logique ici,
+    // mais on ne fait pas de e.preventDefault() pour laisser 
+    // Netlify gérer la redirection native
   };
 
   const handleChange = (e) => {
@@ -170,17 +148,14 @@ function ContactContent({ idSuffix = "", headingId }) {
           </div>
 
           <div>
-            <OverlayActionButton
-              className="px-0 py-3 w-full md:w-auto"
-              label={isSubmitting ? "sending..." : "send"}
-              intent="next"
-              animate="exit"
+            <button
               type="submit"
               disabled={isSubmitting}
-              onClick={(e) => {
-                // Le formulaire sera soumis via onSubmit
-              }}
-            />
+              className="px-6 py-3 text-lg font-medium font-playfair text-whiteCustom/85 hover:text-whiteCustom hover:opacity-100 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <span className="inline-block mr-2">→</span>
+              <span>{isSubmitting ? "sending..." : "send"}</span>
+            </button>
           </div>
         </form>
       </div>
