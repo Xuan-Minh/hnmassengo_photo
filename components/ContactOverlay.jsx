@@ -19,17 +19,21 @@ function ContactContent({ idSuffix = "", headingId }) {
     setIsSubmitting(true);
     setSubmitStatus("");
 
-    try {
-      const formData = new FormData(e.target);
+    const form = e.target;
+    const formData = new FormData(form);
+    
+    // Ajouter le nom du formulaire pour Netlify
+    formData.append('form-name', 'contact');
 
+    try {
       const response = await fetch("/", {
         method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams(formData).toString(),
+        body: formData
       });
 
       if (response.ok) {
         setSubmitStatus("success");
+        // Reset form
         setFormData({
           fullName: "",
           email: "",
@@ -37,6 +41,7 @@ function ContactContent({ idSuffix = "", headingId }) {
           message: "",
         });
       } else {
+        console.error('Response not ok:', response.status, response.statusText);
         setSubmitStatus("error");
       }
     } catch (error) {
@@ -78,11 +83,11 @@ function ContactContent({ idSuffix = "", headingId }) {
           method="POST"
           onSubmit={handleSubmit}
           aria-label="Contact form"
-          data-netlify="true"
-          data-netlify-honeypot="bot-field"
+          netlify="true"
+          netlify-honeypot="bot-field"
         >
           <input type="hidden" name="form-name" value="contact" />
-          <input type="hidden" name="bot-field" />
+          <input type="hidden" name="bot-field" style={{display: 'none'}} />
 
           {submitStatus === "success" && (
             <div className="bg-green-600/20 border border-green-500 text-green-300 p-4 rounded mb-4">
