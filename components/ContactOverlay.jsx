@@ -4,28 +4,22 @@ import { useTranslations } from "next-intl";
 import { AnimatePresence, motion } from "framer-motion";
 import OverlayActionButton from "./OverlayActionButton";
 
-
-
 function ContactContent({ idSuffix = "", headingId }) {
   // State pour afficher le message de succès
   const [showSuccess, setShowSuccess] = useState(false);
-  
+
   // Détecter si on revient après soumission réussie
   useEffect(() => {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search);
       console.log("🔍 Checking URL params:", window.location.search);
-      console.log("🔍 Success param:", params.get('success'));
-      if (params.get('success')) {
+      console.log("🔍 Success param:", params.get("success"));
+      if (params.get("success")) {
         console.log("✅ Success detected - showing success message");
         setShowSuccess(true);
       }
     }
   }, []);
-
-
-
-
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14">
@@ -56,20 +50,26 @@ function ContactContent({ idSuffix = "", headingId }) {
               <div className="flex items-center gap-4">
                 <span className="text-3xl">✅</span>
                 <div>
-                  <h3 className="font-bold text-lg">🎉 Message envoyé avec succès !</h3>
-                  <p className="text-green-100">Nous vous répondrons sous 24h à l'adresse indiquée.</p>
-                  <p className="text-xs text-green-200 mt-2">Debug: Success state activé</p>
+                  <h3 className="font-bold text-lg">
+                    🎉 Message envoyé avec succès !
+                  </h3>
+                  <p className="text-green-100">
+                    Nous vous répondrons sous 24h à l'adresse indiquée.
+                  </p>
+                  <p className="text-xs text-green-200 mt-2">
+                    Debug: Success state activé
+                  </p>
                 </div>
               </div>
             </div>
           )}
-          
+
           {/* Message de debug permanent */}
           <div className="bg-blue-900/50 border border-blue-400 text-blue-200 p-3 rounded mb-4 text-sm">
-            🔧 Debug: URL = {typeof window !== 'undefined' ? window.location.href : 'server'} | 
-            Success = {showSuccess ? 'TRUE' : 'FALSE'}
+            🔧 Debug: URL ={" "}
+            {typeof window !== "undefined" ? window.location.href : "server"} |
+            Success = {showSuccess ? "TRUE" : "FALSE"}
           </div>
-
 
           <div>
             <label
@@ -146,15 +146,30 @@ function ContactContent({ idSuffix = "", headingId }) {
             </button>
           </div>
         </form>
-        
+
         {/* Formulaire de test pour diagnostic */}
         <div className="mt-8 p-4 border border-yellow-500 rounded">
           <h3 className="text-yellow-300 mb-4">🔧 Test Form (Debug)</h3>
           <form name="debug-contact" method="POST" data-netlify="true">
             <input type="hidden" name="form-name" value="debug-contact" />
-            <input type="text" name="test-name" placeholder="Test Name" className="w-full p-2 mb-2 text-black" />
-            <input type="email" name="test-email" placeholder="Test Email" className="w-full p-2 mb-2 text-black" />
-            <button type="submit" className="bg-yellow-500 text-black px-4 py-2">Test Submit</button>
+            <input
+              type="text"
+              name="test-name"
+              placeholder="Test Name"
+              className="w-full p-2 mb-2 text-black"
+            />
+            <input
+              type="email"
+              name="test-email"
+              placeholder="Test Email"
+              className="w-full p-2 mb-2 text-black"
+            />
+            <button
+              type="submit"
+              className="bg-yellow-500 text-black px-4 py-2"
+            >
+              Test Submit
+            </button>
           </form>
         </div>
       </div>
