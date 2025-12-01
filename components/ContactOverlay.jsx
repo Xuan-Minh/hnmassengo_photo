@@ -8,6 +8,18 @@ import OverlayActionButton from "./OverlayActionButton";
 
 function ContactContent({ idSuffix = "", headingId }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  // Détecter si on revient après soumission réussie
+  const [showSuccess, setShowSuccess] = useState(false);
+  
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('success')) {
+        setShowSuccess(true);
+      }
+    }
+  }, []);
 
   // Fonction simplifiée - laisse Netlify gérer complètement
   const handleSubmit = (e) => {
@@ -27,7 +39,6 @@ function ContactContent({ idSuffix = "", headingId }) {
     console.log("Local: form submission prevented for development");
     setIsSubmitting(true);
     setTimeout(() => {
-      setSubmitStatus("success");
       setIsSubmitting(false);
     }, 1000);
   };
@@ -50,6 +61,7 @@ function ContactContent({ idSuffix = "", headingId }) {
           className="space-y-6"
           name="contact"
           method="POST"
+          action="/?success=true"
           aria-label="Contact form"
           data-netlify="true"
           data-netlify-honeypot="bot-field"
@@ -57,18 +69,19 @@ function ContactContent({ idSuffix = "", headingId }) {
           <input type="hidden" name="form-name" value="contact" />
           <input type="hidden" name="bot-field" style={{ display: "none" }} />
 
-          {submitStatus === "success" && (
-            <div className="bg-green-600/20 border border-green-500 text-green-300 p-4 rounded mb-4">
-              Message envoyé avec succès ! Nous vous répondrons bientôt.
+          {showSuccess && (
+            <div className="bg-green-600/20 border border-green-500 text-green-300 p-4 rounded mb-6">
+              <div className="flex items-center gap-3">
+                <span className="text-xl">✅</span>
+                <div>
+                  <h3 className="font-semibold">Message envoyé avec succès !</h3>
+                  <p className="text-sm opacity-90">Nous vous répondrons sous 24h à l'adresse indiquée.</p>
+                </div>
+              </div>
             </div>
           )}
 
-          {submitStatus === "error" && (
-            <div className="bg-red-600/20 border border-red-500 text-red-300 p-4 rounded mb-4">
-              Erreur lors de l'envoi. Veuillez réessayer ou nous contacter
-              directement.
-            </div>
-          )}
+
           <div>
             <label
               htmlFor={`fullName${idSuffix}`}
@@ -81,8 +94,6 @@ function ContactContent({ idSuffix = "", headingId }) {
               name="fullName"
               type="text"
               required
-              value={formData.fullName}
-              onChange={handleChange}
               className="w-full bg-formBG text-whiteCustom placeholder-whiteCustom/40 border border-whiteCustom/60 focus:border-whiteCustom outline-none px-3 py-2"
             />
           </div>
