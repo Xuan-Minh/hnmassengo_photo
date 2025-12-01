@@ -14,13 +14,37 @@ function ContactContent({ idSuffix = "", headingId }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState("");
 
-  const handleSubmit = (e) => {
-    // On laisse Netlify gérer nativement la soumission
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     setIsSubmitting(true);
-    
-    // Si JavaScript est activé, on peut ajouter une logique ici,
-    // mais on ne fait pas de e.preventDefault() pour laisser 
-    // Netlify gérer la redirection native
+    setSubmitStatus("");
+
+    try {
+      const formData = new FormData(e.target);
+      
+      const response = await fetch('/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams(formData).toString(),
+      });
+
+      if (response.ok) {
+        setSubmitStatus("success");
+        setFormData({
+          fullName: "",
+          email: "",
+          subject: "",
+          message: "",
+        });
+      } else {
+        setSubmitStatus("error");
+      }
+    } catch (error) {
+      console.error('Form submission error:', error);
+      setSubmitStatus("error");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleChange = (e) => {
@@ -41,7 +65,7 @@ function ContactContent({ idSuffix = "", headingId }) {
         </h2>
 
         {/* Formulaire caché pour garantir la détection Netlify */}
-        <form name="contact" netlify netlify-honeypot="bot-field" hidden>
+        <form name="contact" netlify="true" netlify-honeypot="bot-field" hidden>
           <input type="text" name="fullName" />
           <input type="email" name="email" />
           <input type="text" name="subject" />
@@ -50,8 +74,8 @@ function ContactContent({ idSuffix = "", headingId }) {
 
         <form
           className="space-y-6"
+          name="contact"
           method="POST"
-          action="/success.html"
           onSubmit={handleSubmit}
           aria-label="Contact form"
           data-netlify="true"
@@ -59,8 +83,6 @@ function ContactContent({ idSuffix = "", headingId }) {
         >
           <input type="hidden" name="form-name" value="contact" />
           <input type="hidden" name="bot-field" />
-          <input type="hidden" name="success-redirect" value="/success.html" />
-          <input type="hidden" name="error-redirect" value="/error.html" />
 
           {submitStatus === "success" && (
             <div className="bg-green-600/20 border border-green-500 text-green-300 p-4 rounded mb-4">
