@@ -9,4 +9,9 @@
 [[plugins]]
   package = "@netlify/plugin-nextjs"
 
-# Configuration des formulaires Netlify - Les notifications email se configurent dans le dashboard
+# Configuration des formulaires Netlify
+[build.processing]
+  skip_processing = false
+
+# Les notifications email se configurent dans le dashboard
+# Site Settings > Forms > Form notifications > Add notification > Email
