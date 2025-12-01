@@ -19,7 +19,19 @@ function ContactContent({ idSuffix = "", headingId }) {
       window.location.host.includes("netlify.com") ||
       window.location.host === "hannoahmassengo.fr";
 
+    console.log("🚀 Form submission started", {
+      isNetlify,
+      host: window.location.host,
+      formData: {
+        fullName: e.target.fullName?.value,
+        email: e.target.email?.value,
+        subject: e.target.subject?.value,
+        message: e.target.message?.value
+      }
+    });
+
     if (isNetlify) {
+      console.log("📡 Netlify environment detected - using iframe submission");
       // Sur Netlify : utiliser iframe cachée pour éviter redirection
       setIsSubmitting(true);
       
@@ -28,16 +40,21 @@ function ContactContent({ idSuffix = "", headingId }) {
       iframe.style.display = 'none';
       iframe.name = 'hidden-form-target';
       document.body.appendChild(iframe);
+      console.log("📄 Hidden iframe created:", iframe.name);
       
       // Modifier le target du form pour l'iframe
       e.target.target = 'hidden-form-target';
+      console.log("🎯 Form target set to iframe");
       
       // Écouter le load de l'iframe pour détecter le succès
       iframe.onload = () => {
+        console.log("✅ Iframe loaded - form submission completed");
+        console.log("📧 Form should be processed by Netlify now");
         setIsSubmitting(false);
         setShowSuccess(true);
         e.target.reset(); // Vider le formulaire
         document.body.removeChild(iframe); // Nettoyer l'iframe
+        console.log("🧹 Iframe cleaned up, form reset, success message shown");
         
         // Scroll vers le message de succès
         setTimeout(() => {
@@ -45,13 +62,24 @@ function ContactContent({ idSuffix = "", headingId }) {
         }, 100);
       };
       
+      // Timeout de sécurité
+      setTimeout(() => {
+        if (document.body.contains(iframe)) {
+          console.log("⚠️ Iframe timeout - forcing success state");
+          iframe.onload();
+        }
+      }, 5000);
+      
+      console.log("🔄 Native form submission proceeding to iframe...");
       // Laisser la soumission native se faire vers l'iframe
       return;
     } else {
+      console.log("💻 Local environment - simulating submission");
       // En local : simuler le succès
       e.preventDefault();
       setIsSubmitting(true);
       setTimeout(() => {
+        console.log("✅ Local simulation completed");
         setIsSubmitting(false);
         setShowSuccess(true);
       }, 1000);
