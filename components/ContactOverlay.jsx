@@ -4,124 +4,35 @@ import { useTranslations } from "next-intl";
 import { AnimatePresence, motion } from "framer-motion";
 import OverlayActionButton from "./OverlayActionButton";
 
-// Fonction utilitaire pour encoder les données de formulaire
-const encode = (data) => {
-  return Object.keys(data)
-    .map((key) => encodeURIComponent(key) + "=" + encodeURIComponent(data[key]))
-    .join("&");
-};
+
 
 function ContactContent({ idSuffix = "", headingId }) {
-  const [formData, setFormData] = useState({
-    fullName: "",
-    email: "",
-    subject: "",
-    message: "",
-  });
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitStatus, setSubmitStatus] = useState("");
 
-  const handleSubmit = async (e) => {
-    const form = e.target;
-    const formData = new FormData(form);
-    
-    // Vérifier si on est sur Netlify
+  // Fonction simplifiée - laisse Netlify gérer complètement
+  const handleSubmit = (e) => {
     const isNetlify =
       window.location.host.includes("netlify.app") ||
       window.location.host.includes("netlify.com") ||
       window.location.host === "hannoahmassengo.fr";
 
-    console.log("=== FORM SUBMISSION START ===");
-    console.log("Is Netlify:", isNetlify);
-    
-    // Si on est sur Netlify, essayer la soumission native d'abord
     if (isNetlify) {
-      console.log("Trying native Netlify form submission...");
-      // Ne pas preventDefault(), laisser Netlify gérer
-      setIsSubmitting(true);
-      setSubmitStatus("");
-      
-      // Ajouter un délai pour voir le statut, puis reset
-      setTimeout(() => {
-        setSubmitStatus("success");
-        setFormData({
-          fullName: "",
-          email: "",
-          subject: "",
-          message: "",
-        });
-        setIsSubmitting(false);
-      }, 2000);
-      
-      return; // Laisser la soumission native se faire
+      // Sur Netlify : aucune interférence JavaScript
+      console.log("Netlify: letting native form submission handle everything");
+      return; // Laisse le formulaire se soumettre normalement
     }
-    
-    // Pour le développement local, utiliser JavaScript
+
+    // En local : empêcher la soumission et simuler
     e.preventDefault();
+    console.log("Local: form submission prevented for development");
     setIsSubmitting(true);
-    setSubmitStatus("");
-
-    // Debug: Log form data
-    console.log("=== FORM SUBMISSION DEBUG ===");
-    console.log("Form element:", form);
-    console.log("Environment:", process.env.NODE_ENV);
-    console.log("Host:", window.location.host);
-    console.log("All form data entries:");
-    for (let [key, value] of formData.entries()) {
-      console.log(`  ${key}: "${value}"`);
-    }
-    console.log("FormData size:", [...formData.entries()].length);
-
-    try {
-      let response;
-
-      console.log("Using local API...");
-      response = await fetch("/api/contact", {
-        method: "POST",
-        body: formData,
-      });
-
-      console.log("Response status:", response.status);
-      console.log("Response headers:", [...response.headers.entries()]);
-
-      if (response.ok) {
-        console.log("Form submitted successfully");
-        setSubmitStatus("success");
-        // Reset form
-        setFormData({
-          fullName: "",
-          email: "",
-          subject: "",
-          message: "",
-        });
-      } else {
-        let responseText = "";
-        try {
-          responseText = await response.text();
-        } catch (e) {
-          console.error("Could not read response text:", e);
-        }
-        console.error("=== FORM SUBMISSION FAILED ===");
-        console.error("Status:", response.status);
-        console.error("Status Text:", response.statusText);
-        console.error("Response Text:", responseText);
-        console.error("Response URL:", response.url);
-        setSubmitStatus("error");
-      }
-    } catch (error) {
-      console.error("Form submission error:", error);
-      setSubmitStatus("error");
-    } finally {
+    setTimeout(() => {
+      setSubmitStatus("success");
       setIsSubmitting(false);
-    }
+    }, 1000);
   };
 
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
+
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14">
@@ -139,11 +50,9 @@ function ContactContent({ idSuffix = "", headingId }) {
           className="space-y-6"
           name="contact"
           method="POST"
-          onSubmit={handleSubmit}
           aria-label="Contact form"
           data-netlify="true"
           data-netlify-honeypot="bot-field"
-          action="/"
         >
           <input type="hidden" name="form-name" value="contact" />
           <input type="hidden" name="bot-field" style={{ display: "none" }} />
@@ -191,8 +100,6 @@ function ContactContent({ idSuffix = "", headingId }) {
                 name="email"
                 type="email"
                 required
-                value={formData.email}
-                onChange={handleChange}
                 className="w-full bg-formBG text-whiteCustom placeholder-whiteCustom/40 border border-whiteCustom/60 focus:border-whiteCustom outline-none px-3 py-2"
               />
             </div>
@@ -208,8 +115,6 @@ function ContactContent({ idSuffix = "", headingId }) {
                 name="subject"
                 type="text"
                 required
-                value={formData.subject}
-                onChange={handleChange}
                 className="w-full bg-formBG text-whiteCustom placeholder-whiteCustom/40 border border-whiteCustom/60 focus:border-whiteCustom outline-none px-3 py-2"
               />
             </div>
@@ -227,8 +132,6 @@ function ContactContent({ idSuffix = "", headingId }) {
               name="message"
               rows={6}
               required
-              value={formData.message}
-              onChange={handleChange}
               className="w-full bg-formBG text-whiteCustom placeholder-whiteCustom/40 border border-whiteCustom/60 focus:border-whiteCustom outline-none px-3 py-2 resize-y"
             />
           </div>

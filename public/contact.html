@@ -1,31 +1,39 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="fr">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Contact - Netlify Form</title>
-</head>
-<body>
-  <!-- Ce fichier existe uniquement pour que Netlify détecte le formulaire contact -->
-  <form name="contact" method="POST" data-netlify="true" data-netlify-honeypot="bot-field">
-    <input type="hidden" name="form-name" value="contact" />
-    <input type="hidden" name="bot-field" style="display: none;" />
-    
-    <label for="fullName">Full Name:</label>
-    <input type="text" id="fullName" name="fullName" required />
-    
-    <label for="email">Email:</label>
-    <input type="email" id="email" name="email" required />
-    
-    <label for="subject">Subject:</label>
-    <input type="text" id="subject" name="subject" required />
-    
-    <label for="message">Message:</label>
-    <textarea id="message" name="message" required></textarea>
-    
-    <button type="submit">Send Message</button>
-  </form>
-  
-  <p><strong>Note:</strong> Ce formulaire existe pour la détection Netlify. Utilisez le formulaire sur le site principal.</p>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Contact - Netlify Form</title>
+  </head>
+  <body>
+    <!-- Ce fichier existe uniquement pour que Netlify détecte le formulaire contact -->
+    <form
+      name="contact"
+      method="POST"
+      data-netlify="true"
+      data-netlify-honeypot="bot-field"
+    >
+      <input type="hidden" name="form-name" value="contact" />
+      <input type="hidden" name="bot-field" style="display: none" />
+
+      <label for="fullName">Full Name:</label>
+      <input type="text" id="fullName" name="fullName" required />
+
+      <label for="email">Email:</label>
+      <input type="email" id="email" name="email" required />
+
+      <label for="subject">Subject:</label>
+      <input type="text" id="subject" name="subject" required />
+
+      <label for="message">Message:</label>
+      <textarea id="message" name="message" required></textarea>
+
+      <button type="submit">Send Message</button>
+    </form>
+
+    <p>
+      <strong>Note:</strong> Ce formulaire existe pour la détection Netlify.
+      Utilisez le formulaire sur le site principal.
+    </p>
+  </body>
 </html>

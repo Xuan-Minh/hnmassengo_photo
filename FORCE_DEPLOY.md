@@ -3,6 +3,7 @@
 Ce fichier existe pour déclencher un nouveau déploiement Netlify et forcer la détection du formulaire "contact".
 
 ## Formulaires qui devraient être détectés :
+
 - `contact` (depuis contact.html et contact-form.html)
 - `test-contact` (depuis test-form.html)
 
