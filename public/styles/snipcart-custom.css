@@ -1,0 +1,390 @@
+/* Snipcart Custom Styling - Résumé permanent + Modal custom */
+
+/* Configuration de base */
+#snipcart {
+  font-family: "Playfair Display", serif !important;
+}
+
+/* ===== RÉSUMÉ PERMANENT DANS LA SIDEBAR ===== */
+
+/* Style pour le résumé intégré */
+.snipcart-summary {
+  font-family: "Playfair Display", serif !important;
+}
+
+/* Nombre d'articles */
+.snipcart-items-count {
+  color: rgba(0, 0, 0, 0.4) !important;
+  font-style: italic !important;
+}
+
+.snipcart-total-items:empty::before {
+  content: "0" !important;
+}
+
+/* Total affiché */
+.snipcart-total-price {
+  color: black !important;
+  font-weight: normal !important;
+}
+
+.snipcart-total-price:empty::before {
+  content: "0€" !important;
+}
+
+/* Liste des items en résumé */
+.snipcart-cart-lines-summary {
+  color: black !important;
+}
+
+/* Style pour chaque ligne d'item dans le résumé */
+.snipcart-cart-line-summary {
+  display: flex !important;
+  justify-content: space-between !important;
+  padding: 4px 0 !important;
+  font-size: 14px !important;
+  color: rgba(0, 0, 0, 0.8) !important;
+}
+
+/* Scrollbar pour le résumé */
+.snipcart-cart-lines-summary::-webkit-scrollbar {
+  width: 4px !important;
+}
+
+.snipcart-cart-lines-summary::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1) !important;
+}
+
+.snipcart-cart-lines-summary::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.3) !important;
+  border-radius: 2px !important;
+}
+
+/* ===== MODAL SNIPCART COMPLÈTE ===== */
+
+/* Style de la modal principale */
+#snipcart-container {
+  z-index: 999999 !important;
+}
+
+/* Conteneur du panier - transformation en sidebar */
+.snipcart-modal {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 320px !important;
+  height: 100vh !important;
+  background: #fefefe !important; /* whiteCustom */
+  border-right: 1px solid rgba(0, 0, 0, 0.3) !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  transform: none !important;
+  margin: 0 !important;
+  max-width: none !important;
+  max-height: none !important;
+}
+
+/* Overlay - uniquement à droite de la sidebar */
+.snipcart-modal__overlay {
+  background: rgba(0, 0, 0, 0.3) !important;
+  backdrop-filter: blur(2px) !important;
+}
+
+/* Container du contenu */
+.snipcart-modal__container {
+  width: 100% !important;
+  height: 100% !important;
+  padding: 40px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* Header du panier */
+.snipcart-cart-header {
+  margin-bottom: 32px !important;
+  padding: 0 !important;
+  border: none !important;
+}
+
+.snipcart-cart-header__title {
+  font-size: 24px !important;
+  font-weight: normal !important;
+  color: black !important;
+  margin: 0 !important;
+  text-transform: lowercase !important;
+  letter-spacing: 0 !important;
+}
+
+/* Bouton de fermeture - discret */
+.snipcart-modal__close-title,
+.snipcart-cart-header__close {
+  position: absolute !important;
+  top: 20px !important;
+  right: 20px !important;
+  background: transparent !important;
+  border: none !important;
+  font-size: 18px !important;
+  color: rgba(0, 0, 0, 0.4) !important;
+  cursor: pointer !important;
+  padding: 5px !important;
+}
+
+.snipcart-modal__close-title:hover,
+.snipcart-cart-header__close:hover {
+  color: black !important;
+}
+
+/* Message panier vide */
+.snipcart-cart-summary--empty {
+  color: rgba(0, 0, 0, 0.4) !important;
+  font-style: italic !important;
+  margin-bottom: 32px !important;
+}
+
+/* Liste des items */
+.snipcart-cart-lines {
+  flex: 1 !important;
+  overflow-y: auto !important;
+  max-height: 60vh !important;
+  margin-bottom: 32px !important;
+  padding-right: 10px !important;
+}
+
+/* Item individuel */
+.snipcart-cart-line {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  padding: 8px 0 !important;
+  border: none !important;
+  background: transparent !important;
+  margin-bottom: 8px !important;
+}
+
+.snipcart-cart-line:hover {
+  background: rgba(0, 0, 0, 0.02) !important;
+}
+
+/* Nom et détails du produit */
+.snipcart-cart-line__product {
+  flex: 1 !important;
+}
+
+.snipcart-cart-line__product-name {
+  font-size: 16px !important;
+  color: black !important;
+  margin: 0 0 4px 0 !important;
+  font-weight: normal !important;
+}
+
+.snipcart-cart-line__product-variant {
+  font-size: 14px !important;
+  color: rgba(0, 0, 0, 0.6) !important;
+  margin: 0 !important;
+}
+
+/* Prix et quantité */
+.snipcart-cart-line__quantity,
+.snipcart-cart-line__total-price {
+  font-size: 16px !important;
+  color: black !important;
+  margin-left: 16px !important;
+}
+
+/* Bouton supprimer - au hover */
+.snipcart-cart-line__remove {
+  opacity: 0 !important;
+  background: transparent !important;
+  border: none !important;
+  color: rgba(0, 0, 0, 0.4) !important;
+  cursor: pointer !important;
+  padding: 4px 8px !important;
+  margin-left: 8px !important;
+  font-size: 14px !important;
+  transition: opacity 0.2s ease !important;
+}
+
+.snipcart-cart-line:hover .snipcart-cart-line__remove {
+  opacity: 1 !important;
+}
+
+.snipcart-cart-line__remove:hover {
+  color: black !important;
+}
+
+/* Séparateur avant total */
+.snipcart-cart-summary {
+  border-top: 1px solid rgba(0, 0, 0, 0.3) !important;
+  padding-top: 16px !important;
+  margin-top: auto !important;
+}
+
+/* Total */
+.snipcart-cart-summary__total {
+  display: flex !important;
+  justify-content: space-between !important;
+  font-size: 18px !important;
+  color: black !important;
+  margin-bottom: 16px !important;
+  font-weight: normal !important;
+}
+
+/* Bouton checkout */
+.snipcart-cart-button,
+.snipcart-cart-button--primary {
+  width: 100% !important;
+  background: transparent !important;
+  border: none !important;
+  color: #d1d5db !important; /* text-gray-300 */
+  text-align: right !important;
+  padding: 0 !important;
+  margin-top: 16px !important;
+  font-size: 16px !important;
+  cursor: pointer !important;
+  font-family: "Playfair Display", serif !important;
+  transition: color 0.2s ease !important;
+}
+
+.snipcart-cart-button:hover,
+.snipcart-cart-button--primary:hover {
+  color: black !important;
+}
+
+.snipcart-cart-button:disabled,
+.snipcart-cart-button--primary:disabled {
+  opacity: 0.5 !important;
+  cursor: not-allowed !important;
+}
+
+/* Cache les éléments non nécessaires */
+.snipcart-cart-header__options,
+.snipcart-cart-summary__fees,
+.snipcart-cart-summary__taxes,
+.snipcart-cart-summary__discount,
+.snipcart-discount-box,
+.snipcart-cart-line__actions button:not(.snipcart-cart-line__remove),
+.snipcart-cart-line__quantity-badge,
+.snipcart-cart-line__image {
+  display: none !important;
+}
+
+/* Styles pour les contrôles de quantité simplifiés */
+.snipcart-cart-line__quantity-container {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+
+.snipcart-cart-line__quantity-input {
+  width: 40px !important;
+  text-align: center !important;
+  border: 1px solid rgba(0, 0, 0, 0.2) !important;
+  padding: 2px 4px !important;
+  background: transparent !important;
+}
+
+/* Animations d'entrée/sortie */
+.snipcart-modal {
+  animation: slideInLeft 0.3s ease-out !important;
+}
+
+@keyframes slideInLeft {
+  from {
+    transform: translateX(-100%) !important;
+  }
+  to {
+    transform: translateX(0) !important;
+  }
+}
+
+/* Responsive - sur mobile, prendre toute la largeur */
+@media (max-width: 640px) {
+  .snipcart-modal {
+    width: 100vw !important;
+  }
+}
+
+/* Style pour le texte "→ checkout" */
+.snipcart-cart-button::before,
+.snipcart-cart-button--primary::before {
+  content: "→ " !important;
+}
+
+/* Sélecteurs additionnels pour les boutons checkout */
+button[class*="checkout"],
+.snipcart__button--primary,
+.snipcart-checkout-button,
+[data-item-checkout],
+button[type="submit"] {
+  width: 100% !important;
+  background: transparent !important;
+  border: none !important;
+  color: #d1d5db !important;
+  text-align: right !important;
+  padding: 0 !important;
+  margin-top: 16px !important;
+  font-size: 16px !important;
+  cursor: pointer !important;
+  font-family: "Playfair Display", serif !important;
+  transition: color 0.2s ease !important;
+}
+
+button[class*="checkout"]:hover,
+.snipcart__button--primary:hover,
+.snipcart-checkout-button:hover,
+[data-item-checkout]:hover,
+button[type="submit"]:hover {
+  color: black !important;
+}
+
+/* Amélioration pour les boutons de modification/édition */
+.snipcart-cart-line__actions button,
+.snipcart-item-quantity__quantity button,
+button[class*="quantity"] {
+  background: transparent !important;
+  border: 1px solid rgba(0, 0, 0, 0.2) !important;
+  color: rgba(0, 0, 0, 0.6) !important;
+  padding: 2px 6px !important;
+  margin: 0 2px !important;
+  cursor: pointer !important;
+  font-size: 12px !important;
+}
+
+.snipcart-cart-line__actions button:hover,
+.snipcart-item-quantity__quantity button:hover,
+button[class*="quantity"]:hover {
+  color: black !important;
+  border-color: black !important;
+}
+
+/* Correction pour les inputs de quantité */
+input[class*="quantity"],
+.snipcart-item-quantity input {
+  width: 50px !important;
+  text-align: center !important;
+  border: 1px solid rgba(0, 0, 0, 0.2) !important;
+  padding: 4px !important;
+  background: transparent !important;
+  color: black !important;
+}
+
+/* Scrollbar custom pour la liste des produits */
+.snipcart-cart-lines::-webkit-scrollbar {
+  width: 4px !important;
+}
+
+.snipcart-cart-lines::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1) !important;
+}
+
+.snipcart-cart-lines::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.3) !important;
+  border-radius: 2px !important;
+}
+
+.snipcart-cart-lines::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.5) !important;
+}

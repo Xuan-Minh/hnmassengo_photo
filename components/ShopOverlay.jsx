@@ -49,13 +49,30 @@ export default function ShopOverlay({ product, onClose, onAddToCart }) {
             <button
               className="snipcart-add-item text-xl italic text-whiteCustom/60 hover:text-whiteCustom transition-colors"
               data-item-id={product.id}
-              data-item-price={product.price}
-              data-item-url="/"
-              data-item-description={product.description}
-              data-item-image={product.imgDefault}
               data-item-name={product.title}
-              onClick={() => {
-                if (onAddToCart) onAddToCart(product);
+              data-item-price={product.price}
+              data-item-url="/products.json"
+              data-item-description={
+                product.description || "Produit disponible"
+              }
+              data-item-image={product.imgDefault}
+              onClick={(e) => {
+                console.log("=== ADD TO CART CLICKED ===");
+                console.log("Product:", product);
+                console.log("Button attributes:");
+                console.log("- ID:", product.id);
+                console.log("- Name:", product.title);
+                console.log("- Price:", product.price);
+
+                // Laisser Snipcart gérer l'ajout naturellement
+                // Ne pas appeler onAddToCart car ça peut interférer
+                console.log("Letting Snipcart handle the add to cart...");
+
+                // Fermer après un délai plus long
+                setTimeout(() => {
+                  console.log("Closing overlay...");
+                  onClose();
+                }, 500);
               }}
             >
               add to cart

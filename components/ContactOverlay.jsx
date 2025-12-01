@@ -2,8 +2,54 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { AnimatePresence, motion } from "framer-motion";
+import OverlayActionButton from "./OverlayActionButton";
 
 function ContactContent({ idSuffix = "", headingId }) {
+  const [formData, setFormData] = useState({
+    fullName: "",
+    email: "",
+    subject: "",
+    message: "",
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState("");
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setSubmitStatus("");
+
+    // Utilisation de FormData pour une soumission Netlify native
+    const form = e.target;
+    const formData = new FormData(form);
+
+    try {
+      const response = await fetch("/", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams(formData).toString(),
+      });
+
+      if (response.ok) {
+        setSubmitStatus("success");
+        setFormData({ fullName: "", email: "", subject: "", message: "" });
+      } else {
+        setSubmitStatus("error");
+      }
+    } catch (error) {
+      setSubmitStatus("error");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14">
       <div className="lg:col-span-7">
@@ -13,22 +59,52 @@ function ContactContent({ idSuffix = "", headingId }) {
         >
           Contact
         </h2>
+
+        {/* Formulaire caché pour garantir la détection Netlify */}
+        <form name="contact" netlify netlify-honeypot="bot-field" hidden>
+          <input type="text" name="fullName" />
+          <input type="email" name="email" />
+          <input type="text" name="subject" />
+          <textarea name="message"></textarea>
+        </form>
+
         <form
           className="space-y-6"
-          onSubmit={(e) => e.preventDefault()}
+          method="POST"
+          onSubmit={handleSubmit}
           aria-label="Contact form"
+          data-netlify="true"
+          data-netlify-honeypot="bot-field"
         >
+          <input type="hidden" name="form-name" value="contact" />
+          <input type="hidden" name="bot-field" />
+
+          {submitStatus === "success" && (
+            <div className="bg-green-600/20 border border-green-500 text-green-300 p-4 rounded mb-4">
+              Message envoyé avec succès ! Nous vous répondrons bientôt.
+            </div>
+          )}
+
+          {submitStatus === "error" && (
+            <div className="bg-red-600/20 border border-red-500 text-red-300 p-4 rounded mb-4">
+              Erreur lors de l'envoi. Veuillez réessayer ou nous contacter
+              directement.
+            </div>
+          )}
           <div>
             <label
               htmlFor={`fullName${idSuffix}`}
               className="block text-whiteCustom/90 font-playfair text-sm mb-2"
             >
-              full name
+              full name *
             </label>
             <input
               id={`fullName${idSuffix}`}
-              name={`fullName${idSuffix}`}
+              name="fullName"
               type="text"
+              required
+              value={formData.fullName}
+              onChange={handleChange}
               className="w-full bg-formBG text-whiteCustom placeholder-whiteCustom/40 border border-whiteCustom/60 focus:border-whiteCustom outline-none px-3 py-2"
             />
           </div>
@@ -39,12 +115,15 @@ function ContactContent({ idSuffix = "", headingId }) {
                 htmlFor={`email${idSuffix}`}
                 className="block text-whiteCustom/90 font-playfair  text-sm mb-2"
               >
-                email
+                email *
               </label>
               <input
                 id={`email${idSuffix}`}
-                name={`email${idSuffix}`}
+                name="email"
                 type="email"
+                required
+                value={formData.email}
+                onChange={handleChange}
                 className="w-full bg-formBG text-whiteCustom placeholder-whiteCustom/40 border border-whiteCustom/60 focus:border-whiteCustom outline-none px-3 py-2"
               />
             </div>
@@ -53,12 +132,15 @@ function ContactContent({ idSuffix = "", headingId }) {
                 htmlFor={`subject${idSuffix}`}
                 className="block text-whiteCustom/90 font-playfair text-sm mb-2"
               >
-                subject
+                subject *
               </label>
               <input
                 id={`subject${idSuffix}`}
-                name={`subject${idSuffix}`}
+                name="subject"
                 type="text"
+                required
+                value={formData.subject}
+                onChange={handleChange}
                 className="w-full bg-formBG text-whiteCustom placeholder-whiteCustom/40 border border-whiteCustom/60 focus:border-whiteCustom outline-none px-3 py-2"
               />
             </div>
@@ -69,25 +151,31 @@ function ContactContent({ idSuffix = "", headingId }) {
               htmlFor={`message${idSuffix}`}
               className="block text-whiteCustom/90 font-playfair text-sm mb-2"
             >
-              message
+              message *
             </label>
             <textarea
               id={`message${idSuffix}`}
-              name={`message${idSuffix}`}
+              name="message"
               rows={6}
+              required
+              value={formData.message}
+              onChange={handleChange}
               className="w-full bg-formBG text-whiteCustom placeholder-whiteCustom/40 border border-whiteCustom/60 focus:border-whiteCustom outline-none px-3 py-2 resize-y"
             />
           </div>
 
-          <div className="pt-2">
-            <button
+          <div>
+            <OverlayActionButton
+              className="px-0 py-3 w-full md:w-auto"
+              label={isSubmitting ? "sending..." : "send"}
+              intent="next"
+              animate="exit"
               type="submit"
-              className="inline-flex items-center gap-3 text-whiteCustom/90 hover:text-whiteCustom transition-colors font-playfair  text-xl"
-              aria-label="Submit"
-            >
-              <span aria-hidden>→</span>
-              <span>submit</span>
-            </button>
+              disabled={isSubmitting}
+              onClick={(e) => {
+                // Le formulaire sera soumis via onSubmit
+              }}
+            />
           </div>
         </form>
       </div>

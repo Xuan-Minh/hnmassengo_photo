@@ -33,6 +33,7 @@ export default function RootLayout({ children }) {
           rel="stylesheet"
           href="https://cdn.snipcart.com/themes/v3.0.31/default/snipcart.css"
         />
+        <link rel="stylesheet" href="/styles/snipcart-custom.css" />
       </head>
       <body
         className={[lexend.className, lexend.variable, playfair.variable].join(
@@ -44,15 +45,17 @@ export default function RootLayout({ children }) {
         <RevealRoot>{children}</RevealRoot>
 
         <div
-          hidden
           id="snipcart"
           data-api-key="MzhiNjU4MDUtYTA2MC00YjA5LTkwYmMtOWIyY2FjOTAyZmZlNjM4OTk4OTA5MTYxNDMxODU0"
           data-config-modal-style="side"
+          data-config-add-product-behavior="none"
+          hidden
           suppressHydrationWarning
         ></div>
         <Script
           src="https://cdn.snipcart.com/themes/v3.0.31/default/snipcart.js"
           strategy="afterInteractive"
+          suppressHydrationWarning
         />
       </body>
     </html>

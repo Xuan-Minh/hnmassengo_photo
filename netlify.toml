@@ -4,3 +4,17 @@
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"
+
+# Configuration des formulaires Netlify
+[build.environment]
+  # Variables d'environnement pour les notifications
+  
+# Configuration des notifications par email
+[[plugins]]
+  package = "netlify-plugin-form-submissions"
+  
+  [plugins.inputs]
+    # Email de destination pour les soumissions de formulaire
+    to = "naux.pro@gmail.com"
+    # Sujet de l'email
+    subject = "Nouveau message de contact - Portfolio Han-Noah MASSENGO"
