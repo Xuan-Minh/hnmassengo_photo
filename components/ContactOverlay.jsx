@@ -51,17 +51,17 @@ function ContactContent({ idSuffix = "", headingId }) {
       if (isNetlify) {
         // Sur Netlify : utiliser Netlify Forms avec encode
         console.log("Using Netlify Forms...");
-        
+
         // Convertir FormData en objet pour encoder
         const data = {};
         for (let [key, value] of formData.entries()) {
           data[key] = value;
         }
-        
+
         console.log("Data to encode:", data);
         const encodedData = encode(data);
         console.log("Encoded data:", encodedData);
-        
+
         response = await fetch("/", {
           method: "POST",
           headers: { "Content-Type": "application/x-www-form-urlencoded" },
