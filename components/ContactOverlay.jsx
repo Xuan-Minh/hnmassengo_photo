@@ -31,13 +31,15 @@ function ContactContent({ idSuffix = "", headingId }) {
       });
 
       if (response.ok) {
-        setSubmitStatus("success");
-        setFormData({ fullName: "", email: "", subject: "", message: "" });
+        // Redirection vers la page de succès
+        window.location.href = "/success.html";
       } else {
-        setSubmitStatus("error");
+        // Redirection vers la page d'erreur
+        window.location.href = "/error.html";
       }
     } catch (error) {
-      setSubmitStatus("error");
+      // En cas d'erreur réseau, redirection vers la page d'erreur
+      window.location.href = "/error.html";
     } finally {
       setIsSubmitting(false);
     }
@@ -71,6 +73,7 @@ function ContactContent({ idSuffix = "", headingId }) {
         <form
           className="space-y-6"
           method="POST"
+          action="/success.html"
           onSubmit={handleSubmit}
           aria-label="Contact form"
           data-netlify="true"
@@ -78,6 +81,8 @@ function ContactContent({ idSuffix = "", headingId }) {
         >
           <input type="hidden" name="form-name" value="contact" />
           <input type="hidden" name="bot-field" />
+          <input type="hidden" name="success-redirect" value="/success.html" />
+          <input type="hidden" name="error-redirect" value="/error.html" />
 
           {submitStatus === "success" && (
             <div className="bg-green-600/20 border border-green-500 text-green-300 p-4 rounded mb-4">

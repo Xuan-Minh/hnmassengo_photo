@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Message envoyé - Han-Noah MASSENGO</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background-color: #1a1a1a;
+            color: #F4F3F2;
+            font-family: 'Playfair Display', serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+        
+        .container {
+            text-align: center;
+            max-width: 600px;
+        }
+        
+        .success-icon {
+            font-size: 4rem;
+            margin-bottom: 2rem;
+            color: #10b981;
+        }
+        
+        h1 {
+            font-size: 3rem;
+            font-style: italic;
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
+        }
+        
+        p {
+            font-size: 1.2rem;
+            line-height: 1.6;
+            margin-bottom: 3rem;
+            opacity: 0.9;
+        }
+        
+        .back-link {
+            display: inline-block;
+            color: #F4F3F2;
+            text-decoration: none;
+            font-size: 1.1rem;
+            border: 1px solid #F4F3F2;
+            padding: 1rem 2rem;
+            transition: all 0.3s ease;
+        }
+        
+        .back-link:hover {
+            background-color: #F4F3F2;
+            color: #1a1a1a;
+        }
+        
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;1,400;0,700;1,700&display=swap');
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="success-icon">✓</div>
+        <h1>Message envoyé !</h1>
+        <p>
+            Merci pour votre message. Nous avons bien reçu votre demande et vous répondrons dans les plus brefs délais à l'adresse email que vous avez fournie.
+        </p>
+        <a href="/" class="back-link">← Retour à l'accueil</a>
+    </div>
+    
+    <script>
+        // Redirection automatique après 10 secondes
+        setTimeout(() => {
+            window.location.href = '/';
+        }, 10000);
+    </script>
+</body>
+</html>
