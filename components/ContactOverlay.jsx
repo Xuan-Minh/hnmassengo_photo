@@ -7,8 +7,6 @@ import OverlayActionButton from "./OverlayActionButton";
 
 
 function ContactContent({ idSuffix = "", headingId }) {
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  
   // State pour afficher le message de succès
   const [showSuccess, setShowSuccess] = useState(false);
   
@@ -22,51 +20,7 @@ function ContactContent({ idSuffix = "", headingId }) {
     }
   }, []);
 
-  // Fonction de soumission simple - laisse Netlify gérer complètement
-  const handleSubmit = (e) => {
-    const isNetlify =
-      window.location.host.includes("netlify.app") ||
-      window.location.host.includes("netlify.com") ||
-      window.location.host === "hannoahmassengo.fr";
 
-    console.log("🚀 Form submission started", {
-      isNetlify,
-      host: window.location.host,
-      formData: {
-        fullName: e.target.fullName?.value,
-        email: e.target.email?.value,
-        subject: e.target.subject?.value,
-        message: e.target.message?.value
-      }
-    });
-
-    if (isNetlify) {
-      console.log("📡 Netlify environment - using native submission");
-      // Sur Netlify : soumission native simple
-      setIsSubmitting(true);
-      
-      // Afficher le message de succès après un délai
-      setTimeout(() => {
-        setShowSuccess(true);
-        setIsSubmitting(false);
-        console.log("✅ Success message shown - form submitted to Netlify");
-      }, 1000);
-      
-      // Laisser la soumission native se faire normalement
-      console.log("🔄 Native form submission proceeding...");
-      return; // Laisse le formulaire se soumettre
-    } else {
-      console.log("💻 Local environment - simulating submission");
-      // En local : simuler le succès
-      e.preventDefault();
-      setIsSubmitting(true);
-      setTimeout(() => {
-        console.log("✅ Local simulation completed");
-        setIsSubmitting(false);
-        setShowSuccess(true);
-      }, 1000);
-    }
-  };
 
 
 
@@ -87,7 +41,6 @@ function ContactContent({ idSuffix = "", headingId }) {
           name="contact"
           method="POST"
           action="/?success=true"
-          onSubmit={handleSubmit}
           aria-label="Contact form"
           data-netlify="true"
           data-netlify-honeypot="bot-field"
@@ -176,11 +129,10 @@ function ContactContent({ idSuffix = "", headingId }) {
           <div>
             <button
               type="submit"
-              disabled={isSubmitting}
-              className="px-6 py-3 text-lg font-medium font-playfair text-whiteCustom/85 hover:text-whiteCustom hover:opacity-100 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-6 py-3 text-lg font-medium font-playfair text-whiteCustom/85 hover:text-whiteCustom hover:opacity-100 transition-all duration-300"
             >
               <span className="inline-block mr-2">→</span>
-              <span>{isSubmitting ? "sending..." : "send"}</span>
+              <span>send</span>
             </button>
           </div>
         </form>
