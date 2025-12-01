@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Contact Direct</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .form-container { max-width: 500px; margin: 0 auto; }
+        input, textarea { width: 100%; padding: 10px; margin: 5px 0; }
+        button { background: #007cba; color: white; padding: 10px 20px; border: none; cursor: pointer; }
+        .success { background: #d4edda; padding: 10px; margin: 10px 0; border: 1px solid #c3e6cb; }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h1>Test Contact Direct</h1>
+        <p><strong>Ce formulaire teste directement Netlify Forms sans JavaScript</strong></p>
+        
+        <form name="contact-direct" method="POST" data-netlify="true" data-netlify-honeypot="bot-field">
+            <input type="hidden" name="form-name" value="contact-direct" />
+            <input type="hidden" name="bot-field" style="display: none;" />
+            
+            <label for="fullName">Nom complet :</label>
+            <input type="text" id="fullName" name="fullName" required />
+            
+            <label for="email">Email :</label>
+            <input type="email" id="email" name="email" required />
+            
+            <label for="subject">Sujet :</label>
+            <input type="text" id="subject" name="subject" required />
+            
+            <label for="message">Message :</label>
+            <textarea id="message" name="message" rows="5" required></textarea>
+            
+            <button type="submit">Envoyer Test Direct</button>
+        </form>
+        
+        <hr>
+        
+        <h3>Instructions :</h3>
+        <ol>
+            <li>Remplissez ce formulaire et envoyez</li>
+            <li>Vous devriez voir une page de succès Netlify</li>
+            <li>Vérifiez dans Dashboard Netlify > Forms si "contact-direct" apparaît</li>
+            <li>Configurez les notifications pour "contact-direct"</li>
+            <li>Testez l'envoi d'email</li>
+        </ol>
+        
+        <p><strong>URL de ce test :</strong> hannoahmassengo.netlify.app/contact-direct.html</p>
+    </div>
+</body>
+</html>

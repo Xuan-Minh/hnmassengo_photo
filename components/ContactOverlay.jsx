@@ -133,14 +133,7 @@ function ContactContent({ idSuffix = "", headingId }) {
           Contact
         </h2>
 
-        {/* Formulaire caché pour garantir la détection Netlify */}
-        <form name="contact" data-netlify="true" data-netlify-honeypot="bot-field" style={{display: 'none'}}>
-          <input type="text" name="fullName" />
-          <input type="email" name="email" />
-          <input type="text" name="subject" />
-          <textarea name="message"></textarea>
-          <input type="hidden" name="form-name" value="contact" />
-        </form>
+        {/* Formulaire caché supprimé - utilise contact.html pour la détection */}
 
         <form
           className="space-y-6"
@@ -150,6 +143,7 @@ function ContactContent({ idSuffix = "", headingId }) {
           aria-label="Contact form"
           data-netlify="true"
           data-netlify-honeypot="bot-field"
+          action="/"
         >
           <input type="hidden" name="form-name" value="contact" />
           <input type="hidden" name="bot-field" style={{ display: "none" }} />
