@@ -5,6 +5,36 @@ import { AnimatePresence, motion } from "framer-motion";
 import OverlayActionButton from "./OverlayActionButton";
 
 function ContactContent({ idSuffix = "", headingId }) {
+  const [showSuccess, setShowSuccess] = useState(false);
+  const formRef = useRef(null);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const form = formRef.current;
+    if (!form) return;
+
+    // Créer une iframe cachée pour soumettre le formulaire
+    const iframe = document.createElement("iframe");
+    iframe.name = "hidden-iframe";
+    iframe.style.display = "none";
+    document.body.appendChild(iframe);
+
+    // Configurer le formulaire pour soumettre dans l'iframe
+    form.target = "hidden-iframe";
+
+    // Soumettre le formulaire
+    form.submit();
+
+    // Afficher le message de succès
+    setShowSuccess(true);
+
+    // Réinitialiser le formulaire après un court délai
+    setTimeout(() => {
+      form.reset();
+      document.body.removeChild(iframe);
+    }, 1000);
+  };
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14">
       <div className="lg:col-span-7">
@@ -18,6 +48,7 @@ function ContactContent({ idSuffix = "", headingId }) {
         {/* Formulaire caché supprimé - utilise contact.html pour la détection */}
 
         <form
+          ref={formRef}
           className="space-y-6"
           name="contact"
           method="POST"
@@ -25,9 +56,26 @@ function ContactContent({ idSuffix = "", headingId }) {
           aria-label="Contact form"
           data-netlify="true"
           data-netlify-honeypot="bot-field"
+          onSubmit={handleSubmit}
         >
           <input type="hidden" name="form-name" value="contact" />
           <input type="hidden" name="bot-field" style={{ display: "none" }} />
+
+          {showSuccess && (
+            <div className="bg-green-600/20 border border-green-500 text-green-300 p-4 rounded mb-6">
+              <div className="flex items-center gap-3">
+                <span className="text-xl">✅</span>
+                <div>
+                  <h3 className="font-semibold">
+                    Message envoyé avec succès !
+                  </h3>
+                  <p className="text-sm opacity-90">
+                    Nous vous répondrons sous 24h à l'adresse indiquée.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
 
           <div>
             <label
