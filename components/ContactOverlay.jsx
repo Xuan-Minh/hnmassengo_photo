@@ -14,7 +14,10 @@ function ContactContent({ idSuffix = "", headingId }) {
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
+      console.log("🔍 Checking URL params:", window.location.search);
+      console.log("🔍 Success param:", params.get('success'));
       if (params.get('success')) {
+        console.log("✅ Success detected - showing success message");
         setShowSuccess(true);
       }
     }
@@ -136,6 +139,17 @@ function ContactContent({ idSuffix = "", headingId }) {
             </button>
           </div>
         </form>
+        
+        {/* Formulaire de test pour diagnostic */}
+        <div className="mt-8 p-4 border border-yellow-500 rounded">
+          <h3 className="text-yellow-300 mb-4">🔧 Test Form (Debug)</h3>
+          <form name="debug-contact" method="POST" data-netlify="true">
+            <input type="hidden" name="form-name" value="debug-contact" />
+            <input type="text" name="test-name" placeholder="Test Name" className="w-full p-2 mb-2 text-black" />
+            <input type="email" name="test-email" placeholder="Test Email" className="w-full p-2 mb-2 text-black" />
+            <button type="submit" className="bg-yellow-500 text-black px-4 py-2">Test Submit</button>
+          </form>
+        </div>
       </div>
 
       <div className="lg:col-span-5 text-whiteCustom/90">
