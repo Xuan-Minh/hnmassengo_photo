@@ -43,7 +43,7 @@ function ContactContent({ idSuffix = "", headingId }) {
           className="space-y-6"
           name="contact"
           method="POST"
-          action="/?success=true"
+          action="/en?success=true"
           aria-label="Contact form"
           data-netlify="true"
           data-netlify-honeypot="bot-field"
@@ -52,16 +52,23 @@ function ContactContent({ idSuffix = "", headingId }) {
           <input type="hidden" name="bot-field" style={{ display: "none" }} />
 
           {showSuccess && (
-            <div className="bg-green-600/20 border border-green-500 text-green-300 p-4 rounded mb-6">
-              <div className="flex items-center gap-3">
-                <span className="text-xl">✅</span>
+            <div className="bg-green-600 border-2 border-green-400 text-white p-6 rounded-lg mb-6 shadow-lg">
+              <div className="flex items-center gap-4">
+                <span className="text-3xl">✅</span>
                 <div>
-                  <h3 className="font-semibold">Message envoyé avec succès !</h3>
-                  <p className="text-sm opacity-90">Nous vous répondrons sous 24h à l'adresse indiquée.</p>
+                  <h3 className="font-bold text-lg">🎉 Message envoyé avec succès !</h3>
+                  <p className="text-green-100">Nous vous répondrons sous 24h à l'adresse indiquée.</p>
+                  <p className="text-xs text-green-200 mt-2">Debug: Success state activé</p>
                 </div>
               </div>
             </div>
           )}
+          
+          {/* Message de debug permanent */}
+          <div className="bg-blue-900/50 border border-blue-400 text-blue-200 p-3 rounded mb-4 text-sm">
+            🔧 Debug: URL = {typeof window !== 'undefined' ? window.location.href : 'server'} | 
+            Success = {showSuccess ? 'TRUE' : 'FALSE'}
+          </div>
 
 
           <div>
