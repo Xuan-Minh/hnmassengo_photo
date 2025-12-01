@@ -12,10 +12,7 @@ function ContactContent({ idSuffix = "", headingId }) {
   useEffect(() => {
     if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search);
-      console.log("🔍 Checking URL params:", window.location.search);
-      console.log("🔍 Success param:", params.get("success"));
       if (params.get("success")) {
-        console.log("✅ Success detected - showing success message");
         setShowSuccess(true);
       }
     }
@@ -37,39 +34,32 @@ function ContactContent({ idSuffix = "", headingId }) {
           className="space-y-6"
           name="contact"
           method="POST"
-          action="/en?success=true"
           aria-label="Contact form"
           data-netlify="true"
           data-netlify-honeypot="bot-field"
         >
           <input type="hidden" name="form-name" value="contact" />
-          <input type="hidden" name="bot-field" style={{ display: "none" }} />
+          <p style={{ display: "none" }}>
+            <label>
+              Don't fill this out if you're human: <input name="bot-field" />
+            </label>
+          </p>
 
           {showSuccess && (
-            <div className="bg-green-600 border-2 border-green-400 text-white p-6 rounded-lg mb-6 shadow-lg">
-              <div className="flex items-center gap-4">
-                <span className="text-3xl">✅</span>
+            <div className="bg-green-600/20 border border-green-500 text-green-300 p-4 rounded mb-6">
+              <div className="flex items-center gap-3">
+                <span className="text-xl">✅</span>
                 <div>
-                  <h3 className="font-bold text-lg">
-                    🎉 Message envoyé avec succès !
+                  <h3 className="font-semibold">
+                    Message envoyé avec succès !
                   </h3>
-                  <p className="text-green-100">
+                  <p className="text-sm opacity-90">
                     Nous vous répondrons sous 24h à l'adresse indiquée.
-                  </p>
-                  <p className="text-xs text-green-200 mt-2">
-                    Debug: Success state activé
                   </p>
                 </div>
               </div>
             </div>
           )}
-
-          {/* Message de debug permanent */}
-          <div className="bg-blue-900/50 border border-blue-400 text-blue-200 p-3 rounded mb-4 text-sm">
-            🔧 Debug: URL ={" "}
-            {typeof window !== "undefined" ? window.location.href : "server"} |
-            Success = {showSuccess ? "TRUE" : "FALSE"}
-          </div>
 
           <div>
             <label
@@ -146,32 +136,6 @@ function ContactContent({ idSuffix = "", headingId }) {
             </button>
           </div>
         </form>
-
-        {/* Formulaire de test pour diagnostic */}
-        <div className="mt-8 p-4 border border-yellow-500 rounded">
-          <h3 className="text-yellow-300 mb-4">🔧 Test Form (Debug)</h3>
-          <form name="debug-contact" method="POST" data-netlify="true">
-            <input type="hidden" name="form-name" value="debug-contact" />
-            <input
-              type="text"
-              name="test-name"
-              placeholder="Test Name"
-              className="w-full p-2 mb-2 text-black"
-            />
-            <input
-              type="email"
-              name="test-email"
-              placeholder="Test Email"
-              className="w-full p-2 mb-2 text-black"
-            />
-            <button
-              type="submit"
-              className="bg-yellow-500 text-black px-4 py-2"
-            >
-              Test Submit
-            </button>
-          </form>
-        </div>
       </div>
 
       <div className="lg:col-span-5 text-whiteCustom/90">
