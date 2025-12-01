@@ -1,14 +1,26 @@
-<!doctype html>
-<html>
-  <head>
-    <title>Contact Form</title>
-  </head>
-  <body>
-    <form name="contact" netlify="true" netlify-honeypot="bot-field" hidden>
-      <input type="text" name="fullName" />
-      <input type="email" name="email" />
-      <input type="text" name="subject" />
-      <textarea name="message"></textarea>
-    </form>
-  </body>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Contact Forms for Netlify Detection</title>
+</head>
+<body>
+  <!-- Formulaire principal contact -->
+  <form name="contact" method="POST" data-netlify="true" data-netlify-honeypot="bot-field" hidden>
+    <input type="hidden" name="form-name" value="contact" />
+    <input type="hidden" name="bot-field" />
+    <input type="text" name="fullName" placeholder="Full Name" />
+    <input type="email" name="email" placeholder="Email" />
+    <input type="text" name="subject" placeholder="Subject" />
+    <textarea name="message" placeholder="Message"></textarea>
+  </form>
+  
+  <!-- Formulaire de test -->
+  <form name="test-contact" method="POST" data-netlify="true" hidden>
+    <input type="hidden" name="form-name" value="test-contact" />
+    <input type="text" name="name" placeholder="Name" />
+    <input type="email" name="email" placeholder="Email" />
+    <textarea name="message" placeholder="Message"></textarea>
+  </form>
+</body>
 </html>

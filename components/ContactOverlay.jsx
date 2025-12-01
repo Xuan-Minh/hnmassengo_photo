@@ -129,11 +129,12 @@ function ContactContent({ idSuffix = "", headingId }) {
         </h2>
 
         {/* Formulaire caché pour garantir la détection Netlify */}
-        <form name="contact" netlify="true" netlify-honeypot="bot-field" hidden>
+        <form name="contact" data-netlify="true" data-netlify-honeypot="bot-field" style={{display: 'none'}}>
           <input type="text" name="fullName" />
           <input type="email" name="email" />
           <input type="text" name="subject" />
           <textarea name="message"></textarea>
+          <input type="hidden" name="form-name" value="contact" />
         </form>
 
         <form
