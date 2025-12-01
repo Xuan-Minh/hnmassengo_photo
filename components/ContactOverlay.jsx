@@ -5,19 +5,6 @@ import { AnimatePresence, motion } from "framer-motion";
 import OverlayActionButton from "./OverlayActionButton";
 
 function ContactContent({ idSuffix = "", headingId }) {
-  // State pour afficher le message de succès
-  const [showSuccess, setShowSuccess] = useState(false);
-
-  // Détecter si on revient après soumission réussie
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const params = new URLSearchParams(window.location.search);
-      if (params.get("success")) {
-        setShowSuccess(true);
-      }
-    }
-  }, []);
-
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14">
       <div className="lg:col-span-7">
@@ -34,32 +21,13 @@ function ContactContent({ idSuffix = "", headingId }) {
           className="space-y-6"
           name="contact"
           method="POST"
+          action="/success.html"
           aria-label="Contact form"
           data-netlify="true"
           data-netlify-honeypot="bot-field"
         >
           <input type="hidden" name="form-name" value="contact" />
-          <p style={{ display: "none" }}>
-            <label>
-              Don't fill this out if you're human: <input name="bot-field" />
-            </label>
-          </p>
-
-          {showSuccess && (
-            <div className="bg-green-600/20 border border-green-500 text-green-300 p-4 rounded mb-6">
-              <div className="flex items-center gap-3">
-                <span className="text-xl">✅</span>
-                <div>
-                  <h3 className="font-semibold">
-                    Message envoyé avec succès !
-                  </h3>
-                  <p className="text-sm opacity-90">
-                    Nous vous répondrons sous 24h à l'adresse indiquée.
-                  </p>
-                </div>
-              </div>
-            </div>
-          )}
+          <input type="hidden" name="bot-field" style={{ display: "none" }} />
 
           <div>
             <label
