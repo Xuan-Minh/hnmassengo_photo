@@ -22,59 +22,64 @@ function ContactContent({ idSuffix = "", headingId }) {
   const [submitStatus, setSubmitStatus] = useState("");
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    setSubmitStatus("");
-
     const form = e.target;
     const formData = new FormData(form);
-
-    // Debug: Log form data
-    console.log("=== FORM SUBMISSION DEBUG ===");
-    console.log("Environment:", process.env.NODE_ENV);
-    console.log("Host:", window.location.host);
-    for (let [key, value] of formData.entries()) {
-      console.log(`${key}: ${value}`);
-    }
-
-    // Vérifier si on est sur Netlify ou en local
+    
+    // Vérifier si on est sur Netlify
     const isNetlify =
       window.location.host.includes("netlify.app") ||
       window.location.host.includes("netlify.com") ||
       window.location.host === "hannoahmassengo.fr";
 
+    console.log("=== FORM SUBMISSION START ===");
     console.log("Is Netlify:", isNetlify);
+    
+    // Si on est sur Netlify, essayer la soumission native d'abord
+    if (isNetlify) {
+      console.log("Trying native Netlify form submission...");
+      // Ne pas preventDefault(), laisser Netlify gérer
+      setIsSubmitting(true);
+      setSubmitStatus("");
+      
+      // Ajouter un délai pour voir le statut, puis reset
+      setTimeout(() => {
+        setSubmitStatus("success");
+        setFormData({
+          fullName: "",
+          email: "",
+          subject: "",
+          message: "",
+        });
+        setIsSubmitting(false);
+      }, 2000);
+      
+      return; // Laisser la soumission native se faire
+    }
+    
+    // Pour le développement local, utiliser JavaScript
+    e.preventDefault();
+    setIsSubmitting(true);
+    setSubmitStatus("");
+
+    // Debug: Log form data
+    console.log("=== FORM SUBMISSION DEBUG ===");
+    console.log("Form element:", form);
+    console.log("Environment:", process.env.NODE_ENV);
+    console.log("Host:", window.location.host);
+    console.log("All form data entries:");
+    for (let [key, value] of formData.entries()) {
+      console.log(`  ${key}: "${value}"`);
+    }
+    console.log("FormData size:", [...formData.entries()].length);
 
     try {
       let response;
 
-      if (isNetlify) {
-        // Sur Netlify : utiliser Netlify Forms avec encode
-        console.log("Using Netlify Forms...");
-
-        // Convertir FormData en objet pour encoder
-        const data = {};
-        for (let [key, value] of formData.entries()) {
-          data[key] = value;
-        }
-
-        console.log("Data to encode:", data);
-        const encodedData = encode(data);
-        console.log("Encoded data:", encodedData);
-
-        response = await fetch("/", {
-          method: "POST",
-          headers: { "Content-Type": "application/x-www-form-urlencoded" },
-          body: encodedData,
-        });
-      } else {
-        // En local : utiliser notre API Next.js
-        console.log("Using local API...");
-        response = await fetch("/api/contact", {
-          method: "POST",
-          body: formData,
-        });
-      }
+      console.log("Using local API...");
+      response = await fetch("/api/contact", {
+        method: "POST",
+        body: formData,
+      });
 
       console.log("Response status:", response.status);
       console.log("Response headers:", [...response.headers.entries()]);
