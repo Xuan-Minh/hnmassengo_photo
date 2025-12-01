@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test Contact Form</title>
+</head>
+<body>
+  <h1>Test Netlify Forms</h1>
+  
+  <!-- Formulaire de test simple -->
+  <form name="test-contact" method="POST" data-netlify="true">
+    <input type="hidden" name="form-name" value="test-contact" />
+    
+    <div>
+      <label for="name">Nom:</label>
+      <input type="text" id="name" name="name" required />
+    </div>
+    
+    <div>
+      <label for="email">Email:</label>
+      <input type="email" id="email" name="email" required />
+    </div>
+    
+    <div>
+      <label for="message">Message:</label>
+      <textarea id="message" name="message" required></textarea>
+    </div>
+    
+    <button type="submit">Envoyer Test</button>
+  </form>
+  
+  <!-- Formulaire caché pour détection -->
+  <form name="contact" data-netlify="true" netlify-honeypot="bot-field" hidden>
+    <input type="text" name="fullName" />
+    <input type="email" name="email" />
+    <input type="text" name="subject" />
+    <textarea name="message"></textarea>
+  </form>
+  
+</body>
+</html>

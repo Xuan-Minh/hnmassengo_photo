@@ -4,6 +4,13 @@ import { useTranslations } from "next-intl";
 import { AnimatePresence, motion } from "framer-motion";
 import OverlayActionButton from "./OverlayActionButton";
 
+// Fonction utilitaire pour encoder les données de formulaire
+const encode = (data) => {
+  return Object.keys(data)
+    .map((key) => encodeURIComponent(key) + "=" + encodeURIComponent(data[key]))
+    .join("&");
+};
+
 function ContactContent({ idSuffix = "", headingId }) {
   const [formData, setFormData] = useState({
     fullName: "",
@@ -42,11 +49,23 @@ function ContactContent({ idSuffix = "", headingId }) {
       let response;
 
       if (isNetlify) {
-        // Sur Netlify : utiliser Netlify Forms
+        // Sur Netlify : utiliser Netlify Forms avec encode
         console.log("Using Netlify Forms...");
+        
+        // Convertir FormData en objet pour encoder
+        const data = {};
+        for (let [key, value] of formData.entries()) {
+          data[key] = value;
+        }
+        
+        console.log("Data to encode:", data);
+        const encodedData = encode(data);
+        console.log("Encoded data:", encodedData);
+        
         response = await fetch("/", {
           method: "POST",
-          body: formData,
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: encodedData,
         });
       } else {
         // En local : utiliser notre API Next.js
@@ -58,6 +77,7 @@ function ContactContent({ idSuffix = "", headingId }) {
       }
 
       console.log("Response status:", response.status);
+      console.log("Response headers:", [...response.headers.entries()]);
 
       if (response.ok) {
         console.log("Form submitted successfully");
@@ -71,15 +91,16 @@ function ContactContent({ idSuffix = "", headingId }) {
         });
       } else {
         let responseText = "";
-        if (response.text) {
+        try {
           responseText = await response.text();
+        } catch (e) {
+          console.error("Could not read response text:", e);
         }
-        console.error(
-          "Response not ok:",
-          response.status,
-          response.statusText,
-          responseText
-        );
+        console.error("=== FORM SUBMISSION FAILED ===");
+        console.error("Status:", response.status);
+        console.error("Status Text:", response.statusText);
+        console.error("Response Text:", responseText);
+        console.error("Response URL:", response.url);
         setSubmitStatus("error");
       }
     } catch (error) {
@@ -121,8 +142,8 @@ function ContactContent({ idSuffix = "", headingId }) {
           method="POST"
           onSubmit={handleSubmit}
           aria-label="Contact form"
-          netlify="true"
-          netlify-honeypot="bot-field"
+          data-netlify="true"
+          data-netlify-honeypot="bot-field"
         >
           <input type="hidden" name="form-name" value="contact" />
           <input type="hidden" name="bot-field" style={{ display: "none" }} />
