@@ -21,17 +21,45 @@ function ContactContent({ idSuffix = "", headingId }) {
 
     const form = e.target;
     const formData = new FormData(form);
-    
-    // Ajouter le nom du formulaire pour Netlify
-    formData.append('form-name', 'contact');
+
+    // Debug: Log form data
+    console.log('=== FORM SUBMISSION DEBUG ===');
+    console.log('Environment:', process.env.NODE_ENV);
+    console.log('Host:', window.location.host);
+    for (let [key, value] of formData.entries()) {
+      console.log(`${key}: ${value}`);
+    }
+
+    // Vérifier si on est sur Netlify ou en local
+    const isNetlify = window.location.host.includes('netlify.app') || 
+                     window.location.host.includes('netlify.com') ||
+                     window.location.host === 'hannoahmassengo.fr';
+
+    console.log('Is Netlify:', isNetlify);
 
     try {
-      const response = await fetch("/", {
-        method: "POST",
-        body: formData
-      });
+      let response;
+
+      if (isNetlify) {
+        // Sur Netlify : utiliser Netlify Forms
+        console.log('Using Netlify Forms...');
+        response = await fetch("/", {
+          method: "POST",
+          body: formData,
+        });
+      } else {
+        // En local : utiliser notre API Next.js
+        console.log('Using local API...');
+        response = await fetch('/api/contact', {
+          method: 'POST',
+          body: formData,
+        });
+      }
+
+      console.log('Response status:', response.status);
 
       if (response.ok) {
+        console.log('Form submitted successfully');
         setSubmitStatus("success");
         // Reset form
         setFormData({
@@ -41,7 +69,11 @@ function ContactContent({ idSuffix = "", headingId }) {
           message: "",
         });
       } else {
-        console.error('Response not ok:', response.status, response.statusText);
+        let responseText = '';
+        if (response.text) {
+          responseText = await response.text();
+        }
+        console.error("Response not ok:", response.status, response.statusText, responseText);
         setSubmitStatus("error");
       }
     } catch (error) {
@@ -87,7 +119,7 @@ function ContactContent({ idSuffix = "", headingId }) {
           netlify-honeypot="bot-field"
         >
           <input type="hidden" name="form-name" value="contact" />
-          <input type="hidden" name="bot-field" style={{display: 'none'}} />
+          <input type="hidden" name="bot-field" style={{ display: "none" }} />
 
           {submitStatus === "success" && (
             <div className="bg-green-600/20 border border-green-500 text-green-300 p-4 rounded mb-4">
