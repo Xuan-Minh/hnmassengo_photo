@@ -4,6 +4,8 @@ import React, { useState } from "react";
 import { AnimatePresence } from "framer-motion";
 import ShopItem from "./ShopItem";
 import ShopOverlay from "./ShopOverlay";
+import { formatPrice, debounce } from "../lib/utils";
+import { ANIMATIONS } from "../lib/constants";
 
 // Composant CartItem réutilisé de l'ancien cart
 const CartItem = ({ item }) => {
@@ -166,13 +168,10 @@ export default function Shop() {
   React.useEffect(() => {
     let updateTimeout;
 
-    const debouncedUpdate = () => {
-      clearTimeout(updateTimeout);
-      updateTimeout = setTimeout(() => {
-        console.log("Debounced update triggered");
-        updateCartFromSnipcart();
-      }, 100);
-    };
+    const debouncedUpdate = debounce(() => {
+      console.log("Debounced update triggered");
+      updateCartFromSnipcart();
+    }, ANIMATIONS.FAST);
 
     const initSnipcart = () => {
       if (window.Snipcart) {
@@ -376,7 +375,7 @@ export default function Shop() {
 
           <div className="border-t border-black/30 pt-4 flex justify-between text-lg mb-4">
             <span>total</span>
-            <span>{cartTotal.toFixed(2)}€</span>
+            <span>{formatPrice(cartTotal)}</span>
           </div>
 
           <button

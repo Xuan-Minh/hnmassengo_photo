@@ -21,6 +21,33 @@ Ce projet est un site vitrine Jamstack pour présenter les œuvres et projets ph
 - Vente de tirages
 - Expérience utilisateur soignée
 
+## Architecture du projet
+
+```
+├── app/                    # Pages et layouts (Next.js 13+ App Router)
+│   ├── api/               # Routes API
+│   ├── [locale]/          # Pages internationalisées
+│   └── layout.jsx         # Layout racine
+├── components/            # Composants React organisés par fonction
+│   ├── index.js          # Barrel exports pour imports propres
+│   ├── Blog*.jsx         # Composants blog
+│   ├── Gallery*.jsx      # Composants galerie
+│   ├── Shop*.jsx         # Composants e-commerce
+│   ├── Contact*.jsx      # Composants contact
+│   └── UI components     # Composants interface
+├── lib/                   # Bibliothèques et utilitaires
+│   ├── constants.js      # Constantes globales
+│   ├── hooks.js          # Hooks React personnalisés
+│   ├── utils.js          # Fonctions utilitaires
+│   └── sanity.client.js  # Configuration Sanity
+├── messages/             # Fichiers de traduction i18n
+├── public/               # Assets statiques
+│   ├── gallery/          # Images projets
+│   ├── home/            # Images page d'accueil
+│   └── contact.html     # Formulaire Netlify Forms
+└── src/i18n/            # Configuration internationalization
+```
+
 ---
 
 > Développé par Xuan-Minh TRAN (Dev Artist, junior)

@@ -1,30 +1,11 @@
 "use client";
 import React, { useState } from "react";
+import { GALLERY_FILTERS } from "../lib/constants";
+import { GALLERY_PROJECTS } from "../lib/data";
 
-// Exemple de données de projets
-const PROJECTS = [
-  {
-    id: 1,
-    name: "M33",
-    type: "artwork",
-    images: ["/home/home1.jpg", "/home/home2.jpg", "/home/home3.jpg"],
-    coords: "48.3705° N, 10.8978° E",
-  },
-  {
-    id: 2,
-    name: "Commission A",
-    type: "commission",
-    images: ["/home/home4.jpg", "/home/home1.jpg"],
-    coords: "47.1234° N, 11.5678° E",
-  },
-  // ...ajoute ici les autres projets avec plusieurs images
-];
-
-const FILTERS = [
-  { label: "all", value: "all" },
-  { label: "artworks", value: "artwork" },
-  { label: "commissions", value: "commission" },
-];
+// Utiliser les données centralisées
+const PROJECTS = GALLERY_PROJECTS;
+const FILTERS = GALLERY_FILTERS;
 
 import GalleryGridMore from "./GalleryGridMore";
 import ProjetCartel from "./ProjetCartel";
@@ -239,7 +220,7 @@ export default function Gallery() {
           >
             {view === "grid" ? (
               // --- MODE GRID ---
-              <div className="w-full h-full grid grid-cols-1 md:grid-cols-[minmax(160px,1fr)_repeat(4,1fr)] gap-x-2 gap-y-2 overflow-y-auto pr-2 auto-rows-min">
+              <div className="w-full h-full grid grid-cols-1 md:grid-cols-[minmax(160px,1fr)_repeat(4,1fr)] gap-x-2 gap-y-2 overflow-y pr-2 auto-rows-min">
                 {gridItems.map((item, idx) => {
                   if (idx === 0) {
                     // Case filtres + view

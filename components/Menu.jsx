@@ -1,31 +1,14 @@
 "use client";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useParams, usePathname, useRouter } from "next/navigation";
+import { MENU_ITEMS, LANGUAGES } from "../lib/constants";
 
 // Menu one-page: scroll interne vers des sections dans #scroll-root
 export default function Menu() {
-  const items = useMemo(
-    () => [
-      { id: "home", label: "About" },
-      { id: "works", label: "Works" },
-      { id: "blog", label: "Spaces" },
-      { id: "shop", label: "shop" },
-      // { id: "info", label: "info" }, // Removed info from mobile menu list as per screenshot usually, but let's keep it or remove it? Screenshot shows ABOUT, WORKS, SPACES, SHOP. No INFO.
-    ],
-    []
-  );
+  const items = useMemo(() => MENU_ITEMS.slice(0, -1), []); // Tous sauf contact pour mobile
 
-  // Items for desktop (includes info)
-  const desktopItems = useMemo(
-    () => [
-      { id: "home", label: "About" },
-      { id: "works", label: "Works" },
-      { id: "blog", label: "Spaces" },
-      { id: "shop", label: "shop" },
-      { id: "info", label: "info" },
-    ],
-    []
-  );
+  // Items for desktop (includes contact)
+  const desktopItems = useMemo(() => MENU_ITEMS, []);
 
   const [active, setActive] = useState(null);
   const [hydrated, setHydrated] = useState(false);
@@ -37,7 +20,7 @@ export default function Menu() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // Language switcher logic
-  const langs = ["fr", "en", "de"];
+  const langs = LANGUAGES;
   const params = useParams();
   const router = useRouter();
   const pathname = usePathname();

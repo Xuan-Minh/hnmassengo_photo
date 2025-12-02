@@ -5,52 +5,56 @@ import { motion, AnimatePresence } from "framer-motion";
 import BlogArchives from "./BlogArchives";
 import BlogPostItem from "./BlogPostItem";
 import BlogPostOverlay from "./BlogPostOverlay";
+import { BLOG_POSTS } from "../lib/data";
 
-// Exemple de données de posts
-const POSTS = [
-  {
-    id: 1,
-    title: "Some randoms thoughts",
-    date: "12 oct. 2025",
-    content:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur posuere tincidunt lacus sit amet porttitor. Aliquam pharetra ante vel nibh accumsan, a bibendum lorem egestas. Sed ac accumsan metus, vitae finibus urna. Phasellus vel rhoncus nisl [...]",
-    fullContent:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur posuere tincidunt lacus sit amet porttitor. Aliquam pharetra ante vel nibh accumsan, a bibendum lorem egestas. Sed ac accumsan metus, vitae finibus urna. Phasellus vel rhoncus nisl. Vestibulum congue lacinia mi volutpat bibendum. Proin vitae odio est. Vivamus tempus pretium commodo. Nulla facilisi.\n\nNam dui metus, interdum vitae lobortis vel, viverra consequat neque. Praesent sagittis aliquet posuere. Aenean suscipit, mi quis viverra pulvinar, purus nulla placerat mi, quis mollis lectus ipsum vitae velit.",
-    image: "/home/home1.jpg", // Placeholder
-    layout: "image-left",
-  },
-  {
-    id: 2,
-    title: "Some randoms thoughts",
-    date: "12 oct. 2025",
-    content:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur posuere tincidunt lacus sit amet porttitor. Aliquam pharetra ante vel nibh accumsan, a bibendum lorem egestas. Sed ac accumsan metus, vitae finibus urna. Phasellus vel rhoncus nisl [...]",
-    fullContent:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur posuere tincidunt lacus sit amet porttitor. Aliquam pharetra ante vel nibh accumsan, a bibendum lorem egestas. Sed ac accumsan metus, vitae finibus urna. Phasellus vel rhoncus nisl.",
-    image: "/home/home2.jpg", // Placeholder
-    layout: "image-right",
-  },
-  {
-    id: 3,
-    title: "Some randoms thoughts",
-    date: "12 oct. 2025",
-    content:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur posuere tincidunt lacus sit amet porttitor. Aliquam pharetra ante vel nibh accumsan, a bibendum lorem egestas. Sed ac accumsan metus, vitae finibus urna. Phasellus vel rhoncus nisl [...]",
-    fullContent:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur posuere tincidunt lacus sit amet porttitor. Aliquam pharetra ante vel nibh accumsan, a bibendum lorem egestas. Sed ac accumsan metus, vitae finibus urna. Phasellus vel rhoncus nisl.",
-    image: null,
-    layout: "text-only",
-  },
-  {
-    id: 4,
-    title: "Older post",
-    date: "10 oct. 2025",
-    content: "Lorem ipsum dolor sit amet...",
-    fullContent: "Full content of older post...",
-    image: "/home/home3.jpg",
-    layout: "image-left",
-  },
-];
+// Utiliser les données centralisées
+const POSTS =
+  BLOG_POSTS.length > 0
+    ? BLOG_POSTS
+    : [
+        {
+          id: 1,
+          title: "Some randoms thoughts",
+          date: "12 oct. 2025",
+          content:
+            "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur posuere tincidunt lacus sit amet porttitor. Aliquam pharetra ante vel nibh accumsan, a bibendum lorem egestas. Sed ac accumsan metus, vitae finibus urna. Phasellus vel rhoncus nisl [...]",
+          fullContent:
+            "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur posuere tincidunt lacus sit amet porttitor. Aliquam pharetra ante vel nibh accumsan, a bibendum lorem egestas. Sed ac accumsan metus, vitae finibus urna. Phasellus vel rhoncus nisl. Vestibulum congue lacinia mi volutpat bibendum. Proin vitae odio est. Vivamus tempus pretium commodo. Nulla facilisi.\n\nNam dui metus, interdum vitae lobortis vel, viverra consequat neque. Praesent sagittis aliquet posuere. Aenean suscipit, mi quis viverra pulvinar, purus nulla placerat mi, quis mollis lectus ipsum vitae velit.",
+          image: "/home/home1.jpg", // Placeholder
+          layout: "image-left",
+        },
+        {
+          id: 2,
+          title: "Some randoms thoughts",
+          date: "12 oct. 2025",
+          content:
+            "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur posuere tincidunt lacus sit amet porttitor. Aliquam pharetra ante vel nibh accumsan, a bibendum lorem egestas. Sed ac accumsan metus, vitae finibus urna. Phasellus vel rhoncus nisl [...]",
+          fullContent:
+            "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur posuere tincidunt lacus sit amet porttitor. Aliquam pharetra ante vel nibh accumsan, a bibendum lorem egestas. Sed ac accumsan metus, vitae finibus urna. Phasellus vel rhoncus nisl.",
+          image: "/home/home2.jpg", // Placeholder
+          layout: "image-right",
+        },
+        {
+          id: 3,
+          title: "Some randoms thoughts",
+          date: "12 oct. 2025",
+          content:
+            "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur posuere tincidunt lacus sit amet porttitor. Aliquam pharetra ante vel nibh accumsan, a bibendum lorem egestas. Sed ac accumsan metus, vitae finibus urna. Phasellus vel rhoncus nisl [...]",
+          fullContent:
+            "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur posuere tincidunt lacus sit amet porttitor. Aliquam pharetra ante vel nibh accumsan, a bibendum lorem egestas. Sed ac accumsan metus, vitae finibus urna. Phasellus vel rhoncus nisl.",
+          image: null,
+          layout: "text-only",
+        },
+        {
+          id: 4,
+          title: "Older post",
+          date: "10 oct. 2025",
+          content: "Lorem ipsum dolor sit amet...",
+          fullContent: "Full content of older post...",
+          image: "/home/home3.jpg",
+          layout: "image-left",
+        },
+      ];
 
 export default function Blog() {
   const t = useTranslations();

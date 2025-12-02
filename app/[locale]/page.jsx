@@ -1,14 +1,16 @@
 import fs from "fs";
 import path from "path";
 import { useTranslations } from "next-intl";
-import LanguageSwitcher from "../../components/LanguageSwitcher";
-import HomeImageRotation from "../../components/HomeImageRotation";
-import Gallery from "../../components/Gallery";
-import Blog from "../../components/Blog";
-import Shop from "../../components/Shop";
-import HomePresentation from "../../components/HomePresentation";
-import ContactOverlay from "../../components/ContactOverlay";
-import IntroOverlay from "../../components/IntroOverlay";
+import {
+  LanguageSwitcher,
+  HomeImageRotation,
+  Gallery,
+  Blog,
+  Shop,
+  HomePresentation,
+  ContactOverlay,
+  IntroOverlay,
+} from "../../components";
 
 export default function HomePage() {
   const t = useTranslations();
