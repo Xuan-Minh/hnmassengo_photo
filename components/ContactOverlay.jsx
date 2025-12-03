@@ -33,7 +33,10 @@ function ContactForm({ idSuffix = "", onSubmitSuccess }) {
     // Réinitialiser le formulaire après un court délai
     setTimeout(() => {
       form.reset();
-      document.body.removeChild(iframe);
+      // Vérifier que l'iframe existe toujours avant de la supprimer
+      if (iframe && iframe.parentNode === document.body) {
+        document.body.removeChild(iframe);
+      }
     }, 1000);
   };
 

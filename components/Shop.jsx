@@ -203,13 +203,17 @@ export default function Shop() {
         };
 
         events.forEach((event) => {
-          if (window.Snipcart.events) {
-            if (event === "cart.opened") {
-              window.Snipcart.events.on(event, handleCartOpened);
-            } else if (event === "cart.closed") {
-              window.Snipcart.events.on(event, handleCartClosed);
-            } else {
-              window.Snipcart.events.on(event, debouncedUpdate);
+          if (window.Snipcart && window.Snipcart.events && typeof window.Snipcart.events.on === 'function') {
+            try {
+              if (event === "cart.opened") {
+                window.Snipcart.events.on(event, handleCartOpened);
+              } else if (event === "cart.closed") {
+                window.Snipcart.events.on(event, handleCartClosed);
+              } else {
+                window.Snipcart.events.on(event, debouncedUpdate);
+              }
+            } catch (error) {
+              console.warn(`Failed to add Snipcart event listener for ${event}:`, error);
             }
           }
         });
@@ -262,13 +266,17 @@ export default function Shop() {
           clearInterval(fastPolling);
           document.removeEventListener("click", handleSnipcartClick);
           events.forEach((event) => {
-            if (window.Snipcart.events) {
-              if (event === "cart.opened") {
-                window.Snipcart.events.off(event, handleCartOpened);
-              } else if (event === "cart.closed") {
-                window.Snipcart.events.off(event, handleCartClosed);
-              } else {
-                window.Snipcart.events.off(event, debouncedUpdate);
+            if (window.Snipcart && window.Snipcart.events && typeof window.Snipcart.events.off === 'function') {
+              try {
+                if (event === "cart.opened") {
+                  window.Snipcart.events.off(event, handleCartOpened);
+                } else if (event === "cart.closed") {
+                  window.Snipcart.events.off(event, handleCartClosed);
+                } else {
+                  window.Snipcart.events.off(event, debouncedUpdate);
+                }
+              } catch (error) {
+                console.warn(`Failed to remove Snipcart event listener for ${event}:`, error);
               }
             }
           });
