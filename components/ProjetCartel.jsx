@@ -258,9 +258,6 @@ Nam dui metus, interdum vitae lobortis vel, viverra consequat neque. Praesent sa
               {paragraphs.map((p, i) => (
                 <div key={i} className="relative">
                   <TextReveal text={p} delay={0.2 + i * 0.1} />
-                  {i === paragraphs.length - 1 && (
-                    <span className="absolute -bottom-1 -right-4 w-10 h-10 border-b border-r border-blackCustom/50"></span>
-                  )}
                 </div>
               ))}
             </div>

@@ -2,9 +2,10 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { AnimatePresence, motion } from "framer-motion";
-import OverlayActionButton from "./OverlayActionButton";
+import { SITE_CONFIG } from "../lib/constants";
 
-function ContactContent({ idSuffix = "", headingId }) {
+// Composant pour le formulaire de contact réutilisable
+function ContactForm({ idSuffix = "", onSubmitSuccess }) {
   const [showSuccess, setShowSuccess] = useState(false);
   const formRef = useRef(null);
 
@@ -27,6 +28,7 @@ function ContactContent({ idSuffix = "", headingId }) {
 
     // Afficher le message de succès
     setShowSuccess(true);
+    if (onSubmitSuccess) onSubmitSuccess();
 
     // Réinitialiser le formulaire après un court délai
     setTimeout(() => {
@@ -36,162 +38,190 @@ function ContactContent({ idSuffix = "", headingId }) {
   };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14">
-      <div className="lg:col-span-7">
+    <form
+      ref={formRef}
+      className="space-y-4 md:space-y-6"
+      name="contact"
+      method="POST"
+      action="/success.html"
+      aria-label="Contact form"
+      data-netlify="true"
+      data-netlify-honeypot="bot-field"
+      onSubmit={handleSubmit}
+    >
+      <input type="hidden" name="form-name" value="contact" />
+      <input type="hidden" name="bot-field" style={{ display: "none" }} />
+
+      {showSuccess && (
+        <div className="bg-green-600/20 border border-green-500 text-green-300 p-3 md:p-4 rounded mb-4 md:mb-6">
+          <div className="flex items-center gap-3">
+            <span className="text-lg md:text-xl">✅</span>
+            <div>
+              <h3 className="font-semibold text-sm md:text-base">
+                Message envoyé avec succès !
+              </h3>
+              <p className="text-xs md:text-sm opacity-90">
+                Nous vous répondrons sous 24h à l'adresse indiquée.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div>
+        <label
+          htmlFor={`fullName${idSuffix}`}
+          className="block text-whiteCustom/90 font-playfair text-sm mb-2"
+        >
+          full name *
+        </label>
+        <input
+          id={`fullName${idSuffix}`}
+          name="fullName"
+          type="text"
+          required
+          className="w-full bg-formBG text-whiteCustom placeholder-whiteCustom/40 border border-whiteCustom/60 focus:border-whiteCustom outline-none px-3 py-2 text-sm md:text-base"
+        />
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+        <div>
+          <label
+            htmlFor={`email${idSuffix}`}
+            className="block text-whiteCustom/90 font-playfair text-sm mb-2"
+          >
+            email *
+          </label>
+          <input
+            id={`email${idSuffix}`}
+            name="email"
+            type="email"
+            required
+            className="w-full bg-formBG text-whiteCustom placeholder-whiteCustom/40 border border-whiteCustom/60 focus:border-whiteCustom outline-none px-3 py-2 text-sm md:text-base"
+          />
+        </div>
+        <div>
+          <label
+            htmlFor={`subject${idSuffix}`}
+            className="block text-whiteCustom/90 font-playfair text-sm mb-2"
+          >
+            subject *
+          </label>
+          <input
+            id={`subject${idSuffix}`}
+            name="subject"
+            type="text"
+            required
+            className="w-full bg-formBG text-whiteCustom placeholder-whiteCustom/40 border border-whiteCustom/60 focus:border-whiteCustom outline-none px-3 py-2 text-sm md:text-base"
+          />
+        </div>
+      </div>
+
+      <div>
+        <label
+          htmlFor={`message${idSuffix}`}
+          className="block text-whiteCustom/90 font-playfair text-sm mb-2"
+        >
+          message *
+        </label>
+        <textarea
+          id={`message${idSuffix}`}
+          name="message"
+          rows={5}
+          required
+          className="w-full bg-formBG text-whiteCustom placeholder-whiteCustom/40 border border-whiteCustom/60 focus:border-whiteCustom outline-none px-3 py-2 resize-y text-sm md:text-base"
+        />
+      </div>
+
+      <div>
+        <button
+          type="submit"
+          className="px-6 py-3 text-lg font-medium font-playfair text-whiteCustom/85 hover:text-whiteCustom hover:opacity-100 transition-all duration-300"
+        >
+          <span className="inline-block mr-2">→</span>
+          <span>send</span>
+        </button>
+      </div>
+    </form>
+  );
+}
+
+// Composant pour les informations de contact
+function ContactInfo() {
+  return (
+    <div className="text-whiteCustom/90 space-y-4 md:space-y-6">
+      <h3 className="font-playfair italic text-xl md:text-2xl lg:text-3xl leading-tight">
+        <a
+          href={SITE_CONFIG.instagram}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="hover:text-whiteCustom transition-colors"
+        >
+          Instagram
+        </a>
+        ,{" "}
+        <a
+          href={`mailto:${SITE_CONFIG.email}`}
+          className="hover:text-whiteCustom transition-colors"
+        >
+          Mail
+        </a>
+      </h3>
+      <p className="font-playfair text-sm md:text-[16px] leading-relaxed">
+        All images on this website are the property of {SITE_CONFIG.author} and
+        are protected by copyright. It is illegal to reproduce, distribute, or
+        publish them, in whole or in part, without first obtaining his written
+        permission.
+      </p>
+      <p className="font-playfair text-sm md:text-[16px] leading-relaxed">
+        Design & Development by {SITE_CONFIG.developer}
+      </p>
+    </div>
+  );
+}
+
+// Composant pour le contenu principal (formulaire + informations)
+function ContactContent({ idSuffix = "", headingId, variant = "default" }) {
+  const isOverlay = variant === "overlay";
+  const isPrimarySection = variant === "section";
+
+  return (
+    <div
+      className={`grid grid-cols-1 ${isOverlay ? "lg:grid-cols-1 xl:grid-cols-12 gap-6 lg:gap-8 xl:gap-14" : "lg:grid-cols-12 gap-6 md:gap-8 lg:gap-10 xl:gap-14"}`}
+    >
+      <div className={isOverlay ? "xl:col-span-7" : "lg:col-span-7"}>
         <h2
           id={headingId}
-          className="text-whiteCustom font-playfair italic text-[42px] md:text-[46px] lg:text-[48px] leading-none mb-8"
+          className="text-whiteCustom font-playfair italic text-[32px] sm:text-[36px] md:text-[42px] lg:text-[46px] xl:text-[48px] leading-none mb-6 md:mb-8"
         >
           Contact
         </h2>
-
-        {/* Formulaire caché supprimé - utilise contact.html pour la détection */}
-
-        <form
-          ref={formRef}
-          className="space-y-6"
-          name="contact"
-          method="POST"
-          action="/success.html"
-          aria-label="Contact form"
-          data-netlify="true"
-          data-netlify-honeypot="bot-field"
-          onSubmit={handleSubmit}
-        >
-          <input type="hidden" name="form-name" value="contact" />
-          <input type="hidden" name="bot-field" style={{ display: "none" }} />
-
-          {showSuccess && (
-            <div className="bg-green-600/20 border border-green-500 text-green-300 p-4 rounded mb-6">
-              <div className="flex items-center gap-3">
-                <span className="text-xl">✅</span>
-                <div>
-                  <h3 className="font-semibold">
-                    Message envoyé avec succès !
-                  </h3>
-                  <p className="text-sm opacity-90">
-                    Nous vous répondrons sous 24h à l'adresse indiquée.
-                  </p>
-                </div>
-              </div>
-            </div>
-          )}
-
-          <div>
-            <label
-              htmlFor={`fullName${idSuffix}`}
-              className="block text-whiteCustom/90 font-playfair text-sm mb-2"
-            >
-              full name *
-            </label>
-            <input
-              id={`fullName${idSuffix}`}
-              name="fullName"
-              type="text"
-              required
-              className="w-full bg-formBG text-whiteCustom placeholder-whiteCustom/40 border border-whiteCustom/60 focus:border-whiteCustom outline-none px-3 py-2"
-            />
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label
-                htmlFor={`email${idSuffix}`}
-                className="block text-whiteCustom/90 font-playfair  text-sm mb-2"
-              >
-                email *
-              </label>
-              <input
-                id={`email${idSuffix}`}
-                name="email"
-                type="email"
-                required
-                className="w-full bg-formBG text-whiteCustom placeholder-whiteCustom/40 border border-whiteCustom/60 focus:border-whiteCustom outline-none px-3 py-2"
-              />
-            </div>
-            <div>
-              <label
-                htmlFor={`subject${idSuffix}`}
-                className="block text-whiteCustom/90 font-playfair text-sm mb-2"
-              >
-                subject *
-              </label>
-              <input
-                id={`subject${idSuffix}`}
-                name="subject"
-                type="text"
-                required
-                className="w-full bg-formBG text-whiteCustom placeholder-whiteCustom/40 border border-whiteCustom/60 focus:border-whiteCustom outline-none px-3 py-2"
-              />
-            </div>
-          </div>
-
-          <div>
-            <label
-              htmlFor={`message${idSuffix}`}
-              className="block text-whiteCustom/90 font-playfair text-sm mb-2"
-            >
-              message *
-            </label>
-            <textarea
-              id={`message${idSuffix}`}
-              name="message"
-              rows={6}
-              required
-              className="w-full bg-formBG text-whiteCustom placeholder-whiteCustom/40 border border-whiteCustom/60 focus:border-whiteCustom outline-none px-3 py-2 resize-y"
-            />
-          </div>
-
-          <div>
-            <button
-              type="submit"
-              className="px-6 py-3 text-lg font-medium font-playfair text-whiteCustom/85 hover:text-whiteCustom hover:opacity-100 transition-all duration-300"
-            >
-              <span className="inline-block mr-2">→</span>
-              <span>send</span>
-            </button>
-          </div>
-        </form>
+        <ContactForm idSuffix={idSuffix} />
       </div>
 
-      <div className="lg:col-span-5 text-whiteCustom/90">
-        <h3 className="font-playfair italic text-2xl md:text-3xl leading-tight mb-6">
-          <a
-            href="https://www.instagram.com/studio42archives/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Instagram
-          </a>
-          ,<a href="mailto:contact@hannoahmassengo.fr"> Mail</a>
-        </h3>
-        <p className="font-playfair text-[16px] leading-relaxed mb-6">
-          All images on this website are the property of Han-Noah MASSENGO and
-          are protected by copyright. It is illegal to reproduce, distribute, or
-          publish them, in whole or in part, without first obtaining his written
-          permission.
-        </p>
-        <p className="font-playfair text-[16px] leading-relaxed">
-          Design & Development by Xuan-Minh TRAN
-        </p>
+      <div
+        className={`${isOverlay ? "xl:col-span-5" : "lg:col-span-5"} ${isOverlay ? "md:mt-6 xl:mt-0" : "md:mt-6 lg:mt-0"}`}
+      >
+        <ContactInfo />
       </div>
     </div>
   );
 }
 
+// Composant séparé pour le marquee
 function ContactMarquee() {
   return (
     <div className="absolute inset-x-0 bottom-0 border-t border-whiteCustom/60 overflow-hidden pointer-events-none">
       <motion.div
-        className="whitespace-nowrap text-whiteCustom/90 font-playfair text-[42px] md:text-[56px] lg:text-[64px] py-2 -tracking-normal"
+        className="whitespace-nowrap text-whiteCustom/90 font-playfair text-[28px] sm:text-[36px] md:text-[48px] lg:text-[56px] xl:text-[64px] py-2 -tracking-normal"
         animate={{ x: ["0%", "-50%"] }}
         transition={{ duration: 30, ease: "linear", repeat: Infinity }}
         style={{ willChange: "transform" }}
       >
-        <span className="inline-block">© Han-Noah MASSENGO 2025</span>
-        <span className="inline-block">© Han-Noah MASSENGO 2025</span>
-        <span className="inline-block">© Han-Noah MASSENGO 2025</span>
-        <span className="inline-block">© Han-Noah MASSENGO 2025</span>
+        <span className="inline-block">{SITE_CONFIG.copyright}</span>
+        <span className="inline-block">{SITE_CONFIG.copyright}</span>
+        <span className="inline-block">{SITE_CONFIG.copyright}</span>
+        <span className="inline-block">{SITE_CONFIG.copyright}</span>
       </motion.div>
     </div>
   );
@@ -288,6 +318,7 @@ export default function ContactOverlay() {
 
   return (
     <>
+      {/* Contact Overlay Modal */}
       <AnimatePresence>
         {open && (
           <section
@@ -309,7 +340,7 @@ export default function ContactOverlay() {
               role="dialog"
               aria-modal="true"
               aria-labelledby="contact-title-overlay"
-              className="absolute inset-x-0 bottom-0 bg-blackCustom border-t-2 border-whiteCustom"
+              className="absolute inset-x-0 bottom-0 bg-blackCustom border-t-2 border-whiteCustom max-h-[85vh] overflow-y-auto"
               initial={{ y: "100%" }}
               animate={{ y: 0 }}
               exit={{ y: "100%" }}
@@ -317,26 +348,38 @@ export default function ContactOverlay() {
               onClick={(e) => e.stopPropagation()}
               ref={panelRef}
             >
-              <div className="relative max-w-7xl mx-auto px-6 md:px-10 lg:px-12 pt-12 lg:pt-16 pb-28">
+              {/* Contenu principal avec padding adapté pour éviter le marquee */}
+              <div className="relative max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12 pt-8 md:pt-12 lg:pt-16 pb-24 sm:pb-28 md:pb-32">
                 <ContactContent
                   idSuffix="-overlay"
                   headingId="contact-title-overlay"
+                  variant="overlay"
                 />
               </div>
+
+              {/* Marquee séparé en bas */}
               <ContactMarquee />
             </motion.div>
           </section>
         )}
       </AnimatePresence>
 
+      {/* Section Contact Inline */}
       <section
         id="info"
-        className="relative snap-start bg-blackCustom border-t-2 border-whiteCustom min-h-[clamp(560px,68.8svh,820px)]"
+        className="relative snap-start bg-blackCustom border-t-2 border-whiteCustom min-h-[clamp(600px,75vh,900px)]"
         aria-label="Contact"
       >
-        <div className="relative max-w-7xl mx-auto px-6 md:px-10 lg:px-12 py-12 lg:py-16 pb-28">
-          <ContactContent idSuffix="-inline" />
+        {/* Contenu principal avec padding pour éviter le marquee */}
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12 pt-8 md:pt-12 lg:pt-16 pb-20 sm:pb-24 md:pb-32">
+          <ContactContent
+            idSuffix="-inline"
+            headingId="contact-title-inline"
+            variant="section"
+          />
         </div>
+
+        {/* Marquee séparé en bas */}
         <ContactMarquee />
       </section>
     </>
