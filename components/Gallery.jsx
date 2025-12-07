@@ -92,7 +92,7 @@ export default function Gallery() {
   // Pour la grille 5x5, la première case est réservée aux filtres/view
   const gridItems = [
     { type: "filters", uniqueKey: "filters" },
-    ...allImages.slice(0, 24), // 24 images max affichées
+    ...allImages.slice(0, 24), // 24 images max affichées (5x5 - 1 pour les filtres)
   ];
 
   // Gestion du curseur custom
@@ -215,17 +215,20 @@ export default function Gallery() {
           }`}
         >
           <div
-            style={{ width: "min(1000px, 90vw)", height: "min(1100px, 80vh)" }}
-            className="relative flex flex-col justify-center items-start mt-12"
+            style={{ width: "min(1000px, 90vw)", height: "min(1000px, 85vh)" }}
+            className="relative flex flex-col justify-center items-start"
           >
             {view === "grid" ? (
               // --- MODE GRID ---
-              <div className="w-full h-full grid grid-cols-1 md:grid-cols-[minmax(160px,1fr)_repeat(4,1fr)] gap-x-2 gap-y-2 overflow-y pr-2 auto-rows-min">
+              <div className="w-full h-full grid grid-cols-1 md:grid-cols-5 md:grid-rows-5 gap-x-2 gap-y-2 overflow-hidden">
                 {gridItems.map((item, idx) => {
                   if (idx === 0) {
                     // Case filtres + view
                     return (
-                      <div key="filters" className="">
+                      <div
+                        key="filters"
+                        className="flex items-center justify-center"
+                      >
                         <Controls />
                       </div>
                     );
@@ -237,7 +240,7 @@ export default function Gallery() {
                   return (
                     <div
                       key={imgData.uniqueKey}
-                      className="relative group cursor-pointer flex items-center justify-center w-full h-full"
+                      className="relative group cursor-pointer flex items-center justify-center w-full h-full overflow-hidden"
                       onMouseEnter={() => setHoveredId(imgData.projectId)}
                       onMouseLeave={() => setHoveredId(null)}
                       onClick={() => {

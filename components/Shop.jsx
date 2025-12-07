@@ -4,24 +4,85 @@ import React, { useState } from "react";
 import { AnimatePresence } from "framer-motion";
 import ShopItem from "./ShopItem";
 import ShopOverlay from "./ShopOverlay";
-import { formatPrice, debounce } from "../lib/utils";
+import { formatPrice } from "../lib/utils";
 import { ANIMATIONS } from "../lib/constants";
 
-// Composant CartItem réutilisé de l'ancien cart
-const CartItem = ({ item }) => {
+// Clé pour le localStorage
+const CART_STORAGE_KEY = "hnmassengo_cart";
+
+// Fonctions de gestion du panier local
+const getLocalCart = () => {
+  if (typeof window === "undefined") return [];
+  try {
+    const cart = localStorage.getItem(CART_STORAGE_KEY);
+    return cart ? JSON.parse(cart) : [];
+  } catch (error) {
+    console.error("Error reading cart from localStorage:", error);
+    return [];
+  }
+};
+
+const saveLocalCart = (items) => {
+  if (typeof window === "undefined") return;
+  try {
+    localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items));
+  } catch (error) {
+    console.error("Error saving cart to localStorage:", error);
+  }
+};
+
+const clearLocalCart = () => {
+  if (typeof window === "undefined") return;
+  try {
+    localStorage.removeItem(CART_STORAGE_KEY);
+  } catch (error) {
+    console.error("Error clearing cart from localStorage:", error);
+  }
+};
+
+// Composant CartItem avec gestion des quantités
+const CartItem = ({ item, onUpdateQuantity, onRemove }) => {
   return (
     <li className="py-2 border-b border-gray-200/20 group">
-      <div className="flex justify-between items-start">
+      <div className="flex justify-between items-start gap-3">
         <div className="flex-1">
           <h4 className="text-sm text-gray-800">{item.name}</h4>
-          <p className="text-xs text-gray-500 mt-1">
-            {item.quantity} × {item.price?.toFixed(2)}€
-          </p>
+          <div className="flex items-center gap-2 mt-1">
+            <button
+              onClick={() =>
+                onUpdateQuantity(item, Math.max(1, item.quantity - 1))
+              }
+              className="w-5 h-5 flex items-center justify-center text-xs border border-gray-400 hover:bg-gray-100 transition-colors"
+              aria-label="Diminuer la quantité"
+            >
+              −
+            </button>
+            <span className="text-xs text-gray-600 min-w-[20px] text-center">
+              {item.quantity}
+            </span>
+            <button
+              onClick={() => onUpdateQuantity(item, item.quantity + 1)}
+              className="w-5 h-5 flex items-center justify-center text-xs border border-gray-400 hover:bg-gray-100 transition-colors"
+              aria-label="Augmenter la quantité"
+            >
+              +
+            </button>
+            <span className="text-xs text-gray-500 ml-2">
+              × {item.price?.toFixed(2)}€
+            </span>
+          </div>
         </div>
-        <div className="text-right">
+        <div className="text-right flex flex-col items-end gap-1">
           <p className="text-sm font-medium">
-            {(item.totalPrice || item.price * item.quantity)?.toFixed(2)}€
+            {(item.price * item.quantity)?.toFixed(2)}€
           </p>
+          <button
+            onClick={() => onRemove(item)}
+            className="text-xs text-red-400 hover:text-red-600 transition-colors"
+            aria-label="Supprimer l'article"
+          >
+            supprimer
+          </button>
         </div>
       </div>
     </li>
@@ -33,11 +94,17 @@ export default function Shop() {
   const [products, setProducts] = useState([]);
   const [cartItems, setCartItems] = useState([]);
   const [cartTotal, setCartTotal] = useState(0);
+  const [isSnipcartOpen, setIsSnipcartOpen] = useState(false);
 
-  // Reset initial au montage du composant
+  // Charger le panier depuis localStorage au montage
   React.useEffect(() => {
-    setCartItems([]);
-    setCartTotal(0);
+    const localCart = getLocalCart();
+    setCartItems(localCart);
+    const total = localCart.reduce(
+      (sum, item) => sum + item.price * item.quantity,
+      0
+    );
+    setCartTotal(total);
   }, []);
 
   // Charger les produits depuis le JSON
@@ -59,240 +126,178 @@ export default function Shop() {
       .catch((err) => console.error("Failed to load products", err));
   }, []);
 
-  // État pour savoir si le modal Snipcart est ouvert
-  const [isModalOpen, setIsModalOpen] = React.useState(false);
+  // Fonction pour ajouter au panier local
+  const addToLocalCart = React.useCallback((product) => {
+    setCartItems((prevItems) => {
+      const existingItem = prevItems.find((item) => item.id === product.id);
+      let newItems;
 
-  // Fonction de synchronisation Snipcart (accessible globalement)
-  const updateCartFromSnipcart = React.useCallback(() => {
-    try {
-      if (window.Snipcart && window.Snipcart.store) {
-        const state = window.Snipcart.store.getState();
-
-        // Vérifier si le modal est ouvert
-        const modalOpen =
-          document.querySelector("#snipcart").style.display !== "none" ||
-          document.querySelector(".snipcart-modal") !== null;
-
-        setIsModalOpen(modalOpen);
-
-        if (state && state.cart) {
-          console.log("=== SYNC DEBUG ===");
-          console.log("Modal open:", modalOpen);
-          console.log("Cart status:", state.cart.status);
-          console.log("Raw cart items:", state.cart.items);
-
-          // Correction : accéder au bon niveau des items
-          let items = [];
-          if (state.cart.items && state.cart.items.items) {
-            items = Array.isArray(state.cart.items.items)
-              ? state.cart.items.items
-              : [];
-          } else if (Array.isArray(state.cart.items)) {
-            items = state.cart.items;
-          }
-
-          console.log("Processed items:", items);
-
-          const newTotal =
-            items.length === 0
-              ? 0
-              : state.cart.total || state.cart.subtotal || 0;
-
-          // Ne pas vider le cart si le modal est ouvert et qu'on avait des items
-          if (modalOpen && items.length === 0) {
-            console.log("Modal open but no items - keeping current cart state");
-            return; // Ne pas mettre à jour si modal ouvert et items vide
-          }
-
-          // Optimisation : Ne mettre à jour que si les données ont vraiment changé
-          setCartItems((prevItems) => {
-            if (prevItems.length !== items.length) {
-              console.log(
-                `Cart updated: ${prevItems.length} → ${items.length} items`
-              );
-              return items;
-            }
-
-            // Vérifier si le contenu a changé (IDs des items)
-            const prevIds = prevItems
-              .map((item) => `${item.id}-${item.quantity}`)
-              .sort();
-            const newIds = items
-              .map((item) => `${item.id}-${item.quantity}`)
-              .sort();
-            const hasChanged =
-              JSON.stringify(prevIds) !== JSON.stringify(newIds);
-
-            if (hasChanged) {
-              console.log("Cart content changed, updating...");
-              return items;
-            }
-
-            return prevItems; // Pas de changement, garde l'ancien state
-          });
-
-          setCartTotal((prevTotal) => {
-            if (Math.abs(prevTotal - newTotal) > 0.01) {
-              // Changement significatif
-              console.log(`Total updated: ${prevTotal} → ${newTotal}`);
-              return newTotal;
-            }
-            return prevTotal;
-          });
-        } else {
-          // Ne pas reset si le modal est ouvert
-          if (!modalOpen) {
-            setCartItems((prevItems) => {
-              if (prevItems.length > 0) {
-                console.log("Resetting cart (no cart in state, modal closed)");
-                return [];
-              }
-              return prevItems;
-            });
-
-            setCartTotal((prevTotal) => {
-              if (prevTotal !== 0) {
-                return 0;
-              }
-              return prevTotal;
-            });
-          }
-        }
+      if (existingItem) {
+        newItems = prevItems.map((item) =>
+          item.id === product.id
+            ? { ...item, quantity: item.quantity + 1 }
+            : item
+        );
+      } else {
+        newItems = [
+          ...prevItems,
+          {
+            id: product.id,
+            name: product.title,
+            price: product.price,
+            quantity: 1,
+            url: product.url || window.location.href,
+          },
+        ];
       }
-    } catch (error) {
-      console.error("Error updating cart:", error);
-    }
+
+      saveLocalCart(newItems);
+      const total = newItems.reduce(
+        (sum, item) => sum + item.price * item.quantity,
+        0
+      );
+      setCartTotal(total);
+
+      return newItems;
+    });
   }, []);
 
-  // Synchronisation Snipcart améliorée
-  React.useEffect(() => {
-    let updateTimeout;
+  // Fonction pour mettre à jour la quantité
+  const handleUpdateQuantity = React.useCallback((item, newQuantity) => {
+    setCartItems((prevItems) => {
+      const newItems = prevItems.map((cartItem) =>
+        cartItem.id === item.id
+          ? { ...cartItem, quantity: newQuantity }
+          : cartItem
+      );
 
-    const debouncedUpdate = debounce(() => {
-      console.log("Debounced update triggered");
-      updateCartFromSnipcart();
-    }, ANIMATIONS.FAST);
+      saveLocalCart(newItems);
+      const total = newItems.reduce(
+        (sum, item) => sum + item.price * item.quantity,
+        0
+      );
+      setCartTotal(total);
 
-    const initSnipcart = () => {
-      if (window.Snipcart) {
-        console.log("Snipcart loaded, setting up events");
+      return newItems;
+    });
+  }, []);
 
-        // Événements Snipcart - plus complets
-        const events = [
-          "snipcart.ready",
-          "cart.ready",
-          "item.added",
-          "item.removed",
-          "item.updated",
-          "cart.opened",
-          "cart.closed",
-          "cart.confirmed",
-        ];
+  // Fonction pour supprimer un article
+  const handleRemoveItem = React.useCallback((item) => {
+    setCartItems((prevItems) => {
+      const newItems = prevItems.filter((cartItem) => cartItem.id !== item.id);
 
-        // Écouteurs spéciaux pour les événements de modal
-        const handleCartOpened = () => {
-          console.log("Cart modal opened");
-          setIsModalOpen(true);
-        };
+      saveLocalCart(newItems);
+      const total = newItems.reduce(
+        (sum, item) => sum + item.price * item.quantity,
+        0
+      );
+      setCartTotal(total);
 
-        const handleCartClosed = () => {
-          console.log("Cart modal closed");
-          setIsModalOpen(false);
-          // Forcer une mise à jour après fermeture
-          setTimeout(() => updateCartFromSnipcart(), 100);
-        };
+      return newItems;
+    });
+  }, []);
 
-        events.forEach((event) => {
-          if (window.Snipcart && window.Snipcart.events && typeof window.Snipcart.events.on === 'function') {
-            try {
-              if (event === "cart.opened") {
-                window.Snipcart.events.on(event, handleCartOpened);
-              } else if (event === "cart.closed") {
-                window.Snipcart.events.on(event, handleCartClosed);
-              } else {
-                window.Snipcart.events.on(event, debouncedUpdate);
-              }
-            } catch (error) {
-              console.warn(`Failed to add Snipcart event listener for ${event}:`, error);
-            }
-          }
-        });
+  // Fonction pour transférer le panier local vers Snipcart et ouvrir le checkout
+  const handleCheckout = React.useCallback(() => {
+    if (!cartItems || cartItems.length === 0) {
+      console.log("Cart is empty, cannot checkout");
+      return;
+    }
 
-        // Mise à jour initiale
-        updateCartFromSnipcart();
+    console.log("=== TRANSFERRING CART TO SNIPCART ===");
+    console.log("Local cart items:", cartItems);
 
-        // Polling modéré pour éviter le blinking
-        const pollingInterval = setInterval(() => {
-          updateCartFromSnipcart();
-        }, 1500); // Vérifie toutes les 1.5s
-
-        // Détection globale des clics sur boutons Snipcart
-        const handleSnipcartClick = (e) => {
-          if (e.target.classList.contains("snipcart-add-item")) {
-            console.log("Snipcart add-item button clicked!");
-            // Mise à jour immédiate puis après délais courts
-            setTimeout(() => updateCartFromSnipcart(), 100);
-            setTimeout(() => updateCartFromSnipcart(), 500);
-            setTimeout(() => updateCartFromSnipcart(), 1000);
-            setTimeout(() => updateCartFromSnipcart(), 2000);
-          }
-        };
-
-        document.addEventListener("click", handleSnipcartClick);
-
-        // Détection de changements sur window.Snipcart
-        const watchSnipcart = () => {
-          if (window.Snipcart && window.Snipcart.store) {
-            try {
-              const currentState = window.Snipcart.store.getState();
-              if (
-                currentState &&
-                currentState.cart &&
-                currentState.cart.items
-              ) {
-                updateCartFromSnipcart();
-              }
-            } catch (e) {
-              // Ignorer les erreurs de lecture
-            }
-          }
-        };
-
-        // Observer les changements moins fréquemment pour éviter le blinking
-        const fastPolling = setInterval(watchSnipcart, 800);
-
-        return () => {
-          clearInterval(pollingInterval);
-          clearInterval(fastPolling);
-          document.removeEventListener("click", handleSnipcartClick);
-          events.forEach((event) => {
-            if (window.Snipcart && window.Snipcart.events && typeof window.Snipcart.events.off === 'function') {
-              try {
-                if (event === "cart.opened") {
-                  window.Snipcart.events.off(event, handleCartOpened);
-                } else if (event === "cart.closed") {
-                  window.Snipcart.events.off(event, handleCartClosed);
-                } else {
-                  window.Snipcart.events.off(event, debouncedUpdate);
-                }
-              } catch (error) {
-                console.warn(`Failed to remove Snipcart event listener for ${event}:`, error);
-              }
-            }
+    // Vider le panier Snipcart d'abord (si nécessaire)
+    if (window.Snipcart) {
+      try {
+        // Attendre que Snipcart soit prêt
+        if (!window.Snipcart.ready) {
+          document.addEventListener("snipcart.ready", () => {
+            transferToSnipcart();
           });
-        };
-      } else {
-        // Réessayer jusqu'à ce que Snipcart soit chargé
-        setTimeout(initSnipcart, 200);
+        } else {
+          transferToSnipcart();
+        }
+      } catch (error) {
+        console.error("Error during checkout:", error);
       }
+    }
+
+    function transferToSnipcart() {
+      // Créer des boutons temporaires pour chaque article
+      cartItems.forEach((item, index) => {
+        setTimeout(() => {
+          const tempBtn = document.createElement("button");
+          tempBtn.className = "snipcart-add-item";
+          tempBtn.setAttribute("data-item-id", item.id);
+          tempBtn.setAttribute("data-item-name", item.name);
+          tempBtn.setAttribute("data-item-price", item.price.toString());
+          tempBtn.setAttribute(
+            "data-item-url",
+            item.url || window.location.href
+          );
+          tempBtn.setAttribute("data-item-quantity", item.quantity.toString());
+          tempBtn.style.display = "none";
+
+          document.body.appendChild(tempBtn);
+          tempBtn.click();
+
+          setTimeout(() => {
+            document.body.removeChild(tempBtn);
+
+            // Ouvrir le checkout après avoir ajouté le dernier article
+            if (index === cartItems.length - 1) {
+              setTimeout(() => {
+                const checkoutBtn =
+                  document.querySelector(".snipcart-checkout");
+                if (checkoutBtn) {
+                  checkoutBtn.click();
+                  console.log("Snipcart checkout opened");
+                }
+              }, 300);
+            }
+          }, 100);
+        }, index * 150); // Décalage pour chaque article
+      });
+    }
+  }, [cartItems]);
+
+  // Écouter la fermeture du panier Snipcart pour vider le panier local
+  React.useEffect(() => {
+    const handleOrderCompleted = () => {
+      console.log("Order completed, clearing local cart");
+      clearLocalCart();
+      setCartItems([]);
+      setCartTotal(0);
     };
 
-    const cleanup = initSnipcart();
-
-    return () => {
-      clearTimeout(updateTimeout);
-      if (cleanup) cleanup();
+    const handleCartOpened = () => {
+      console.log("Snipcart cart opened");
+      setIsSnipcartOpen(true);
     };
+
+    const handleCartClosed = () => {
+      console.log("Snipcart cart closed");
+      setIsSnipcartOpen(false);
+    };
+
+    if (window.Snipcart && window.Snipcart.events) {
+      // Écouter les événements Snipcart
+      if (typeof window.Snipcart.events.on === "function") {
+        window.Snipcart.events.on("order.completed", handleOrderCompleted);
+        window.Snipcart.events.on("cart.opened", handleCartOpened);
+        window.Snipcart.events.on("cart.closed", handleCartClosed);
+      }
+
+      return () => {
+        if (typeof window.Snipcart.events.off === "function") {
+          window.Snipcart.events.off("order.completed", handleOrderCompleted);
+          window.Snipcart.events.off("cart.opened", handleCartOpened);
+          window.Snipcart.events.off("cart.closed", handleCartClosed);
+        }
+      };
+    }
   }, []);
 
   return (
@@ -300,24 +305,21 @@ export default function Shop() {
       id="shop"
       className="flex h-screen bg-whiteCustom font-playfair snap-start relative"
     >
-      {/* Résumé Panier Permanent */}
-      <aside className="w-[320px] border-r border-black/30 p-10 flex flex-col z-10 bg-whiteCustom">
+      {/* Résumé Panier Permanent - masqué quand Snipcart est ouvert */}
+      <aside
+        className={`w-[320px] border-r border-black/30 p-10 flex flex-col z-10 bg-whiteCustom transition-opacity duration-300 ${
+          isSnipcartOpen ? "opacity-0 pointer-events-none" : "opacity-100"
+        }`}
+      >
         <div className="flex justify-between items-center mb-8">
           <h2 className="text-3xl">cart</h2>
-          {/* Bouton debug pour vider le cache */}
+          {/* Bouton pour vider le panier local */}
           <button
             onClick={() => {
-              console.log("Forcing cart reset...");
+              console.log("Clearing local cart...");
+              clearLocalCart();
               setCartItems([]);
               setCartTotal(0);
-              if (window.Snipcart && window.Snipcart.store) {
-                // Essayer de vider le panier Snipcart aussi
-                try {
-                  window.Snipcart.api.theme.cart.clear();
-                } catch (e) {
-                  console.log("Could not clear Snipcart cart:", e);
-                }
-              }
             }}
             className="text-xs text-black/20 hover:text-black/40 transition-colors"
           >
@@ -327,40 +329,6 @@ export default function Shop() {
 
         {/* Contenu du panier Snipcart intégré */}
         <div className="snipcart-summary flex-1 flex flex-col">
-          {Array.isArray(cartItems) && cartItems.length > 0 && (
-            <div className="flex justify-end mb-4">
-              <button
-                onClick={() => {
-                  console.log("Modifier button clicked");
-                  if (window.Snipcart && window.Snipcart.api) {
-                    // Ouvrir le panier Snipcart complet pour permettre l'édition
-                    window.Snipcart.api.theme.cart.open();
-
-                    // Debug : lister tous les boutons disponibles après ouverture
-                    setTimeout(() => {
-                      console.log("=== SNIPCART CART OPENED FOR EDITING ===");
-                      const cartButtons = document.querySelectorAll(
-                        "#snipcart button, .snipcart button"
-                      );
-                      cartButtons.forEach((btn, i) => {
-                        console.log(
-                          `Cart button ${i}:`,
-                          btn.className,
-                          btn.textContent?.trim()
-                        );
-                      });
-                    }, 500);
-                  } else {
-                    console.log("Snipcart not available for editing");
-                  }
-                }}
-                className="text-xs text-black/40 hover:text-black transition-colors"
-              >
-                modifier
-              </button>
-            </div>
-          )}
-
           <div className="flex-1 mb-8">
             {!Array.isArray(cartItems) || cartItems.length === 0 ? (
               <div className="text-black/40 italic">empty</div>
@@ -368,13 +336,16 @@ export default function Shop() {
               <ul className="space-y-2 overflow-y-auto max-h-[60vh]">
                 {cartItems.map((item, index) => (
                   <CartItem
-                    key={index}
+                    key={item.uniqueId || index}
                     item={{
+                      ...item,
                       name: item.name,
                       quantity: item.quantity,
                       price: item.price,
                       totalPrice: item.totalPrice || item.price * item.quantity,
                     }}
+                    onUpdateQuantity={handleUpdateQuantity}
+                    onRemove={handleRemoveItem}
                   />
                 ))}
               </ul>
@@ -386,86 +357,19 @@ export default function Shop() {
             <span>{formatPrice(cartTotal)}</span>
           </div>
 
+          {/* Bouton checkout caché pour Snipcart */}
+          <button className="snipcart-checkout hidden" id="hidden-checkout-btn">
+            Hidden Checkout
+          </button>
+
           <button
-            onClick={() => {
-              console.log("=== CHECKOUT BUTTON CLICKED ===");
-              console.log("Current cart items:", cartItems?.length);
-              console.log("Current total:", cartTotal);
-
-              // Debug : voir l'état Snipcart au moment du clic
-              if (window.Snipcart && window.Snipcart.store) {
-                const state = window.Snipcart.store.getState();
-                console.log("Snipcart state at checkout:", state.cart);
-                if (state.cart && state.cart.items) {
-                  console.log("Items in Snipcart:", state.cart.items);
-                }
-              }
-
-              // Forcer une mise à jour avant de procéder
-              updateCartFromSnipcart();
-
-              if (window.Snipcart && window.Snipcart.api) {
-                // Toujours ouvrir le panier Snipcart
-                window.Snipcart.api.theme.cart.open();
-
-                // Arrêter temporairement le polling pendant que le modal est ouvert
-                const stopPolling = () => {
-                  console.log("Stopping polling while modal is open...");
-                };
-
-                // Si il y a des articles, essayer d'aller au checkout
-                if (Array.isArray(cartItems) && cartItems.length > 0) {
-                  setTimeout(() => {
-                    // Essayer plusieurs sélecteurs possibles pour le bouton checkout
-                    const checkoutSelectors = [
-                      ".snipcart__button--primary",
-                      ".snipcart-button--primary",
-                      "[data-item-checkout]",
-                      'button[type="submit"]',
-                      ".snipcart-cart-button",
-                      ".snipcart__cart__checkout-button",
-                    ];
-
-                    let checkoutBtn = null;
-                    for (const selector of checkoutSelectors) {
-                      checkoutBtn = document.querySelector(selector);
-                      if (checkoutBtn) {
-                        console.log(
-                          `Found checkout button with selector: ${selector}`
-                        );
-                        break;
-                      }
-                    }
-
-                    if (checkoutBtn) {
-                      console.log("Clicking checkout button");
-                      checkoutBtn.click();
-                    } else {
-                      console.log(
-                        "Checkout button not found, available buttons:"
-                      );
-                      const allButtons = document.querySelectorAll(
-                        "#snipcart button, .snipcart button"
-                      );
-                      allButtons.forEach((btn, i) => {
-                        console.log(
-                          `Button ${i}:`,
-                          btn.className,
-                          btn.textContent?.trim()
-                        );
-                      });
-                    }
-                  }, 1000); // Augmenter le délai pour laisser le temps au DOM de se construire
-                }
-              } else {
-                console.log("Snipcart not available");
-              }
-            }}
+            onClick={handleCheckout}
             className={`text-right transition-colors ${
               Array.isArray(cartItems) && cartItems.length > 0
                 ? "text-gray-300 hover:text-black"
                 : "text-black/20"
             } cursor-pointer`}
+            disabled={!cartItems || cartItems.length === 0}
           >
             → checkout
           </button>
@@ -501,6 +405,7 @@ export default function Shop() {
             isOpen={!!selectedProduct}
             product={selectedProduct}
             onClose={() => setSelectedProduct(null)}
+            onAddToCart={addToLocalCart}
           />
         )}
       </AnimatePresence>

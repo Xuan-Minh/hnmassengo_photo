@@ -47,32 +47,21 @@ export default function ShopOverlay({ product, onClose, onAddToCart }) {
           <div className="mt-auto">
             <div className="text-3xl font-bold mb-2">{product.price}€</div>
             <button
-              className="snipcart-add-item text-xl italic text-whiteCustom/60 hover:text-whiteCustom transition-colors"
-              data-item-id={product.id}
-              data-item-name={product.title}
-              data-item-price={product.price}
-              data-item-url="/products.json"
-              data-item-description={
-                product.description || "Produit disponible"
-              }
-              data-item-image={product.imgDefault}
-              onClick={(e) => {
+              className="text-xl italic text-whiteCustom/60 hover:text-whiteCustom transition-colors"
+              onClick={() => {
                 console.log("=== ADD TO CART CLICKED ===");
                 console.log("Product:", product);
-                console.log("Button attributes:");
-                console.log("- ID:", product.id);
-                console.log("- Name:", product.title);
-                console.log("- Price:", product.price);
 
-                // Laisser Snipcart gérer l'ajout naturellement
-                // Ne pas appeler onAddToCart car ça peut interférer
-                console.log("Letting Snipcart handle the add to cart...");
+                // Ajouter au panier local via la fonction passée en props
+                if (onAddToCart) {
+                  onAddToCart(product);
+                  console.log("Added to local cart");
+                }
 
-                // Fermer après un délai plus long
+                // Fermer l'overlay
                 setTimeout(() => {
-                  console.log("Closing overlay...");
                   onClose();
-                }, 500);
+                }, 200);
               }}
             >
               add to cart
