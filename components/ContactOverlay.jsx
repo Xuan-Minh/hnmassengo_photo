@@ -263,7 +263,14 @@ export default function ContactOverlay() {
 
     const root = document.getElementById("scroll-root");
     const prevOverflow = root ? root.style.overflow : undefined;
-    if (root) root.style.overflow = "hidden";
+    const prevPaddingRight = root ? root.style.paddingRight : undefined;
+    
+    // Calculate scrollbar width to prevent layout shift
+    if (root) {
+      const scrollbarWidth = root.offsetWidth - root.clientWidth;
+      root.style.overflow = "hidden";
+      root.style.paddingRight = `${scrollbarWidth}px`;
+    }
 
     const focusSelectors = [
       "a[href]",
@@ -315,7 +322,10 @@ export default function ContactOverlay() {
     return () => {
       cancelAnimationFrame(raf);
       window.removeEventListener("keydown", onKeyDown);
-      if (root) root.style.overflow = prevOverflow || "";
+      if (root) {
+        root.style.overflow = prevOverflow || "";
+        root.style.paddingRight = prevPaddingRight || "";
+      }
     };
   }, [open]);
 
