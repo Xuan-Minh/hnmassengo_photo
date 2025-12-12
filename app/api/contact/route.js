@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { logger } from "../../../lib/logger";
 
 export async function POST(request) {
   try {
@@ -24,7 +25,7 @@ export async function POST(request) {
       { status: 200 }
     );
   } catch (error) {
-    console.error("API Contact Error:", error);
+    logger.error("API Contact Error:", error);
     return NextResponse.json(
       { success: false, message: "Erreur lors de l'envoi du message" },
       { status: 500 }

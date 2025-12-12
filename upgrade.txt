@@ -1,0 +1,2 @@
+Etat actuel :
+- Loading screen : Responsive (OK) / Animation (OK) / 

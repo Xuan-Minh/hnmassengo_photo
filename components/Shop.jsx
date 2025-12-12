@@ -6,6 +6,7 @@ import ShopItem from "./ShopItem";
 import ShopOverlay from "./ShopOverlay";
 import { formatPrice } from "../lib/utils";
 import { ANIMATIONS } from "../lib/constants";
+import { logger } from "../lib/logger";
 
 // Clé pour le localStorage
 const CART_STORAGE_KEY = "hnmassengo_cart";
@@ -17,7 +18,7 @@ const getLocalCart = () => {
     const cart = localStorage.getItem(CART_STORAGE_KEY);
     return cart ? JSON.parse(cart) : [];
   } catch (error) {
-    console.error("Error reading cart from localStorage:", error);
+    logger.error("Error reading cart from localStorage:", error);
     return [];
   }
 };
@@ -27,7 +28,7 @@ const saveLocalCart = (items) => {
   try {
     localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items));
   } catch (error) {
-    console.error("Error saving cart to localStorage:", error);
+    logger.error("Error saving cart to localStorage:", error);
   }
 };
 
@@ -36,7 +37,7 @@ const clearLocalCart = () => {
   try {
     localStorage.removeItem(CART_STORAGE_KEY);
   } catch (error) {
-    console.error("Error clearing cart from localStorage:", error);
+    logger.error("Error clearing cart from localStorage:", error);
   }
 };
 
@@ -123,7 +124,7 @@ export default function Shop() {
         }));
         setProducts(formatted);
       })
-      .catch((err) => console.error("Failed to load products", err));
+      .catch((err) => logger.error("Failed to load products", err));
   }, []);
 
   // Fonction pour ajouter au panier local
@@ -201,12 +202,12 @@ export default function Shop() {
   // Fonction pour transférer le panier local vers Snipcart et ouvrir le checkout
   const handleCheckout = React.useCallback(() => {
     if (!cartItems || cartItems.length === 0) {
-      console.log("Cart is empty, cannot checkout");
+      logger.debug("Cart is empty, cannot checkout");
       return;
     }
 
-    console.log("=== TRANSFERRING CART TO SNIPCART ===");
-    console.log("Local cart items:", cartItems);
+    logger.debug("=== TRANSFERRING CART TO SNIPCART ===");
+    logger.debug("Local cart items:", cartItems);
 
     // Vider le panier Snipcart d'abord (si nécessaire)
     if (window.Snipcart) {
@@ -220,7 +221,7 @@ export default function Shop() {
           transferToSnipcart();
         }
       } catch (error) {
-        console.error("Error during checkout:", error);
+        logger.error("Error during checkout:", error);
       }
     }
 
@@ -253,7 +254,7 @@ export default function Shop() {
                   document.querySelector(".snipcart-checkout");
                 if (checkoutBtn) {
                   checkoutBtn.click();
-                  console.log("Snipcart checkout opened");
+                  logger.debug("Snipcart checkout opened");
                 }
               }, 300);
             }
@@ -266,19 +267,19 @@ export default function Shop() {
   // Écouter la fermeture du panier Snipcart pour vider le panier local
   React.useEffect(() => {
     const handleOrderCompleted = () => {
-      console.log("Order completed, clearing local cart");
+      logger.debug("Order completed, clearing local cart");
       clearLocalCart();
       setCartItems([]);
       setCartTotal(0);
     };
 
     const handleCartOpened = () => {
-      console.log("Snipcart cart opened");
+      logger.debug("Snipcart cart opened");
       setIsSnipcartOpen(true);
     };
 
     const handleCartClosed = () => {
-      console.log("Snipcart cart closed");
+      logger.debug("Snipcart cart closed");
       setIsSnipcartOpen(false);
     };
 
@@ -316,7 +317,7 @@ export default function Shop() {
           {/* Bouton pour vider le panier local */}
           <button
             onClick={() => {
-              console.log("Clearing local cart...");
+              logger.debug("Clearing local cart...");
               clearLocalCart();
               setCartItems([]);
               setCartTotal(0);
