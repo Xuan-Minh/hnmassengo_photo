@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { AnimatePresence } from "framer-motion";
 import ShopItem from "./ShopItem";
 import ShopOverlay from "./ShopOverlay";
@@ -93,23 +93,16 @@ const CartItem = ({ item, onUpdateQuantity, onRemove }) => {
 export default function Shop() {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [products, setProducts] = useState([]);
-  const [cartItems, setCartItems] = useState([]);
-  const [cartTotal, setCartTotal] = useState(0);
+  // Lazy initialization pour éviter de lire localStorage à chaque render
+  const [cartItems, setCartItems] = useState(() => getLocalCart());
+  const [cartTotal, setCartTotal] = useState(() => {
+    const localCart = getLocalCart();
+    return localCart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  });
   const [isSnipcartOpen, setIsSnipcartOpen] = useState(false);
 
-  // Charger le panier depuis localStorage au montage
-  React.useEffect(() => {
-    const localCart = getLocalCart();
-    setCartItems(localCart);
-    const total = localCart.reduce(
-      (sum, item) => sum + item.price * item.quantity,
-      0
-    );
-    setCartTotal(total);
-  }, []);
-
   // Charger les produits depuis le JSON
-  React.useEffect(() => {
+  useEffect(() => {
     fetch("/products.json")
       .then((res) => res.json())
       .then((data) => {
@@ -128,7 +121,7 @@ export default function Shop() {
   }, []);
 
   // Fonction pour ajouter au panier local
-  const addToLocalCart = React.useCallback((product) => {
+  const addToLocalCart = useCallback((product) => {
     setCartItems((prevItems) => {
       const existingItem = prevItems.find((item) => item.id === product.id);
       let newItems;
@@ -164,7 +157,7 @@ export default function Shop() {
   }, []);
 
   // Fonction pour mettre à jour la quantité
-  const handleUpdateQuantity = React.useCallback((item, newQuantity) => {
+  const handleUpdateQuantity = useCallback((item, newQuantity) => {
     setCartItems((prevItems) => {
       const newItems = prevItems.map((cartItem) =>
         cartItem.id === item.id
@@ -184,7 +177,7 @@ export default function Shop() {
   }, []);
 
   // Fonction pour supprimer un article
-  const handleRemoveItem = React.useCallback((item) => {
+  const handleRemoveItem = useCallback((item) => {
     setCartItems((prevItems) => {
       const newItems = prevItems.filter((cartItem) => cartItem.id !== item.id);
 
@@ -200,7 +193,7 @@ export default function Shop() {
   }, []);
 
   // Fonction pour transférer le panier local vers Snipcart et ouvrir le checkout
-  const handleCheckout = React.useCallback(() => {
+  const handleCheckout = useCallback(() => {
     if (!cartItems || cartItems.length === 0) {
       logger.debug("Cart is empty, cannot checkout");
       return;
@@ -265,7 +258,7 @@ export default function Shop() {
   }, [cartItems]);
 
   // Écouter la fermeture du panier Snipcart pour vider le panier local
-  React.useEffect(() => {
+  useEffect(() => {
     const handleOrderCompleted = () => {
       logger.debug("Order completed, clearing local cart");
       clearLocalCart();

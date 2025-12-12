@@ -1,2 +1,7 @@
 Etat actuel :
-- Loading screen : Responsive (OK) / Animation (OK) / 
+- Loading screen : Responsive (OK) / Animation (OK) 
+- HomePage
+- Menu
+- Gallery 
+- Blog
+- 

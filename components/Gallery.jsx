@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
 import { GALLERY_FILTERS } from "../lib/constants";
 import { GALLERY_PROJECTS } from "../lib/data";
 
@@ -39,13 +39,13 @@ export default function Gallery() {
   );
 
   // Reset index si on change de filtre
-  React.useEffect(() => {
+  useEffect(() => {
     setCurrentProjectIndex(0);
     setCurrentImageIndex(0);
   }, [filter]);
 
   // Timer pour le slideshow en mode LIST
-  React.useEffect(() => {
+  useEffect(() => {
     if (view !== "list") return;
     if (filteredProjects.length === 0) return;
 
@@ -96,7 +96,7 @@ export default function Gallery() {
   ];
 
   // Gestion du curseur custom
-  React.useEffect(() => {
+  useEffect(() => {
     if (!hoveredId && view === "grid") {
       document.body.style.cursor = "default";
       return;
@@ -117,7 +117,7 @@ export default function Gallery() {
   }, [hoveredId, view]);
 
   // Auto-switch to list view on mobile
-  React.useEffect(() => {
+  useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth < 768) {
         if (view !== "list") setView("list");
@@ -208,7 +208,10 @@ export default function Gallery() {
 
   return (
     <>
-      <section id="works" className="relative w-full h-screen overflow-hidden pt-10">
+      <section
+        id="works"
+        className="relative w-full h-screen overflow-hidden pt-10"
+      >
         <div
           className={`w-full h-full flex flex-col justify-center items-center transition-opacity duration-300 ${
             isAnimating ? "opacity-0" : "opacity-100"

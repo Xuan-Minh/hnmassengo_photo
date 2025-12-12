@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import TextReveal from "./TextReveal";
@@ -7,7 +7,7 @@ import { EVENTS, emitEvent } from "../lib/events";
 
 // Composant CustomLightbox
 function CustomLightbox({ open, onClose, images, project }) {
-  const [currentIndex, setCurrentIndex] = React.useState(0);
+  const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
     if (open) setCurrentIndex(0);
@@ -169,7 +169,7 @@ function ImageMarquee({ images, onClick }) {
 
 export default function ProjetCartel({ project, onClose }) {
   const router = useRouter();
-  const [lightboxOpen, setLightboxOpen] = React.useState(false);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
 
   // Fermeture avec la touche Echap
   useEffect(() => {
