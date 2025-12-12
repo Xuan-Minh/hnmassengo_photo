@@ -13,12 +13,16 @@ export default function ShopOverlay({ product, onClose, onAddToCart }) {
       animate={{ x: 0 }}
       exit={{ x: "100%" }}
       transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="shop-product-title"
     >
       {/* Header / Back Button */}
       <div className="absolute top-8 left-8 md:left-16 z-50">
         <button
           onClick={onClose}
           className="text-lg text-whiteCustom/60 hover:text-whiteCustom transition-colors"
+          aria-label="Close product overlay"
         >
           back
         </button>

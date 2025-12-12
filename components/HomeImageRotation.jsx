@@ -3,12 +3,13 @@
 import { useState, useEffect, useRef } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
+import { TIMING } from "../lib/constants";
 
 // Simple rotating image component. Pass an array of filenames relative to /public/home.
 // position: "center" | "left" | "right"
 export default function HomeImageRotation({
   images = [],
-  interval = 4000,
+  interval = TIMING.IMAGE_ROTATION_INTERVAL,
   position = "left",
 }) {
   const [index, setIndex] = useState(0);

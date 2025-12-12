@@ -4,11 +4,59 @@ import Logo from "../components/Logo";
 import { Lexend, Playfair_Display } from "next/font/google";
 import IntroOverlay from "../components/IntroOverlay";
 import RevealRoot from "../components/RevealRoot";
+import ErrorBoundary from "../components/ErrorBoundary";
 import Script from "next/script";
 
 export const metadata = {
-  title: "Han-Noah MASSENGO",
-  description: "Portfolio Han-Noah Massengo",
+  metadataBase: new URL("https://hannoahmassengo.fr"),
+  title: "Han-Noah MASSENGO | Photographer & Visual Artist",
+  description:
+    "Explore the artistic portfolio of Han-Noah MASSENGO, a photographer capturing moments through light, shadow, and emotion. Discover commissioned works, fine art prints, and visual stories.",
+  keywords: [
+    "photography",
+    "visual art",
+    "Han-Noah MASSENGO",
+    "fine art",
+    "portrait",
+    "commissioned work",
+    "art prints",
+  ],
+  authors: [{ name: "Han-Noah MASSENGO" }],
+  creator: "Han-Noah MASSENGO",
+  openGraph: {
+    title: "Han-Noah MASSENGO | Photographer & Visual Artist",
+    description:
+      "Explore the artistic portfolio of Han-Noah MASSENGO, a photographer capturing moments through light, shadow, and emotion.",
+    url: "https://hannoahmassengo.fr",
+    siteName: "Han-Noah MASSENGO Portfolio",
+    locale: "fr_FR",
+    type: "website",
+    images: [
+      {
+        url: "/home/home1.jpg", // Update with actual OG image
+        width: 1200,
+        height: 630,
+        alt: "Han-Noah MASSENGO Photography Portfolio",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Han-Noah MASSENGO | Photographer & Visual Artist",
+    description: "Explore the artistic portfolio of Han-Noah MASSENGO.",
+    images: ["/home/home1.jpg"], // Update with actual OG image
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
 };
 
 const lexend = Lexend({
@@ -40,9 +88,11 @@ export default function RootLayout({ children }) {
           " "
         )}
       >
-        <Logo />
-        <IntroOverlay />
-        <RevealRoot>{children}</RevealRoot>
+        <ErrorBoundary>
+          <Logo />
+          <IntroOverlay />
+          <RevealRoot>{children}</RevealRoot>
+        </ErrorBoundary>
 
         <div
           id="snipcart"

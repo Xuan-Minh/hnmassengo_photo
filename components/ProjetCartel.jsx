@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import PropTypes from "prop-types";
 import { motion, AnimatePresence } from "framer-motion";
 import TextReveal from "./TextReveal";
 import { EVENTS, emitEvent } from "../lib/events";
@@ -63,7 +64,7 @@ function CustomLightbox({ open, onClose, images, project }) {
           <img
             src={images[prevIndex]}
             className="w-full h-full object-contain"
-            alt="previous"
+            alt={`${project.name} - Previous image`}
           />
         </div>
 
@@ -73,7 +74,7 @@ function CustomLightbox({ open, onClose, images, project }) {
             key={currentIndex}
             src={images[currentIndex]}
             className="max-h-full max-w-full object-contain shadow-2xl"
-            alt="current"
+            alt={`${project.name} - Image ${currentIndex + 1} of ${images.length}`}
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.3 }}
@@ -241,6 +242,7 @@ Nam dui metus, interdum vitae lobortis vel, viverra consequat neque. Praesent sa
             <button
               onClick={onClose}
               className="font-playfair text-lg text-blackCustom/60 hover:text-blackCustom transition-colors"
+              aria-label="Close project overlay"
             >
               back
             </button>
@@ -288,3 +290,15 @@ Nam dui metus, interdum vitae lobortis vel, viverra consequat neque. Praesent sa
     </>
   );
 }
+
+ProjetCartel.propTypes = {
+  project: PropTypes.shape({
+    id: PropTypes.number.isRequired,
+    name: PropTypes.string.isRequired,
+    type: PropTypes.string.isRequired,
+    images: PropTypes.arrayOf(PropTypes.string).isRequired,
+    coords: PropTypes.string.isRequired,
+    description: PropTypes.string.isRequired,
+  }).isRequired,
+  onClose: PropTypes.func.isRequired,
+};

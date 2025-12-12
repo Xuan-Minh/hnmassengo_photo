@@ -5,7 +5,7 @@ import { AnimatePresence } from "framer-motion";
 import ShopItem from "./ShopItem";
 import ShopOverlay from "./ShopOverlay";
 import { formatPrice } from "../lib/utils";
-import { ANIMATIONS } from "../lib/constants";
+import { ANIMATIONS, TIMING } from "../lib/constants";
 import { logger } from "../lib/logger";
 
 // Clé pour le localStorage
@@ -249,10 +249,10 @@ export default function Shop() {
                   checkoutBtn.click();
                   logger.debug("Snipcart checkout opened");
                 }
-              }, 300);
+              }, TIMING.CHECKOUT_OPEN_DELAY);
             }
-          }, 100);
-        }, index * 150); // Décalage pour chaque article
+          }, TIMING.BUTTON_REMOVE_DELAY);
+        }, index * TIMING.CART_TRANSFER_DELAY); // Décalage pour chaque article
       });
     }
   }, [cartItems]);

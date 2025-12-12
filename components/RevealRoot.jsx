@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { EVENTS, addEventHandler } from "../lib/events";
+import { TIMING } from "../lib/constants";
 
 export default function RevealRoot({ children }) {
   const [revealed, setRevealed] = useState(false);
@@ -11,7 +12,7 @@ export default function RevealRoot({ children }) {
     // Si jamais l'intro est déjà partie (refresh sans overlay), on révèle immédiatement après un tick
     const timeout = setTimeout(() => {
       if (!revealed) setRevealed(true);
-    }, 2000);
+    }, TIMING.REVEAL_TIMEOUT);
     return () => {
       cleanup();
       clearTimeout(timeout);

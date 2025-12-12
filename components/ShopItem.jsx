@@ -1,5 +1,6 @@
 "use client";
 import React, { useState } from "react";
+import PropTypes from "prop-types";
 
 export default function ShopItem({
   imgDefault,
@@ -39,3 +40,11 @@ export default function ShopItem({
     </div>
   );
 }
+
+ShopItem.propTypes = {
+  imgDefault: PropTypes.string.isRequired,
+  imgHover: PropTypes.string.isRequired,
+  title: PropTypes.string.isRequired,
+  price: PropTypes.string.isRequired,
+  onClick: PropTypes.func.isRequired,
+};

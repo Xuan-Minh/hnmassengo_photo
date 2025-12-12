@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 
 export default function BlogPostItem({ post, onClick }) {
   return (
@@ -58,3 +59,14 @@ export default function BlogPostItem({ post, onClick }) {
     </div>
   );
 }
+
+BlogPostItem.propTypes = {
+  post: PropTypes.shape({
+    title: PropTypes.string.isRequired,
+    date: PropTypes.string.isRequired,
+    content: PropTypes.string.isRequired,
+    image: PropTypes.string,
+    layout: PropTypes.oneOf(["image-left", "image-right", "text-only"]).isRequired,
+  }).isRequired,
+  onClick: PropTypes.func.isRequired,
+};

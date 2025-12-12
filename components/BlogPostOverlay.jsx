@@ -19,12 +19,16 @@ export default function BlogPostOverlay({ post, onClose, onPrevious, onNext }) {
         animate={{ x: 0 }}
         exit={{ x: "100%" }}
         transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="blog-post-title"
       >
         {/* Header / Back Button */}
         <div className="absolute top-8 left-8 md:left-16 z-50">
           <button
             onClick={onClose}
             className="text-lg text-whiteCustom/60 hover:text-whiteCustom transition-colors"
+            aria-label="Close blog post overlay"
           >
             back
           </button>
