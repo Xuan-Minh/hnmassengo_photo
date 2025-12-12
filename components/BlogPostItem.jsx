@@ -66,7 +66,8 @@ BlogPostItem.propTypes = {
     date: PropTypes.string.isRequired,
     content: PropTypes.string.isRequired,
     image: PropTypes.string,
-    layout: PropTypes.oneOf(["image-left", "image-right", "text-only"]).isRequired,
+    layout: PropTypes.oneOf(["image-left", "image-right", "text-only"])
+      .isRequired,
   }).isRequired,
   onClick: PropTypes.func.isRequired,
 };

@@ -5,7 +5,7 @@ import ContactOverlay from "./ContactOverlay";
 
 export default function BlogPostOverlay({ post, onClose, onPrevious, onNext }) {
   const [contactOpen, setContactOpen] = useState(false);
-  
+
   if (!post) return null;
 
   const hasImage = post.image && post.image.trim() !== "";
@@ -34,115 +34,116 @@ export default function BlogPostOverlay({ post, onClose, onPrevious, onNext }) {
           </button>
         </div>
 
-      {/* Main Content - Two Layouts */}
-      {hasImage ? (
-        // Layout WITH Image (Date/Title, Image, then Content stacked vertically)
-        <div className="flex-1 flex items-start justify-center w-full h-full px-16 md:px-24 py-20 overflow-y-auto">
-          <div className="max-w-5xl w-full">
-            {/* Date + Title - Left aligned */}
-            <div className="mb-8 flex flex-col items-start">
-              {/* Date on 2 lines */}
-              <div className="text-4xl md:text-5xl lg:text-6xl font-norma text-accent leading-[0.85]">
-                {post.date}
+        {/* Main Content - Two Layouts */}
+        {hasImage ? (
+          // Layout WITH Image (Date/Title, Image, then Content stacked vertically)
+          <div className="flex-1 flex items-start justify-center w-full h-full px-16 md:px-24 py-20 overflow-y-auto">
+            <div className="max-w-5xl w-full">
+              {/* Date + Title - Left aligned */}
+              <div className="mb-8 flex flex-col items-start">
+                {/* Date on 2 lines */}
+                <div className="text-4xl md:text-5xl lg:text-6xl font-norma text-accent leading-[0.85]">
+                  {post.date}
+                </div>
+                {/* Title separate */}
+                <h1 className="text-3xl md:text-4xl lg:text-5xl italic font-normal leading-[0.85] mt-0">
+                  {post.title}
+                </h1>
               </div>
-              {/* Title separate */}
-              <h1 className="text-3xl md:text-4xl lg:text-5xl italic font-normal leading-[0.85] mt-0">
-                {post.title}
-              </h1>
-            </div>
 
-            {/* Image */}
-            <div className="relative w-full mb-8 max-w-md mx-auto">
-              <img
-                src={post.image}
-                alt={post.title}
-                className="w-full h-auto object-contain"
-              />
-            </div>
+              {/* Image */}
+              <div className="relative w-full mb-8 max-w-md mx-auto">
+                <img
+                  src={post.image}
+                  alt={post.title}
+                  className="w-full h-auto object-contain"
+                />
+              </div>
 
-            {/* Content - Left aligned and justified */}
-            <div className="text-base md:text-lg leading-relaxed text-whiteCustom space-y-4 max-w-2xl">
-              {post.fullContent?.split("\n\n").map((paragraph, idx) => (
-                <p key={idx} className="text-justify">
-                  {paragraph}
-                </p>
-              ))}
-            </div>
+              {/* Content - Left aligned and justified */}
+              <div className="text-base md:text-lg leading-relaxed text-whiteCustom space-y-4 max-w-2xl">
+                {post.fullContent?.split("\n\n").map((paragraph, idx) => (
+                  <p key={idx} className="text-justify">
+                    {paragraph}
+                  </p>
+                ))}
+              </div>
 
-            {/* Contact Button */}
-            <div className="mt-8 max-w-2xl">
-              <button
-                onClick={() => setContactOpen(true)}
-                className="text-sm text-whiteCustom/60 hover:text-whiteCustom transition-colors italic"
-              >
-                contact↗
-              </button>
+              {/* Contact Button */}
+              <div className="mt-8 max-w-2xl">
+                <button
+                  onClick={() => setContactOpen(true)}
+                  className="text-sm text-whiteCustom/60 hover:text-whiteCustom transition-colors italic"
+                >
+                  contact↗
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      ) : (
-        // Layout WITHOUT Image (Centered content)
-        <div className="flex-1 flex items-center justify-center w-full h-full px-16 md:px-24 py-20 overflow-hidden">
-          <div className="max-w-3xl w-full">
-            {/* Date + Title - Left aligned */}
-            <div className="mb-12">
-              {/* Date on 2 lines */}
-              <div className="text-7xl md:text-8xl lg:text-9xl font-normal leading-[0.85]">
-                {post.date?.split(" ")[0] || "12"} {post.date?.split(" ")[1] || "oct."}
+        ) : (
+          // Layout WITHOUT Image (Centered content)
+          <div className="flex-1 flex items-center justify-center w-full h-full px-16 md:px-24 py-20 overflow-hidden">
+            <div className="max-w-3xl w-full">
+              {/* Date + Title - Left aligned */}
+              <div className="mb-12">
+                {/* Date on 2 lines */}
+                <div className="text-7xl md:text-8xl lg:text-9xl font-normal leading-[0.85]">
+                  {post.date?.split(" ")[0] || "12"}{" "}
+                  {post.date?.split(" ")[1] || "oct."}
+                </div>
+                <div className="text-7xl md:text-8xl lg:text-9xl font-normal leading-[0.85]">
+                  {post.date?.split(" ")[2] || "2025"}
+                </div>
+                {/* Title separate */}
+                <h1 className="text-7xl md:text-8xl lg:text-9xl italic font-normal leading-[0.85] mt-0">
+                  {post.title}
+                </h1>
               </div>
-              <div className="text-7xl md:text-8xl lg:text-9xl font-normal leading-[0.85]">
-                {post.date?.split(" ")[2] || "2025"}
+
+              {/* Content - Left aligned and justified */}
+              <div className="text-base md:text-lg leading-relaxed text-whiteCustom space-y-4 max-w-2xl">
+                {post.fullContent?.split("\n\n").map((paragraph, idx) => (
+                  <p key={idx} className="text-justify">
+                    {paragraph}
+                  </p>
+                ))}
               </div>
-              {/* Title separate */}
-              <h1 className="text-7xl md:text-8xl lg:text-9xl italic font-normal leading-[0.85] mt-0">
-                {post.title}
-              </h1>
-            </div>
 
-            {/* Content - Left aligned and justified */}
-            <div className="text-base md:text-lg leading-relaxed text-whiteCustom space-y-4 max-w-2xl">
-              {post.fullContent?.split("\n\n").map((paragraph, idx) => (
-                <p key={idx} className="text-justify">
-                  {paragraph}
-                </p>
-              ))}
-            </div>
-
-            {/* Contact Button */}
-            <div className="mt-8 max-w-2xl">
-              <button
-                onClick={() => setContactOpen(true)}
-                className="text-sm text-whiteCustom/60 hover:text-whiteCustom transition-colors italic"
-              >
-                contact↗
-              </button>
+              {/* Contact Button */}
+              <div className="mt-8 max-w-2xl">
+                <button
+                  onClick={() => setContactOpen(true)}
+                  className="text-sm text-whiteCustom/60 hover:text-whiteCustom transition-colors italic"
+                >
+                  contact↗
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Navigation Footer */}
-      <div className="w-full border-t border-whiteCustom/20 px-8 md:px-16 py-6 flex items-center justify-center gap-16 shrink-0">
-        <button
-          onClick={onPrevious}
-          className="text-base text-whiteCustom/60 hover:text-whiteCustom transition-colors flex items-center gap-2"
-          disabled={!onPrevious}
-        >
-          <span>←</span> previous
-        </button>
-        
-        <button
-          onClick={onNext}
-          className="text-base text-whiteCustom/60 hover:text-whiteCustom transition-colors flex items-center gap-2"
-          disabled={!onNext}
-        >
-          next <span>→</span>
-        </button>
-      </div>
+        {/* Navigation Footer */}
+        <div className="w-full border-t border-whiteCustom/20 px-8 md:px-16 py-6 flex items-center justify-center gap-16 shrink-0">
+          <button
+            onClick={onPrevious}
+            className="text-base text-whiteCustom/60 hover:text-whiteCustom transition-colors flex items-center gap-2"
+            disabled={!onPrevious}
+          >
+            <span>←</span> previous
+          </button>
+
+          <button
+            onClick={onNext}
+            className="text-base text-whiteCustom/60 hover:text-whiteCustom transition-colors flex items-center gap-2"
+            disabled={!onNext}
+          >
+            next <span>→</span>
+          </button>
+        </div>
       </motion.div>
 
-      <ContactOverlay 
-        open={contactOpen} 
+      <ContactOverlay
+        open={contactOpen}
         onClose={() => setContactOpen(false)}
         defaultSubject={contactSubject}
       />
