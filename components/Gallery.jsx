@@ -208,7 +208,7 @@ export default function Gallery() {
 
   return (
     <>
-      <section id="works" className="relative w-full h-screen overflow-hidden">
+      <section id="works" className="relative w-full h-screen overflow-hidden pt-10">
         <div
           className={`w-full h-full flex flex-col justify-center items-center transition-opacity duration-300 ${
             isAnimating ? "opacity-0" : "opacity-100"
@@ -220,7 +220,7 @@ export default function Gallery() {
           >
             {view === "grid" ? (
               // --- MODE GRID ---
-              <div className="w-full h-full grid grid-cols-1 md:grid-cols-5 md:grid-rows-5 gap-x-2 gap-y-2 overflow-hidden">
+              <div className="w-full h-full grid grid-cols-1 md:grid-cols-5 md:grid-rows-5 gap-x-2 gap-y-2 overflow-hidden lg:pt-10">
                 {gridItems.map((item, idx) => {
                   if (idx === 0) {
                     // Case filtres + view
@@ -293,7 +293,7 @@ export default function Gallery() {
                   </div>
 
                   {/* Zone centrale image (Slideshow) */}
-                  <div className="flex-1 relative w-full h-full flex items-center justify-center bg-gray-50/50 p-8 overflow-hidden">
+                  <div className="flex-1 relative w-full h-full flex items-center justify-center  overflow-hidden">
                     {filteredProjects.length > 0 && (
                       <img
                         src={
