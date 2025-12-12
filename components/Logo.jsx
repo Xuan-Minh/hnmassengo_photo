@@ -1,5 +1,6 @@
 "use client";
 import { useRouter, usePathname } from "next/navigation";
+import { EVENTS, emitEvent } from "../lib/events";
 
 export default function Logo() {
   const router = useRouter();
@@ -12,9 +13,7 @@ export default function Logo() {
     }
 
     // On lance l'animation immédiatement
-    if (typeof window !== "undefined") {
-      window.dispatchEvent(new Event("intro:show"));
-    }
+    emitEvent(EVENTS.INTRO_SHOW);
   };
 
   return (

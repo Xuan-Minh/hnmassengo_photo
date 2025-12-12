@@ -3,6 +3,7 @@ import React, { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import TextReveal from "./TextReveal";
+import { EVENTS, emitEvent } from "../lib/events";
 
 // Composant CustomLightbox
 function CustomLightbox({ open, onClose, images, project }) {
@@ -188,9 +189,7 @@ export default function ProjetCartel({ project, onClose }) {
 
     // Après un délai pour laisser l'animation se jouer, on navigue et on lance l'intro
     setTimeout(() => {
-      if (typeof window !== "undefined") {
-        window.dispatchEvent(new Event("intro:show"));
-      }
+      emitEvent(EVENTS.INTRO_SHOW);
       router.push("/");
     }, 800); // Délai légèrement inférieur à la durée de l'animation (1s)
   };

@@ -1,18 +1,19 @@
 "use client";
 import { useEffect, useState } from "react";
+import { EVENTS, addEventHandler } from "../lib/events";
 
 export default function RevealRoot({ children }) {
   const [revealed, setRevealed] = useState(false);
 
   useEffect(() => {
     const handler = () => setRevealed(true);
-    window.addEventListener("intro:dismissed", handler);
+    const cleanup = addEventHandler(EVENTS.INTRO_DISMISSED, handler);
     // Si jamais l'intro est déjà partie (refresh sans overlay), on révèle immédiatement après un tick
     const timeout = setTimeout(() => {
       if (!revealed) setRevealed(true);
     }, 2000);
     return () => {
-      window.removeEventListener("intro:dismissed", handler);
+      cleanup();
       clearTimeout(timeout);
     };
   }, [revealed]);

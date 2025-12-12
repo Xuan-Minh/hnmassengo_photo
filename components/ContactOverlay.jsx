@@ -3,6 +3,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { AnimatePresence, motion } from "framer-motion";
 import { SITE_CONFIG } from "../lib/constants";
+import { EVENTS, addEventHandler } from "../lib/events";
 
 // Composant pour le formulaire de contact réutilisable
 function ContactForm({ idSuffix = "", onSubmitSuccess, defaultSubject = "" }) {
@@ -245,11 +246,11 @@ export default function ContactOverlay({ open: openProp, onClose: onCloseProp, d
     if (openProp !== undefined) return; // Skip if controlled
     const onShow = () => setOpenState(true);
     const onHide = () => setOpenState(false);
-    window.addEventListener("contact:show", onShow);
-    window.addEventListener("contact:hide", onHide);
+    const cleanupShow = addEventHandler(EVENTS.CONTACT_SHOW, onShow);
+    const cleanupHide = addEventHandler(EVENTS.CONTACT_HIDE, onHide);
     return () => {
-      window.removeEventListener("contact:show", onShow);
-      window.removeEventListener("contact:hide", onHide);
+      cleanupShow();
+      cleanupHide();
     };
   }, [openProp]);
 

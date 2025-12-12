@@ -2,6 +2,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import OverlayActionButton from "./OverlayActionButton";
+import { EVENTS, emitEvent, addEventHandler } from "../lib/events";
 
 export default function IntroOverlay() {
   // Plus de couleurs flashy: fond neutre sombre pour éviter tout flash de couleur
@@ -96,14 +97,8 @@ export default function IntroOverlay() {
       setIsReTrigger(true);
       setVisible(true);
     };
-    if (typeof window !== "undefined") {
-      window.addEventListener("intro:show", handler);
-    }
-    return () => {
-      if (typeof window !== "undefined") {
-        window.removeEventListener("intro:show", handler);
-      }
-    };
+    const cleanup = addEventHandler(EVENTS.INTRO_SHOW, handler);
+    return cleanup;
   }, []);
 
   if (!visible && !isExiting) return null;
@@ -123,9 +118,7 @@ export default function IntroOverlay() {
           setVisible(false);
           setIsExiting(false);
           setIsReTrigger(false); // Reset for next time
-          if (typeof window !== "undefined") {
-            window.dispatchEvent(new Event("intro:dismissed"));
-          }
+          emitEvent(EVENTS.INTRO_DISMISSED);
         }
       }}
       onClick={dismiss}

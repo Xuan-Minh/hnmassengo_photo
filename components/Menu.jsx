@@ -1,7 +1,9 @@
 "use client";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useParams, usePathname, useRouter } from "next/navigation";
-import { MENU_ITEMS, LANGUAGES } from "../lib/constants";
+import { MENU_ITEMS, LANGUAGES, THEME } from "../lib/constants";
+import { computeIsDark } from "../lib/utils";
+import { EVENTS, emitEvent } from "../lib/events";
 
 // Menu one-page: scroll interne vers des sections dans #scroll-root
 export default function Menu() {
@@ -65,19 +67,6 @@ export default function Menu() {
 
     // Récupère toutes les sections (y compris celles pas dans le menu, ex: blog)
     const allSections = Array.from(root.querySelectorAll("section[id]"));
-
-    function computeIsDark(element) {
-      if (!element) return false;
-      const bg = window.getComputedStyle(element).backgroundColor;
-      const match = bg.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/i);
-      if (!match) return false;
-      const r = parseInt(match[1], 10);
-      const g = parseInt(match[2], 10);
-      const b = parseInt(match[3], 10);
-      // Perceived brightness formula
-      const brightness = (r * 299 + g * 587 + b * 114) / 1000;
-      return brightness < 110; // seuil un peu plus strict pour #222
-    }
 
     const io = new IntersectionObserver(
       (entries) => {
@@ -227,9 +216,7 @@ export default function Menu() {
                 type="button"
                 onClick={() => {
                   if (it.id === "info") {
-                    if (typeof window !== "undefined") {
-                      window.dispatchEvent(new Event("contact:show"));
-                    }
+                    emitEvent(EVENTS.CONTACT_SHOW);
                   } else {
                     scrollToId(it.id);
                   }

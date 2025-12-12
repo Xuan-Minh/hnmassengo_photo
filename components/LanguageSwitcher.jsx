@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { useParams, usePathname, useRouter } from "next/navigation";
+import { computeIsDark } from "../lib/utils";
 
 // Sélecteur de langue avec adaptation de couleur + disparition sur la section contact
 export default function LanguageSwitcher() {
@@ -17,18 +18,6 @@ export default function LanguageSwitcher() {
     const root = document.getElementById("scroll-root");
     if (!root) return;
     const sections = Array.from(root.querySelectorAll("section[id]"));
-
-    function computeIsDark(element) {
-      if (!element) return false;
-      const bg = window.getComputedStyle(element).backgroundColor;
-      const match = bg.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/i);
-      if (!match) return false;
-      const r = parseInt(match[1], 10);
-      const g = parseInt(match[2], 10);
-      const b = parseInt(match[3], 10);
-      const brightness = (r * 299 + g * 587 + b * 114) / 1000;
-      return brightness < 110;
-    }
 
     const io = new IntersectionObserver(
       (entries) => {

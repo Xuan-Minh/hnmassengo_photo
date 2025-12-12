@@ -6,6 +6,7 @@ import BlogArchives from "./BlogArchives";
 import BlogPostItem from "./BlogPostItem";
 import BlogPostOverlay from "./BlogPostOverlay";
 import { BLOG_POSTS } from "../lib/data";
+import { CONTENT } from "../lib/constants";
 
 // Utiliser les données centralisées
 const POSTS =
@@ -30,7 +31,7 @@ export default function Blog() {
   const [archiveOpen, setArchiveOpen] = useState(false);
   const [selectedPost, setSelectedPost] = useState(null);
 
-  const latestPosts = POSTS.slice(0, 3);
+  const latestPosts = POSTS.slice(0, CONTENT.BLOG_PREVIEW_COUNT);
 
   return (
     <>
