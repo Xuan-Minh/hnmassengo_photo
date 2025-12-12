@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import ContactOverlay from "./ContactOverlay";
 
 export default function BlogPostOverlay({ post, onClose, onPrevious, onNext }) {
@@ -61,7 +61,7 @@ export default function BlogPostOverlay({ post, onClose, onPrevious, onNext }) {
               </div>
 
               {/* Content - Left aligned and justified */}
-              <div className="text-base md:text-lg leading-relaxed text-whiteCustom space-y-4 max-w-2xl">
+              <div className="text-base md:text-lg leading-relaxed text-whiteCustom space-y-4 max-w-2xl mx-auto">
                 {post.fullContent?.split("\n\n").map((paragraph, idx) => (
                   <p key={idx} className="text-justify">
                     {paragraph}
@@ -70,7 +70,7 @@ export default function BlogPostOverlay({ post, onClose, onPrevious, onNext }) {
               </div>
 
               {/* Contact Button */}
-              <div className="mt-8 max-w-2xl">
+              <div className="mt-8 flex justify-end max-w-2xl mx-auto">
                 <button
                   onClick={() => setContactOpen(true)}
                   className="text-sm text-whiteCustom/60 hover:text-whiteCustom transition-colors italic"
@@ -101,7 +101,7 @@ export default function BlogPostOverlay({ post, onClose, onPrevious, onNext }) {
               </div>
 
               {/* Content - Left aligned and justified */}
-              <div className="text-base md:text-lg leading-relaxed text-whiteCustom space-y-4 max-w-2xl">
+              <div className="text-base md:text-lg leading-relaxed text-whiteCustom space-y-4 max-w-2xl mx-auto">
                 {post.fullContent?.split("\n\n").map((paragraph, idx) => (
                   <p key={idx} className="text-justify">
                     {paragraph}
@@ -110,7 +110,7 @@ export default function BlogPostOverlay({ post, onClose, onPrevious, onNext }) {
               </div>
 
               {/* Contact Button */}
-              <div className="mt-8 max-w-2xl">
+              <div className="mt-8 flex justify-end max-w-2xl mx-auto">
                 <button
                   onClick={() => setContactOpen(true)}
                   className="text-sm text-whiteCustom/60 hover:text-whiteCustom transition-colors italic"
@@ -142,11 +142,15 @@ export default function BlogPostOverlay({ post, onClose, onPrevious, onNext }) {
         </div>
       </motion.div>
 
-      <ContactOverlay
-        open={contactOpen}
-        onClose={() => setContactOpen(false)}
-        defaultSubject={contactSubject}
-      />
+      <AnimatePresence>
+        {contactOpen && (
+          <ContactOverlay
+            open={contactOpen}
+            onClose={() => setContactOpen(false)}
+            defaultSubject={contactSubject}
+          />
+        )}
+      </AnimatePresence>
     </>
   );
 }
