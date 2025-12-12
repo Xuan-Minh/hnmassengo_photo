@@ -5,7 +5,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { SITE_CONFIG } from "../lib/constants";
 
 // Composant pour le formulaire de contact réutilisable
-function ContactForm({ idSuffix = "", onSubmitSuccess }) {
+function ContactForm({ idSuffix = "", onSubmitSuccess, defaultSubject = "" }) {
   const [showSuccess, setShowSuccess] = useState(false);
   const formRef = useRef(null);
 
@@ -115,6 +115,7 @@ function ContactForm({ idSuffix = "", onSubmitSuccess }) {
             name="subject"
             type="text"
             required
+            defaultValue={defaultSubject}
             className="w-full bg-formBG text-whiteCustom placeholder-whiteCustom/40 border border-whiteCustom/60 focus:border-whiteCustom outline-none px-3 py-2 text-sm md:text-base"
           />
         </div>
@@ -184,7 +185,7 @@ function ContactInfo() {
 }
 
 // Composant pour le contenu principal (formulaire + informations)
-function ContactContent({ idSuffix = "", headingId, variant = "default" }) {
+function ContactContent({ idSuffix = "", headingId, variant = "default", defaultSubject = "" }) {
   const isOverlay = variant === "overlay";
   const isPrimarySection = variant === "section";
 
@@ -199,7 +200,7 @@ function ContactContent({ idSuffix = "", headingId, variant = "default" }) {
         >
           Contact
         </h2>
-        <ContactForm idSuffix={idSuffix} />
+        <ContactForm idSuffix={idSuffix} defaultSubject={defaultSubject} />
       </div>
 
       <div
@@ -230,32 +231,37 @@ function ContactMarquee() {
   );
 }
 
-export default function ContactOverlay() {
+export default function ContactOverlay({ open: openProp, onClose: onCloseProp, defaultSubject = "" } = {}) {
   const t = useTranslations();
-  const [open, setOpen] = useState(false);
+  const [openState, setOpenState] = useState(false);
   const panelRef = useRef(null);
 
-  // Open/close via global events
+  // Use prop if provided, otherwise use internal state
+  const open = openProp !== undefined ? openProp : openState;
+  const handleClose = onCloseProp || (() => setOpenState(false));
+
+  // Open/close via global events (only if not controlled by props)
   useEffect(() => {
-    const onShow = () => setOpen(true);
-    const onHide = () => setOpen(false);
+    if (openProp !== undefined) return; // Skip if controlled
+    const onShow = () => setOpenState(true);
+    const onHide = () => setOpenState(false);
     window.addEventListener("contact:show", onShow);
     window.addEventListener("contact:hide", onHide);
     return () => {
       window.removeEventListener("contact:show", onShow);
       window.removeEventListener("contact:hide", onHide);
     };
-  }, []);
+  }, [openProp]);
 
   // Close on ESC when open
   useEffect(() => {
     if (!open) return;
     const onKey = (e) => {
-      if (e.key === "Escape") setOpen(false);
+      if (e.key === "Escape") handleClose();
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [open]);
+  }, [open, handleClose]);
 
   // Scroll lock, initial focus and focus trap when overlay is open
   useEffect(() => {
@@ -346,7 +352,7 @@ export default function ContactOverlay() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              onClick={() => setOpen(false)}
+              onClick={handleClose}
             />
 
             <motion.div
@@ -367,6 +373,7 @@ export default function ContactOverlay() {
                   idSuffix="-overlay"
                   headingId="contact-title-overlay"
                   variant="overlay"
+                  defaultSubject={defaultSubject}
                 />
               </div>
 
@@ -389,6 +396,7 @@ export default function ContactOverlay() {
             idSuffix="-inline"
             headingId="contact-title-inline"
             variant="section"
+            defaultSubject={defaultSubject}
           />
         </div>
 
