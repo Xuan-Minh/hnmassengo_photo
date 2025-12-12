@@ -1,67 +1,147 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
+import ContactOverlay from "./ContactOverlay";
 
-export default function BlogPostOverlay({ post, onClose }) {
+export default function BlogPostOverlay({ post, onClose, onPrevious, onNext }) {
+  const [contactOpen, setContactOpen] = useState(false);
+  
   if (!post) return null;
 
+  const hasImage = post.image && post.image.trim() !== "";
+  const contactSubject = `${post.title || post.date} - Reply`;
+
   return (
-    <motion.div
-      className="fixed inset-0 z-[60] bg-blackCustom text-whiteCustom font-playfair flex flex-col"
-      initial={{ x: "100%" }}
-      animate={{ x: 0 }}
-      exit={{ x: "100%" }}
-      transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-    >
-      {/* Header / Back Button */}
-      <div className="absolute top-8 left-8 md:left-16 z-50">
-        <button
-          onClick={onClose}
-          className="text-lg text-whiteCustom/60 hover:text-whiteCustom transition-colors"
-        >
-          back
-        </button>
-      </div>
+    <>
+      <motion.div
+        className="fixed inset-0 z-[60] bg-blackCustom text-whiteCustom font-playfair flex flex-col"
+        initial={{ x: "100%" }}
+        animate={{ x: 0 }}
+        exit={{ x: "100%" }}
+        transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+      >
+        {/* Header / Back Button */}
+        <div className="absolute top-8 left-8 md:left-16 z-50">
+          <button
+            onClick={onClose}
+            className="text-lg text-whiteCustom/60 hover:text-whiteCustom transition-colors"
+          >
+            back
+          </button>
+        </div>
 
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col md:flex-row items-center justify-center w-full h-full p-8 md:p-16 gap-12 md:gap-24 overflow-y-auto">
-        {/* Left: Image */}
-        {post.image && (
-          <div className="w-full md:w-1/2 max-w-xl relative shadow-2xl shrink-0">
-            <img
-              src={post.image}
-              alt={post.title}
-              className="w-full h-full object-cover"
-            />
-          </div>
-        )}
+      {/* Main Content - Two Layouts */}
+      {hasImage ? (
+        // Layout WITH Image (Date/Title, Image, then Content stacked vertically)
+        <div className="flex-1 flex items-start justify-center w-full h-full px-16 md:px-24 py-20 overflow-y-auto">
+          <div className="max-w-5xl w-full">
+            {/* Date + Title - Left aligned */}
+            <div className="mb-8 flex flex-col items-start">
+              {/* Date on 2 lines */}
+              <div className="text-4xl md:text-5xl lg:text-6xl font-norma text-accent leading-[0.85]">
+                {post.date}
+              </div>
+              {/* Title separate */}
+              <h1 className="text-3xl md:text-4xl lg:text-5xl italic font-normal leading-[0.85] mt-0">
+                {post.title}
+              </h1>
+            </div>
 
-        {/* Right: Info */}
-        <div className="w-full md:w-1/3 flex flex-col items-start text-left h-full justify-center">
-          <h2 className="text-5xl md:text-6xl italic mb-8">{post.title}</h2>
+            {/* Image */}
+            <div className="relative w-full mb-8 max-w-md mx-auto">
+              <img
+                src={post.image}
+                alt={post.title}
+                className="w-full h-auto object-contain"
+              />
+            </div>
 
-          <div className="text-lg md:text-xl leading-relaxed text-whiteCustom/80 mb-12 max-w-md overflow-y-auto max-h-[40vh] pr-4">
-            {post.fullContent.split("\n").map((paragraph, idx) => (
-              <p key={idx} className="mb-4">
-                {paragraph}
-              </p>
-            ))}
-          </div>
+            {/* Content - Left aligned and justified */}
+            <div className="text-base md:text-lg leading-relaxed text-whiteCustom space-y-4 max-w-2xl">
+              {post.fullContent?.split("\n\n").map((paragraph, idx) => (
+                <p key={idx} className="text-justify">
+                  {paragraph}
+                </p>
+              ))}
+            </div>
 
-          <div className="mt-auto">
-            <div className="text-xl font-playfair text-whiteCustom/60">
-              {post.date}
+            {/* Contact Button */}
+            <div className="mt-8 max-w-2xl">
+              <button
+                onClick={() => setContactOpen(true)}
+                className="text-sm text-whiteCustom/60 hover:text-whiteCustom transition-colors italic"
+              >
+                contact↗
+              </button>
             </div>
           </div>
         </div>
-      </div>
+      ) : (
+        // Layout WITHOUT Image (Centered content)
+        <div className="flex-1 flex items-center justify-center w-full h-full px-16 md:px-24 py-20 overflow-hidden">
+          <div className="max-w-3xl w-full">
+            {/* Date + Title - Left aligned */}
+            <div className="mb-12">
+              {/* Date on 2 lines */}
+              <div className="text-7xl md:text-8xl lg:text-9xl font-normal leading-[0.85]">
+                {post.date?.split(" ")[0] || "12"} {post.date?.split(" ")[1] || "oct."}
+              </div>
+              <div className="text-7xl md:text-8xl lg:text-9xl font-normal leading-[0.85]">
+                {post.date?.split(" ")[2] || "2025"}
+              </div>
+              {/* Title separate */}
+              <h1 className="text-7xl md:text-8xl lg:text-9xl italic font-normal leading-[0.85] mt-0">
+                {post.title}
+              </h1>
+            </div>
 
-      {/* Footer */}
-      <div className="w-full border-t border-whiteCustom/20 p-8 text-center relative shrink-0">
-        <span className="text-xl italic">
-          {post.title.toLowerCase()} - {post.date.split(" ").pop()}
-        </span>
+            {/* Content - Left aligned and justified */}
+            <div className="text-base md:text-lg leading-relaxed text-whiteCustom space-y-4 max-w-2xl">
+              {post.fullContent?.split("\n\n").map((paragraph, idx) => (
+                <p key={idx} className="text-justify">
+                  {paragraph}
+                </p>
+              ))}
+            </div>
+
+            {/* Contact Button */}
+            <div className="mt-8 max-w-2xl">
+              <button
+                onClick={() => setContactOpen(true)}
+                className="text-sm text-whiteCustom/60 hover:text-whiteCustom transition-colors italic"
+              >
+                contact↗
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Navigation Footer */}
+      <div className="w-full border-t border-whiteCustom/20 px-8 md:px-16 py-6 flex items-center justify-center gap-16 shrink-0">
+        <button
+          onClick={onPrevious}
+          className="text-base text-whiteCustom/60 hover:text-whiteCustom transition-colors flex items-center gap-2"
+          disabled={!onPrevious}
+        >
+          <span>←</span> previous
+        </button>
+        
+        <button
+          onClick={onNext}
+          className="text-base text-whiteCustom/60 hover:text-whiteCustom transition-colors flex items-center gap-2"
+          disabled={!onNext}
+        >
+          next <span>→</span>
+        </button>
       </div>
-    </motion.div>
+      </motion.div>
+
+      <ContactOverlay 
+        open={contactOpen} 
+        onClose={() => setContactOpen(false)}
+        defaultSubject={contactSubject}
+      />
+    </>
   );
 }
