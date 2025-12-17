@@ -274,7 +274,9 @@ export default function Gallery() {
                   <div className="flex gap-4 flex-shrink-0">
                     <button
                       className={`relative w-6 h-6 transition-opacity duration-300 ease-in-out ${
-                        view === "grid" ? "opacity-100" : "opacity-50 hover:opacity-100"
+                        view === "grid"
+                          ? "opacity-100"
+                          : "opacity-50 hover:opacity-100"
                       }`}
                       onClick={() => handleViewChange("grid")}
                       aria-label="Grid view"
@@ -296,7 +298,9 @@ export default function Gallery() {
                     </button>
                     <button
                       className={`relative w-6 h-6 transition-opacity duration-300 ease-in-out ${
-                        view === "list" ? "opacity-100" : "opacity-50 hover:opacity-100"
+                        view === "list"
+                          ? "opacity-100"
+                          : "opacity-50 hover:opacity-100"
                       }`}
                       onClick={() => handleViewChange("list")}
                       aria-label="List view"
@@ -344,24 +348,24 @@ export default function Gallery() {
 
                 {/* Zone centrale image (Slideshow) */}
                 <div className="flex-1 relative w-full h-full flex items-center justify-center overflow-hidden">
-                    {filteredProjects.length > 0 && (
-                      <img
-                        src={
-                          filteredProjects[currentProjectIndex].images[
-                            currentImageIndex
-                          ]
-                        }
-                        alt={filteredProjects[currentProjectIndex].name}
-                        className={`max-w-[70%] max-h-[70%] md:max-w-[80%] md:max-h-[80%] object-contain shadow-lg cursor-pointer transition-opacity duration-300 ${
-                          isTransitioning ? "opacity-0" : "opacity-100"
-                        }`}
-                        onClick={() =>
-                          setSelectedProject(
-                            filteredProjects[currentProjectIndex]
-                          )
-                        }
-                      />
-                    )}
+                  {filteredProjects.length > 0 && (
+                    <img
+                      src={
+                        filteredProjects[currentProjectIndex].images[
+                          currentImageIndex
+                        ]
+                      }
+                      alt={filteredProjects[currentProjectIndex].name}
+                      className={`max-w-[70%] max-h-[70%] md:max-w-[80%] md:max-h-[80%] object-contain shadow-lg cursor-pointer transition-opacity duration-300 ${
+                        isTransitioning ? "opacity-0" : "opacity-100"
+                      }`}
+                      onClick={() =>
+                        setSelectedProject(
+                          filteredProjects[currentProjectIndex]
+                        )
+                      }
+                    />
+                  )}
                 </div>
               </div>
             )}
