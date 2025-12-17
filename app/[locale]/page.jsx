@@ -31,24 +31,49 @@ export default function HomePage() {
       <LanguageSwitcher />
       <section
         id="home"
-        className="relative h-screen snap-start bg-whiteCustom overflow-hidden flex flex-col md:block"
+        className="relative h-screen snap-start bg-whiteCustom"
         aria-label="Hero"
       >
-        {/* Bloc rotation image - centré et plus grand sur mobile, positionnable sur desktop */}
-        <div className="flex items-center justify-center pt-20 pb-8 md:absolute md:top-[40%] md:left-auto md:right-0 md:-translate-y-1/2 w-full md:w-auto md:max-w-[calc(100vw-220px)] md:pr-[120px] z-20 pointer-events-none md:pt-0 md:pb-0">
-          <HomeImageRotation images={imageFiles} position="center" />
-        </div>
+        {/* Bloc rotation image positionnable (par défaut centre, modifiable) */}
+        {(() => {
+          // Sur mobile, toujours centré
+          const isMobile =
+            typeof window !== "undefined" && window.innerWidth < 768;
+          let pos = "center";
+          if (!isMobile) {
+            const r = Math.random();
+            if (r < 0.4) pos = "left";
+            else if (r < 0.8) pos = "right";
+          }
+          // Marges fixes desktop, centre sur mobile
+          let extraStyle = "z-20";
+          if (pos === "right")
+            extraStyle += " right-0 max-w-[calc(100vw-220px)] pr-[120px]";
+          if (pos === "left") extraStyle += " left-0 pl-[40px]";
+          if (pos === "center") extraStyle += " left-1/2 -translate-x-1/2";
+          // Sur mobile, toujours centré
+          if (typeof window !== "undefined" && window.innerWidth < 768) {
+            extraStyle = "z-20 left-1/2 -translate-x-1/2";
+          }
+          return (
+            <div
+              className={`absolute top-[40%] w-full -translate-y-1/2 pointer-events-none ${extraStyle}`}
+            >
+              <HomeImageRotation images={imageFiles} position={pos} />
+            </div>
+          );
+        })()}
 
-        {/* Bloc texte - juste en dessous de l'image sur mobile, bas gauche sur desktop */}
-        <div className="px-4 pb-8 md:absolute md:bottom-16 md:left-16 md:right-auto md:px-0 md:pb-0">
-          <p className="text-[16px] md:text-[20px] lg:text-[26px] font-playfair text-neutral-300 tracking-[-0.05em]">
+        {/* Bloc texte bas gauche */}
+        <div className="absolute bottom-16 left-16">
+          <p className="text-[20px] mt-0 md:text-[26px] font-playfair text-neutral-300 tracking-[-0.05em]">
             {t("home.title")}
           </p>
-          <div className="mt-2 md:mt-4">
-            <h2 className="text-[40px] md:text-[56px] lg:text-[72px] leading-none font-playfair italic tracking-[-0.05em]">
+          <div className="mt-4">
+            <h2 className="text-[56px] md:text-[72px] leading-none font-playfair italic tracking-[-0.05em]">
               Han-Noah
             </h2>
-            <h2 className="mt-0 text-[44px] md:text-[64px] lg:text-[80px] leading-none font-lexend font-semibold tracking-tight">
+            <h2 className="mt-0 text-[64px] md:text-[80px] leading-none font-lexend font-semibold tracking-tight">
               MASSENGO
             </h2>
           </div>
