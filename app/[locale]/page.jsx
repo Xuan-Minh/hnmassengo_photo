@@ -66,7 +66,7 @@ export default function HomePage() {
 
         {/* Bloc texte bas gauche */}
         <div className="absolute bottom-16 left-16">
-          <p className="text-[20px] mt-0 md:text-[26px] font-playfair text-neutral-300 tracking-[-0.05em]">
+          <p className="text-lg md:text-[20px] lg:text-[26px] font-playfair text-neutral-300 tracking-[-0.05em]">
             {t("home.title")}
           </p>
           <div className="mt-4">
@@ -77,12 +77,12 @@ export default function HomePage() {
               MASSENGO
             </h2>
           </div>
-
-          {/* Rôle - en dessous du nom sur mobile, à droite sur desktop */}
-          <p className="mt-4 md:mt-0 md:absolute md:bottom-0 md:left-[55%] text-[16px] md:text-[26px] lg:text-[32px] font-playfair italic text-neutral-300 tracking-[-0.05em]">
-            {t("home.role")}
-          </p>
         </div>
+
+        {/* Rôle - en dessous du nom sur mobile, centré sur desktop */}
+        <p className="absolute bottom-16 left-16 mt-4 md:mt-0 md:bottom-16 md:left-1/2 md:-translate-x-1/2 text-lg md:text-[26px] lg:text-[32px] font-playfair italic text-neutral-300 tracking-[-0.05em]">
+          {t("home.role")}
+        </p>
       </section>
 
       <HomePresentation />
