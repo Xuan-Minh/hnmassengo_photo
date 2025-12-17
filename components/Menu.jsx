@@ -20,6 +20,8 @@ export default function Menu() {
   // Mobile logic
   const [isMobile, setIsMobile] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [touchStart, setTouchStart] = useState(null);
+  const mobileOverlayRef = React.useRef(null);
 
   // Language switcher logic
   const langs = LANGUAGES;
@@ -37,6 +39,77 @@ export default function Menu() {
     router.replace(href, { scroll: false });
     setMobileMenuOpen(false); // Close menu after lang change
   };
+
+  // Trap focus dans le menu mobile
+  useEffect(() => {
+    if (!mobileMenuOpen || !mobileOverlayRef.current) return;
+
+    const overlay = mobileOverlayRef.current;
+    const focusableElements = overlay.querySelectorAll(
+      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    );
+    const firstElement = focusableElements[0];
+    const lastElement = focusableElements[focusableElements.length - 1];
+
+    const handleTabKey = (e) => {
+      if (e.key !== "Tab") return;
+
+      if (e.shiftKey) {
+        if (document.activeElement === firstElement) {
+          e.preventDefault();
+          lastElement.focus();
+        }
+      } else {
+        if (document.activeElement === lastElement) {
+          e.preventDefault();
+          firstElement.focus();
+        }
+      }
+    };
+
+    overlay.addEventListener("keydown", handleTabKey);
+    firstElement?.focus();
+
+    return () => overlay.removeEventListener("keydown", handleTabKey);
+  }, [mobileMenuOpen]);
+
+  // Swipe up pour fermer le menu mobile
+  useEffect(() => {
+    if (!mobileMenuOpen || !mobileOverlayRef.current) return;
+
+    const overlay = mobileOverlayRef.current;
+
+    const handleTouchStart = (e) => {
+      setTouchStart(e.touches[0].clientY);
+    };
+
+    const handleTouchMove = (e) => {
+      if (!touchStart) return;
+
+      const touchEnd = e.touches[0].clientY;
+      const diff = touchStart - touchEnd;
+
+      // Swipe up (diff positif) d'au moins 50px
+      if (diff > 50) {
+        setMobileMenuOpen(false);
+        setTouchStart(null);
+      }
+    };
+
+    const handleTouchEnd = () => {
+      setTouchStart(null);
+    };
+
+    overlay.addEventListener("touchstart", handleTouchStart);
+    overlay.addEventListener("touchmove", handleTouchMove);
+    overlay.addEventListener("touchend", handleTouchEnd);
+
+    return () => {
+      overlay.removeEventListener("touchstart", handleTouchStart);
+      overlay.removeEventListener("touchmove", handleTouchMove);
+      overlay.removeEventListener("touchend", handleTouchEnd);
+    };
+  }, [mobileMenuOpen, touchStart]);
 
   // Initialisation au montage
   useEffect(() => {
@@ -127,7 +200,7 @@ export default function Menu() {
       <>
         {/* Bouton MENU fixe */}
         <button
-          className={`fixed top-8 right-8 z-50 text-xl font-playfair font-bold tracking-wider mix-blend-difference text-white transition-opacity duration-300 ${
+          className={`fixed top-8 right-8 z-50 text-xl font-playfair italic tracking-wider mix-blend-difference text-white transition-opacity duration-300 ${
             hideMenu && !mobileMenuOpen
               ? "opacity-0 pointer-events-none"
               : "opacity-100"
@@ -140,6 +213,7 @@ export default function Menu() {
 
         {/* Overlay Mobile */}
         <div
+          ref={mobileOverlayRef}
           className={`fixed inset-0 z-[60] bg-[#333] text-[#F4F3F2] flex flex-col items-center justify-center transition-transform duration-500 ease-in-out ${
             mobileMenuOpen ? "translate-y-0" : "-translate-y-full"
           }`}
@@ -152,17 +226,29 @@ export default function Menu() {
             close
           </button>
 
-          {/* Title */}
-          <div className="absolute top-24 text-center">
-            <h2 className="text-2xl font-playfair italic">HAN-NOAH MASSENGO</h2>
+          {/* Logo - centré avec les sections du menu */}
+          <div className="flex items-center justify-center gap-2 mb-8">
+            <span className="text-accent font-playfair italic text-[32px]">
+              Han-Noah
+            </span>
+            <span className="text-accent font-lexend text-[32px]">
+              MASSENGO
+            </span>
           </div>
 
           {/* Links */}
-          <ul className="flex flex-col items-center gap-6 mb-12">
-            {items.map((it) => (
+          <ul className="flex flex-col items-center gap-2 mb-12">
+            {desktopItems.map((it) => (
               <li key={it.id}>
                 <button
-                  onClick={() => scrollToId(it.id)}
+                  onClick={() => {
+                    if (it.id === "info") {
+                      emitEvent(EVENTS.CONTACT_SHOW);
+                      setMobileMenuOpen(false);
+                    } else {
+                      scrollToId(it.id);
+                    }
+                  }}
                   className="text-4xl font-lexend font-normal uppercase tracking-wide hover:text-gray-400 transition-colors"
                 >
                   {it.label}
@@ -171,20 +257,20 @@ export default function Menu() {
             ))}
           </ul>
 
-          {/* Language Switcher */}
-          <div className="flex items-center gap-4 text-xl font-bold">
+          {/* Language Switcher - même style que la version desktop */}
+          <div className="flex items-center gap-2 text-[20px]">
             {langs.map((lang, i) => (
               <React.Fragment key={lang}>
                 <button
                   onClick={() => handleChangeLang(lang)}
-                  className={`uppercase transition-colors ${
-                    locale === lang ? "text-white" : "text-gray-500"
-                  }`}
+                  className={`uppercase font-bold transition-colors ${
+                    locale === lang ? "text-[#F4F3F2]" : "text-[#F4F3F2]/60"
+                  } hover:text-[#F4F3F2]`}
                 >
                   {lang}
                 </button>
                 {i < langs.length - 1 && (
-                  <span className="text-gray-600">/</span>
+                  <span className="text-[#F4F3F2]/60">/</span>
                 )}
               </React.Fragment>
             ))}

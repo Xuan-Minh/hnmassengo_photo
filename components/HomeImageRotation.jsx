@@ -16,23 +16,38 @@ export default function HomeImageRotation({
   const [imgPosition, setImgPosition] = useState(position);
   const lastPosition = useRef(position);
   const [pendingPosition, setPendingPosition] = useState(null);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Détection du mobile
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
 
   useEffect(() => {
     if (!images.length) return;
     const id = setInterval(() => {
-      // Deux positions seulement : gauche et centre
-      const positions = ["left", "center"];
-      let nextPos = lastPosition.current;
-      let tries = 0;
-      while (nextPos === lastPosition.current && tries < 10) {
-        nextPos = positions[Math.floor(Math.random() * positions.length)];
-        tries++;
+      // Sur mobile, toujours center. Sur desktop, alternance left/center
+      if (isMobile) {
+        setPendingPosition("center");
+      } else {
+        const positions = ["left", "center"];
+        let nextPos = lastPosition.current;
+        let tries = 0;
+        while (nextPos === lastPosition.current && tries < 10) {
+          nextPos = positions[Math.floor(Math.random() * positions.length)];
+          tries++;
+        }
+        setPendingPosition(nextPos);
       }
-      setPendingPosition(nextPos);
       setIndex((prev) => (prev + 1) % images.length);
     }, interval);
     return () => clearInterval(id);
-  }, [images, interval]);
+  }, [images, interval, isMobile]);
 
   // Quand l'image change, on applique la nouvelle position (après le fade)
   useEffect(() => {
@@ -55,17 +70,24 @@ export default function HomeImageRotation({
   // Positionnement horizontal dynamique
   let justify = "justify-center";
   let marginClass = "";
-  if (imgPosition === "left") {
-    justify = "justify-start";
-    marginClass = "pl-[90px]";
-  }
-  if (imgPosition === "center") {
-    marginClass = "pl-[150px]";
+
+  // Sur mobile, toujours centré sans marge. Sur desktop, respecter la position
+  if (isMobile) {
+    justify = "justify-center";
+    marginClass = "";
+  } else {
+    if (imgPosition === "left") {
+      justify = "justify-start";
+      marginClass = "md:pl-[90px]";
+    }
+    if (imgPosition === "center") {
+      marginClass = "md:pl-[150px]";
+    }
   }
 
   return (
     <div className={`flex ${justify} w-full ${marginClass}`}>
-      <div className="relative w-[420px] max-w-[60vw] aspect-[3/4] overflow-hidden">
+      <div className="relative w-[420px] max-w-[80vw] md:max-w-[60vw] aspect-[3/4] overflow-hidden mx-auto md:mx-0">
         <AnimatePresence mode="wait">
           <motion.div
             key={current}
