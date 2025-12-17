@@ -18,6 +18,8 @@ export default function IntroOverlay() {
   const rotateInterval = useRef(null);
   const [loadedImages, setLoadedImages] = useState([]);
   const [isReTrigger, setIsReTrigger] = useState(false);
+  const [touchStart, setTouchStart] = useState(null);
+  const overlayRef = useRef(null);
   // Survol limité au bouton uniquement (pas de dépendance au mouvement global)
 
   // Affiche toujours l'intro au chargement (plus de gating sessionStorage)
@@ -106,8 +108,31 @@ export default function IntroOverlay() {
   // Mode sans fade: on affiche seulement l'image courante (préchargée). Si aucune image, fond neutre fixe.
   const showImages = loadedImages.length > 0;
 
+  // Swipe up pour fermer (mobile)
+  const handleTouchStart = (e) => {
+    setTouchStart(e.touches[0].clientY);
+  };
+
+  const handleTouchMove = (e) => {
+    if (!touchStart) return;
+
+    const currentTouch = e.touches[0].clientY;
+    const diff = touchStart - currentTouch;
+
+    // Si swipe up d'au moins 50px
+    if (diff > 50) {
+      dismiss();
+      setTouchStart(null);
+    }
+  };
+
+  const handleTouchEnd = () => {
+    setTouchStart(null);
+  };
+
   return (
     <motion.div
+      ref={overlayRef}
       className="fixed inset-0 z-[100]"
       style={{ backgroundColor: neutralBackground, overflow: "hidden" }}
       initial={isReTrigger ? { y: "-100%", opacity: 1 } : { y: 0, opacity: 1 }}
@@ -122,6 +147,9 @@ export default function IntroOverlay() {
         }
       }}
       onClick={dismiss}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
     >
       <div className="relative w-full h-full">
         {showImages && (
