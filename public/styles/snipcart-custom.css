@@ -1,76 +1,25 @@
-/* Snipcart Custom Styling - Override minimal */
+/* Snipcart Custom Styling - Configuration minimale */
 
 /* Configuration de base */
 #snipcart {
   font-family: "Playfair Display", serif !important;
-  z-index: 999999 !important;
+  z-index: 2147483647 !important;
 }
 
 #snipcart-container {
-  z-index: 999999 !important;
+  z-index: 2147483647 !important;
 }
 
-/* ===== MODAL SNIPCART PLEIN ÉCRAN ===== */
-
-/* Conteneur du panier - plein écran */
+/* S'assurer que tous les éléments Snipcart sont au-dessus */
+.snipcart,
+.snipcart__container,
+.snipcart-cart,
+.snipcart-cart-header,
 .snipcart-modal {
-  position: fixed !important;
-  top: 0 !important;
-  left: 0 !important;
-  right: 0 !important;
-  bottom: 0 !important;
-  width: 100vw !important;
-  height: 100vh !important;
-  border: none !important;
-  border-radius: 0 !important;
-  margin: 0 !important;
-  max-width: 100vw !important;
-  max-height: 100vh !important;
-  z-index: 999999 !important;
-  transform: translateX(0) !important;
-  transition: none !important;
-  animation: slideInFromRight 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards !important;
+  z-index: 2147483647 !important;
 }
 
-/* Overlay - fond sombre derrière le modal */
+/* Overlay */
 .snipcart-modal__overlay {
-  background: rgba(0, 0, 0, 0.5) !important;
-  backdrop-filter: blur(4px) !important;
-  z-index: 999998 !important;
-}
-
-/* Animations d'entrée/sortie - depuis la droite */
-@keyframes slideInFromRight {
-  0% {
-    transform: translateX(100%);
-    opacity: 0;
-  }
-  100% {
-    transform: translateX(0);
-    opacity: 1;
-  }
-}
-
-/* Animation de sortie */
-.snipcart-modal[data-closing="true"],
-.snipcart-modal.is-closing {
-  animation: slideOutToRight 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards !important;
-}
-
-@keyframes slideOutToRight {
-  0% {
-    transform: translateX(0);
-    opacity: 1;
-  }
-  100% {
-    transform: translateX(100%);
-    opacity: 0;
-  }
-}
-
-/* Responsive */
-@media (max-width: 640px) {
-  .snipcart-modal__container {
-    padding: 40px 20px !important;
-  }
+  z-index: 2147483646 !important;
 }

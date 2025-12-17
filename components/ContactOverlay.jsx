@@ -187,14 +187,9 @@ function ContactInfo() {
 
 // Composant pour le contenu principal (formulaire + informations)
 function ContactContent({ idSuffix = "", headingId, variant = "default", defaultSubject = "" }) {
-  const isOverlay = variant === "overlay";
-  const isPrimarySection = variant === "section";
-
   return (
-    <div
-      className={`grid grid-cols-1 ${isOverlay ? "lg:grid-cols-1 xl:grid-cols-12 gap-6 lg:gap-8 xl:gap-14" : "lg:grid-cols-12 gap-6 md:gap-8 lg:gap-10 xl:gap-14"}`}
-    >
-      <div className={isOverlay ? "xl:col-span-7" : "lg:col-span-7"}>
+    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-8 lg:gap-10 xl:gap-14">
+      <div className="lg:col-span-7">
         <h2
           id={headingId}
           className="text-whiteCustom font-playfair italic text-[32px] sm:text-[36px] md:text-[42px] lg:text-[46px] xl:text-[48px] leading-none mb-6 md:mb-8"
@@ -204,9 +199,7 @@ function ContactContent({ idSuffix = "", headingId, variant = "default", default
         <ContactForm idSuffix={idSuffix} defaultSubject={defaultSubject} />
       </div>
 
-      <div
-        className={`${isOverlay ? "xl:col-span-5" : "lg:col-span-5"} ${isOverlay ? "md:mt-6 xl:mt-0" : "md:mt-6 lg:mt-0"}`}
-      >
+      <div className="lg:col-span-5 md:mt-6 lg:mt-0">
         <ContactInfo />
       </div>
     </div>
@@ -218,7 +211,7 @@ function ContactMarquee() {
   return (
     <div className="absolute inset-x-0 bottom-0 border-t border-whiteCustom/60 overflow-hidden pointer-events-none">
       <motion.div
-        className="whitespace-nowrap text-whiteCustom/90 font-playfair text-[28px] sm:text-[36px] md:text-[48px] lg:text-[56px] xl:text-[64px] py-2 -tracking-normal"
+        className="whitespace-nowrap text-whiteCustom/90 font-playfair text-[18px] sm:text-[24px] md:text-[32px] lg:text-[38px] xl:text-[44px] py-1 sm:py-1.5 md:py-2 -tracking-normal"
         animate={{ x: ["0%", "-50%"] }}
         transition={{ duration: 30, ease: "linear", repeat: Infinity }}
         style={{ willChange: "transform" }}
@@ -360,7 +353,7 @@ export default function ContactOverlay({ open: openProp, onClose: onCloseProp, d
               role="dialog"
               aria-modal="true"
               aria-labelledby="contact-title-overlay"
-              className="absolute inset-x-0 bottom-0 bg-blackCustom border-t-2 border-whiteCustom max-h-[85vh] overflow-y-auto"
+              className="absolute inset-x-0 bottom-0 bg-blackCustom border-t-2 border-whiteCustom max-h-[85vh] flex flex-col"
               initial={{ y: "100%" }}
               animate={{ y: 0 }}
               exit={{ y: "100%" }}
@@ -368,18 +361,32 @@ export default function ContactOverlay({ open: openProp, onClose: onCloseProp, d
               onClick={(e) => e.stopPropagation()}
               ref={panelRef}
             >
-              {/* Contenu principal avec padding adapté pour éviter le marquee */}
-              <div className="relative max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12 pt-8 md:pt-12 lg:pt-16 pb-24 sm:pb-28 md:pb-32">
-                <ContactContent
-                  idSuffix="-overlay"
-                  headingId="contact-title-overlay"
-                  variant="overlay"
-                  defaultSubject={defaultSubject}
-                />
+              {/* Contenu principal - prend l'espace disponible */}
+              <div className="flex-1 overflow-y-auto min-h-0">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12 pt-6 sm:pt-8 md:pt-10 lg:pt-12 pb-6 sm:pb-8 md:pb-10 lg:pb-12">
+                  <ContactContent
+                    idSuffix="-overlay"
+                    headingId="contact-title-overlay"
+                    variant="overlay"
+                    defaultSubject={defaultSubject}
+                  />
+                </div>
               </div>
 
-              {/* Marquee séparé en bas */}
-              <ContactMarquee />
+              {/* Marquee en position relative - fait partie du flux */}
+              <div className="flex-shrink-0 border-t border-whiteCustom/60 overflow-hidden pointer-events-none">
+                <motion.div
+                  className="whitespace-nowrap text-whiteCustom/90 font-playfair text-[18px] sm:text-[24px] md:text-[32px] lg:text-[38px] xl:text-[44px] py-1 sm:py-1.5 md:py-2 -tracking-normal"
+                  animate={{ x: ["0%", "-50%"] }}
+                  transition={{ duration: 30, ease: "linear", repeat: Infinity }}
+                  style={{ willChange: "transform" }}
+                >
+                  <span className="inline-block">{SITE_CONFIG.copyright}</span>
+                  <span className="inline-block">{SITE_CONFIG.copyright}</span>
+                  <span className="inline-block">{SITE_CONFIG.copyright}</span>
+                  <span className="inline-block">{SITE_CONFIG.copyright}</span>
+                </motion.div>
+              </div>
             </motion.div>
           </section>
         )}
@@ -392,7 +399,7 @@ export default function ContactOverlay({ open: openProp, onClose: onCloseProp, d
         aria-label="Contact"
       >
         {/* Contenu principal avec padding pour éviter le marquee */}
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12 pt-8 md:pt-12 lg:pt-16 pb-20 sm:pb-24 md:pb-32">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12 pt-8 md:pt-12 lg:pt-16 pb-20 sm:pb-24 md:pb-32 lg:pb-36 xl:pb-40">
           <ContactContent
             idSuffix="-inline"
             headingId="contact-title-inline"
