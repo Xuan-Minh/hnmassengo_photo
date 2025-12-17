@@ -267,16 +267,59 @@ export default function Gallery() {
               </div>
             ) : (
               // --- MODE LIST ---
-              <div className="w-full h-full flex flex-col md:flex-row">
-                {/* Colonne gauche : Controls */}
-                <div className="hidden md:block w-full md:w-[160px] flex-shrink-0 mb-4 md:mb-0">
-                  <Controls />
-                </div>
+              <div className="w-full h-full flex flex-col">
+                {/* Ligne du haut : Boutons view + Liste projets */}
+                <div className="flex items-center justify-between gap-8 mb-12 mt-8 md:mt-12 w-full">
+                  {/* Boutons de vue à gauche */}
+                  <div className="flex gap-4 flex-shrink-0">
+                    <button
+                      className={`relative w-6 h-6 transition-opacity duration-300 ease-in-out ${
+                        view === "grid" ? "opacity-100" : "opacity-50 hover:opacity-100"
+                      }`}
+                      onClick={() => handleViewChange("grid")}
+                      aria-label="Grid view"
+                    >
+                      <img
+                        src="/icons/gridOff.png"
+                        alt="Grid View Off"
+                        className={`absolute inset-0 w-full h-full object-contain transition-opacity duration-300 ${
+                          view === "grid" ? "opacity-0" : "opacity-100"
+                        }`}
+                      />
+                      <img
+                        src="/icons/gridOn.png"
+                        alt="Grid View On"
+                        className={`absolute inset-0 w-full h-full object-contain transition-opacity duration-300 ${
+                          view === "grid" ? "opacity-100" : "opacity-0"
+                        }`}
+                      />
+                    </button>
+                    <button
+                      className={`relative w-6 h-6 transition-opacity duration-300 ease-in-out ${
+                        view === "list" ? "opacity-100" : "opacity-50 hover:opacity-100"
+                      }`}
+                      onClick={() => handleViewChange("list")}
+                      aria-label="List view"
+                    >
+                      <img
+                        src="/icons/listOff.png"
+                        alt="List View Off"
+                        className={`absolute inset-0 w-full h-full object-contain transition-opacity duration-300 ${
+                          view === "list" ? "opacity-0" : "opacity-100"
+                        }`}
+                      />
+                      <img
+                        src="/icons/listOn.png"
+                        alt="List View On"
+                        className={`absolute inset-0 w-full h-full object-contain transition-opacity duration-300 ${
+                          view === "list" ? "opacity-100" : "opacity-0"
+                        }`}
+                      />
+                    </button>
+                  </div>
 
-                {/* Colonne centrale : Liste projets + Slideshow */}
-                <div className="flex-1 flex flex-col h-full relative">
-                  {/* Liste des projets en haut */}
-                  <div className="flex flex-wrap justify-center gap-x-8 gap-y-2 mb-8 w-full">
+                  {/* Liste des projets au centre */}
+                  <div className="flex flex-wrap justify-center gap-x-8 gap-y-2 flex-1">
                     {filteredProjects.map((p, idx) => (
                       <button
                         key={p.id}
@@ -295,8 +338,12 @@ export default function Gallery() {
                     ))}
                   </div>
 
-                  {/* Zone centrale image (Slideshow) */}
-                  <div className="flex-1 relative w-full h-full flex items-center justify-center  overflow-hidden">
+                  {/* Spacer à droite pour équilibrer */}
+                  <div className="w-[52px] flex-shrink-0"></div>
+                </div>
+
+                {/* Zone centrale image (Slideshow) */}
+                <div className="flex-1 relative w-full h-full flex items-center justify-center overflow-hidden">
                     {filteredProjects.length > 0 && (
                       <img
                         src={
@@ -305,7 +352,7 @@ export default function Gallery() {
                           ]
                         }
                         alt={filteredProjects[currentProjectIndex].name}
-                        className={`max-w-full max-h-full object-contain shadow-lg cursor-pointer transition-opacity duration-300 ${
+                        className={`max-w-[70%] max-h-[70%] md:max-w-[80%] md:max-h-[80%] object-contain shadow-lg cursor-pointer transition-opacity duration-300 ${
                           isTransitioning ? "opacity-0" : "opacity-100"
                         }`}
                         onClick={() =>
@@ -315,11 +362,7 @@ export default function Gallery() {
                         }
                       />
                     )}
-                  </div>
                 </div>
-
-                {/* Spacer pour centrer le contenu */}
-                <div className="hidden md:block w-[160px] flex-shrink-0" />
               </div>
             )}
           </div>
