@@ -45,25 +45,21 @@ export default function Blog() {
     <>
       <section
         id="blog"
-        className="h-screen snap-start flex items-center justify-center bg-blackCustom relative py-10"
+        className="h-screen snap-start flex items-center justify-start bg-blackCustom relative py-10 px-10 lg:pl-24 lg:pr-16"
         aria-label="Section blog"
       >
         <div
-          style={{ width: "min(1100px, 90vw)" }}
+          style={{ width: "min(1000px, 85vw)" }}
           className="flex flex-col h-full max-h-full"
         >
           {/* Posts List */}
-          <div className="flex-1 flex flex-col lg:justify-center justify-center gap-6 min-h-0">
+          <div className="flex-1 flex flex-col justify-start min-h-0">
             {latestPosts.map((post, index) => (
-              <React.Fragment key={post.id}>
-                {index === 0 && (
-                  <div className="w-full h-[1px] bg-whiteCustom/20 hidden lg:block" />
-                )}
-                <BlogPostItem
-                  post={post}
-                  onClick={() => setSelectedPost(post)}
-                />
-              </React.Fragment>
+              <BlogPostItem
+                key={post.id}
+                post={post}
+                onClick={() => setSelectedPost(post)}
+              />
             ))}
           </div>
 

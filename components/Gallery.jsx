@@ -347,7 +347,7 @@ export default function Gallery() {
                 </div>
 
                 {/* Zone centrale image (Slideshow) */}
-                <div className="flex-1 relative w-full h-full flex items-center justify-center overflow-hidden mt-0 md:mt-8 lg:mt-0">
+                <div className="flex-1 relative w-full h-[60vh] flex items-center justify-center overflow-hidden mt-0 md:mt-8 lg:mt-0">
                   {filteredProjects.length > 0 && (
                     <img
                       src={
@@ -356,7 +356,7 @@ export default function Gallery() {
                         ]
                       }
                       alt={filteredProjects[currentProjectIndex].name}
-                      className={`max-w-[85%] max-h-[60vh] lg:max-w-[70%] lg:max-h-[70%] xl:max-w-[80%] xl:max-h-[80%] object-contain shadow-lg cursor-pointer transition-opacity duration-300 ${
+                      className={`max-w-[85%] max-h-[50vh] lg:max-w-[70%] lg:max-h-[70%] xl:max-w-[80%] xl:max-h-[80%] object-contain shadow-lg cursor-pointer transition-opacity duration-300 ${
                         isTransitioning ? "opacity-0" : "opacity-100"
                       }`}
                       onClick={() =>

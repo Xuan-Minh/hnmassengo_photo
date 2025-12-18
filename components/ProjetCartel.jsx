@@ -139,9 +139,8 @@ function ImageMarqueeHorizontal({ images, onClick }) {
       <motion.div
         className="flex items-center"
         drag="x"
-        dragConstraints={{ left: -10000, right: 10000 }}
-        dragElastic={0.05}
-        dragTransition={{ bounceStiffness: 300, bounceDamping: 30 }}
+        dragConstraints={{ left: 0, right: 0 }}
+        dragElastic={0.2}
         animate={{
           x: ["0%", "-50%"],
         }}
