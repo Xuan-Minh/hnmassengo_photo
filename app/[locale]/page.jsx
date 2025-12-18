@@ -1,5 +1,3 @@
-import fs from "fs";
-import path from "path";
 import { useTranslations } from "next-intl";
 import {
   LanguageSwitcher,
@@ -13,19 +11,16 @@ import {
 } from "../../components";
 import { AnimatePresence } from "framer-motion";
 
+// Liste statique des images à afficher
+const imageFiles = [
+  "/home/home1.jpg",
+  "/home/home2.jpg",
+  "/home/home3.jpg",
+  "/home/home4.jpg",
+];
+
 export default function HomePage() {
   const t = useTranslations();
-
-  // Collecte dynamique des images du dossier /public/home
-  const imagesDir = path.join(process.cwd(), "public", "home");
-  let imageFiles = [];
-  try {
-    imageFiles = fs
-      .readdirSync(imagesDir)
-      .filter((f) => /\.(jpe?g|png|webp|avif)$/i.test(f));
-  } catch (e) {
-    // dossier absent: on ignore
-  }
 
   return (
     <>
