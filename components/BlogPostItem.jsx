@@ -8,18 +8,18 @@ export default function BlogPostItem({ post, onClick }) {
       onClick={onClick}
     >
       {post.layout === "image-left" && post.image && (
-        <div className="flex flex-col md:flex-row gap-8 items-center">
-          <div className="w-full md:w-1/3 flex items-center justify-center">
+        <div className="flex flex-col lg:flex-row gap-8 items-center">
+          <div className="w-full lg:w-1/3 flex items-center justify-center">
             <img
               src={post.image}
               alt={post.title}
-              className="w-full h-auto max-h-[150px] object-contain grayscale group-hover:grayscale-0 transition-all duration-500"
+              className="w-full h-auto max-h-[300px] lg:max-h-[150px] object-contain grayscale group-hover:grayscale-0 transition-all duration-500"
             />
           </div>
           <div className="flex-1 text-whiteCustom flex flex-col justify-center">
-            <h3 className="text-3xl font-playfair italic mb-2">{post.title}</h3>
-            <div className="text-xl font-playfair mb-4">{post.date}</div>
-            <p className="font-playfair text-whiteCustom/80 leading-relaxed">
+            <h3 className="text-4xl lg:text-3xl font-playfair italic mb-2">{post.title}</h3>
+            <div className="text-2xl lg:text-xl font-playfair mb-4">{post.date}</div>
+            <p className="text-lg lg:text-base font-playfair text-whiteCustom/80 leading-relaxed">
               {post.content}
             </p>
           </div>
@@ -27,19 +27,19 @@ export default function BlogPostItem({ post, onClick }) {
       )}
 
       {post.layout === "image-right" && post.image && (
-        <div className="flex flex-col md:flex-row gap-8 items-center">
-          <div className="flex-1 text-whiteCustom order-2 md:order-1 flex flex-col justify-center">
-            <h3 className="text-3xl font-playfair italic mb-2">{post.title}</h3>
-            <div className="text-xl font-playfair mb-4">{post.date}</div>
-            <p className="font-playfair text-whiteCustom/80 leading-relaxed">
+        <div className="flex flex-col lg:flex-row gap-8 items-center">
+          <div className="flex-1 text-whiteCustom order-2 lg:order-1 flex flex-col justify-center">
+            <h3 className="text-4xl lg:text-3xl font-playfair italic mb-2">{post.title}</h3>
+            <div className="text-2xl lg:text-xl font-playfair mb-4">{post.date}</div>
+            <p className="text-lg lg:text-base font-playfair text-whiteCustom/80 leading-relaxed">
               {post.content}
             </p>
           </div>
-          <div className="w-full md:w-1/3 flex items-center justify-center order-1 md:order-2">
+          <div className="w-full lg:w-1/3 flex items-center justify-center order-1 lg:order-2">
             <img
               src={post.image}
               alt={post.title}
-              className="w-full h-auto max-h-[150px] object-contain grayscale group-hover:grayscale-0 transition-all duration-500"
+              className="w-full h-auto max-h-[300px] lg:max-h-[150px] object-contain grayscale group-hover:grayscale-0 transition-all duration-500"
             />
           </div>
         </div>
@@ -48,10 +48,10 @@ export default function BlogPostItem({ post, onClick }) {
       {(post.layout === "text-only" || !post.image) && (
         <div className="text-whiteCustom">
           <div className="flex flex-wrap items-baseline gap-4 mb-4">
-            <h3 className="text-3xl font-playfair italic">{post.title}</h3>
-            <span className="text-xl font-playfair">{post.date}</span>
+            <h3 className="text-4xl lg:text-3xl font-playfair italic">{post.title}</h3>
+            <span className="text-2xl lg:text-xl font-playfair">{post.date}</span>
           </div>
-          <p className="font-playfair text-whiteCustom/80 leading-relaxed max-w-3xl">
+          <p className="text-lg lg:text-base font-playfair text-whiteCustom/80 leading-relaxed max-w-3xl">
             {post.content}
           </p>
         </div>

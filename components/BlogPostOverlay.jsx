@@ -46,7 +46,10 @@ export default function BlogPostOverlay({ post, onClose, onPrevious, onNext }) {
                   {post.date}
                 </div>
                 {/* Title separate */}
-                <h1 className="text-3xl md:text-4xl lg:text-5xl italic font-normal leading-[0.85] mt-0">
+                <h1
+                  className="text-3xl md:text-4xl lg:text-5xl italic font-normal leading-[0.85] mt-2"
+                  id="blog-post-title"
+                >
                   {post.title}
                 </h1>
               </div>
