@@ -67,6 +67,12 @@ export default function HomeImageRotation({
 
   const current = images[index];
 
+  // Correction du chemin : retire les slashs en trop
+  const imgSrc =
+    typeof current === "string"
+      ? current.replace(/^\/+|\/+/g, "/").replace(/^home\//, "/home/")
+      : "";
+
   // Positionnement horizontal dynamique
   let justify = "justify-center";
   let marginClass = "";
@@ -90,7 +96,7 @@ export default function HomeImageRotation({
       <div className="relative h-[55vh] lg:h-[60vh] aspect-[3/4] overflow-hidden mx-auto lg:mx-0">
         <AnimatePresence mode="wait">
           <motion.div
-            key={current}
+            key={imgSrc}
             className="absolute inset-0"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -98,7 +104,7 @@ export default function HomeImageRotation({
             transition={{ duration: 0.8, ease: "easeInOut" }}
           >
             <Image
-              src={`/home/${current}`}
+              src={imgSrc}
               alt=""
               fill
               sizes="(max-width: 768px) 50vh, 55vh"
