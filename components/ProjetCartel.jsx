@@ -127,7 +127,49 @@ function CustomLightbox({ open, onClose, images, project }) {
   );
 }
 
-// Composant pour le carrousel d'images vertical
+// Composant pour le carrousel d'images horizontal (mobile)
+function ImageMarqueeHorizontal({ images, onClick }) {
+  const allImages = [...images, ...images];
+
+  return (
+    <div
+      className="w-full h-full relative bg-whiteCustom cursor-pointer overflow-hidden flex items-center"
+      onClick={onClick}
+    >
+      <motion.div
+        className="flex items-center"
+        drag="x"
+        dragConstraints={{ left: -10000, right: 10000 }}
+        dragElastic={0.05}
+        dragTransition={{ bounceStiffness: 300, bounceDamping: 30 }}
+        animate={{
+          x: ["0%", "-50%"],
+        }}
+        transition={{
+          ease: "linear",
+          duration: images.length * 4,
+          repeat: Infinity,
+        }}
+      >
+        {allImages.map((img, index) => (
+          <div
+            key={index}
+            className="flex-shrink-0 flex justify-center items-center px-8"
+          >
+            <img
+              src={img}
+              alt={`Project image ${index + 1}`}
+              className="h-[30vh] w-auto object-contain"
+              draggable={false}
+            />
+          </div>
+        ))}
+      </motion.div>
+    </div>
+  );
+}
+
+// Composant pour le carrousel d'images vertical (desktop)
 function ImageMarquee({ images, onClick }) {
   // On duplique les images pour créer une boucle parfaite
   const allImages = [...images, ...images];
@@ -219,17 +261,63 @@ Nam dui metus, interdum vitae lobortis vel, viverra consequat neque. Praesent sa
         aria-hidden="true"
       ></motion.div>
       <motion.section
-        className="fixed top-0 right-0 w-screen h-screen bg-whiteCustom z-50 flex shadow-2xl"
+        className="fixed top-0 right-0 w-screen h-screen bg-whiteCustom z-50 flex flex-col md:flex-row shadow-2xl"
         initial={{ x: "100%" }}
         animate={{ x: 0 }}
         exit={{ x: "100%" }}
-        transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }} // Augmentation de la durée à 1s
+        transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
         aria-modal="true"
         role="dialog"
         aria-labelledby="project-title"
       >
-        {/* Colonne de gauche: Infos projet */}
-        <main className="w-full md:w-[55%] h-full border-r border-blackCustom p-8 md:p-16 flex flex-col justify-between overflow-y-auto">
+        {/* Version Mobile: Layout vertical */}
+        <div className="md:hidden w-full h-full flex flex-col relative">
+          {/* Back button en position absolute */}
+          <button
+            onClick={onClose}
+            className="absolute top-6 left-6 z-10 font-playfair text-lg text-blackCustom/60 hover:text-blackCustom transition-colors"
+            aria-label="Close project overlay"
+          >
+            back
+          </button>
+
+          {/* Section supérieure: Marquee horizontal - 50vh */}
+          <div className="h-[50vh] flex-shrink-0 flex items-center">
+            <ImageMarqueeHorizontal
+              images={project.images}
+              onClick={() => setLightboxOpen(true)}
+            />
+          </div>
+
+          {/* Ligne de séparation */}
+          <div className="border-t border-blackCustom/20"></div>
+
+          {/* Section inférieure: Cartel - reste de l'espace */}
+          <div className="flex-1 flex flex-col overflow-y-auto">
+            {/* Contenu texte */}
+            <div className="p-6 flex-1">
+              <div className="font-playfair text-lg italic text-blackCustom mb-4">
+                <TextReveal text={project.coords} />
+              </div>
+              <h2 id="project-title" className="mb-6">
+                <TextReveal
+                  text={project.name}
+                  className="text-3xl font-playfair italic"
+                />
+              </h2>
+              <div className="font-playfair text-base leading-relaxed space-y-4">
+                {paragraphs.map((p, i) => (
+                  <div key={i} className="relative">
+                    <TextReveal text={p} delay={0.2 + i * 0.1} />
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Version Desktop: Layout horizontal */}
+        <main className="hidden md:flex w-[55%] h-full border-r border-blackCustom p-16 flex-col justify-between overflow-y-auto">
           <div>
             <div
               className="flex items-center gap-2 text-lg text-accent mb-2 cursor-pointer"
@@ -252,10 +340,10 @@ Nam dui metus, interdum vitae lobortis vel, viverra consequat neque. Praesent sa
             <h2 id="project-title" className="mb-8">
               <TextReveal
                 text={project.name}
-                className="text-3xl md:text-5xl font-playfair"
+                className="text-5xl font-playfair"
               />
             </h2>
-            <div className="font-playfair text-base md:text-lg max-w-2xl leading-relaxed space-y-4">
+            <div className="font-playfair text-lg max-w-2xl leading-relaxed space-y-4">
               {paragraphs.map((p, i) => (
                 <div key={i} className="relative">
                   <TextReveal text={p} delay={0.2 + i * 0.1} />
@@ -269,7 +357,7 @@ Nam dui metus, interdum vitae lobortis vel, viverra consequat neque. Praesent sa
           </div>
         </main>
 
-        {/* Colonne de droite: Carrousel d'images */}
+        {/* Colonne de droite: Carrousel d'images vertical (desktop only) */}
         <ImageMarquee
           images={project.images}
           onClick={() => setLightboxOpen(true)}
