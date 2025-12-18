@@ -54,13 +54,13 @@ export default function ShopOverlay({ product, onClose, onAddToCart }) {
             <button
               className="text-xl italic text-whiteCustom/60 hover:text-whiteCustom transition-colors"
               onClick={() => {
-                console.log("=== ADD TO CART CLICKED ===");
-                console.log("Product:", product);
+                // logger.debug("=== ADD TO CART CLICKED ===");
+                // logger.debug("Product:", product);
 
                 // Ajouter au panier local via la fonction passée en props
                 if (onAddToCart) {
                   onAddToCart(product);
-                  console.log("Added to local cart");
+                  // logger.debug("Added to local cart");
                 }
 
                 // Fermer l'overlay

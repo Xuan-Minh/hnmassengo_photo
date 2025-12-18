@@ -4,9 +4,14 @@ import { useTranslations } from "next-intl";
 import { motion, AnimatePresence } from "framer-motion";
 import BlogArchives from "./BlogArchives";
 import BlogPostItem from "./BlogPostItem";
-import BlogPostOverlay from "./BlogPostOverlay";
+import dynamic from "next/dynamic";
 import { BLOG_POSTS } from "../lib/data";
 import { CONTENT } from "../lib/constants";
+
+// Lazy load BlogPostOverlay
+const BlogPostOverlay = dynamic(() => import("./BlogPostOverlay"), {
+  loading: () => <div>Loading…</div>,
+});
 
 // Utiliser les données centralisées
 const POSTS =
