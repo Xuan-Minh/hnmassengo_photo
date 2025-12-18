@@ -17,13 +17,13 @@ export default function BlogPostItem({ post, onClick }) {
             />
           </div>
           <div className="flex-1 text-whiteCustom flex flex-col justify-center">
-            <h3 className="text-4xl lg:text-3xl font-playfair italic mb-2">
+            <h3 className="text-2xl lg:text-3xl font-playfair italic mb-2">
               {post.title}
             </h3>
-            <div className="text-2xl lg:text-xl font-playfair mb-4">
+            <div className="text-lg lg:text-xl font-playfair mb-4">
               {post.date}
             </div>
-            <p className="text-lg lg:text-base font-playfair text-whiteCustom/80 leading-relaxed">
+            <p className="text-base lg:text-base font-playfair text-whiteCustom/80 leading-relaxed">
               {post.content}
             </p>
           </div>
@@ -33,13 +33,13 @@ export default function BlogPostItem({ post, onClick }) {
       {post.layout === "image-right" && post.image && (
         <div className="flex flex-col lg:flex-row gap-8 items-center">
           <div className="flex-1 text-whiteCustom order-2 lg:order-1 flex flex-col justify-center">
-            <h3 className="text-4xl lg:text-3xl font-playfair italic mb-2">
+            <h3 className="text-2xl lg:text-3xl font-playfair italic mb-2">
               {post.title}
             </h3>
-            <div className="text-2xl lg:text-xl font-playfair mb-4">
+            <div className="text-lg lg:text-xl font-playfair mb-4">
               {post.date}
             </div>
-            <p className="text-lg lg:text-base font-playfair text-whiteCustom/80 leading-relaxed">
+            <p className="text-base lg:text-base font-playfair text-whiteCustom/80 leading-relaxed">
               {post.content}
             </p>
           </div>
@@ -56,14 +56,14 @@ export default function BlogPostItem({ post, onClick }) {
       {(post.layout === "text-only" || !post.image) && (
         <div className="text-whiteCustom">
           <div className="flex flex-wrap items-baseline gap-4 mb-4">
-            <h3 className="text-4xl lg:text-3xl font-playfair italic">
+            <h3 className="text-2xl lg:text-3xl font-playfair italic">
               {post.title}
             </h3>
-            <span className="text-2xl lg:text-xl font-playfair">
+            <span className="text-lg lg:text-xl font-playfair">
               {post.date}
             </span>
           </div>
-          <p className="text-lg lg:text-base font-playfair text-whiteCustom/80 leading-relaxed max-w-3xl">
+          <p className="text-base lg:text-base font-playfair text-whiteCustom/80 leading-relaxed max-w-3xl">
             {post.content}
           </p>
         </div>

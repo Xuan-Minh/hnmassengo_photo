@@ -135,7 +135,7 @@ export default function Gallery() {
         view === "grid" ? "justify-center" : "justify-start"
       }`}
     >
-      <div className="flex gap-4 mb-4">
+      <div className="hidden lg:flex gap-4 mb-4">
         <button
           className={`relative w-6 h-6 transition-opacity duration-300 ease-in-out ${
             view === "grid" ? "opacity-100" : "opacity-50 hover:opacity-100"
@@ -210,7 +210,7 @@ export default function Gallery() {
     <>
       <section
         id="works"
-        className="relative w-full h-screen overflow-hidden pt-10"
+        className="relative w-full h-screen overflow-hidden md:pt-10"
       >
         <div
           className={`w-full h-full flex flex-col justify-center items-center transition-opacity duration-300 ${
@@ -268,8 +268,8 @@ export default function Gallery() {
             ) : (
               // --- MODE LIST ---
               <div className="w-full h-full flex flex-col">
-                {/* Ligne du haut : Boutons view + Liste projets */}
-                <div className="flex items-center justify-between gap-8 mb-12 mt-8 md:mt-12 w-full">
+                {/* Ligne du haut : Boutons view + Liste projets - Desktop seulement */}
+                <div className="hidden lg:flex items-center justify-between gap-8 mb-12 mt-8 md:mt-12 w-full">
                   {/* Boutons de vue à gauche */}
                   <div className="flex gap-4 flex-shrink-0">
                     <button
@@ -347,7 +347,7 @@ export default function Gallery() {
                 </div>
 
                 {/* Zone centrale image (Slideshow) */}
-                <div className="flex-1 relative w-full h-full flex items-center justify-center overflow-hidden">
+                <div className="flex-1 relative w-full h-full flex items-center justify-center overflow-hidden mt-0 md:mt-8 lg:mt-0">
                   {filteredProjects.length > 0 && (
                     <img
                       src={
@@ -356,7 +356,7 @@ export default function Gallery() {
                         ]
                       }
                       alt={filteredProjects[currentProjectIndex].name}
-                      className={`max-w-[70%] max-h-[70%] md:max-w-[80%] md:max-h-[80%] object-contain shadow-lg cursor-pointer transition-opacity duration-300 ${
+                      className={`max-w-[85%] max-h-[60vh] lg:max-w-[70%] lg:max-h-[70%] xl:max-w-[80%] xl:max-h-[80%] object-contain shadow-lg cursor-pointer transition-opacity duration-300 ${
                         isTransitioning ? "opacity-0" : "opacity-100"
                       }`}
                       onClick={() =>
@@ -366,6 +366,26 @@ export default function Gallery() {
                       }
                     />
                   )}
+                </div>
+
+                {/* Liste des projets en bas - Mobile seulement */}
+                <div className="lg:hidden flex flex-row flex-wrap justify-center gap-x-6 gap-y-3 mt-3">
+                  {filteredProjects.map((p, idx) => (
+                    <button
+                      key={p.id}
+                      onClick={() => {
+                        setCurrentProjectIndex(idx);
+                        setCurrentImageIndex(0);
+                      }}
+                      className={`text-lg font-playfair transition-all duration-300 ${
+                        idx === currentProjectIndex
+                          ? "font-bold underline underline-offset-4"
+                          : "opacity-60"
+                      }`}
+                    >
+                      {p.name}
+                    </button>
+                  ))}
                 </div>
               </div>
             )}
