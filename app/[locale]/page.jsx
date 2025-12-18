@@ -31,58 +31,35 @@ export default function HomePage() {
       <LanguageSwitcher />
       <section
         id="home"
-        className="relative h-screen snap-start bg-whiteCustom"
+        className="relative h-screen snap-start bg-whiteCustom overflow-hidden flex flex-col lg:block"
         aria-label="Hero"
       >
-        {/* Bloc rotation image positionnable (par défaut centre, modifiable) */}
-        {(() => {
-          // Sur mobile, toujours centré
-          const isMobile =
-            typeof window !== "undefined" && window.innerWidth < 768;
-          let pos = "center";
-          if (!isMobile) {
-            const r = Math.random();
-            if (r < 0.4) pos = "left";
-            else if (r < 0.8) pos = "right";
-          }
-          // Marges fixes desktop, centre sur mobile
-          let extraStyle = "z-20";
-          if (pos === "right")
-            extraStyle += " right-0 max-w-[calc(100vw-220px)] pr-[120px]";
-          if (pos === "left") extraStyle += " left-0 pl-[40px]";
-          if (pos === "center") extraStyle += " left-1/2 -translate-x-1/2";
-          // Sur mobile, toujours centré
-          if (typeof window !== "undefined" && window.innerWidth < 768) {
-            extraStyle = "z-20 left-1/2 -translate-x-1/2";
-          }
-          return (
-            <div
-              className={`absolute top-[40%] w-full -translate-y-1/2 pointer-events-none ${extraStyle}`}
-            >
-              <HomeImageRotation images={imageFiles} position={pos} />
-            </div>
-          );
-        })()}
+        {/* Bloc rotation image - centré et plus grand sur mobile, positionnable sur desktop */}
+        <div className="flex items-center justify-center pt-20 pb-8 lg:absolute lg:top-[40%] lg:left-0 lg:-translate-y-1/2 w-full lg:w-full z-20 pointer-events-none lg:pt-0 lg:pb-0">
+          <HomeImageRotation images={imageFiles} />
+        </div>
 
-        {/* Bloc texte bas gauche */}
-        <div className="absolute bottom-16 left-16">
-          <p className="text-lg md:text-[20px] lg:text-[26px] font-playfair text-neutral-300 tracking-[-0.05em]">
+        {/* Bloc texte - juste en dessous de l'image sur mobile/tablet, bas gauche sur desktop */}
+        <div className="px-4 pb-8 lg:absolute lg:bottom-16 lg:left-16 lg:right-auto lg:px-0 lg:pb-0">
+          <p className="text-xl lg:text-2xl xl:text-[30px] font-playfair text-neutral-300 tracking-[-0.05em]">
             {t("home.title")}
           </p>
-          <div className="mt-4">
-            <h2 className="text-[56px] md:text-[72px] leading-none font-playfair italic tracking-[-0.05em]">
+          <div className="mt-2 lg:mt-4">
+            <h2 className="text-[52px] lg:text-[64px] xl:text-[80px] leading-none font-playfair italic tracking-[-0.05em]">
               Han-Noah
             </h2>
-            <h2 className="mt-0 text-[64px] md:text-[80px] leading-none font-lexend font-semibold tracking-tight">
+            <h2 className="mt-0 text-[56px] lg:text-[72px] xl:text-[88px] leading-none font-lexend font-semibold tracking-tight">
               MASSENGO
             </h2>
           </div>
         </div>
 
-        {/* Rôle - en dessous du nom sur mobile, centré sur desktop */}
-        <p className="absolute bottom-16 left-16 mt-4 md:mt-0 md:bottom-16 md:left-1/2 md:-translate-x-1/2 text-lg md:text-[26px] lg:text-[32px] font-playfair italic text-neutral-300 tracking-[-0.05em]">
-          {t("home.role")}
-        </p>
+        {/* Rôle - en dessous du nom sur mobile/tablet, à droite sur desktop */}
+        <div className="px-4 pb-8 lg:absolute lg:bottom-20 lg:right-16 lg:px-0 lg:pb-0">
+          <p className="text-xl lg:text-[28px] xl:text-[36px] font-playfair italic text-neutral-300 tracking-[-0.05em]">
+            {t("home.role")}
+          </p>
+        </div>
       </section>
 
       <HomePresentation />

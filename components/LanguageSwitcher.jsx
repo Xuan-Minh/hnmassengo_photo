@@ -78,7 +78,7 @@ export default function LanguageSwitcher() {
 
   return (
     <div
-      className={`hidden md:flex fixed text-[20px] bottom-10 right-20 z-50 items-center space-x-2 transition-opacity duration-300 ${
+      className={`hidden lg:flex fixed text-[20px] bottom-10 right-20 z-50 items-center space-x-2 transition-opacity duration-300 ${
         hideSelector ? "opacity-0 pointer-events-none" : "opacity-100"
       }`}
     >

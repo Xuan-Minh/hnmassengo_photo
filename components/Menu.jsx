@@ -116,7 +116,7 @@ export default function Menu() {
     if (typeof window !== "undefined") {
       setActive(sessionStorage.getItem("menuActiveSection") || "home");
       setHydrated(true);
-      const handleResize = () => setIsMobile(window.innerWidth < 768);
+      const handleResize = () => setIsMobile(window.innerWidth < 1024);
       handleResize();
       window.addEventListener("resize", handleResize);
       return () => window.removeEventListener("resize", handleResize);

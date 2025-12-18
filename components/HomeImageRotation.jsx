@@ -87,7 +87,7 @@ export default function HomeImageRotation({
 
   return (
     <div className={`flex ${justify} w-full ${marginClass}`}>
-      <div className="relative w-[420px] max-w-[80vw] md:max-w-[60vw] aspect-[3/4] overflow-hidden mx-auto md:mx-0">
+      <div className="relative h-[55vh] lg:h-[60vh] aspect-[3/4] overflow-hidden mx-auto lg:mx-0">
         <AnimatePresence mode="wait">
           <motion.div
             key={current}
@@ -101,7 +101,7 @@ export default function HomeImageRotation({
               src={`/home/${current}`}
               alt=""
               fill
-              sizes="(max-width: 768px) 80vw, 420px"
+              sizes="(max-width: 768px) 50vh, 55vh"
               className="object-contain"
               priority
             />
