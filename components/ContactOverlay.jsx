@@ -186,7 +186,12 @@ function ContactInfo() {
 }
 
 // Composant pour le contenu principal (formulaire + informations)
-function ContactContent({ idSuffix = "", headingId, variant = "default", defaultSubject = "" }) {
+function ContactContent({
+  idSuffix = "",
+  headingId,
+  variant = "default",
+  defaultSubject = "",
+}) {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-8 lg:gap-10 xl:gap-14">
       <div className="lg:col-span-7">
@@ -225,7 +230,11 @@ function ContactMarquee() {
   );
 }
 
-export default function ContactOverlay({ open: openProp, onClose: onCloseProp, defaultSubject = "" } = {}) {
+export default function ContactOverlay({
+  open: openProp,
+  onClose: onCloseProp,
+  defaultSubject = "",
+} = {}) {
   const t = useTranslations();
   const [openState, setOpenState] = useState(false);
   const panelRef = useRef(null);
@@ -264,7 +273,7 @@ export default function ContactOverlay({ open: openProp, onClose: onCloseProp, d
     const root = document.getElementById("scroll-root");
     const prevOverflow = root ? root.style.overflow : undefined;
     const prevPaddingRight = root ? root.style.paddingRight : undefined;
-    
+
     // Calculate scrollbar width to prevent layout shift
     if (root) {
       const scrollbarWidth = root.offsetWidth - root.clientWidth;
@@ -378,7 +387,11 @@ export default function ContactOverlay({ open: openProp, onClose: onCloseProp, d
                 <motion.div
                   className="whitespace-nowrap text-whiteCustom/90 font-playfair text-[18px] sm:text-[24px] md:text-[32px] lg:text-[38px] xl:text-[44px] py-1 sm:py-1.5 md:py-2 -tracking-normal"
                   animate={{ x: ["0%", "-50%"] }}
-                  transition={{ duration: 30, ease: "linear", repeat: Infinity }}
+                  transition={{
+                    duration: 30,
+                    ease: "linear",
+                    repeat: Infinity,
+                  }}
                   style={{ willChange: "transform" }}
                 >
                   <span className="inline-block">{SITE_CONFIG.copyright}</span>
