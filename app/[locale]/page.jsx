@@ -11,6 +11,7 @@ import {
   ContactOverlay,
   IntroOverlay,
 } from "../../components";
+import { AnimatePresence } from "framer-motion";
 
 export default function HomePage() {
   const t = useTranslations();
