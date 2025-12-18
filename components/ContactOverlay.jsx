@@ -230,6 +230,25 @@ function ContactMarquee() {
   );
 }
 
+// Ajout d'un composant global pour le toast de confirmation
+function ContactSuccessToast({ show, onClose }) {
+  return (
+    <AnimatePresence>
+      {show && (
+        <motion.div
+          initial={{ y: -80, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          exit={{ y: -80, opacity: 0 }}
+          transition={{ duration: 0.6 }}
+          className="fixed top-0 left-1/2 -translate-x-1/2 z-[100] bg-green-600/90 text-whiteCustom font-playfair px-6 py-4 rounded-b shadow-lg text-lg md:text-xl"
+        >
+          Message envoyé avec succès !
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}
+
 export default function ContactOverlay({
   open: openProp,
   onClose: onCloseProp,
@@ -238,6 +257,7 @@ export default function ContactOverlay({
   const t = useTranslations();
   const [openState, setOpenState] = useState(false);
   const panelRef = useRef(null);
+  const [showSuccessToast, setShowSuccessToast] = useState(false);
 
   // Use prop if provided, otherwise use internal state
   const open = openProp !== undefined ? openProp : openState;
@@ -338,12 +358,20 @@ export default function ContactOverlay({
     };
   }, [open]);
 
+  const handleSuccess = () => {
+    setShowSuccessToast(true);
+    setTimeout(() => {
+      setShowSuccessToast(false);
+      handleClose();
+    }, 1800);
+  };
+
   return (
     <>
-      {/* Contact Overlay Modal */}
+      <ContactSuccessToast show={showSuccessToast} />
       <AnimatePresence>
         {open && (
-          <section
+          <motion.div
             id="info-overlay"
             className="fixed inset-0 z-[130]"
             aria-label="Contact Overlay"
@@ -378,6 +406,7 @@ export default function ContactOverlay({
                     headingId="contact-title-overlay"
                     variant="overlay"
                     defaultSubject={defaultSubject}
+                    onSubmitSuccess={handleSuccess}
                   />
                 </div>
               </div>
@@ -401,7 +430,7 @@ export default function ContactOverlay({
                 </motion.div>
               </div>
             </motion.div>
-          </section>
+          </motion.div>
         )}
       </AnimatePresence>
 
