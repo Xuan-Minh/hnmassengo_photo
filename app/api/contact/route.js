@@ -34,12 +34,6 @@ export async function POST(request) {
     const subject = formData.get("subject");
     const message = formData.get("message");
 
-    // logger.debug("=== API ROUTE CONTACT ===");
-    // logger.debug("Full Name:", fullName);
-    // logger.debug("Email:", email);
-    // logger.debug("Subject:", subject);
-    // logger.debug("Message:", message);
-
     // Ici, vous pouvez ajouter la logique d'envoi d'email
     // Par exemple avec Nodemailer, SendGrid, etc.
 

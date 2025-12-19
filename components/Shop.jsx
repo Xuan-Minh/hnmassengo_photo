@@ -73,8 +73,6 @@ export default function Shop() {
         setCartItems(items);
         setCartTotal(calculatedTotal);
         setCartCount(count);
-
-        logger.debug("Cart synced:", { items, total: calculatedTotal, count });
       } catch (error) {
         logger.error("Error syncing with Snipcart:", error);
       }
@@ -84,36 +82,53 @@ export default function Shop() {
   // Initialiser Snipcart et écouter les événements
   useEffect(() => {
     const initSnipcart = () => {
-      if (window.Snipcart) {
+      if (typeof window === "undefined" || !window.Snipcart) return;
+      try {
         syncWithSnipcart();
-
-        // Écouter les changements du panier
-        if (window.Snipcart.events) {
+        if (
+          window.Snipcart.events &&
+          typeof window.Snipcart.events.on === "function"
+        ) {
           window.Snipcart.events.on("item.added", syncWithSnipcart);
           window.Snipcart.events.on("item.removed", syncWithSnipcart);
           window.Snipcart.events.on("item.updated", syncWithSnipcart);
-          window.Snipcart.events.on("cart.confirmed", () => {
-            logger.debug("Order completed");
-            syncWithSnipcart();
-          });
+          window.Snipcart.events.on("cart.confirmed", syncWithSnipcart);
         }
+      } catch (e) {
+        if (logger && typeof logger.error === "function")
+          logger.error("Snipcart init error", e);
       }
     };
 
     // Attendre que Snipcart soit prêt
+    let loadHandler;
     if (document.readyState === "complete") {
       setTimeout(initSnipcart, 1000);
     } else {
-      window.addEventListener("load", () => {
-        setTimeout(initSnipcart, 1000);
-      });
+      loadHandler = () => setTimeout(initSnipcart, 1000);
+      window.addEventListener("load", loadHandler);
     }
 
     return () => {
-      if (window.Snipcart && window.Snipcart.events) {
-        window.Snipcart.events.off("item.added", syncWithSnipcart);
-        window.Snipcart.events.off("item.removed", syncWithSnipcart);
-        window.Snipcart.events.off("item.updated", syncWithSnipcart);
+      // Nettoyage défensif des écouteurs Snipcart
+      if (
+        typeof window !== "undefined" &&
+        window.Snipcart &&
+        window.Snipcart.events &&
+        typeof window.Snipcart.events.off === "function"
+      ) {
+        try {
+          window.Snipcart.events.off("item.added", syncWithSnipcart);
+          window.Snipcart.events.off("item.removed", syncWithSnipcart);
+          window.Snipcart.events.off("item.updated", syncWithSnipcart);
+          window.Snipcart.events.off("cart.confirmed", syncWithSnipcart);
+        } catch (e) {
+          if (logger && typeof logger.error === "function")
+            logger.error("Snipcart cleanup error", e);
+        }
+      }
+      if (loadHandler) {
+        window.removeEventListener("load", loadHandler);
       }
     };
   }, [syncWithSnipcart]);
@@ -140,8 +155,6 @@ export default function Shop() {
         document.body.removeChild(tempBtn);
         syncWithSnipcart();
       }, 100);
-
-      logger.debug("Added to Snipcart:", product);
     },
     [syncWithSnipcart]
   );

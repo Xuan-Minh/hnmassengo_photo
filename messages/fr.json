@@ -39,5 +39,13 @@
     "spaces": "Espaces",
     "shop": "Boutique",
     "info": "Infos"
+  },
+  "form": {
+    "error_fullName": "Nom requis",
+    "error_email": "Email requis",
+    "error_email_invalid": "Email invalide",
+    "error_subject": "Sujet requis",
+    "error_message": "Message requis",
+    "success": "Message envoyé avec succès ! Nous vous répondrons sous 24h à l'adresse indiquée."
   }
 }

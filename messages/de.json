@@ -39,5 +39,13 @@
     "spaces": "Räume",
     "shop": "Shop",
     "info": "Infos"
+  },
+  "form": {
+    "error_fullName": "Name erforderlich",
+    "error_email": "E-Mail erforderlich",
+    "error_email_invalid": "Ungültige E-Mail",
+    "error_subject": "Betreff erforderlich",
+    "error_message": "Nachricht erforderlich",
+    "success": "Nachricht erfolgreich gesendet! Wir antworten innerhalb von 24 Stunden an die angegebene Adresse."
   }
 }

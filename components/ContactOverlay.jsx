@@ -9,20 +9,41 @@ import { EVENTS, addEventHandler } from "../lib/events";
 
 // Composant pour le formulaire de contact réutilisable
 function ContactForm({ idSuffix = "", onSubmitSuccess, defaultSubject = "" }) {
-  // Suppression du message de succès local, gestion uniquement par le toast global
   const formRef = useRef(null);
+  const [errors, setErrors] = useState({});
+  const [success, setSuccess] = useState(false);
+  const successTimeout = useRef();
+  const t = useTranslations();
+
+  const validate = () => {
+    const form = formRef.current;
+    const newErrors = {};
+    if (!form.fullName.value.trim()) newErrors.fullName = t("form.error_fullName");
+    if (!form.email.value.trim()) newErrors.email = t("form.error_email");
+    else if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(form.email.value)) newErrors.email = t("form.error_email_invalid");
+    if (!form.subject.value.trim()) newErrors.subject = t("form.error_subject");
+    if (!form.message.value.trim()) newErrors.message = t("form.error_message");
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  // Permet de fermer l'overlay parent si fourni
+  const closeOverlay = typeof onSubmitSuccess === "function" ? onSubmitSuccess : undefined;
 
   const handleSubmit = (e) => {
     e.preventDefault();
     const form = formRef.current;
     if (!form) return;
+    if (!validate()) return;
 
     // En local, simuler le succès sans soumission Netlify
     const isLocal =
       typeof window !== "undefined" && window.location.hostname === "localhost";
     if (isLocal) {
-      if (onSubmitSuccess) onSubmitSuccess();
-      setTimeout(() => {
+      setSuccess(true);
+      if (closeOverlay) closeOverlay();
+      successTimeout.current = setTimeout(() => {
+        setSuccess(false);
         form.reset();
       }, 1800);
       return;
@@ -32,53 +53,60 @@ function ContactForm({ idSuffix = "", onSubmitSuccess, defaultSubject = "" }) {
     const iframe = document.createElement("iframe");
     iframe.name = "hidden-iframe";
     iframe.style.display = "none";
-    document.body.appendChild(iframe);
-    form.target = "hidden-iframe";
-    form.submit();
-    if (onSubmitSuccess) onSubmitSuccess();
-    setTimeout(() => {
-      form.reset();
-      if (iframe && iframe.parentNode === document.body) {
-        document.body.removeChild(iframe);
+    try {
+      document.body.appendChild(iframe);
+      form.target = "hidden-iframe";
+      form.submit();
+      setSuccess(true);
+      if (closeOverlay) closeOverlay();
+    } catch (e) {
+      // Sécurise l'ajout de l'iframe
+    }
+    successTimeout.current = setTimeout(() => {
+      setSuccess(false);
+      try {
+        form.reset();
+        if (iframe && iframe.parentNode && iframe.parentNode === document.body) {
+          document.body.removeChild(iframe);
+        }
+      } catch (e) {
+        // Sécurise la suppression de l'iframe
       }
     }, 1800);
   };
 
+  // Nettoyage du timeout si le composant est démonté
+  useEffect(() => {
+    return () => {
+      if (successTimeout.current) clearTimeout(successTimeout.current);
+    };
+  }, []);
+
   return (
-    <form
-      ref={formRef}
-      className="space-y-4 md:space-y-6"
-      name="contact"
-      method="POST"
-      action="/success.html"
-      aria-label="Contact form"
-      data-netlify="true"
-      data-netlify-honeypot="bot-field"
-      onSubmit={handleSubmit}
-    >
-      <input type="hidden" name="form-name" value="contact" />
-      <input type="hidden" name="bot-field" style={{ display: "none" }} />
-
-      {/* Notification de succès locale supprimée, le toast global s'affiche uniquement */}
-
-      <div>
-        <label
-          htmlFor={`fullName${idSuffix}`}
-          className="block text-whiteCustom/90 font-playfair text-sm mb-2"
-        >
-          full name *
-        </label>
-        <input
-          id={`fullName${idSuffix}`}
-          name="fullName"
-          type="text"
-          required
-          className="w-full bg-formBG text-whiteCustom placeholder-whiteCustom/40 border border-whiteCustom/60 focus:border-whiteCustom outline-none px-3 py-2 text-sm md:text-base"
-        />
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-        <div>
+    <div className="relative">
+      {/* Notification de succès style toast en haut à droite */}
+      {success && (
+        <div className="fixed z-[9999] top-8 right-8 bg-whiteCustom/95 text-blackCustom shadow-lg rounded px-6 py-3 font-playfair text-lg font-medium border border-black/10 animate-fade-in">
+          {t("form.success")}
+        </div>
+      )}
+      <form
+        ref={formRef}
+        className="space-y-4 md:space-y-6"
+        name="contact"
+        method="POST"
+        action="/success.html"
+        aria-label="Contact form"
+        data-netlify="true"
+        data-netlify-honeypot="bot-field"
+        onSubmit={handleSubmit}
+        noValidate
+      >
+        <input type="hidden" name="form-name" value="contact" />
+        <input type="hidden" name="bot-field" style={{ display: "none" }} />
+        {/* ...existing code... */}
+      </form>
+    </div>
           <label
             htmlFor={`email${idSuffix}`}
             className="block text-whiteCustom/90 font-playfair text-sm mb-2"
@@ -91,7 +119,11 @@ function ContactForm({ idSuffix = "", onSubmitSuccess, defaultSubject = "" }) {
             type="email"
             required
             className="w-full bg-formBG text-whiteCustom placeholder-whiteCustom/40 border border-whiteCustom/60 focus:border-whiteCustom outline-none px-3 py-2 text-sm md:text-base"
+            aria-invalid={!!errors.email}
           />
+          {errors.email && (
+            <div className="text-red-400 text-xs mt-1">{errors.email}</div>
+          )}
         </div>
         <div>
           <label
@@ -107,7 +139,11 @@ function ContactForm({ idSuffix = "", onSubmitSuccess, defaultSubject = "" }) {
             required
             defaultValue={defaultSubject}
             className="w-full bg-formBG text-whiteCustom placeholder-whiteCustom/40 border border-whiteCustom/60 focus:border-whiteCustom outline-none px-3 py-2 text-sm md:text-base"
+            aria-invalid={!!errors.subject}
           />
+          {errors.subject && (
+            <div className="text-red-400 text-xs mt-1">{errors.subject}</div>
+          )}
         </div>
       </div>
 
@@ -124,7 +160,11 @@ function ContactForm({ idSuffix = "", onSubmitSuccess, defaultSubject = "" }) {
           rows={5}
           required
           className="w-full bg-formBG text-whiteCustom placeholder-whiteCustom/40 border border-whiteCustom/60 focus:border-whiteCustom outline-none px-3 py-2 resize-y text-sm md:text-base"
+          aria-invalid={!!errors.message}
         />
+        {errors.message && (
+          <div className="text-red-400 text-xs mt-1">{errors.message}</div>
+        )}
       </div>
 
       <div>
@@ -381,17 +421,16 @@ export default function ContactOverlay({
   }, [open]);
 
   const handleSuccess = () => {
-    console.log("handleSuccess appelé", { toast, open });
     toast.showToast(
       <div className="bg-green-600/20 border border-green-500 text-green-300 p-3 md:p-4 rounded shadow-lg">
         <div className="flex items-center gap-3">
           <span className="text-lg md:text-xl">✅</span>
           <div>
             <h3 className="font-semibold text-sm md:text-base">
-              Message envoyé avec succès !
+              {t("form.success").split("!")[0]}!
             </h3>
             <p className="text-xs md:text-sm opacity-90">
-              Nous vous répondrons sous 24h à l'adresse indiquée.
+              {t("form.success").split("!").slice(1).join("!").trim()}
             </p>
           </div>
         </div>
@@ -399,9 +438,8 @@ export default function ContactOverlay({
     );
     if (open) {
       setTimeout(() => {
-        console.log("Fermeture overlay via handleClose()");
         handleClose();
-      }, 100);
+      }, 1400);
     }
   };
 

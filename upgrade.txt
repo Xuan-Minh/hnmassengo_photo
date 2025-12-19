@@ -1,8 +1,0 @@
-Etat actuel :
-- Loading screen : Responsive (OK) / Animation (OK) 
-- HomePage : pas responsive encore, la taille des 
-- Menu : version ordinateur OK, mais le menu téléphone à changer
-- Language Selector : OK
-- Gallery 
-- Blog
-- 
