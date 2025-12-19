@@ -459,6 +459,7 @@ export default function ContactOverlay({
             headingId="contact-title-inline"
             variant="section"
             defaultSubject={defaultSubject}
+            onSubmitSuccess={handleSuccess}
           />
         </div>
 
