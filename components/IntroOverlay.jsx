@@ -5,6 +5,7 @@ import OverlayActionButton from "./OverlayActionButton";
 import { EVENTS, emitEvent, addEventHandler } from "../lib/events";
 
 export default function IntroOverlay() {
+  const previouslyFocusedElement = useRef(null);
   // Plus de couleurs flashy: fond neutre sombre pour éviter tout flash de couleur
   const neutralBackground = "#222222";
 
@@ -25,10 +26,18 @@ export default function IntroOverlay() {
   // Affiche toujours l'intro au chargement (plus de gating sessionStorage)
   useEffect(() => {
     setVisible(true);
+    previouslyFocusedElement.current = document.activeElement;
     return () => {
       if (rotateInterval.current) clearInterval(rotateInterval.current);
     };
   }, []);
+
+  // Rendre le focus à l'élément déclencheur à la fermeture
+  useEffect(() => {
+    if (!visible && previouslyFocusedElement.current) {
+      previouslyFocusedElement.current.focus?.();
+    }
+  }, [visible]);
 
   // Récupère la liste des fichiers dans /public/loading
   const fetchedOnceRef = useRef(false);

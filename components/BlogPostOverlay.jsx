@@ -1,10 +1,25 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import ContactOverlay from "./ContactOverlay";
 
 export default function BlogPostOverlay({ post, onClose, onPrevious, onNext }) {
   const [contactOpen, setContactOpen] = useState(false);
+  const previouslyFocusedElement = useRef(null);
+
+  // Mémoriser l'élément actif à l'ouverture
+  useEffect(() => {
+    if (post) {
+      previouslyFocusedElement.current = document.activeElement;
+    }
+  }, [post]);
+
+  // Rendre le focus à l'élément déclencheur à la fermeture
+  useEffect(() => {
+    if (!post && previouslyFocusedElement.current) {
+      previouslyFocusedElement.current.focus?.();
+    }
+  }, [post]);
 
   if (!post) return null;
 

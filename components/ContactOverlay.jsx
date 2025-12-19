@@ -264,11 +264,26 @@ export default function ContactOverlay({
   const t = useTranslations();
   const [openState, setOpenState] = useState(false);
   const panelRef = useRef(null);
+  const previouslyFocusedElement = useRef(null);
   // Use prop if provided, otherwise use internal state
   const open = openProp !== undefined ? openProp : openState;
   useFocusTrap(open);
   const toast = useToast();
   const handleClose = onCloseProp || (() => setOpenState(false));
+
+  // Mémoriser l'élément actif à l'ouverture
+  useEffect(() => {
+    if (open) {
+      previouslyFocusedElement.current = document.activeElement;
+    }
+  }, [open]);
+
+  // Rendre le focus à l'élément déclencheur à la fermeture
+  useEffect(() => {
+    if (!open && previouslyFocusedElement.current) {
+      previouslyFocusedElement.current.focus?.();
+    }
+  }, [open]);
 
   // Open/close via global events (only if not controlled by props)
   useEffect(() => {

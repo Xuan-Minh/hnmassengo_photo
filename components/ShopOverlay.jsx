@@ -1,9 +1,25 @@
 "use client";
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { logger } from "../lib/logger";
 
 export default function ShopOverlay({ product, onClose, onAddToCart }) {
+  const previouslyFocusedElement = useRef(null);
+
+  // Mémoriser l'élément actif à l'ouverture
+  useEffect(() => {
+    if (product) {
+      previouslyFocusedElement.current = document.activeElement;
+    }
+  }, [product]);
+
+  // Rendre le focus à l'élément déclencheur à la fermeture
+  useEffect(() => {
+    if (!product && previouslyFocusedElement.current) {
+      previouslyFocusedElement.current.focus?.();
+    }
+  }, [product]);
+
   if (!product) return null;
 
   return (
@@ -54,16 +70,9 @@ export default function ShopOverlay({ product, onClose, onAddToCart }) {
             <button
               className="text-xl italic text-whiteCustom/60 hover:text-whiteCustom transition-colors"
               onClick={() => {
-                // logger.debug("=== ADD TO CART CLICKED ===");
-                // logger.debug("Product:", product);
-
-                // Ajouter au panier local via la fonction passée en props
                 if (onAddToCart) {
                   onAddToCart(product);
-                  // logger.debug("Added to local cart");
                 }
-
-                // Fermer l'overlay
                 setTimeout(() => {
                   onClose();
                 }, 200);
