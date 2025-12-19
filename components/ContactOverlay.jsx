@@ -27,18 +27,18 @@ function ContactForm({ idSuffix = "", onSubmitSuccess, defaultSubject = "" }) {
     // Soumettre le formulaire
     form.submit();
 
-    // Afficher le message de succès
+    // Afficher le message de succès local
     setShowSuccess(true);
     if (onSubmitSuccess) onSubmitSuccess();
 
     // Réinitialiser le formulaire après un court délai
     setTimeout(() => {
+      setShowSuccess(false);
       form.reset();
-      // Vérifier que l'iframe existe toujours avant de la supprimer
       if (iframe && iframe.parentNode === document.body) {
         document.body.removeChild(iframe);
       }
-    }, 1000);
+    }, 1800);
   };
 
   return (
