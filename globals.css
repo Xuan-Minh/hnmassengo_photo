@@ -1,3 +1,10 @@
+/* Accessibilité : focus visible sur tous les boutons et liens */
+button:focus-visible, a:focus-visible, [tabindex]:focus-visible {
+  outline: 2px solid #2563eb !important;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 3px #2563eb44;
+  transition: outline 0.2s, box-shadow 0.2s;
+}
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

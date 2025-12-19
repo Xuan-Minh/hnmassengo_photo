@@ -50,7 +50,7 @@ export default function Blog() {
     <>
       <section
         id="blog"
-        className="h-screen snap-start flex items-center justify-start bg-blackCustom relative py-10 px-10 lg:pl-24 lg:pr-16"
+        className="h-screen snap-start flex items-center justify-start bg-blackCustom relative py-10 px-6 sm:px-10 lg:pl-20 lg:pr-16"
         aria-label="Section blog"
       >
         <div

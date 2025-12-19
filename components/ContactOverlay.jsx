@@ -1,5 +1,6 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
+import { useFocusTrap } from "../lib/hooks";
 import { useToast } from "./GlobalToast";
 import { useTranslations } from "next-intl";
 import { AnimatePresence, motion } from "framer-motion";
@@ -263,10 +264,10 @@ export default function ContactOverlay({
   const t = useTranslations();
   const [openState, setOpenState] = useState(false);
   const panelRef = useRef(null);
-  const toast = useToast();
-
   // Use prop if provided, otherwise use internal state
   const open = openProp !== undefined ? openProp : openState;
+  useFocusTrap(open);
+  const toast = useToast();
   const handleClose = onCloseProp || (() => setOpenState(false));
 
   // Open/close via global events (only if not controlled by props)
