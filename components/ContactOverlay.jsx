@@ -17,7 +17,8 @@ function ContactForm({ idSuffix = "", onSubmitSuccess, defaultSubject = "" }) {
     if (!form) return;
 
     // En local, simuler le succès sans soumission Netlify
-    const isLocal = typeof window !== "undefined" && window.location.hostname === "localhost";
+    const isLocal =
+      typeof window !== "undefined" && window.location.hostname === "localhost";
     if (isLocal) {
       if (onSubmitSuccess) onSubmitSuccess();
       setTimeout(() => {
@@ -188,7 +189,13 @@ function ContactContent({
         >
           Contact
         </h2>
-        <ContactForm idSuffix={idSuffix} defaultSubject={defaultSubject} onSubmitSuccess={typeof onSubmitSuccess === 'function' ? onSubmitSuccess : undefined} />
+        <ContactForm
+          idSuffix={idSuffix}
+          defaultSubject={defaultSubject}
+          onSubmitSuccess={
+            typeof onSubmitSuccess === "function" ? onSubmitSuccess : undefined
+          }
+        />
       </div>
 
       <div className="lg:col-span-5 md:mt-6 lg:mt-0">
