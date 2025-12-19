@@ -1,5 +1,6 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
+import { useToast } from "./GlobalToast";
 import { useTranslations } from "next-intl";
 import { AnimatePresence, motion } from "framer-motion";
 import { SITE_CONFIG } from "../lib/constants";
@@ -7,7 +8,7 @@ import { EVENTS, addEventHandler } from "../lib/events";
 
 // Composant pour le formulaire de contact réutilisable
 function ContactForm({ idSuffix = "", onSubmitSuccess, defaultSubject = "" }) {
-  const [showSuccess, setShowSuccess] = useState(false);
+  // Suppression du message de succès local, gestion uniquement par le toast global
   const formRef = useRef(null);
 
   const handleSubmit = (e) => {
@@ -15,25 +16,25 @@ function ContactForm({ idSuffix = "", onSubmitSuccess, defaultSubject = "" }) {
     const form = formRef.current;
     if (!form) return;
 
-    // Créer une iframe cachée pour soumettre le formulaire
+    // En local, simuler le succès sans soumission Netlify
+    const isLocal = typeof window !== "undefined" && window.location.hostname === "localhost";
+    if (isLocal) {
+      if (onSubmitSuccess) onSubmitSuccess();
+      setTimeout(() => {
+        form.reset();
+      }, 1800);
+      return;
+    }
+
+    // Production Netlify : soumission réelle
     const iframe = document.createElement("iframe");
     iframe.name = "hidden-iframe";
     iframe.style.display = "none";
     document.body.appendChild(iframe);
-
-    // Configurer le formulaire pour soumettre dans l'iframe
     form.target = "hidden-iframe";
-
-    // Soumettre le formulaire
     form.submit();
-
-    // Afficher le message de succès local
-    setShowSuccess(true);
     if (onSubmitSuccess) onSubmitSuccess();
-
-    // Réinitialiser le formulaire après un court délai
     setTimeout(() => {
-      setShowSuccess(false);
       form.reset();
       if (iframe && iframe.parentNode === document.body) {
         document.body.removeChild(iframe);
@@ -56,21 +57,7 @@ function ContactForm({ idSuffix = "", onSubmitSuccess, defaultSubject = "" }) {
       <input type="hidden" name="form-name" value="contact" />
       <input type="hidden" name="bot-field" style={{ display: "none" }} />
 
-      {showSuccess && (
-        <div className="bg-green-600/20 border border-green-500 text-green-300 p-3 md:p-4 rounded mb-4 md:mb-6">
-          <div className="flex items-center gap-3">
-            <span className="text-lg md:text-xl">✅</span>
-            <div>
-              <h3 className="font-semibold text-sm md:text-base">
-                Message envoyé avec succès !
-              </h3>
-              <p className="text-xs md:text-sm opacity-90">
-                Nous vous répondrons sous 24h à l'adresse indiquée.
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Notification de succès locale supprimée, le toast global s'affiche uniquement */}
 
       <div>
         <label
@@ -201,7 +188,7 @@ function ContactContent({
         >
           Contact
         </h2>
-        <ContactForm idSuffix={idSuffix} defaultSubject={defaultSubject} />
+        <ContactForm idSuffix={idSuffix} defaultSubject={defaultSubject} onSubmitSuccess={typeof onSubmitSuccess === 'function' ? onSubmitSuccess : undefined} />
       </div>
 
       <div className="lg:col-span-5 md:mt-6 lg:mt-0">
@@ -269,7 +256,7 @@ export default function ContactOverlay({
   const t = useTranslations();
   const [openState, setOpenState] = useState(false);
   const panelRef = useRef(null);
-  const [showSuccessToast, setShowSuccessToast] = useState(false);
+  const toast = useToast();
 
   // Use prop if provided, otherwise use internal state
   const open = openProp !== undefined ? openProp : openState;
@@ -371,16 +358,33 @@ export default function ContactOverlay({
   }, [open]);
 
   const handleSuccess = () => {
-    setShowSuccessToast(true);
-    setTimeout(() => {
-      setShowSuccessToast(false);
-      handleClose();
-    }, 1800);
+    console.log("handleSuccess appelé", { toast, open });
+    toast.showToast(
+      <div className="bg-green-600/20 border border-green-500 text-green-300 p-3 md:p-4 rounded shadow-lg">
+        <div className="flex items-center gap-3">
+          <span className="text-lg md:text-xl">✅</span>
+          <div>
+            <h3 className="font-semibold text-sm md:text-base">
+              Message envoyé avec succès !
+            </h3>
+            <p className="text-xs md:text-sm opacity-90">
+              Nous vous répondrons sous 24h à l'adresse indiquée.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+    if (open) {
+      setTimeout(() => {
+        console.log("Fermeture overlay via handleClose()");
+        handleClose();
+      }, 100);
+    }
   };
 
   return (
     <>
-      <ContactSuccessToast show={showSuccessToast} />
+      {/* Le toast global est maintenant géré par ToastProvider */}
       <AnimatePresence>
         {open && (
           <motion.div
