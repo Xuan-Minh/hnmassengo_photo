@@ -230,8 +230,8 @@ function ContactMarquee() {
   );
 }
 
-// Ajout d'un composant global pour le toast de confirmation
-function ContactSuccessToast({ show, onClose }) {
+// Composant toast réutilisant l'ancien style de notification
+function ContactSuccessToast({ show }) {
   return (
     <AnimatePresence>
       {show && (
@@ -240,9 +240,21 @@ function ContactSuccessToast({ show, onClose }) {
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: -80, opacity: 0 }}
           transition={{ duration: 0.6 }}
-          className="fixed top-0 left-1/2 -translate-x-1/2 z-[100] bg-green-600/90 text-whiteCustom font-playfair px-6 py-4 rounded-b shadow-lg text-lg md:text-xl"
+          className="fixed top-4 left-1/2 -translate-x-1/2 z-[200] w-full max-w-md px-4"
         >
-          Message envoyé avec succès !
+          <div className="bg-green-600/20 border border-green-500 text-green-300 p-3 md:p-4 rounded shadow-lg">
+            <div className="flex items-center gap-3">
+              <span className="text-lg md:text-xl">✅</span>
+              <div>
+                <h3 className="font-semibold text-sm md:text-base">
+                  Message envoyé avec succès !
+                </h3>
+                <p className="text-xs md:text-sm opacity-90">
+                  Nous vous répondrons sous 24h à l'adresse indiquée.
+                </p>
+              </div>
+            </div>
+          </div>
         </motion.div>
       )}
     </AnimatePresence>
