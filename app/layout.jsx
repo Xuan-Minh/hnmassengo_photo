@@ -73,16 +73,11 @@ const playfair = Playfair_Display({
   variable: "--font-playfair",
 });
 
-import { usePathname } from "next/navigation";
+
 
 export default function RootLayout({ children }) {
-  // Canonical URL dynamique
-  const baseUrl = "https://hannoahmassengo.fr";
-  // Utilisation Next.js 13/14 : pathname côté serveur
-  let canonicalPath = "";
-  if (typeof window !== "undefined") {
-    canonicalPath = window.location.pathname;
-  }
+  // Canonical statique (page d'accueil FR par défaut)
+  const canonicalUrl = "https://hannoahmassengo.fr/fr";
 
   // Langues disponibles
   const locales = [
@@ -101,7 +96,7 @@ export default function RootLayout({ children }) {
         <link rel="stylesheet" href="/styles/snipcart-custom.css" />
         <link
           rel="canonical"
-          href={baseUrl + (canonicalPath || "")}
+          href={canonicalUrl}
           key="canonical"
         />
         <meta name="theme-color" content="#222222" />
