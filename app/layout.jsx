@@ -33,7 +33,7 @@ export const metadata = {
     type: "website",
     images: [
       {
-        url: "/home/home1.jpg", // Update with actual OG image
+        url: "/ogimage.webp",
         width: 1200,
         height: 630,
         alt: "Han-Noah MASSENGO Photography Portfolio",
@@ -44,7 +44,7 @@ export const metadata = {
     card: "summary_large_image",
     title: "Han-Noah MASSENGO | Photographer & Visual Artist",
     description: "Explore the artistic portfolio of Han-Noah MASSENGO.",
-    images: ["/home/home1.jpg"], // Update with actual OG image
+    images: ["/ogimage.webp"],
   },
   robots: {
     index: true,
@@ -73,7 +73,24 @@ const playfair = Playfair_Display({
   variable: "--font-playfair",
 });
 
+import { usePathname } from "next/navigation";
+
 export default function RootLayout({ children }) {
+  // Canonical URL dynamique
+  const baseUrl = "https://hannoahmassengo.fr";
+  // Utilisation Next.js 13/14 : pathname côté serveur
+  let canonicalPath = "";
+  if (typeof window !== "undefined") {
+    canonicalPath = window.location.pathname;
+  }
+
+  // Langues disponibles
+  const locales = [
+    { code: "fr", url: "https://hannoahmassengo.fr/fr" },
+    { code: "en", url: "https://hannoahmassengo.fr/en" },
+    { code: "de", url: "https://hannoahmassengo.fr/de" },
+  ];
+
   return (
     <html lang="fr">
       <head>
@@ -82,6 +99,21 @@ export default function RootLayout({ children }) {
           href="https://cdn.snipcart.com/themes/v3.0.31/default/snipcart.css"
         />
         <link rel="stylesheet" href="/styles/snipcart-custom.css" />
+        <link
+          rel="canonical"
+          href={baseUrl + (canonicalPath || "")}
+          key="canonical"
+        />
+        <meta name="theme-color" content="#222222" />
+        {/* Balises hreflang pour le SEO multilingue */}
+        {locales.map((locale) => (
+          <link
+            rel="alternate"
+            href={locale.url}
+            hrefLang={locale.code}
+            key={"hreflang-" + locale.code}
+          />
+        ))}
       </head>
       <body
         className={[lexend.className, lexend.variable, playfair.variable].join(

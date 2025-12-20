@@ -18,9 +18,11 @@ function ContactForm({ idSuffix = "", onSubmitSuccess, defaultSubject = "" }) {
   const validate = () => {
     const form = formRef.current;
     const newErrors = {};
-    if (!form.fullName.value.trim()) newErrors.fullName = t("form.error_fullName");
+    if (!form.fullName.value.trim())
+      newErrors.fullName = t("form.error_fullName");
     if (!form.email.value.trim()) newErrors.email = t("form.error_email");
-    else if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(form.email.value)) newErrors.email = t("form.error_email_invalid");
+    else if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(form.email.value))
+      newErrors.email = t("form.error_email_invalid");
     if (!form.subject.value.trim()) newErrors.subject = t("form.error_subject");
     if (!form.message.value.trim()) newErrors.message = t("form.error_message");
     setErrors(newErrors);
@@ -28,7 +30,8 @@ function ContactForm({ idSuffix = "", onSubmitSuccess, defaultSubject = "" }) {
   };
 
   // Permet de fermer l'overlay parent si fourni
-  const closeOverlay = typeof onSubmitSuccess === "function" ? onSubmitSuccess : undefined;
+  const closeOverlay =
+    typeof onSubmitSuccess === "function" ? onSubmitSuccess : undefined;
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -41,10 +44,10 @@ function ContactForm({ idSuffix = "", onSubmitSuccess, defaultSubject = "" }) {
       typeof window !== "undefined" && window.location.hostname === "localhost";
     if (isLocal) {
       setSuccess(true);
-      if (closeOverlay) closeOverlay();
       successTimeout.current = setTimeout(() => {
         setSuccess(false);
         form.reset();
+        if (closeOverlay) closeOverlay();
       }, 1800);
       return;
     }
@@ -58,7 +61,6 @@ function ContactForm({ idSuffix = "", onSubmitSuccess, defaultSubject = "" }) {
       form.target = "hidden-iframe";
       form.submit();
       setSuccess(true);
-      if (closeOverlay) closeOverlay();
     } catch (e) {
       // Sécurise l'ajout de l'iframe
     }
@@ -66,12 +68,17 @@ function ContactForm({ idSuffix = "", onSubmitSuccess, defaultSubject = "" }) {
       setSuccess(false);
       try {
         form.reset();
-        if (iframe && iframe.parentNode && iframe.parentNode === document.body) {
+        if (
+          iframe &&
+          iframe.parentNode &&
+          iframe.parentNode === document.body
+        ) {
           document.body.removeChild(iframe);
         }
       } catch (e) {
         // Sécurise la suppression de l'iframe
       }
+      if (closeOverlay) closeOverlay();
     }, 1800);
   };
 
@@ -330,7 +337,13 @@ export default function ContactOverlay({
   const open = openProp !== undefined ? openProp : openState;
   useFocusTrap(open);
   const toast = useToast();
-  const handleClose = onCloseProp || (() => setOpenState(false));
+  const handleClose = () => {
+    if (typeof onCloseProp === "function") {
+      onCloseProp();
+    } else {
+      setOpenState(false);
+    }
+  };
 
   // Mémoriser l'élément actif à l'ouverture
   useEffect(() => {
@@ -457,11 +470,6 @@ export default function ContactOverlay({
         </div>
       </div>
     );
-    if (open) {
-      setTimeout(() => {
-        handleClose();
-      }, 1800);
-    }
   };
 
   return (
