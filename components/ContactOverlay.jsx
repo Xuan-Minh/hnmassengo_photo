@@ -86,7 +86,7 @@ function ContactForm({ idSuffix = "", onSubmitSuccess, defaultSubject = "" }) {
     <div className="relative">
       {/* Notification de succès style toast en haut à droite */}
       {success && (
-        <div className="fixed z-[9999] top-8 right-8 bg-whiteCustom/95 text-blackCustom shadow-lg rounded px-6 py-3 font-playfair text-lg font-medium border border-black/10 animate-fade-in">
+        <div className="fixed z-[9999] top-8 right-8 bg-blackCustom border border-green-500 text-green-300 shadow-lg rounded px-6 py-3 font-playfair text-lg font-medium animate-fade-in">
           {t("form.success")}
         </div>
       )}
@@ -104,79 +104,100 @@ function ContactForm({ idSuffix = "", onSubmitSuccess, defaultSubject = "" }) {
       >
         <input type="hidden" name="form-name" value="contact" />
         <input type="hidden" name="bot-field" style={{ display: "none" }} />
-        {/* ...existing code... */}
-      </form>
-    </div>
-          <label
-            htmlFor={`email${idSuffix}`}
-            className="block text-whiteCustom/90 font-playfair text-sm mb-2"
-          >
-            email *
-          </label>
-          <input
-            id={`email${idSuffix}`}
-            name="email"
-            type="email"
-            required
-            className="w-full bg-formBG text-whiteCustom placeholder-whiteCustom/40 border border-whiteCustom/60 focus:border-whiteCustom outline-none px-3 py-2 text-sm md:text-base"
-            aria-invalid={!!errors.email}
-          />
-          {errors.email && (
-            <div className="text-red-400 text-xs mt-1">{errors.email}</div>
-          )}
-        </div>
+
         <div>
           <label
-            htmlFor={`subject${idSuffix}`}
+            htmlFor={`fullName${idSuffix}`}
             className="block text-whiteCustom/90 font-playfair text-sm mb-2"
           >
-            subject *
+            {t("form.label_fullName") || "full name *"}
           </label>
           <input
-            id={`subject${idSuffix}`}
-            name="subject"
+            id={`fullName${idSuffix}`}
+            name="fullName"
             type="text"
             required
-            defaultValue={defaultSubject}
             className="w-full bg-formBG text-whiteCustom placeholder-whiteCustom/40 border border-whiteCustom/60 focus:border-whiteCustom outline-none px-3 py-2 text-sm md:text-base"
-            aria-invalid={!!errors.subject}
+            aria-invalid={!!errors.fullName}
           />
-          {errors.subject && (
-            <div className="text-red-400 text-xs mt-1">{errors.subject}</div>
+          {errors.fullName && (
+            <div className="text-red-400 text-xs mt-1">{errors.fullName}</div>
           )}
         </div>
-      </div>
 
-      <div>
-        <label
-          htmlFor={`message${idSuffix}`}
-          className="block text-whiteCustom/90 font-playfair text-sm mb-2"
-        >
-          message *
-        </label>
-        <textarea
-          id={`message${idSuffix}`}
-          name="message"
-          rows={5}
-          required
-          className="w-full bg-formBG text-whiteCustom placeholder-whiteCustom/40 border border-whiteCustom/60 focus:border-whiteCustom outline-none px-3 py-2 resize-y text-sm md:text-base"
-          aria-invalid={!!errors.message}
-        />
-        {errors.message && (
-          <div className="text-red-400 text-xs mt-1">{errors.message}</div>
-        )}
-      </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+          <div>
+            <label
+              htmlFor={`email${idSuffix}`}
+              className="block text-whiteCustom/90 font-playfair text-sm mb-2"
+            >
+              {t("form.label_email") || "email *"}
+            </label>
+            <input
+              id={`email${idSuffix}`}
+              name="email"
+              type="email"
+              required
+              className="w-full bg-formBG text-whiteCustom placeholder-whiteCustom/40 border border-whiteCustom/60 focus:border-whiteCustom outline-none px-3 py-2 text-sm md:text-base"
+              aria-invalid={!!errors.email}
+            />
+            {errors.email && (
+              <div className="text-red-400 text-xs mt-1">{errors.email}</div>
+            )}
+          </div>
+          <div>
+            <label
+              htmlFor={`subject${idSuffix}`}
+              className="block text-whiteCustom/90 font-playfair text-sm mb-2"
+            >
+              {t("form.label_subject") || "subject *"}
+            </label>
+            <input
+              id={`subject${idSuffix}`}
+              name="subject"
+              type="text"
+              required
+              defaultValue={defaultSubject}
+              className="w-full bg-formBG text-whiteCustom placeholder-whiteCustom/40 border border-whiteCustom/60 focus:border-whiteCustom outline-none px-3 py-2 text-sm md:text-base"
+              aria-invalid={!!errors.subject}
+            />
+            {errors.subject && (
+              <div className="text-red-400 text-xs mt-1">{errors.subject}</div>
+            )}
+          </div>
+        </div>
 
-      <div>
-        <button
-          type="submit"
-          className="px-6 py-3 text-lg font-medium font-playfair text-whiteCustom/85 hover:text-whiteCustom hover:opacity-100 transition-all duration-300"
-        >
-          <span className="inline-block mr-2">→</span>
-          <span>send</span>
-        </button>
-      </div>
-    </form>
+        <div>
+          <label
+            htmlFor={`message${idSuffix}`}
+            className="block text-whiteCustom/90 font-playfair text-sm mb-2"
+          >
+            {t("form.label_message") || "message *"}
+          </label>
+          <textarea
+            id={`message${idSuffix}`}
+            name="message"
+            rows={5}
+            required
+            className="w-full bg-formBG text-whiteCustom placeholder-whiteCustom/40 border border-whiteCustom/60 focus:border-whiteCustom outline-none px-3 py-2 resize-y text-sm md:text-base"
+            aria-invalid={!!errors.message}
+          />
+          {errors.message && (
+            <div className="text-red-400 text-xs mt-1">{errors.message}</div>
+          )}
+        </div>
+
+        <div>
+          <button
+            type="submit"
+            className="px-6 py-3 text-lg font-medium font-playfair text-whiteCustom/85 hover:text-whiteCustom hover:opacity-100 transition-all duration-300"
+          >
+            <span className="inline-block mr-2">→</span>
+            <span>{t("form.label_send") || "send"}</span>
+          </button>
+        </div>
+      </form>
+    </div>
   );
 }
 
@@ -439,7 +460,7 @@ export default function ContactOverlay({
     if (open) {
       setTimeout(() => {
         handleClose();
-      }, 1400);
+      }, 1800);
     }
   };
 

@@ -46,6 +46,11 @@
     "error_email_invalid": "Ungültige E-Mail",
     "error_subject": "Betreff erforderlich",
     "error_message": "Nachricht erforderlich",
-    "success": "Nachricht erfolgreich gesendet! Wir antworten innerhalb von 24 Stunden an die angegebene Adresse."
+    "success": "Nachricht erfolgreich gesendet! Wir antworten innerhalb von 24 Stunden an die angegebene Adresse.",
+    "label_fullName": "Vollständiger Name *",
+    "label_email": "E-Mail *",
+    "label_subject": "Betreff *",
+    "label_message": "Nachricht *",
+    "label_send": "Senden"
   }
 }

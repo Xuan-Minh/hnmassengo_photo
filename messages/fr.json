@@ -46,6 +46,11 @@
     "error_email_invalid": "Email invalide",
     "error_subject": "Sujet requis",
     "error_message": "Message requis",
-    "success": "Message envoyé avec succès ! Nous vous répondrons sous 24h à l'adresse indiquée."
+    "success": "Message envoyé avec succès ! Nous vous répondrons sous 24h à l'adresse indiquée.",
+    "label_fullName": "Nom et prénom *",
+    "label_email": "Email *",
+    "label_subject": "Sujet *",
+    "label_message": "Message *",
+    "label_send": "Envoyer"
   }
 }
