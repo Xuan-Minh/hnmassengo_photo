@@ -73,8 +73,6 @@ const playfair = Playfair_Display({
   variable: "--font-playfair",
 });
 
-
-
 export default function RootLayout({ children }) {
   // Canonical statique (page d'accueil FR par défaut)
   const canonicalUrl = "https://hannoahmassengo.fr/fr";
@@ -94,11 +92,7 @@ export default function RootLayout({ children }) {
           href="https://cdn.snipcart.com/themes/v3.0.31/default/snipcart.css"
         />
         <link rel="stylesheet" href="/styles/snipcart-custom.css" />
-        <link
-          rel="canonical"
-          href={canonicalUrl}
-          key="canonical"
-        />
+        <link rel="canonical" href={canonicalUrl} key="canonical" />
         <meta name="theme-color" content="#222222" />
         {/* Balises hreflang pour le SEO multilingue */}
         {locales.map((locale) => (
