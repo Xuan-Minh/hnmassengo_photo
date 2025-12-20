@@ -105,7 +105,7 @@ export default function HomeImageRotation({
           >
             <Image
               src={imgSrc}
-              alt=""
+              alt="Han-Noah profile illustration"
               fill
               sizes="(max-width: 768px) 50vh, 55vh"
               className="object-contain"
