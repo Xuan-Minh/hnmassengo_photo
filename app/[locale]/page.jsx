@@ -13,10 +13,10 @@ import { AnimatePresence } from "framer-motion";
 
 // Liste statique des images à afficher
 const imageFiles = [
-  "/home/home1.jpg",
-  "/home/home2.jpg",
-  "/home/home3.jpg",
-  "/home/home4.jpg",
+  "/home/home1 .webp",
+  "/home/home2 .webp",
+  "/home/home3 .webp",
+  "/home/home4 .webp",
 ];
 
 export default function HomePage() {

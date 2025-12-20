@@ -5,8 +5,8 @@
     "price": 20,
     "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit...",
     "url": "/products.json",
-    "image": "/home/home1.jpg",
-    "imgHover": "/home/home2.jpg"
+    "image": "/home/home1 .webp",
+    "imgHover": "/home/home2 .webp"
   },
   {
     "id": "2",
@@ -14,8 +14,8 @@
     "price": 20,
     "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit...",
     "url": "/products.json",
-    "image": "/home/home2.jpg",
-    "imgHover": "/home/home3.jpg"
+    "image": "/home/home2 .webp",
+    "imgHover": "/home/home3 .webp"
   },
   {
     "id": "3",
@@ -23,8 +23,8 @@
     "price": 20,
     "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit...",
     "url": "/products.json",
-    "image": "/home/home3.jpg",
-    "imgHover": "/home/home4.jpg"
+    "image": "/home/home3 .webp",
+    "imgHover": "/home/home4 .webp"
   },
   {
     "id": "4",
@@ -32,7 +32,7 @@
     "price": 20,
     "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit...",
     "url": "/products.json",
-    "image": "/home/home4.jpg",
-    "imgHover": "/home/home1.jpg"
+    "image": "/home/home4 .webp",
+    "imgHover": "/home/home1 .webp"
   }
 ]
