@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import ContactOverlay from "./ContactOverlay";
@@ -71,10 +72,14 @@ export default function BlogPostOverlay({ post, onClose, onPrevious, onNext }) {
 
               {/* Image */}
               <div className="relative w-full mb-8 max-w-md mx-auto">
-                <img
+                <Image
                   src={post.image}
                   alt={post.title}
+                  width={600}
+                  height={400}
                   className="w-full h-auto object-contain"
+                  sizes="(max-width: 768px) 100vw, 600px"
+                  priority
                 />
               </div>
 

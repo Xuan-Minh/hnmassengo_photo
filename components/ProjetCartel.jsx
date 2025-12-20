@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import PropTypes from "prop-types";
 import { motion, AnimatePresence } from "framer-motion";
@@ -61,32 +62,47 @@ function CustomLightbox({ open, onClose, images, project }) {
       <div className="flex-1 relative flex items-center justify-center overflow-hidden w-full h-full">
         {/* Prev Image */}
         <div className="absolute left-8 top-1/2 -translate-y-1/2 h-[50%] w-[15%] opacity-40 blur-[2px] pointer-events-none hidden md:block">
-          <img
+          <Image
             src={images[prevIndex]}
-            className="w-full h-full object-contain"
             alt={`${project.name} - Previous image`}
+            width={300}
+            height={200}
+            className="w-full h-full object-contain"
+            sizes="(max-width: 768px) 100vw, 300px"
+            priority={false}
           />
         </div>
 
         {/* Main Image */}
         <div className="relative z-10 h-[60%] md:h-[80%] w-full max-w-[60%] flex items-center justify-center">
-          <motion.img
+          <motion.div
             key={currentIndex}
-            src={images[currentIndex]}
-            className="max-h-full max-w-full object-contain shadow-2xl"
-            alt={`${project.name} - Image ${currentIndex + 1} of ${images.length}`}
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.3 }}
-          />
+          >
+            <Image
+              src={images[currentIndex]}
+              alt={`${project.name} - Image ${currentIndex + 1} of ${images.length}`}
+              width={800}
+              height={600}
+              className="max-h-full max-w-full object-contain shadow-2xl"
+              sizes="(max-width: 1200px) 100vw, 800px"
+              priority
+            />
+          </motion.div>
         </div>
 
         {/* Next Image */}
         <div className="absolute right-8 top-1/2 -translate-y-1/2 h-[50%] w-[15%] opacity-40 blur-[2px] pointer-events-none hidden md:block">
-          <img
+          <Image
             src={images[nextIndex]}
-            className="w-full h-full object-contain"
             alt="next"
+            width={300}
+            height={200}
+            className="w-full h-full object-contain"
+            sizes="(max-width: 768px) 100vw, 300px"
+            priority={false}
           />
         </div>
 
@@ -155,11 +171,15 @@ function ImageMarqueeHorizontal({ images, onClick }) {
             key={index}
             className="flex-shrink-0 flex justify-center items-center px-8"
           >
-            <img
+            <Image
               src={img}
               alt={`Project image ${index + 1}`}
+              width={400}
+              height={300}
               className="h-[30vh] w-auto object-contain"
               draggable={false}
+              sizes="(max-width: 768px) 100vw, 400px"
+              priority={false}
             />
           </div>
         ))}
@@ -195,11 +215,15 @@ function ImageMarquee({ images, onClick }) {
               key={index}
               className="w-full pb-16 flex-shrink-0 flex justify-center items-center"
             >
-              <img
+              <Image
                 src={img}
                 alt={`Project image ${index + 1}`}
+                width={400}
+                height={300}
                 className="w-3/5 h-auto object-contain"
                 draggable={false}
+                sizes="(max-width: 1200px) 100vw, 400px"
+                priority={false}
               />
             </div>
           ))}

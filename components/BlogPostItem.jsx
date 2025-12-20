@@ -1,4 +1,5 @@
 import React from "react";
+import Image from "next/image";
 import PropTypes from "prop-types";
 
 export default function BlogPostItem({ post, onClick }) {
@@ -10,10 +11,14 @@ export default function BlogPostItem({ post, onClick }) {
       {post.layout === "image-left" && post.image && (
         <div className="flex flex-col lg:flex-row gap-8 items-center">
           <div className="w-full lg:w-1/3 flex items-center justify-center">
-            <img
+            <Image
               src={post.image}
               alt={post.title}
+              width={400}
+              height={300}
               className="w-full h-auto max-h-[300px] lg:max-h-[150px] object-contain grayscale group-hover:grayscale-0 transition-all duration-500"
+              sizes="(max-width: 768px) 100vw, 400px"
+              priority={false}
             />
           </div>
           <div className="flex-1 text-whiteCustom flex flex-col justify-center">
@@ -44,10 +49,14 @@ export default function BlogPostItem({ post, onClick }) {
             </p>
           </div>
           <div className="w-full lg:w-1/3 flex items-center justify-center order-1 lg:order-2">
-            <img
+            <Image
               src={post.image}
               alt={post.title}
+              width={400}
+              height={300}
               className="w-full h-auto max-h-[300px] lg:max-h-[150px] object-contain grayscale group-hover:grayscale-0 transition-all duration-500"
+              sizes="(max-width: 768px) 100vw, 400px"
+              priority={false}
             />
           </div>
         </div>
