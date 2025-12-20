@@ -16,6 +16,7 @@
     "node": ">=18.0.0"
   },
   "dependencies": {
+    "@next/bundle-analyzer": "^16.1.0",
     "@portabletext/react": "^4.0.3",
     "@sanity/client": "^7.11.2",
     "@sanity/image-url": "^1.2.0",
