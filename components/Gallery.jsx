@@ -414,7 +414,8 @@ export default function Gallery() {
             </div>
             {view === "grid" && (
               <button
-                className="text-lg font-playfair italic text-accent hover:text-accentHover transition-colors"
+                className="text-lg font-playfair italic text-accent border-none bg-transparent px-2 py-1 transition-all duration-150 hover:underline hover:underline-offset-4 hover:text-accent/80 focus:outline-none"
+                style={{ letterSpacing: "0.02em" }}
                 onClick={() => setOverlayOpen(true)}
               >
                 see more

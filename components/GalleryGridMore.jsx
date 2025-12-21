@@ -92,7 +92,7 @@ export default function GalleryGridMore({
               return (
                 <div
                   key={imgData.src + index}
-                  className="relative group cursor-pointer aspect-[4/3]"
+                  className="relative group cursor-pointer flex items-center justify-center w-full h-full overflow-hidden"
                   onMouseEnter={() => setHoveredId(imgData.projectId)}
                   onMouseLeave={() => setHoveredId(null)}
                   onClick={() => handleImageClick(imgData.project)}
@@ -100,7 +100,7 @@ export default function GalleryGridMore({
                   <img
                     src={imgData.src}
                     alt={imgData.name}
-                    className={`w-full h-full object-cover rounded shadow transition-opacity duration-300 ${
+                    className={`max-w-[90%] max-h-[90%] object-contain shadow transition-opacity duration-300 ${
                       isHovered ? "opacity-100" : "opacity-40"
                     }`}
                     draggable={false}
