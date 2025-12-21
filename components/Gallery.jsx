@@ -3,7 +3,10 @@ import { useState, useEffect } from "react";
 import { GALLERY_FILTERS } from "../lib/constants";
 import { GALLERY_PROJECTS } from "../lib/data";
 // dynamic déjà importé plus bas, donc on ne le réimporte pas ici
-const AnimatePresence = dynamic(() => import("framer-motion").then(mod => mod.AnimatePresence), { ssr: false });
+const AnimatePresence = dynamic(
+  () => import("framer-motion").then((mod) => mod.AnimatePresence),
+  { ssr: false }
+);
 
 // Utiliser les données centralisées
 const PROJECTS = GALLERY_PROJECTS;

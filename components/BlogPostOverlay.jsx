@@ -3,7 +3,10 @@ import Image from "next/image";
 import React, { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import dynamic from "next/dynamic";
-const AnimatePresence = dynamic(() => import("framer-motion").then(mod => mod.AnimatePresence), { ssr: false });
+const AnimatePresence = dynamic(
+  () => import("framer-motion").then((mod) => mod.AnimatePresence),
+  { ssr: false }
+);
 import ContactOverlay from "./ContactOverlay";
 
 export default function BlogPostOverlay({ post, onClose, onPrevious, onNext }) {

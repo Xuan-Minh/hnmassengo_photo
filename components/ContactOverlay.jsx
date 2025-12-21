@@ -5,7 +5,10 @@ import { useToast } from "./GlobalToast";
 import { useTranslations } from "next-intl";
 import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
-const AnimatePresence = dynamic(() => import("framer-motion").then(mod => mod.AnimatePresence), { ssr: false });
+const AnimatePresence = dynamic(
+  () => import("framer-motion").then((mod) => mod.AnimatePresence),
+  { ssr: false }
+);
 import { SITE_CONFIG } from "../lib/constants";
 import { EVENTS, addEventHandler } from "../lib/events";
 
