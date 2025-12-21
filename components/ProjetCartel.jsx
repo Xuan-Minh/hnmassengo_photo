@@ -3,7 +3,12 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import PropTypes from "prop-types";
-import { motion, AnimatePresence } from "framer-motion";
+import dynamic from "next/dynamic";
+import { motion } from "framer-motion";
+const AnimatePresence = dynamic(
+  () => import("framer-motion").then((mod) => mod.AnimatePresence),
+  { ssr: false }
+);
 import TextReveal from "./TextReveal";
 import { EVENTS, emitEvent } from "../lib/events";
 

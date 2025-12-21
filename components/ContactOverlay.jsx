@@ -3,7 +3,9 @@ import React, { useEffect, useRef, useState } from "react";
 import { useFocusTrap } from "../lib/hooks";
 import { useToast } from "./GlobalToast";
 import { useTranslations } from "next-intl";
-import { AnimatePresence, motion } from "framer-motion";
+import dynamic from "next/dynamic";
+import { motion } from "framer-motion";
+const AnimatePresence = dynamic(() => import("framer-motion").then(mod => mod.AnimatePresence), { ssr: false });
 import { SITE_CONFIG } from "../lib/constants";
 import { EVENTS, addEventHandler } from "../lib/events";
 

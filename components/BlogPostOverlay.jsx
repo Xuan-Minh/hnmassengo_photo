@@ -1,7 +1,9 @@
 "use client";
 import Image from "next/image";
 import React, { useState, useEffect, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
+import dynamic from "next/dynamic";
+const AnimatePresence = dynamic(() => import("framer-motion").then(mod => mod.AnimatePresence), { ssr: false });
 import ContactOverlay from "./ContactOverlay";
 
 export default function BlogPostOverlay({ post, onClose, onPrevious, onNext }) {
