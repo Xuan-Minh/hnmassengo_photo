@@ -90,7 +90,8 @@ export default function GalleryGridMore({
             {allImages.map((imgData, index) => {
               const isHovered = hoveredId === imgData.projectId;
               return (
-                <div
+                <motion.div
+                  layout
                   key={imgData.src + index}
                   className="relative group cursor-pointer flex items-center justify-center w-full h-full overflow-hidden"
                   onMouseEnter={() => setHoveredId(imgData.projectId)}
@@ -105,7 +106,7 @@ export default function GalleryGridMore({
                     }`}
                     draggable={false}
                   />
-                </div>
+                </motion.div>
               );
             })}
           </div>

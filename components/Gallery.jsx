@@ -2,25 +2,15 @@
 import { useState, useEffect } from "react";
 import { GALLERY_FILTERS } from "../lib/constants";
 import { GALLERY_PROJECTS } from "../lib/data";
-// dynamic déjà importé plus bas, donc on ne le réimporte pas ici
-const AnimatePresence = dynamic(
-  () => import("framer-motion").then((mod) => mod.AnimatePresence),
-  { ssr: false }
-);
 
 // Utiliser les données centralisées
 const PROJECTS = GALLERY_PROJECTS;
 const FILTERS = GALLERY_FILTERS;
 
-import dynamic from "next/dynamic";
-
-// Lazy load overlays
-const GalleryGridMore = dynamic(() => import("./GalleryGridMore"), {
-  loading: () => <div>Loading…</div>,
-});
-const ProjetCartel = dynamic(() => import("./ProjetCartel"), {
-  loading: () => <div>Loading…</div>,
-});
+import GalleryGridMore from "./GalleryGridMore";
+import ProjetCartel from "./ProjetCartel";
+import { AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 
 export default function Gallery() {
   const [filter, setFilter] = useState("all");
@@ -235,46 +225,53 @@ export default function Gallery() {
             {view === "grid" ? (
               // --- MODE GRID ---
               <div className="w-full h-full grid grid-cols-1 md:grid-cols-5 md:grid-rows-5 gap-x-2 gap-y-2 overflow-hidden lg:pt-10">
-                {gridItems.map((item, idx) => {
-                  if (idx === 0) {
-                    // Case filtres + view
+                <AnimatePresence mode="popLayout">
+                  {gridItems.map((item, idx) => {
+                    if (idx === 0) {
+                      // Case filtres + view
+                      return (
+                        <div
+                          key="filters"
+                          className="flex items-center justify-center"
+                        >
+                          <Controls />
+                        </div>
+                      );
+                    }
+                    if (!item) return <div key={`empty-${idx}`} />;
+                    // Case image d'un projet
+                    const imgData = item;
+                    const isHovered = hoveredId === imgData.projectId;
                     return (
-                      <div
-                        key="filters"
-                        className="flex items-center justify-center"
+                      <motion.div
+                        layout
+                        exit={{ opacity: 0, scale: 0.7 }}
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ duration: 0.5, type: "spring" }}
+                        key={imgData.uniqueKey}
+                        className="relative group cursor-pointer flex items-center justify-center w-full h-full overflow-hidden"
+                        onMouseEnter={() => setHoveredId(imgData.projectId)}
+                        onMouseLeave={() => setHoveredId(null)}
+                        onClick={() => {
+                          const projectData = PROJECTS.find(
+                            (p) => p.id === imgData.projectId
+                          );
+                          setSelectedProject(projectData);
+                        }}
                       >
-                        <Controls />
-                      </div>
+                        <img
+                          src={imgData.img}
+                          alt={imgData.name}
+                          className={`max-w-full max-h-full object-contain shadow transition-opacity duration-300 ${
+                            isHovered ? "opacity-100" : "opacity-40"
+                          }`}
+                          draggable={false}
+                        />
+                      </motion.div>
                     );
-                  }
-                  if (!item) return <div key={`empty-${idx}`} />;
-                  // Case image d'un projet
-                  const imgData = item;
-                  const isHovered = hoveredId === imgData.projectId;
-                  return (
-                    <div
-                      key={imgData.uniqueKey}
-                      className="relative group cursor-pointer flex items-center justify-center w-full h-full overflow-hidden"
-                      onMouseEnter={() => setHoveredId(imgData.projectId)}
-                      onMouseLeave={() => setHoveredId(null)}
-                      onClick={() => {
-                        const projectData = PROJECTS.find(
-                          (p) => p.id === imgData.projectId
-                        );
-                        setSelectedProject(projectData);
-                      }}
-                    >
-                      <img
-                        src={imgData.img}
-                        alt={imgData.name}
-                        className={`max-w-full max-h-full object-contain shadow transition-opacity duration-300 ${
-                          isHovered ? "opacity-100" : "opacity-40"
-                        }`}
-                        draggable={false}
-                      />
-                    </div>
-                  );
-                })}
+                  })}
+                </AnimatePresence>
               </div>
             ) : (
               // --- MODE LIST ---
@@ -358,7 +355,7 @@ export default function Gallery() {
                 </div>
 
                 {/* Zone centrale image (Slideshow) */}
-                <div className="relative w-full h-[45vh] lg:h-auto flex items-center justify-center overflow-hidden mt-0 md:mt-8 lg:flex-1 lg:mt-0">
+                <div className="flex-1 relative w-full h-[60vh] flex items-center justify-center overflow-hidden mt-0 md:mt-8 lg:mt-0">
                   {filteredProjects.length > 0 && (
                     <img
                       src={
@@ -367,7 +364,7 @@ export default function Gallery() {
                         ]
                       }
                       alt={filteredProjects[currentProjectIndex].name}
-                      className={`max-w-[85%] max-h-[45vh] lg:max-w-[70%] lg:max-h-[70%] xl:max-w-[80%] xl:max-h-[80%] object-contain shadow-lg cursor-pointer transition-opacity duration-300 ${
+                      className={`max-w-[85%] max-h-[0vh] lg:max-w-[70%] lg:max-h-[70%] xl:max-w-[80%] xl:max-h-[80%] object-contain shadow-lg cursor-pointer transition-opacity duration-300 ${
                         isTransitioning ? "opacity-0" : "opacity-100"
                       }`}
                       onClick={() =>
@@ -380,7 +377,7 @@ export default function Gallery() {
                 </div>
 
                 {/* Liste des projets en bas - Mobile seulement */}
-                <div className="lg:hidden flex flex-row flex-wrap justify-center gap-x-6 gap-y-3 mt-6">
+                <div className="lg:hidden flex flex-row flex-wrap justify-center gap-x-6 gap-y-3 mt-3">
                   {filteredProjects.map((p, idx) => (
                     <button
                       key={p.id}
@@ -388,7 +385,7 @@ export default function Gallery() {
                         setCurrentProjectIndex(idx);
                         setCurrentImageIndex(0);
                       }}
-                      className={`text-base font-playfair transition-all duration-300 ${
+                      className={`text-lg font-playfair transition-all duration-300 ${
                         idx === currentProjectIndex
                           ? "font-bold underline underline-offset-4"
                           : "opacity-60"
@@ -414,8 +411,7 @@ export default function Gallery() {
             </div>
             {view === "grid" && (
               <button
-                className="text-lg font-playfair italic text-accent border-none bg-transparent px-2 py-1 transition-all duration-150 hover:underline hover:underline-offset-4 hover:text-accent/80 focus:outline-none"
-                style={{ letterSpacing: "0.02em" }}
+                className="text-lg font-playfair italic text-accent hover:text-accentHover transition-colors"
                 onClick={() => setOverlayOpen(true)}
               >
                 see more
