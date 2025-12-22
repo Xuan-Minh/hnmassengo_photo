@@ -100,7 +100,7 @@ export default function GalleryGridMore({
                   <img
                     src={imgData.src}
                     alt={imgData.name}
-                    className={`max-w-[90%] max-h-[90%] object-contain shadow transition-opacity duration-300 ${
+                    className={`max-w-[90%] max-h-[90%] 2xl:max-w-[98%] 2xl:max-h-[98%] object-contain shadow transition-opacity duration-300 ${
                       isHovered ? "opacity-100" : "opacity-40"
                     }`}
                     draggable={false}

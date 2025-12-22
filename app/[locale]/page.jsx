@@ -51,7 +51,7 @@ export default function HomePage() {
         </div>
 
         {/* Rôle - en dessous du nom sur mobile/tablet, à droite sur desktop */}
-        <div className="px-4 pb-8 lg:absolute lg:bottom-20 lg:right-16 lg:px-0 lg:pb-0 flex justify-end">
+        <div className="px-4 pb-8 lg:absolute lg:bottom-20 lg:right-[20%] lg:px-0 lg:pb-0 flex justify-end">
           <p className="text-xl lg:text-[28px] xl:text-[36px] font-playfair italic text-neutral-300 tracking-[-0.05em]">
             {t("home.role")}
           </p>

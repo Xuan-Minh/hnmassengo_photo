@@ -84,10 +84,10 @@ export default function HomeImageRotation({
   } else {
     if (imgPosition === "left") {
       justify = "justify-start";
-      marginClass = "md:pl-[90px]";
+      marginClass = "md:pl-[180px]";
     }
     if (imgPosition === "center") {
-      marginClass = "md:pl-[150px]";
+      marginClass = "md:pl-[2O0px]";
     }
   }
 
