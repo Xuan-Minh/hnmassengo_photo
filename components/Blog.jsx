@@ -50,15 +50,15 @@ export default function Blog() {
     <>
       <section
         id="blog"
-        className="h-screen snap-start flex items-center justify-start bg-blackCustom relative py-10 px-6 sm:px-10 lg:pl-20 lg:pr-16"
+        className="h-screen snap-start flex items-center justify-center 2xl:items-center 2xl:justify-center bg-blackCustom relative py-10 px-6 sm:px-10 lg:pl-20 lg:pr-16"
         aria-label="Section blog"
       >
         <div
           style={{ width: "min(1000px, 85vw)" }}
-          className="flex flex-col h-full max-h-full"
+          className="flex flex-col h-full max-h-full 2xl:max-w-5xl"
         >
           {/* Posts List */}
-          <div className="flex-1 flex flex-col justify-start min-h-0">
+          <div className="flex-1 flex flex-col justify-center lg:justify-start min-h-0">
             {latestPosts.map((post, index) => (
               <BlogPostItem
                 key={post.id}

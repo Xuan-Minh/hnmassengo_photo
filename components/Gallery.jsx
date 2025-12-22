@@ -364,7 +364,7 @@ export default function Gallery() {
                         ]
                       }
                       alt={filteredProjects[currentProjectIndex].name}
-                      className={`max-w-[85%] max-h-[0vh] lg:max-w-[70%] lg:max-h-[70%] xl:max-w-[80%] xl:max-h-[80%] object-contain shadow-lg cursor-pointer transition-opacity duration-300 ${
+                      className={`max-w-[85%] max-h-[60vh] lg:max-w-[70%] lg:max-h-[70%] xl:max-w-[80%] xl:max-h-[80%] object-contain shadow-lg cursor-pointer transition-opacity duration-300 ${
                         isTransitioning ? "opacity-0" : "opacity-100"
                       }`}
                       onClick={() =>
