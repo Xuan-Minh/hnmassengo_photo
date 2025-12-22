@@ -7,7 +7,6 @@ export default function SnipcartPortal() {
       <div
         id="snipcart"
         data-api-key="MzhiNjU4MDUtYTA2MC00YjA5LTkwYmMtOWIyY2FjOTAyZmZlNjM4OTk4OTA5MTYxNDMxODU0"
-        data-config-modal-style="side"
         data-config-add-product-behavior="none"
         hidden
         suppressHydrationWarning
