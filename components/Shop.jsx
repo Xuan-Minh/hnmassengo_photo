@@ -204,7 +204,7 @@ export default function Shop() {
         {/* Liste produits (mobile: 50vh, desktop: colonne centrale) */}
         <div className="w-full md:flex-1 h-[50vh] md:h-full flex items-center justify-center bg-whiteCustom order-1 md:order-2">
           <div className="w-full max-w-3xl xl:max-w-3xl 2xl:max-w-4xl p-4 md:p-16">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 xl:gap-12 2xl:gap-16 w-full lg:pt-10">
+            <div className="grid grid-cols-2 md:grid-cols-2 gap-4 md:gap-12 w-full pt-2 md:pt-10">
               {products.map((product) => (
                 <ShopItem
                   key={product.id}
@@ -213,6 +213,7 @@ export default function Shop() {
                   title={product.title}
                   price={product.price + "€"}
                   onClick={() => setSelectedProduct(product)}
+                  className="!h-36 md:!h-64" // hauteur réduite sur mobile
                 />
               ))}
             </div>
