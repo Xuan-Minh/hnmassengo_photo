@@ -44,42 +44,79 @@ export default function ShopOverlay({ product, onClose, onAddToCart }) {
         </button>
       </div>
 
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col md:flex-row items-center justify-center w-full h-full p-8 md:p-16 gap-12 md:gap-24">
-        {/* Left: Image */}
-        <div className="w-full md:w-1/2 max-w-xl aspect-square bg-[#6B66FF] relative shadow-2xl">
-          {/* Placeholder color based on design, or real image */}
-          <img
-            src={product.imgDefault}
-            alt={product.title}
-            className="w-full h-full object-cover"
-          />
+      {/* Main Content - Responsive */}
+      {/* Mobile: vertical 50/50, Desktop: inchangé */}
+      <div className="flex-1 w-full h-full flex flex-col md:flex-row p-0 md:p-16">
+        {/* MOBILE */}
+        <div className="block md:hidden w-full">
+          {/* Image 50vh */}
+          <div className="w-full h-[50vh] flex items-center justify-center bg-blackCustom relative">
+            <img
+              src={product.imgDefault}
+              alt={product.title}
+              className="max-h-[30vh] w-auto object-contain mx-auto"
+            />
+          </div>
+          {/* Séparateur */}
+          <div className="border-t border-whiteCustom/20"></div>
+          {/* Infos 50vh */}
+          <div className="w-full h-[50vh] flex flex-col items-start text-left p-8 overflow-y-auto bg-blackCustom">
+            <h2 className="text-4xl italic mb-6">{product.title}</h2>
+            <p className="text-base leading-relaxed text-whiteCustom/80 mb-8 max-w-md">
+              {product.description ||
+                "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur posuere tincidunt lacus sit amet porttitor. Aliquam pharetra ante vel nibh accumsan, a bibendum lorem egestas. Sed ac accumsan metus, vitae finibus urna."}
+            </p>
+            <div className="mt-auto">
+              <div className="text-2xl font-bold mb-2">{product.price}€</div>
+              <button
+                className="text-lg italic text-whiteCustom/60 hover:text-whiteCustom transition-colors"
+                onClick={() => {
+                  if (onAddToCart) {
+                    onAddToCart(product);
+                  }
+                  setTimeout(() => {
+                    onClose();
+                  }, 200);
+                }}
+              >
+                add to cart
+              </button>
+            </div>
+          </div>
         </div>
-
-        {/* Right: Info */}
-        <div className="w-full md:w-1/3 flex flex-col items-start text-left">
-          <h2 className="text-5xl md:text-6xl italic mb-8">{product.title}</h2>
-
-          <p className="text-lg md:text-xl leading-relaxed text-whiteCustom/80 mb-12 max-w-md">
-            {product.description ||
-              "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur posuere tincidunt lacus sit amet porttitor. Aliquam pharetra ante vel nibh accumsan, a bibendum lorem egestas. Sed ac accumsan metus, vitae finibus urna."}
-          </p>
-
-          <div className="mt-auto">
-            <div className="text-3xl font-bold mb-2">{product.price}€</div>
-            <button
-              className="text-xl italic text-whiteCustom/60 hover:text-whiteCustom transition-colors"
-              onClick={() => {
-                if (onAddToCart) {
-                  onAddToCart(product);
-                }
-                setTimeout(() => {
-                  onClose();
-                }, 200);
-              }}
-            >
-              add to cart
-            </button>
+        {/* DESKTOP */}
+        <div className="hidden md:flex flex-1 flex-row items-center justify-center gap-24 w-full h-full">
+          {/* Image */}
+          <div className="w-1/2 max-w-xl aspect-square relative shadow-2xl flex items-center justify-center">
+            <img
+              src={product.imgDefault}
+              alt={product.title}
+              className="w-full h-full object-cover"
+            />
+          </div>
+          {/* Infos */}
+          <div className="w-1/3 flex flex-col items-start text-left">
+            <h2 className="text-6xl italic mb-8">{product.title}</h2>
+            <p className="text-xl leading-relaxed text-whiteCustom/80 mb-12 max-w-md">
+              {product.description ||
+                "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur posuere tincidunt lacus sit amet porttitor. Aliquam pharetra ante vel nibh accumsan, a bibendum lorem egestas. Sed ac accumsan metus, vitae finibus urna."}
+            </p>
+            <div className="mt-auto">
+              <div className="text-3xl font-bold mb-2">{product.price}€</div>
+              <button
+                className="text-xl italic text-whiteCustom/60 hover:text-whiteCustom transition-colors"
+                onClick={() => {
+                  if (onAddToCart) {
+                    onAddToCart(product);
+                  }
+                  setTimeout(() => {
+                    onClose();
+                  }, 200);
+                }}
+              >
+                add to cart
+              </button>
+            </div>
           </div>
         </div>
       </div>
