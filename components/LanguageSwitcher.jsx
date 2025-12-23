@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams, usePathname, useRouter } from "next/navigation";
 import { computeIsDark } from "../lib/utils";
 
@@ -83,7 +83,7 @@ export default function LanguageSwitcher() {
       }`}
     >
       {langs.map((lang, i) => (
-        <React.Fragment key={lang}>
+        <>
           <button
             className={`uppercase font-bold transition-all duration-300 ease-in-out relative ${hoverClass} ${
               locale === lang ? activeClass : inactiveClass
@@ -101,7 +101,7 @@ export default function LanguageSwitcher() {
               |
             </span>
           )}
-        </React.Fragment>
+        </>
       ))}
     </div>
   );

@@ -5,7 +5,6 @@ import { AnimatePresence } from "framer-motion";
 import ShopItem from "./ShopItem";
 import ShopOverlay from "./ShopOverlay";
 import { formatPrice } from "../lib/utils";
-import { ANIMATIONS, TIMING } from "../lib/constants";
 import { logger } from "../lib/logger";
 
 // Composant CartItem - Affichage simple des articles Snipcart
