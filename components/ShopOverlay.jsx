@@ -1,5 +1,5 @@
 "use client";
- import { useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { logger } from "../lib/logger";
 

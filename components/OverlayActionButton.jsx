@@ -1,5 +1,5 @@
 "use client";
- import { useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
 
 // intent -> default direction mapping
