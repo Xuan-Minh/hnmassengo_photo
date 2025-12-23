@@ -1,215 +1,153 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
-import { useFocusTrap } from "../lib/hooks";
-import { useToast } from "./GlobalToast";
 import { useTranslations } from "next-intl";
-import dynamic from "next/dynamic";
-import { motion } from "framer-motion";
-const AnimatePresence = dynamic(
-  () => import("framer-motion").then((mod) => mod.AnimatePresence),
-  { ssr: false }
-);
+import { AnimatePresence, motion } from "framer-motion";
 import { SITE_CONFIG } from "../lib/constants";
 import { EVENTS, addEventHandler } from "../lib/events";
 
 // Composant pour le formulaire de contact réutilisable
 function ContactForm({ idSuffix = "", onSubmitSuccess, defaultSubject = "" }) {
+  const [showSuccess, setShowSuccess] = useState(false);
   const formRef = useRef(null);
-  const [errors, setErrors] = useState({});
-  const [success, setSuccess] = useState(false);
-  const successTimeout = useRef();
-  const t = useTranslations();
-
-  const validate = () => {
-    const form = formRef.current;
-    const newErrors = {};
-    if (!form.fullName.value.trim())
-      newErrors.fullName = t("form.error_fullName");
-    if (!form.email.value.trim()) newErrors.email = t("form.error_email");
-    else if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(form.email.value))
-      newErrors.email = t("form.error_email_invalid");
-    if (!form.subject.value.trim()) newErrors.subject = t("form.error_subject");
-    if (!form.message.value.trim()) newErrors.message = t("form.error_message");
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  // Permet de fermer l'overlay parent si fourni
-  const closeOverlay =
-    typeof onSubmitSuccess === "function" ? onSubmitSuccess : undefined;
 
   const handleSubmit = (e) => {
     e.preventDefault();
     const form = formRef.current;
     if (!form) return;
-    if (!validate()) return;
 
-    // En local, simuler le succès sans soumission Netlify
-    const isLocal =
-      typeof window !== "undefined" && window.location.hostname === "localhost";
-    if (isLocal) {
-      setSuccess(true);
-      successTimeout.current = setTimeout(() => {
-        setSuccess(false);
-        form.reset();
-        if (closeOverlay) closeOverlay();
-      }, 1800);
-      return;
-    }
-
-    // Production Netlify : soumission réelle
+    // Créer une iframe cachée pour soumettre le formulaire
     const iframe = document.createElement("iframe");
     iframe.name = "hidden-iframe";
     iframe.style.display = "none";
-    try {
-      document.body.appendChild(iframe);
-      form.target = "hidden-iframe";
-      form.submit();
-      setSuccess(true);
-    } catch (e) {
-      // Sécurise l'ajout de l'iframe
-    }
-    successTimeout.current = setTimeout(() => {
-      setSuccess(false);
-      try {
-        form.reset();
-        if (
-          iframe &&
-          iframe.parentNode &&
-          iframe.parentNode === document.body
-        ) {
-          document.body.removeChild(iframe);
-        }
-      } catch (e) {
-        // Sécurise la suppression de l'iframe
+    document.body.appendChild(iframe);
+
+    // Configurer le formulaire pour soumettre dans l'iframe
+    form.target = "hidden-iframe";
+
+    // Soumettre le formulaire
+    form.submit();
+
+    // Afficher le message de succès
+    setShowSuccess(true);
+    if (onSubmitSuccess) onSubmitSuccess();
+
+    // Réinitialiser le formulaire après un court délai
+    setTimeout(() => {
+      form.reset();
+      // Vérifier que l'iframe existe toujours avant de la supprimer
+      if (iframe && iframe.parentNode === document.body) {
+        document.body.removeChild(iframe);
       }
-      if (closeOverlay) closeOverlay();
-    }, 1800);
+    }, 1000);
   };
 
-  // Nettoyage du timeout si le composant est démonté
-  useEffect(() => {
-    return () => {
-      if (successTimeout.current) clearTimeout(successTimeout.current);
-    };
-  }, []);
-
   return (
-    <div className="relative">
-      {/* Notification de succès style toast en haut à droite */}
-      {success && (
-        <div className="fixed z-[9999] top-8 right-8 bg-blackCustom border border-green-500 text-green-300 shadow-lg rounded px-6 py-3 font-playfair text-lg font-medium animate-fade-in">
-          {t("form.success")}
+    <form
+      ref={formRef}
+      className="space-y-4 md:space-y-6"
+      name="contact"
+      method="POST"
+      action="/success.html"
+      aria-label="Contact form"
+      data-netlify="true"
+      data-netlify-honeypot="bot-field"
+      onSubmit={handleSubmit}
+    >
+      <input type="hidden" name="form-name" value="contact" />
+      <input type="hidden" name="bot-field" style={{ display: "none" }} />
+
+      {showSuccess && (
+        <div className="bg-green-600/20 border border-green-500 text-green-300 p-3 md:p-4 rounded mb-4 md:mb-6">
+          <div className="flex items-center gap-3">
+            <span className="text-lg md:text-xl">✅</span>
+            <div>
+              <h3 className="font-semibold text-sm md:text-base">
+                Message envoyé avec succès !
+              </h3>
+              <p className="text-xs md:text-sm opacity-90">
+                Nous vous répondrons sous 24h à l'adresse indiquée.
+              </p>
+            </div>
+          </div>
         </div>
       )}
-      <form
-        ref={formRef}
-        className="space-y-4 md:space-y-6"
-        name="contact"
-        method="POST"
-        action="/success.html"
-        aria-label="Contact form"
-        data-netlify="true"
-        data-netlify-honeypot="bot-field"
-        onSubmit={handleSubmit}
-        noValidate
-      >
-        <input type="hidden" name="form-name" value="contact" />
-        <input type="hidden" name="bot-field" style={{ display: "none" }} />
 
+      <div>
+        <label
+          htmlFor={`fullName${idSuffix}`}
+          className="block text-whiteCustom/90 font-playfair text-sm mb-2"
+        >
+          full name *
+        </label>
+        <input
+          id={`fullName${idSuffix}`}
+          name="fullName"
+          type="text"
+          required
+          className="w-full bg-formBG text-whiteCustom placeholder-whiteCustom/40 border border-whiteCustom/60 focus:border-whiteCustom outline-none px-3 py-2 text-sm md:text-base"
+        />
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
         <div>
           <label
-            htmlFor={`fullName${idSuffix}`}
+            htmlFor={`email${idSuffix}`}
             className="block text-whiteCustom/90 font-playfair text-sm mb-2"
           >
-            {t("form.label_fullName") || "full name *"}
+            email *
           </label>
           <input
-            id={`fullName${idSuffix}`}
-            name="fullName"
-            type="text"
+            id={`email${idSuffix}`}
+            name="email"
+            type="email"
             required
             className="w-full bg-formBG text-whiteCustom placeholder-whiteCustom/40 border border-whiteCustom/60 focus:border-whiteCustom outline-none px-3 py-2 text-sm md:text-base"
-            aria-invalid={!!errors.fullName}
           />
-          {errors.fullName && (
-            <div className="text-red-400 text-xs mt-1">{errors.fullName}</div>
-          )}
         </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-          <div>
-            <label
-              htmlFor={`email${idSuffix}`}
-              className="block text-whiteCustom/90 font-playfair text-sm mb-2"
-            >
-              {t("form.label_email") || "email *"}
-            </label>
-            <input
-              id={`email${idSuffix}`}
-              name="email"
-              type="email"
-              required
-              className="w-full bg-formBG text-whiteCustom placeholder-whiteCustom/40 border border-whiteCustom/60 focus:border-whiteCustom outline-none px-3 py-2 text-sm md:text-base"
-              aria-invalid={!!errors.email}
-            />
-            {errors.email && (
-              <div className="text-red-400 text-xs mt-1">{errors.email}</div>
-            )}
-          </div>
-          <div>
-            <label
-              htmlFor={`subject${idSuffix}`}
-              className="block text-whiteCustom/90 font-playfair text-sm mb-2"
-            >
-              {t("form.label_subject") || "subject *"}
-            </label>
-            <input
-              id={`subject${idSuffix}`}
-              name="subject"
-              type="text"
-              required
-              defaultValue={defaultSubject}
-              className="w-full bg-formBG text-whiteCustom placeholder-whiteCustom/40 border border-whiteCustom/60 focus:border-whiteCustom outline-none px-3 py-2 text-sm md:text-base"
-              aria-invalid={!!errors.subject}
-            />
-            {errors.subject && (
-              <div className="text-red-400 text-xs mt-1">{errors.subject}</div>
-            )}
-          </div>
-        </div>
-
         <div>
           <label
-            htmlFor={`message${idSuffix}`}
+            htmlFor={`subject${idSuffix}`}
             className="block text-whiteCustom/90 font-playfair text-sm mb-2"
           >
-            {t("form.label_message") || "message *"}
+            subject *
           </label>
-          <textarea
-            id={`message${idSuffix}`}
-            name="message"
-            rows={5}
+          <input
+            id={`subject${idSuffix}`}
+            name="subject"
+            type="text"
             required
-            className="w-full bg-formBG text-whiteCustom placeholder-whiteCustom/40 border border-whiteCustom/60 focus:border-whiteCustom outline-none px-3 py-2 resize-y text-sm md:text-base"
-            aria-invalid={!!errors.message}
+            defaultValue={defaultSubject}
+            className="w-full bg-formBG text-whiteCustom placeholder-whiteCustom/40 border border-whiteCustom/60 focus:border-whiteCustom outline-none px-3 py-2 text-sm md:text-base"
           />
-          {errors.message && (
-            <div className="text-red-400 text-xs mt-1">{errors.message}</div>
-          )}
         </div>
+      </div>
 
-        <div>
-          <button
-            type="submit"
-            className="px-6 py-3 text-lg font-medium font-playfair text-whiteCustom/85 hover:text-whiteCustom hover:opacity-100 transition-all duration-300"
-          >
-            <span className="inline-block mr-2">→</span>
-            <span>{t("form.label_send") || "send"}</span>
-          </button>
-        </div>
-      </form>
-    </div>
+      <div>
+        <label
+          htmlFor={`message${idSuffix}`}
+          className="block text-whiteCustom/90 font-playfair text-sm mb-2"
+        >
+          message *
+        </label>
+        <textarea
+          id={`message${idSuffix}`}
+          name="message"
+          rows={5}
+          required
+          className="w-full bg-formBG text-whiteCustom placeholder-whiteCustom/40 border border-whiteCustom/60 focus:border-whiteCustom outline-none px-3 py-2 resize-y text-sm md:text-base"
+        />
+      </div>
+
+      <div>
+        <button
+          type="submit"
+          className="px-6 py-3 text-lg font-medium font-playfair text-whiteCustom/85 hover:text-whiteCustom hover:opacity-100 transition-all duration-300"
+        >
+          <span className="inline-block mr-2">→</span>
+          <span>send</span>
+        </button>
+      </div>
+    </form>
   );
 }
 
@@ -263,13 +201,7 @@ function ContactContent({
         >
           Contact
         </h2>
-        <ContactForm
-          idSuffix={idSuffix}
-          defaultSubject={defaultSubject}
-          onSubmitSuccess={
-            typeof onSubmitSuccess === "function" ? onSubmitSuccess : undefined
-          }
-        />
+        <ContactForm idSuffix={idSuffix} defaultSubject={defaultSubject} />
       </div>
 
       <div className="lg:col-span-5 md:mt-6 lg:mt-0">
@@ -298,37 +230,6 @@ function ContactMarquee() {
   );
 }
 
-// Composant toast réutilisant l'ancien style de notification
-function ContactSuccessToast({ show }) {
-  return (
-    <AnimatePresence>
-      {show && (
-        <motion.div
-          initial={{ y: -80, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          exit={{ y: -80, opacity: 0 }}
-          transition={{ duration: 0.6 }}
-          className="fixed top-4 left-1/2 -translate-x-1/2 z-[200] w-full max-w-md px-4"
-        >
-          <div className="bg-green-600/20 border border-green-500 text-green-300 p-3 md:p-4 rounded shadow-lg">
-            <div className="flex items-center gap-3">
-              <span className="text-lg md:text-xl">✅</span>
-              <div>
-                <h3 className="font-semibold text-sm md:text-base">
-                  Message envoyé avec succès !
-                </h3>
-                <p className="text-xs md:text-sm opacity-90">
-                  Nous vous répondrons sous 24h à l'adresse indiquée.
-                </p>
-              </div>
-            </div>
-          </div>
-        </motion.div>
-      )}
-    </AnimatePresence>
-  );
-}
-
 export default function ContactOverlay({
   open: openProp,
   onClose: onCloseProp,
@@ -337,32 +238,10 @@ export default function ContactOverlay({
   const t = useTranslations();
   const [openState, setOpenState] = useState(false);
   const panelRef = useRef(null);
-  const previouslyFocusedElement = useRef(null);
+
   // Use prop if provided, otherwise use internal state
   const open = openProp !== undefined ? openProp : openState;
-  useFocusTrap(open);
-  const toast = useToast();
-  const handleClose = () => {
-    if (typeof onCloseProp === "function") {
-      onCloseProp();
-    } else {
-      setOpenState(false);
-    }
-  };
-
-  // Mémoriser l'élément actif à l'ouverture
-  useEffect(() => {
-    if (open) {
-      previouslyFocusedElement.current = document.activeElement;
-    }
-  }, [open]);
-
-  // Rendre le focus à l'élément déclencheur à la fermeture
-  useEffect(() => {
-    if (!open && previouslyFocusedElement.current) {
-      previouslyFocusedElement.current.focus?.();
-    }
-  }, [open]);
+  const handleClose = onCloseProp || (() => setOpenState(false));
 
   // Open/close via global events (only if not controlled by props)
   useEffect(() => {
@@ -459,30 +338,12 @@ export default function ContactOverlay({
     };
   }, [open]);
 
-  const handleSuccess = () => {
-    toast.showToast(
-      <div className="bg-green-600/20 border border-green-500 text-green-300 p-3 md:p-4 rounded shadow-lg">
-        <div className="flex items-center gap-3">
-          <span className="text-lg md:text-xl">✅</span>
-          <div>
-            <h3 className="font-semibold text-sm md:text-base">
-              {t("form.success").split("!")[0]}!
-            </h3>
-            <p className="text-xs md:text-sm opacity-90">
-              {t("form.success").split("!").slice(1).join("!").trim()}
-            </p>
-          </div>
-        </div>
-      </div>
-    );
-  };
-
   return (
     <>
-      {/* Le toast global est maintenant géré par ToastProvider */}
+      {/* Contact Overlay Modal */}
       <AnimatePresence>
         {open && (
-          <motion.div
+          <section
             id="info-overlay"
             className="fixed inset-0 z-[130]"
             aria-label="Contact Overlay"
@@ -517,7 +378,6 @@ export default function ContactOverlay({
                     headingId="contact-title-overlay"
                     variant="overlay"
                     defaultSubject={defaultSubject}
-                    onSubmitSuccess={handleSuccess}
                   />
                 </div>
               </div>
@@ -541,7 +401,7 @@ export default function ContactOverlay({
                 </motion.div>
               </div>
             </motion.div>
-          </motion.div>
+          </section>
         )}
       </AnimatePresence>
 
@@ -558,7 +418,6 @@ export default function ContactOverlay({
             headingId="contact-title-inline"
             variant="section"
             defaultSubject={defaultSubject}
-            onSubmitSuccess={handleSuccess}
           />
         </div>
 

@@ -196,6 +196,7 @@ export default function Shop() {
                   ? "text-gray-300 hover:text-black"
                   : "text-black/20 pointer-events-none"
               }`}
+              disabled={cartItems.length === 0}
             >
               → checkout
             </button>
