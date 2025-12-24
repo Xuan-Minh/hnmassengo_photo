@@ -88,6 +88,9 @@ export default function RootLayout({ children }) {
   return (
     <html lang="fr">
       <head>
+        {/* Preconnect Google Fonts */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
           rel="stylesheet"
           href="https://cdn.snipcart.com/themes/v3.0.31/default/snipcart.css"
@@ -103,6 +106,7 @@ export default function RootLayout({ children }) {
             key={"hreflang-" + locale.code}
           />
         ))}
+        {/* Script Snipcart async retiré, inclus via SnipcartPortal */}
       </head>
       <body
         className={[lexend.className, lexend.variable, playfair.variable].join(

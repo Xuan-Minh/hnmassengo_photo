@@ -14,21 +14,12 @@ export default async function LocaleLayout({ children, params }) {
   setRequestLocale(locale);
   const messages = await getMessages();
   return (
-    <>
-      <head>
-        <link
-          rel="canonical"
-          href={`https://hannoahmassengo.fr/${locale}`}
-          key="canonical"
-        />
-      </head>
-      <NextIntlClientProvider locale={locale} messages={messages}>
-        <ToastProvider>
-          <Menu />
-          {children}
-        </ToastProvider>
-      </NextIntlClientProvider>
-    </>
+    <NextIntlClientProvider locale={locale} messages={messages}>
+      <ToastProvider>
+        <Menu />
+        {children}
+      </ToastProvider>
+    </NextIntlClientProvider>
   );
 }
 

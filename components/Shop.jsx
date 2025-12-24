@@ -13,7 +13,7 @@ const CartItem = ({ item }) => {
     <li className="py-2 border-b border-gray-200/20">
       <div className="flex justify-between items-start gap-3">
         <div className="flex-1">
-          <h4 className="text-sm text-gray-800">{item.name}</h4>
+          <h3 className="text-sm text-gray-800">{item.name}</h3>
           <div className="flex items-center gap-2 mt-1">
             <span className="text-xs text-gray-600">
               {item.quantity} × {item.price?.toFixed(2)}€
