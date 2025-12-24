@@ -1,3 +1,8 @@
+/* Force les polices locales sur Snipcart pour éviter le chargement Google Fonts */
+.snipcart,
+.snipcart * {
+  font-family: "Lexend", "Playfair Display", Arial, sans-serif !important;
+}
 /* Snipcart Custom Styling - Configuration minimale */
 
 /* Configuration de base */
@@ -17,6 +22,7 @@
 .snipcart-cart-header,
 .snipcart-modal {
   z-index: 2147483647 !important;
+  font-family: "Lexend", "Playfair Display", Arial, sans-serif !important;
 }
 
 /* Overlay */

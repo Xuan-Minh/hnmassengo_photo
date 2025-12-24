@@ -88,9 +88,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="fr">
       <head>
-        {/* Preconnect Google Fonts */}
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        {/* Polices locales, liens Google Fonts supprimés */}
         <link
           rel="stylesheet"
           href="https://cdn.snipcart.com/themes/v3.0.31/default/snipcart.css"
