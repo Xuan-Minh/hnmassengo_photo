@@ -89,10 +89,7 @@ export default function RootLayout({ children }) {
     <html lang="fr">
       <head>
         {/* Polices locales, liens Google Fonts supprimés */}
-        <link
-          rel="stylesheet"
-          href="https://cdn.snipcart.com/themes/v3.0.31/default/snipcart.css"
-        />
+        <link rel="stylesheet" href="/styles/snipcart-local.css" />
         <link rel="stylesheet" href="/styles/snipcart-custom.css" />
         <meta name="theme-color" content="#222222" />
         {/* Balises hreflang pour le SEO multilingue */}
