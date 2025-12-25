@@ -70,8 +70,13 @@ export default function GalleryGridMore({
         {/* Sidebar Filters */}
         <div className="w-48 flex flex-col gap-2 pt-8 shrink-0">
           {FILTERS.map((f) => (
-            <button
+            <motion.button
+              layout
               key={f.value}
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.7 }}
+              transition={{ duration: 0.5, type: "spring" }}
               className={`text-lg text-left font-playfair transition-colors duration-300 ${
                 filter === f.value
                   ? "font-bold text-blackCustom"
@@ -80,7 +85,7 @@ export default function GalleryGridMore({
               onClick={() => setFilter(f.value)}
             >
               {f.label}
-            </button>
+            </motion.button>
           ))}
         </div>
 
@@ -92,7 +97,11 @@ export default function GalleryGridMore({
               return (
                 <motion.div
                   layout
-                  key={imgData.src + index}
+                  exit={{ opacity: 0, scale: 0.7 }}
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.5, type: "spring" }}
+                  key={imgData.projectId + "-" + index}
                   className="relative group cursor-pointer flex items-center justify-center w-full h-full overflow-hidden"
                   onMouseEnter={() => setHoveredId(imgData.projectId)}
                   onMouseLeave={() => setHoveredId(null)}
