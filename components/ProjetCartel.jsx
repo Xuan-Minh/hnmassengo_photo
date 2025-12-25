@@ -35,9 +35,6 @@ function CustomLightbox({ open, onClose, images, project }) {
 
   if (!open) return null;
 
-  const prevIndex = (currentIndex - 1 + images.length) % images.length;
-  const nextIndex = (currentIndex + 1) % images.length;
-
   return (
     <motion.div
       className="fixed inset-0 z-[60] bg-[#1a1a1a] text-[#e5e5e5] font-playfair flex flex-col"
@@ -48,10 +45,6 @@ function CustomLightbox({ open, onClose, images, project }) {
     >
       {/* Header */}
       <div className="absolute top-8 left-8 md:left-16 z-40">
-        <div className="text-lg mb-2 opacity-0 pointer-events-none">
-          Placeholder
-        </div>{" "}
-        {/* Spacer to match logo height if needed, or just place back button */}
         <button
           onClick={onClose}
           className="text-lg hover:text-white transition-colors"
@@ -59,16 +52,75 @@ function CustomLightbox({ open, onClose, images, project }) {
           back
         </button>
       </div>
-      <div className="absolute top-8 left-1/2 -translate-x-1/2 z-40 text-lg italic">
-        {currentIndex + 1} / {images.length}
-      </div>
 
-      {/* Main Content */}
-      <div className="flex-1 relative flex items-center justify-center overflow-hidden w-full h-full">
+      {/* Main Content (MOBILE) */}
+      <div className="flex-1 flex flex-col w-full h-full md:hidden">
+        <div className="flex-1 flex flex-col w-full justify-center">
+          <div className="flex-1 flex items-center justify-center w-full max-h-[40vh]">
+            <motion.div
+              key={currentIndex}
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.3 }}
+              className="w-full flex items-center justify-center"
+            >
+              <Image
+                src={images[currentIndex]}
+                alt={`${project.name} - Image ${currentIndex + 1} of ${images.length}`}
+                width={800}
+                height={600}
+                className="max-h-[35vh] w-auto object-contain shadow-2xl mx-auto"
+                sizes="(max-width : 1200px) 100vw, 800px"
+                priority
+              />
+            </motion.div>
+          </div>
+          <div className="top-8 left-1/2 -translate-x-1/2 z-40 text-lg italic">
+            {currentIndex + 1} / {images.length}
+          </div>
+        </div>
+        <div className="flex justify-between w-full px-4 py-4 text-base">
+          <span className="italic">{project.coords}</span>
+          <span>{project.name} - 20XX</span>
+        </div>
+      </div>
+      <section className="md:hidden">
+        {/* Séparateur */}
+        <div className="w-full border-t border-white/20 my-4" />
+        {/* Marquee horizontal des miniatures */}
+        <div className="w-full overflow-x-auto pb-4">
+          <div className="flex gap-4 px-4">
+            {images.map((img, idx) => (
+              <button
+                key={img + idx}
+                onClick={() => setCurrentIndex(idx)}
+                className={`border-2 rounded transition-all duration-200 ${
+                  idx === currentIndex
+                    ? "border-white/80 scale-105"
+                    : "border-transparent opacity-60 hover:opacity-100"
+                }`}
+                style={{ minWidth: 80, minHeight: 80 }}
+              >
+                <Image
+                  src={img}
+                  alt={`Miniature ${idx + 1}`}
+                  width={80}
+                  height={80}
+                  className="object-contain max-h-20 max-w-20"
+                  draggable={false}
+                />
+              </button>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Main Content (DESKTOP) : version d'origine */}
+      <div className="hidden md:flex flex-1 relative items-center justify-center overflow-hidden w-full h-full">
         {/* Prev Image */}
-        <div className="absolute left-8 top-1/2 -translate-y-1/2 h-[50%] w-[15%] opacity-40 blur-[2px] pointer-events-none hidden md:block">
+        <div className="absolute left-8 top-1/2 -translate-y-1/2 h-[50%] w-[15%] opacity-40 blur-[2px] pointer-events-none">
           <Image
-            src={images[prevIndex]}
+            src={images[(currentIndex - 1 + images.length) % images.length]}
             alt={`${project.name} - Previous image`}
             width={300}
             height={200}
@@ -79,7 +131,7 @@ function CustomLightbox({ open, onClose, images, project }) {
         </div>
 
         {/* Main Image */}
-        <div className="relative z-10 h-[60%] md:h-[80%] w-full max-w-[60%] flex items-center justify-center">
+        <div className="relative z-10 h-[60%] w-full max-w-[50%] flex items-center justify-center">
           <motion.div
             key={currentIndex}
             initial={{ opacity: 0, scale: 0.95 }}
@@ -91,17 +143,17 @@ function CustomLightbox({ open, onClose, images, project }) {
               alt={`${project.name} - Image ${currentIndex + 1} of ${images.length}`}
               width={800}
               height={600}
-              className="max-h-full max-w-full object-contain shadow-2xl"
-              sizes="(max-width: 1200px) 100vw, 800px"
+              className="max-h-[70vh] max-w-[50vw] object-contain "
+              sizes="(max-width: 1200px) 50vw, 800px"
               priority
             />
           </motion.div>
         </div>
 
         {/* Next Image */}
-        <div className="absolute right-8 top-1/2 -translate-y-1/2 h-[50%] w-[15%] opacity-40 blur-[2px] pointer-events-none hidden md:block">
+        <div className="absolute right-8 top-1/2 -translate-y-1/2 h-[50%] w-[15%] opacity-40 blur-[2px] pointer-events-none">
           <Image
-            src={images[nextIndex]}
+            src={images[(currentIndex + 1) % images.length]}
             alt="next"
             width={300}
             height={200}
@@ -134,15 +186,15 @@ function CustomLightbox({ open, onClose, images, project }) {
             &rarr; next
           </span>
         </div>
-      </div>
 
-      {/* Footer */}
-      <div className="absolute bottom-20 left-0 w-full h-[1px] bg-white/20 z-20" />
-      <div className="absolute bottom-8 left-8 md:left-16 text-xl italic z-40">
-        {project.coords}
-      </div>
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 text-xl z-40">
-        {project.name} - 2024
+        {/* Footer */}
+        <div className="absolute bottom-20 left-0 w-full h-[1px] bg-white/20 z-20" />
+        <div className="absolute bottom-8 left-8 md:left-16 text-xl italic z-40">
+          {project.coords}
+        </div>
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 text-xl z-40">
+          {project.name} - 2024
+        </div>
       </div>
     </motion.div>
   );
