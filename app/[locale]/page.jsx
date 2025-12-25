@@ -1,3 +1,4 @@
+"use client";
 import { useTranslations } from "next-intl";
 import {
   LanguageSwitcher,
@@ -9,7 +10,30 @@ import {
   ContactOverlay,
   IntroOverlay,
 } from "../../components";
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
+import { useRef, useState, useEffect } from "react";
+
+// Hook utilitaire pour fade-in à la première apparition
+function useFadeInOnScreen() {
+  const ref = useRef();
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    const node = ref.current;
+    if (!node) return;
+    const observer = new window.IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setVisible(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.4 }
+    );
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
+  return [ref, visible];
+}
 
 // Liste statique des images à afficher
 const imageFiles = [
@@ -22,13 +46,25 @@ const imageFiles = [
 export default function HomePage() {
   const t = useTranslations();
 
+  // Fading refs pour chaque section
+  const [homeRef, homeVisible] = useFadeInOnScreen();
+  const [presRef, presVisible] = useFadeInOnScreen();
+  const [galleryRef, galleryVisible] = useFadeInOnScreen();
+  const [blogRef, blogVisible] = useFadeInOnScreen();
+  const [shopRef, shopVisible] = useFadeInOnScreen();
+  const [contactRef, contactVisible] = useFadeInOnScreen();
+
   return (
     <>
       <LanguageSwitcher />
-      <section
+      <motion.section
+        ref={homeRef}
         id="home"
         className="relative h-screen snap-start bg-whiteCustom overflow-hidden flex flex-col lg:block"
         aria-label="Hero"
+        initial={{ opacity: 0 }}
+        animate={homeVisible ? { opacity: 1 } : {}}
+        transition={{ duration: 0.8 }}
       >
         {/* Bloc rotation image - centré et plus grand sur mobile, positionnable sur desktop */}
         <div className="flex items-center justify-center pt-20 pb-8 lg:absolute lg:top-[40%] lg:left-0 lg:-translate-y-1/2 w-full lg:w-full z-20 pointer-events-none lg:pt-0 lg:pb-0">
@@ -56,13 +92,48 @@ export default function HomePage() {
             {t("home.role")}
           </p>
         </div>
-      </section>
+      </motion.section>
 
-      <HomePresentation />
-      <Gallery />
-      <Blog />
-      <Shop />
-      <ContactOverlay />
+      <motion.div
+        ref={presRef}
+        initial={{ opacity: 0 }}
+        animate={presVisible ? { opacity: 1 } : {}}
+        transition={{ duration: 0.8 }}
+      >
+        <HomePresentation />
+      </motion.div>
+      <motion.div
+        ref={galleryRef}
+        initial={{ opacity: 0 }}
+        animate={galleryVisible ? { opacity: 1 } : {}}
+        transition={{ duration: 0.8 }}
+      >
+        <Gallery />
+      </motion.div>
+      <motion.div
+        ref={blogRef}
+        initial={{ opacity: 0 }}
+        animate={blogVisible ? { opacity: 1 } : {}}
+        transition={{ duration: 0.8 }}
+      >
+        <Blog />
+      </motion.div>
+      <motion.div
+        ref={shopRef}
+        initial={{ opacity: 0 }}
+        animate={shopVisible ? { opacity: 1 } : {}}
+        transition={{ duration: 0.8 }}
+      >
+        <Shop />
+      </motion.div>
+      <motion.div
+        ref={contactRef}
+        initial={{ opacity: 0 }}
+        animate={contactVisible ? { opacity: 1 } : {}}
+        transition={{ duration: 0.8 }}
+      >
+        <ContactOverlay />
+      </motion.div>
     </>
   );
 }
