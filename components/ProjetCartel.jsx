@@ -56,27 +56,27 @@ function CustomLightbox({ open, onClose, images, project }) {
       {/* Main Content (MOBILE) */}
       <div className="flex-1 flex flex-col w-full h-full md:hidden">
         <div className="flex-1 flex flex-col w-full justify-center">
-          <div className="flex-1 flex items-center justify-center w-full max-h-[40vh]">
+          <div className="flex-1 flex flex-col items-center justify-center w-full max-h-[70vh] px-6">
             <motion.div
               key={currentIndex}
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.3 }}
-              className="w-full flex items-center justify-center"
+              className="w-full flex items-center justify-center flex-nowrap"
             >
               <Image
                 src={images[currentIndex]}
                 alt={`${project.name} - Image ${currentIndex + 1} of ${images.length}`}
-                width={800}
-                height={600}
-                className="max-h-[35vh] w-auto object-contain shadow-2xl mx-auto"
-                sizes="(max-width : 1200px) 100vw, 800px"
+                width={900}
+                height={700}
+                className="max-h-[65vh] max-w-full w-auto object-contain shadow-2xl mx-auto"
+                sizes="(max-width : 1200px) 100vw, 900px"
                 priority
               />
             </motion.div>
-          </div>
-          <div className="top-8 left-1/2 -translate-x-1/2 z-40 text-lg italic">
-            {currentIndex + 1} / {images.length}
+            <div className="text-center w-full z-40 text-lg italic mt-2">
+              {currentIndex + 1} / {images.length}
+            </div>
           </div>
         </div>
         <div className="flex justify-between w-full px-4 py-4 text-base">
