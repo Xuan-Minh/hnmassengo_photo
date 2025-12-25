@@ -4,7 +4,7 @@ import PropTypes from "prop-types";
 export default function BlogPostItem({ post, onClick }) {
   return (
     <div
-      className="w-full lg:border-b lg:border-whiteCustom/20 py-8 lg:py-12 cursor-pointer group"
+      className="w-full lg:border-b lg:border-whiteCustom/20 py-8 lg:py-12 cursor-pointer group lg:hover:border-l-4 lg:hover:border-l-white lg:pl-8 transition-all duration-300"
       onClick={onClick}
     >
       {post.layout === "image-left" && post.image && (
