@@ -32,18 +32,23 @@ export default function Blog() {
   // Charger les posts depuis Sanity
   useEffect(() => {
     const fetchPosts = async () => {
-      const data = await client.fetch('*[_type == "blogPost"] | order(date desc) { ..., image{ asset->{ url } } }');
-      console.log('Fetched posts:', data); // Debug
-      const mapped = data.map(p => ({
+      const data = await client.fetch(
+        '*[_type == "blogPost"] | order(date desc) { ..., image{ asset->{ url } } }'
+      );
+      console.log("Fetched posts:", data); // Debug
+      const mapped = data.map((p) => ({
         id: p._id,
         title: p[`title_${locale}`] || p.title_fr,
-        date: new Date(p.date).toLocaleDateString(locale === 'fr' ? 'fr-FR' : locale === 'de' ? 'de-DE' : 'en-US', { year: 'numeric', month: 'short', day: 'numeric' }),
+        date: new Date(p.date).toLocaleDateString(
+          locale === "fr" ? "fr-FR" : locale === "de" ? "de-DE" : "en-US",
+          { year: "numeric", month: "short", day: "numeric" }
+        ),
         content: p[`content_${locale}`] || p.content_fr,
         fullContent: p[`fullContent_${locale}`] || p.fullContent_fr,
         image: p.image?.asset?.url,
         layout: p.layout,
       }));
-      console.log('Mapped posts:', mapped); // Debug
+      console.log("Mapped posts:", mapped); // Debug
       setPosts(mapped);
     };
     fetchPosts();

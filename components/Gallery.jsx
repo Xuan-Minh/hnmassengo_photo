@@ -34,17 +34,19 @@ export default function Gallery() {
   // Charger les projets depuis Sanity
   useEffect(() => {
     const fetchProjects = async () => {
-      const data = await client.fetch('*[_type == "project"] { ..., images[]{ asset->{ url } } }');
-      console.log('Fetched projects:', data); // Debug
-      const mapped = data.map(p => ({
+      const data = await client.fetch(
+        '*[_type == "project"] { ..., images[]{ asset->{ url } } }'
+      );
+      console.log("Fetched projects:", data); // Debug
+      const mapped = data.map((p) => ({
         id: p._id,
         name: p[`name_${locale}`] || p.name_fr,
         type: p.type,
-        images: p.images?.map(img => img.asset?.url) || [],
+        images: p.images?.map((img) => img.asset?.url) || [],
         coords: p.coords,
         description: p[`description_${locale}`] || p.description_fr,
       }));
-      console.log('Mapped projects:', mapped); // Debug
+      console.log("Mapped projects:", mapped); // Debug
       setProjects(mapped);
     };
     fetchProjects();

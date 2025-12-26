@@ -55,8 +55,10 @@ export default function Shop() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const data = await client.fetch('*[_type == "shopItem" && available == true] { ..., image{ asset->{ url } }, imgHover{ asset->{ url } } }');
-        console.log('Fetched products:', data); // Debug
+        const data = await client.fetch(
+          '*[_type == "shopItem" && available == true] { ..., image{ asset->{ url } }, imgHover{ asset->{ url } } }'
+        );
+        console.log("Fetched products:", data); // Debug
         const formatted = data.map((p) => ({
           id: p._id,
           imgDefault: p.image?.asset?.url,
@@ -67,7 +69,7 @@ export default function Shop() {
           formats: p.formats || [],
           url: `/shop/${p.slug.current}`,
         }));
-        console.log('Formatted products:', formatted); // Debug
+        console.log("Formatted products:", formatted); // Debug
         setProducts(formatted);
       } catch (err) {
         logger.error("Failed to load products", err);
