@@ -186,7 +186,7 @@ function ContactInfo() {
 }
 
 // Composant pour le contenu principal (formulaire + informations)
-function ContactContent({
+export function ContactContent({
   idSuffix = "",
   headingId,
   variant = "default",
@@ -212,7 +212,7 @@ function ContactContent({
 }
 
 // Composant séparé pour le marquee
-function ContactMarquee() {
+export function ContactMarquee() {
   return (
     <div className="absolute inset-x-0 bottom-0 border-t border-whiteCustom/60 overflow-hidden pointer-events-none">
       <motion.div
@@ -345,7 +345,7 @@ export default function ContactOverlay({
         {open && (
           <section
             id="info-overlay"
-            className="fixed inset-0 z-[130]"
+            className="fixed inset-0 z-[200]"
             aria-label="Contact Overlay"
           >
             <motion.button
@@ -404,26 +404,6 @@ export default function ContactOverlay({
           </section>
         )}
       </AnimatePresence>
-
-      {/* Section Contact Inline */}
-      <section
-        id="info"
-        className="relative snap-start bg-blackCustom border-t-2 border-whiteCustom min-h-[clamp(600px,75vh,900px)]"
-        aria-label="Contact"
-      >
-        {/* Contenu principal avec padding pour éviter le marquee */}
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12 pt-8 md:pt-12 lg:pt-16 pb-20 sm:pb-24 md:pb-32 lg:pb-36 xl:pb-40">
-          <ContactContent
-            idSuffix="-inline"
-            headingId="contact-title-inline"
-            variant="section"
-            defaultSubject={defaultSubject}
-          />
-        </div>
-
-        {/* Marquee séparé en bas */}
-        <ContactMarquee />
-      </section>
     </>
   );
 }

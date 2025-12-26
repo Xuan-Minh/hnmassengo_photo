@@ -33,7 +33,11 @@ export { default as ShopItem } from "./ShopItem";
 export { default as ShopOverlay } from "./ShopOverlay";
 
 // Overlays
-export { default as ContactOverlay } from "./ContactOverlay";
+export {
+  default as ContactOverlay,
+  ContactContent,
+  ContactMarquee,
+} from "./ContactOverlay";
 export { default as IntroOverlay } from "./IntroOverlay";
 
 // Utils
