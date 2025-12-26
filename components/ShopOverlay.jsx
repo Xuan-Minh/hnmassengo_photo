@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useRef } from "react";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { logger } from "../lib/logger";
 
@@ -51,10 +52,15 @@ export default function ShopOverlay({ product, onClose, onAddToCart }) {
         <div className="block md:hidden w-full">
           {/* Image 50vh */}
           <div className="w-full h-[50vh] flex items-center justify-center bg-blackCustom relative">
-            <img
+            <Image
               src={product.imgDefault}
               alt={product.title}
+              width={600}
+              height={600}
+              sizes="100vw"
               className="max-h-[30vh] w-auto object-contain mx-auto"
+              style={{ objectFit: "contain", height: "auto" }}
+              priority
             />
           </div>
           {/* Séparateur */}
@@ -88,10 +94,14 @@ export default function ShopOverlay({ product, onClose, onAddToCart }) {
         <div className="hidden md:flex flex-1 flex-row items-center justify-center gap-24 w-full h-full">
           {/* Image */}
           <div className="w-1/2 max-w-xl aspect-square relative shadow-2xl flex items-center justify-center">
-            <img
+            <Image
               src={product.imgDefault}
               alt={product.title}
+              fill
+              sizes="50vw"
               className="w-full h-full object-cover"
+              style={{ objectFit: "cover" }}
+              priority
             />
           </div>
           {/* Infos */}

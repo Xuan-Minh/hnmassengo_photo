@@ -11,6 +11,7 @@ import GalleryGridMore from "./GalleryGridMore";
 import ProjetCartel from "./ProjetCartel";
 import { AnimatePresence } from "framer-motion";
 import { motion } from "framer-motion";
+import Image from "next/image";
 
 export default function Gallery() {
   const [filter, setFilter] = useState("all");
@@ -260,13 +261,18 @@ export default function Gallery() {
                           setSelectedProject(projectData);
                         }}
                       >
-                        <img
+                        <Image
                           src={imgData.img}
                           alt={imgData.name}
+                          width={600}
+                          height={400}
                           className={`max-w-full max-h-full object-contain shadow transition-opacity duration-300 ${
                             isHovered ? "opacity-100" : "opacity-40"
                           }`}
+                          style={{ objectFit: "contain" }}
                           draggable={false}
+                          sizes="(max-width: 768px) 45vw, (max-width: 1200px) 20vw, 18vw"
+                          priority={idx < 5}
                         />
                       </motion.div>
                     );
@@ -357,21 +363,26 @@ export default function Gallery() {
                 {/* Zone centrale image (Slideshow) */}
                 <div className="flex-1 relative w-full h-[100vh] flex items-center justify-center overflow-hidden mt-0 md:mt-8 lg:mt-0">
                   {filteredProjects.length > 0 && (
-                    <img
+                    <Image
                       src={
                         filteredProjects[currentProjectIndex].images[
                           currentImageIndex
                         ]
                       }
                       alt={filteredProjects[currentProjectIndex].name}
-                      className={`max-w-[85%] max-h-[50vh] lg:max-w-[70%] lg:max-h-[70%] xl:max-w-[80%] xl:max-h-[80%] object-contain shadow-lg cursor-pointer transition-opacity duration-300 ${
+                      width={1200}
+                      height={900}
+                      className={`max-w-[85%] max-h-[50vh] lg:max-w-[70%] lg:max-h-[70%] xl:max-w-[80%] xl:max-h-[80%] object-contain cursor-pointer transition-opacity duration-300 ${
                         isTransitioning ? "opacity-0" : "opacity-100"
                       }`}
+                      style={{ objectFit: "contain" }}
+                      sizes="(max-width: 768px) 90vw, (max-width: 1200px) 70vw, 80vw"
                       onClick={() =>
                         setSelectedProject(
                           filteredProjects[currentProjectIndex]
                         )
                       }
+                      priority
                     />
                   )}
                 </div>

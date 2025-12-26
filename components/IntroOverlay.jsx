@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { motion } from "framer-motion";
+import Image from "next/image";
 import OverlayActionButton from "./OverlayActionButton";
 import { EVENTS, emitEvent, addEventHandler } from "../lib/events";
 
@@ -61,7 +62,9 @@ export default function IntroOverlay() {
     const ok = [];
     let done = 0;
     imageSources.forEach((src) => {
-      const img = new Image();
+      // Utilise le constructeur natif window.Image côté client uniquement
+      const img = typeof window !== "undefined" ? new window.Image() : null;
+      if (!img) return;
       img.onload = () => {
         done += 1;
         ok.push(src);
@@ -163,7 +166,7 @@ export default function IntroOverlay() {
       <div className="relative w-full h-full">
         {showImages && (
           <>
-            <img
+            <Image
               key={loadedImages[currentIndex]}
               src={
                 loadedImages[currentIndex].startsWith("/loading/")
@@ -171,6 +174,7 @@ export default function IntroOverlay() {
                   : loadedImages[currentIndex].replace(/^\.\./, "")
               }
               alt=""
+              fill
               className="absolute inset-0 w-full h-full object-cover z-0"
               draggable={false}
               style={{
@@ -180,6 +184,8 @@ export default function IntroOverlay() {
                 transform: "scale(1.04)",
                 transition: "filter .4s ease",
               }}
+              sizes="100vw"
+              priority
             />
             <div className="absolute inset-0 bg-black/35 pointer-events-none z-10" />
           </>

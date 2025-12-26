@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import PropTypes from "prop-types";
+import Image from "next/image";
 
 export default function ShopItem({
   imgDefault,
@@ -20,15 +21,22 @@ export default function ShopItem({
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
       >
-        <img
+        {/* Image par défaut, optimisée et chargée en priorité */}
+        <Image
           src={imgDefault}
           alt=""
+          fill
+          sizes="100vw"
+          priority
           className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${hovered ? "opacity-0" : "opacity-100"}`}
           draggable={false}
         />
-        <img
+        {/* Image hover, optimisée */}
+        <Image
           src={imgHover}
           alt=""
+          fill
+          sizes="100vw"
           className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${hovered ? "opacity-100" : "opacity-0"}`}
           draggable={false}
         />
