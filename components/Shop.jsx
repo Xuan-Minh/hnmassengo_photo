@@ -32,6 +32,14 @@ const CartItem = ({ item }) => {
 
 export default function Shop() {
   const [cartOpen, setCartOpen] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(false);
+  // Détecter desktop/mobile côté client
+  useEffect(() => {
+    const checkDesktop = () => setIsDesktop(window.innerWidth >= 768);
+    checkDesktop();
+    window.addEventListener("resize", checkDesktop);
+    return () => window.removeEventListener("resize", checkDesktop);
+  }, []);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [products, setProducts] = useState([]);
   const [cartItems, setCartItems] = useState([]);
@@ -183,8 +191,7 @@ export default function Shop() {
           </div>
           {/* Contenu du panier, déroulant sur mobile */}
           <AnimatePresence>
-            {(cartOpen ||
-              (typeof window !== "undefined" && window.innerWidth >= 768)) && (
+            {(cartOpen || isDesktop) && (
               <motion.div
                 initial={{ height: 0, opacity: 0 }}
                 animate={{ height: "auto", opacity: 1 }}
