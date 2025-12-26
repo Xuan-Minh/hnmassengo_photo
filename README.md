@@ -11,7 +11,6 @@ Ce projet est un site vitrine Jamstack pour présenter les œuvres et projets ph
 - Snipcart (e-commerce)
 - next-intl (i18n)
 - react-hook-form
-- yet-another-react-lightbox
 - Déploiement Vercel
 
 ## Fonctionnalités
