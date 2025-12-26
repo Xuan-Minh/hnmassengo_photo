@@ -4,44 +4,47 @@ export default {
   type: "document",
   fields: [
     {
-      name: "title_fr",
-      title: "Titre (Français)",
-      type: "string",
-      validation: (Rule) => Rule.required(),
-    },
-    {
-      name: "title_en",
-      title: "Titre (Anglais)",
-      type: "string",
-      validation: (Rule) => Rule.required(),
-    },
-    {
-      name: "title_de",
-      title: "Titre (Allemand)",
-      type: "string",
+      name: "title",
+      title: "Titre",
+      type: "object",
+      fields: [
+        {
+          name: "fr",
+          title: "Français",
+          type: "string",
+          validation: (Rule) => Rule.required(),
+        },
+        {
+          name: "en",
+          title: "Anglais",
+          type: "string",
+          validation: (Rule) => Rule.required(),
+        },
+        {
+          name: "de",
+          title: "Allemand",
+          type: "string",
+          validation: (Rule) => Rule.required(),
+        },
+      ],
       validation: (Rule) => Rule.required(),
     },
     {
       name: "slug",
       title: "Slug",
       type: "slug",
-      options: { source: "title_fr", maxLength: 96 },
+      options: { source: "title.fr", maxLength: 96 },
       validation: (Rule) => Rule.required(),
     },
     {
-      name: "description_fr",
-      title: "Description (Français)",
-      type: "text",
-    },
-    {
-      name: "description_en",
-      title: "Description (Anglais)",
-      type: "text",
-    },
-    {
-      name: "description_de",
-      title: "Description (Allemand)",
-      type: "text",
+      name: "description",
+      title: "Description",
+      type: "object",
+      fields: [
+        { name: "fr", title: "Français", type: "text" },
+        { name: "en", title: "Anglais", type: "text" },
+        { name: "de", title: "Allemand", type: "text" },
+      ],
     },
     {
       name: "price",

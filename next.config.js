@@ -17,6 +17,9 @@ const nextConfig = {
       },
     ],
   },
+  experimental: {
+    optimizePackageImports: ["framer-motion", "@portabletext/react"],
+  },
 };
 
 module.exports = withBundleAnalyzer(withNextIntl(nextConfig));

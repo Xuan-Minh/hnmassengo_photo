@@ -63,9 +63,17 @@ export default function Shop() {
           id: p._id,
           imgDefault: p.image?.asset?.url,
           imgHover: p.imgHover?.asset?.url,
-          title: p[`title_${locale}`] || p.title_fr,
+          title:
+            p.title?.[locale] ||
+            p.title?.fr ||
+            p[`title_${locale}`] ||
+            p.title_fr,
           price: p.price,
-          description: p[`description_${locale}`] || p.description_fr,
+          description:
+            p.description?.[locale] ||
+            p.description?.fr ||
+            p[`description_${locale}`] ||
+            p.description_fr,
           formats: p.formats || [],
           url: `/shop/${p.slug.current}`,
         }));

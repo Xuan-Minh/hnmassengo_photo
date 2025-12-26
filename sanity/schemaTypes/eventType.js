@@ -6,21 +6,29 @@ export const eventType = defineType({
   type: "document",
   fields: [
     defineField({
-      name: "title_fr",
-      title: "Titre (Français)",
-      type: "string",
-      validation: (Rule) => Rule.required(),
-    }),
-    defineField({
-      name: "title_en",
-      title: "Titre (Anglais)",
-      type: "string",
-      validation: (Rule) => Rule.required(),
-    }),
-    defineField({
-      name: "title_de",
-      title: "Titre (Allemand)",
-      type: "string",
+      name: "title",
+      title: "Titre",
+      type: "object",
+      fields: [
+        {
+          name: "fr",
+          title: "Français",
+          type: "string",
+          validation: (Rule) => Rule.required(),
+        },
+        {
+          name: "en",
+          title: "Anglais",
+          type: "string",
+          validation: (Rule) => Rule.required(),
+        },
+        {
+          name: "de",
+          title: "Allemand",
+          type: "string",
+          validation: (Rule) => Rule.required(),
+        },
+      ],
       validation: (Rule) => Rule.required(),
     }),
     defineField({
@@ -30,39 +38,55 @@ export const eventType = defineType({
       validation: (Rule) => Rule.required(),
     }),
     defineField({
-      name: "content_fr",
-      title: "Contenu Court (Français)",
-      type: "text",
+      name: "content",
+      title: "Contenu Court",
+      type: "object",
+      fields: [
+        {
+          name: "fr",
+          title: "Français",
+          type: "text",
+          validation: (Rule) => Rule.required(),
+        },
+        {
+          name: "en",
+          title: "Anglais",
+          type: "text",
+          validation: (Rule) => Rule.required(),
+        },
+        {
+          name: "de",
+          title: "Allemand",
+          type: "text",
+          validation: (Rule) => Rule.required(),
+        },
+      ],
       validation: (Rule) => Rule.required(),
     }),
     defineField({
-      name: "content_en",
-      title: "Contenu Court (Anglais)",
-      type: "text",
-      validation: (Rule) => Rule.required(),
-    }),
-    defineField({
-      name: "content_de",
-      title: "Contenu Court (Allemand)",
-      type: "text",
-      validation: (Rule) => Rule.required(),
-    }),
-    defineField({
-      name: "fullContent_fr",
-      title: "Contenu Complet (Français)",
-      type: "text",
-      validation: (Rule) => Rule.required(),
-    }),
-    defineField({
-      name: "fullContent_en",
-      title: "Contenu Complet (Anglais)",
-      type: "text",
-      validation: (Rule) => Rule.required(),
-    }),
-    defineField({
-      name: "fullContent_de",
-      title: "Contenu Complet (Allemand)",
-      type: "text",
+      name: "fullContent",
+      title: "Contenu Complet",
+      type: "object",
+      fields: [
+        {
+          name: "fr",
+          title: "Français",
+          type: "text",
+          validation: (Rule) => Rule.required(),
+        },
+        {
+          name: "en",
+          title: "Anglais",
+          type: "text",
+          validation: (Rule) => Rule.required(),
+        },
+        {
+          name: "de",
+          title: "Allemand",
+          type: "text",
+          validation: (Rule) => Rule.required(),
+        },
+      ],
       validation: (Rule) => Rule.required(),
     }),
     defineField({

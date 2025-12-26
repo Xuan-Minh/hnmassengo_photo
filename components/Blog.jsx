@@ -38,13 +38,25 @@ export default function Blog() {
       console.log("Fetched posts:", data); // Debug
       const mapped = data.map((p) => ({
         id: p._id,
-        title: p[`title_${locale}`] || p.title_fr,
+        title:
+          p.title?.[locale] ||
+          p.title?.fr ||
+          p[`title_${locale}`] ||
+          p.title_fr,
         date: new Date(p.date).toLocaleDateString(
           locale === "fr" ? "fr-FR" : locale === "de" ? "de-DE" : "en-US",
           { year: "numeric", month: "short", day: "numeric" }
         ),
-        content: p[`content_${locale}`] || p.content_fr,
-        fullContent: p[`fullContent_${locale}`] || p.fullContent_fr,
+        content:
+          p.content?.[locale] ||
+          p.content?.fr ||
+          p[`content_${locale}`] ||
+          p.content_fr,
+        fullContent:
+          p.fullContent?.[locale] ||
+          p.fullContent?.fr ||
+          p[`fullContent_${locale}`] ||
+          p.fullContent_fr,
         image: p.image?.asset?.url,
         layout: p.layout,
       }));

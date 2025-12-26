@@ -6,21 +6,29 @@ export const projectType = defineType({
   type: "document",
   fields: [
     defineField({
-      name: "name_fr",
-      title: "Nom du Projet (Français)",
-      type: "string",
-      validation: (Rule) => Rule.required(),
-    }),
-    defineField({
-      name: "name_en",
-      title: "Nom du Projet (Anglais)",
-      type: "string",
-      validation: (Rule) => Rule.required(),
-    }),
-    defineField({
-      name: "name_de",
-      title: "Nom du Projet (Allemand)",
-      type: "string",
+      name: "name",
+      title: "Nom du Projet",
+      type: "object",
+      fields: [
+        {
+          name: "fr",
+          title: "Français",
+          type: "string",
+          validation: (Rule) => Rule.required(),
+        },
+        {
+          name: "en",
+          title: "Anglais",
+          type: "string",
+          validation: (Rule) => Rule.required(),
+        },
+        {
+          name: "de",
+          title: "Allemand",
+          type: "string",
+          validation: (Rule) => Rule.required(),
+        },
+      ],
       validation: (Rule) => Rule.required(),
     }),
     defineField({
@@ -49,21 +57,29 @@ export const projectType = defineType({
       description: "Ex: 48.3705° N, 10.8978° E",
     }),
     defineField({
-      name: "description_fr",
-      title: "Description (Français)",
-      type: "text",
-      validation: (Rule) => Rule.required(),
-    }),
-    defineField({
-      name: "description_en",
-      title: "Description (Anglais)",
-      type: "text",
-      validation: (Rule) => Rule.required(),
-    }),
-    defineField({
-      name: "description_de",
-      title: "Description (Allemand)",
-      type: "text",
+      name: "description",
+      title: "Description",
+      type: "object",
+      fields: [
+        {
+          name: "fr",
+          title: "Français",
+          type: "text",
+          validation: (Rule) => Rule.required(),
+        },
+        {
+          name: "en",
+          title: "Anglais",
+          type: "text",
+          validation: (Rule) => Rule.required(),
+        },
+        {
+          name: "de",
+          title: "Allemand",
+          type: "text",
+          validation: (Rule) => Rule.required(),
+        },
+      ],
       validation: (Rule) => Rule.required(),
     }),
     defineField({

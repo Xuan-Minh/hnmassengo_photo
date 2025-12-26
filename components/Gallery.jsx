@@ -53,11 +53,16 @@ export default function Gallery() {
       console.log("Fetched projects:", data); // Debug
       const mapped = data.map((p) => ({
         id: p._id,
-        name: p[`name_${locale}`] || p.name_fr,
+        name:
+          p.name?.[locale] || p.name?.fr || p[`name_${locale}`] || p.name_fr,
         type: p.type,
         images: p.images?.map((img) => img.asset?.url) || [],
         coords: p.coords,
-        description: p[`description_${locale}`] || p.description_fr,
+        description:
+          p.description?.[locale] ||
+          p.description?.fr ||
+          p[`description_${locale}`] ||
+          p.description_fr,
       }));
       console.log("Mapped projects:", mapped); // Debug
       setProjects(mapped);
