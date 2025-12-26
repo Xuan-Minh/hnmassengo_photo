@@ -26,6 +26,19 @@ export default function Gallery() {
   const [isAnimating, setIsAnimating] = useState(false);
   const [selectedProject, setSelectedProject] = useState(null);
 
+  // Custom cursor for project name
+  const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
+  const [showCustomCursor, setShowCustomCursor] = useState(false);
+
+  // Mouse move for custom cursor
+  useEffect(() => {
+    const handleMouseMove = (e) => {
+      setCursorPos({ x: e.clientX, y: e.clientY });
+    };
+    window.addEventListener("mousemove", handleMouseMove);
+    return () => window.removeEventListener("mousemove", handleMouseMove);
+  }, []);
+
   // --- States pour le mode LIST ---
   const [currentProjectIndex, setCurrentProjectIndex] = useState(0);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -127,22 +140,26 @@ export default function Gallery() {
   useEffect(() => {
     if (!hoveredId && view === "grid") {
       document.body.style.cursor = "default";
+      setShowCustomCursor(false);
       return;
     }
     // En mode list, le curseur pointer sur l'image centrale
     if (view === "list") {
+      setShowCustomCursor(false);
       // géré via CSS class
       return;
     }
 
     const project = projects.find((p) => p.id === hoveredId);
     if (project) {
-      document.body.style.cursor = `pointer`;
+      document.body.style.cursor = "none";
+      setShowCustomCursor(true);
     }
     return () => {
       document.body.style.cursor = "default";
+      setShowCustomCursor(false);
     };
-  }, [hoveredId, view]);
+  }, [hoveredId, view, projects]);
 
   // Auto-switch to list view on mobile
   useEffect(() => {
@@ -462,7 +479,7 @@ export default function Gallery() {
           <GalleryGridMore
             onClose={() => setOverlayOpen(false)}
             onProjectClick={(project) => setSelectedProject(project)}
-            projects={PROJECTS}
+            projects={projects}
           />
         )}
       </AnimatePresence>
@@ -472,6 +489,25 @@ export default function Gallery() {
             project={selectedProject}
             onClose={() => setSelectedProject(null)}
           />
+        )}
+      </AnimatePresence>
+      {/* Custom cursor for project name */}
+      <AnimatePresence>
+        {showCustomCursor && hoveredId && (
+          <motion.div
+            className="fixed pointer-events-none z-[1000] text-whiteCustom font-playfair italic text-lg"
+            style={{
+              left: cursorPos.x + 10,
+              top: cursorPos.y + 10,
+              transform: "translate(-50%, -50%)",
+            }}
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            transition={{ duration: 0.2 }}
+          >
+            {projects.find((p) => p.id === hoveredId)?.name}
+          </motion.div>
         )}
       </AnimatePresence>
     </>

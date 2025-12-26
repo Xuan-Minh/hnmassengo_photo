@@ -1,7 +1,8 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+import Image from "next/image";
 
 const FILTERS = [
   { label: "all", value: "all" },
@@ -17,6 +18,38 @@ export default function GalleryGridMore({
   const t = useTranslations();
   const [filter, setFilter] = useState("all");
   const [hoveredId, setHoveredId] = useState(null);
+
+  // Custom cursor for project name
+  const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
+  const [showCustomCursor, setShowCustomCursor] = useState(false);
+
+  // Mouse move for custom cursor
+  useEffect(() => {
+    const handleMouseMove = (e) => {
+      setCursorPos({ x: e.clientX, y: e.clientY });
+    };
+    window.addEventListener("mousemove", handleMouseMove);
+    return () => window.removeEventListener("mousemove", handleMouseMove);
+  }, []);
+
+  // Gestion du curseur custom
+  useEffect(() => {
+    if (!hoveredId) {
+      document.body.style.cursor = "default";
+      setShowCustomCursor(false);
+      return;
+    }
+
+    const project = projects.find((p) => p.id === hoveredId);
+    if (project) {
+      document.body.style.cursor = "none";
+      setShowCustomCursor(true);
+    }
+    return () => {
+      document.body.style.cursor = "default";
+      setShowCustomCursor(false);
+    };
+  }, [hoveredId, projects]);
 
   // Filtrage des projets
   const filteredProjects = projects.filter(
@@ -131,6 +164,25 @@ export default function GalleryGridMore({
       <div className="absolute bottom-8 left-8 md:left-16 text-xl font-playfair italic text-blackCustom pointer-events-none">
         {hoveredProject ? hoveredProject.coords : ""}
       </div>
+      {/* Custom cursor for project name */}
+      <AnimatePresence>
+        {showCustomCursor && hoveredId && (
+          <motion.div
+            className="fixed pointer-events-none z-[200] text-whiteCustom font-playfair italic text-lg"
+            style={{
+              left: cursorPos.x + 10,
+              top: cursorPos.y + 10,
+              transform: "translate(-50%, -50%)",
+            }}
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            transition={{ duration: 0.2 }}
+          >
+            {projects.find((p) => p.id === hoveredId)?.name}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }

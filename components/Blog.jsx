@@ -93,7 +93,7 @@ export default function Blog() {
       <AnimatePresence>
         {archiveOpen && (
           <BlogArchives
-            posts={POSTS}
+            posts={posts}
             onClose={() => setArchiveOpen(false)}
             onPostClick={(post) => setSelectedPost(post)}
           />
@@ -106,19 +106,19 @@ export default function Blog() {
             post={selectedPost}
             onClose={() => setSelectedPost(null)}
             onPrevious={() => {
-              const currentIndex = POSTS.findIndex(
+              const currentIndex = posts.findIndex(
                 (p) => p.id === selectedPost.id
               );
               if (currentIndex > 0) {
-                setSelectedPost(POSTS[currentIndex - 1]);
+                setSelectedPost(posts[currentIndex - 1]);
               }
             }}
             onNext={() => {
-              const currentIndex = POSTS.findIndex(
+              const currentIndex = posts.findIndex(
                 (p) => p.id === selectedPost.id
               );
-              if (currentIndex < POSTS.length - 1) {
-                setSelectedPost(POSTS[currentIndex + 1]);
+              if (currentIndex < posts.length - 1) {
+                setSelectedPost(posts[currentIndex + 1]);
               }
             }}
           />

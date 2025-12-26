@@ -135,14 +135,6 @@ export default function HomePage() {
         animate={shopVisible ? { opacity: 1 } : {}}
         transition={{ duration: 0.8 }}
       >
-        <Shop />
-      </motion.div>
-      <motion.div
-        ref={contactRef}
-        initial={{ opacity: 0 }}
-        animate={contactVisible ? { opacity: 1 } : {}}
-        transition={{ duration: 0.8 }}
-      >
         {/* Section Contact Inline */}
         <section
           id="info"
