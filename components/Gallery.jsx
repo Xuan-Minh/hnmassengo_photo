@@ -1,10 +1,11 @@
 "use client";
 import { useState, useEffect } from "react";
+import { useTranslations } from "next-intl";
+import { useParams } from "next/navigation";
 import { GALLERY_FILTERS } from "../lib/constants";
-import { GALLERY_PROJECTS } from "../lib/data";
+import client from "../lib/sanity.client";
 
-// Utiliser les données centralisées
-const PROJECTS = GALLERY_PROJECTS;
+// Utiliser les données depuis Sanity
 const FILTERS = GALLERY_FILTERS;
 
 import GalleryGridMore from "./GalleryGridMore";
@@ -14,6 +15,10 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 
 export default function Gallery() {
+  const t = useTranslations();
+  const { locale } = useParams();
+  const [projects, setProjects] = useState([]);
+
   const [filter, setFilter] = useState("all");
   const [view, setView] = useState("grid");
   const [hoveredId, setHoveredId] = useState(null);
@@ -26,6 +31,25 @@ export default function Gallery() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
 
+  // Charger les projets depuis Sanity
+  useEffect(() => {
+    const fetchProjects = async () => {
+      const data = await client.fetch('*[_type == "project"] { ..., images[]{ asset->{ url } } }');
+      console.log('Fetched projects:', data); // Debug
+      const mapped = data.map(p => ({
+        id: p._id,
+        name: p[`name_${locale}`] || p.name_fr,
+        type: p.type,
+        images: p.images?.map(img => img.asset?.url) || [],
+        coords: p.coords,
+        description: p[`description_${locale}`] || p.description_fr,
+      }));
+      console.log('Mapped projects:', mapped); // Debug
+      setProjects(mapped);
+    };
+    fetchProjects();
+  }, [locale]);
+
   const handleViewChange = (newView) => {
     if (view === newView) return;
     setIsAnimating(true);
@@ -36,7 +60,7 @@ export default function Gallery() {
   };
 
   // Filtrage des projets
-  const filteredProjects = PROJECTS.filter(
+  const filteredProjects = projects.filter(
     (p) => filter === "all" || p.type === filter
   );
 

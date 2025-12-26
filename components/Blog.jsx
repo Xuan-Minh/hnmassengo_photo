@@ -1,11 +1,12 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
+import { useParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import BlogArchives from "./BlogArchives";
 import BlogPostItem from "./BlogPostItem";
 import dynamic from "next/dynamic";
-import { BLOG_POSTS } from "../lib/data";
+import client from "../lib/sanity.client";
 import { CONTENT } from "../lib/constants";
 
 // Lazy load BlogPostOverlay
@@ -13,26 +14,10 @@ const BlogPostOverlay = dynamic(() => import("./BlogPostOverlay"), {
   loading: () => <div>Loading…</div>,
 });
 
-// Utiliser les données centralisées
-const POSTS =
-  BLOG_POSTS.length > 0
-    ? BLOG_POSTS
-    : [
-        {
-          id: 1,
-          title: "Some randoms thoughts",
-          date: "12 oct. 2025",
-          content:
-            "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur posuere tincidunt lacus sit amet porttitor. Aliquam pharetra ante vel nibh accumsan, a bibendum lorem egestas. Sed ac accumsan metus, vitae finibus urna. Phasellus vel rhoncus nisl [...]",
-          fullContent:
-            "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur posuere tincidunt lacus sit amet porttitor. Aliquam pharetra ante vel nibh accumsan, a bibendum lorem egestas. Sed ac accumsan metus, vitae finibus urna. Phasellus vel rhoncus nisl. Vestibulum congue lacinia mi volutpat bibendum. Proin vitae odio est. Vivamus tempus pretium commodo. Nulla facilisi.\n\nNam dui metus, interdum vitae lobortis vel, viverra consequat neque. Praesent sagittis aliquet posuere. Aenean suscipit, mi quis viverra pulvinar, purus nulla placerat mi, quis mollis lectus ipsum vitae velit.",
-          image: "/home/home1.webp", // Placeholder
-          layout: "image-left",
-        },
-      ];
-
 export default function Blog() {
   const t = useTranslations();
+  const { locale } = useParams();
+  const [posts, setPosts] = useState([]);
   const [archiveOpen, setArchiveOpen] = useState(false);
   const [selectedPost, setSelectedPost] = useState(null);
   const [isMobile, setIsMobile] = React.useState(false);
@@ -44,7 +29,27 @@ export default function Blog() {
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
-  const latestPosts = POSTS.slice(0, isMobile ? 1 : CONTENT.BLOG_PREVIEW_COUNT);
+  // Charger les posts depuis Sanity
+  useEffect(() => {
+    const fetchPosts = async () => {
+      const data = await client.fetch('*[_type == "blogPost"] | order(date desc) { ..., image{ asset->{ url } } }');
+      console.log('Fetched posts:', data); // Debug
+      const mapped = data.map(p => ({
+        id: p._id,
+        title: p[`title_${locale}`] || p.title_fr,
+        date: new Date(p.date).toLocaleDateString(locale === 'fr' ? 'fr-FR' : locale === 'de' ? 'de-DE' : 'en-US', { year: 'numeric', month: 'short', day: 'numeric' }),
+        content: p[`content_${locale}`] || p.content_fr,
+        fullContent: p[`fullContent_${locale}`] || p.fullContent_fr,
+        image: p.image?.asset?.url,
+        layout: p.layout,
+      }));
+      console.log('Mapped posts:', mapped); // Debug
+      setPosts(mapped);
+    };
+    fetchPosts();
+  }, [locale]);
+
+  const latestPosts = posts.slice(0, isMobile ? 1 : CONTENT.BLOG_PREVIEW_COUNT);
 
   return (
     <>

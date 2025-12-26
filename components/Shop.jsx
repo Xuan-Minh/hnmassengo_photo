@@ -1,11 +1,14 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { useTranslations } from "next-intl";
+import { useParams } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import ShopItem from "./ShopItem";
 import ShopOverlay from "./ShopOverlay";
 import { formatPrice } from "../lib/utils";
 import { logger } from "../lib/logger";
+import client from "../lib/sanity.client";
 
 // Composant CartItem - Affichage simple des articles Snipcart
 const CartItem = ({ item }) => {
@@ -31,6 +34,8 @@ const CartItem = ({ item }) => {
 };
 
 export default function Shop() {
+  const t = useTranslations();
+  const { locale } = useParams();
   const [cartOpen, setCartOpen] = useState(false);
   const [isDesktop, setIsDesktop] = useState(false);
   // Détecter desktop/mobile côté client
@@ -46,24 +51,30 @@ export default function Shop() {
   const [cartTotal, setCartTotal] = useState(0);
   const [cartCount, setCartCount] = useState(0);
 
-  // Charger les produits depuis le JSON
+  // Charger les produits depuis Sanity
   useEffect(() => {
-    fetch("/products.json")
-      .then((res) => res.json())
-      .then((data) => {
+    const fetchProducts = async () => {
+      try {
+        const data = await client.fetch('*[_type == "shopItem" && available == true] { ..., image{ asset->{ url } }, imgHover{ asset->{ url } } }');
+        console.log('Fetched products:', data); // Debug
         const formatted = data.map((p) => ({
-          id: p.id,
-          imgDefault: p.image,
-          imgHover: p.imgHover,
-          title: p.name,
+          id: p._id,
+          imgDefault: p.image?.asset?.url,
+          imgHover: p.imgHover?.asset?.url,
+          title: p[`title_${locale}`] || p.title_fr,
           price: p.price,
-          description: p.description,
-          url: p.url,
+          description: p[`description_${locale}`] || p.description_fr,
+          formats: p.formats || [],
+          url: `/shop/${p.slug.current}`,
         }));
+        console.log('Formatted products:', formatted); // Debug
         setProducts(formatted);
-      })
-      .catch((err) => logger.error("Failed to load products", err));
-  }, []);
+      } catch (err) {
+        logger.error("Failed to load products", err);
+      }
+    };
+    fetchProducts();
+  }, [locale]);
 
   // Synchroniser avec Snipcart - lire l'état du panier
   const syncWithSnipcart = useCallback(() => {
