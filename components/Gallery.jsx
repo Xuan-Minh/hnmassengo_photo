@@ -135,7 +135,7 @@ export default function Gallery() {
       return;
     }
 
-    const project = PROJECTS.find((p) => p.id === hoveredId);
+    const project = projects.find((p) => p.id === hoveredId);
     if (project) {
       document.body.style.cursor = `pointer`;
     }
@@ -281,7 +281,7 @@ export default function Gallery() {
                         onMouseEnter={() => setHoveredId(imgData.projectId)}
                         onMouseLeave={() => setHoveredId(null)}
                         onClick={() => {
-                          const projectData = PROJECTS.find(
+                          const projectData = projects.find(
                             (p) => p.id === imgData.projectId
                           );
                           setSelectedProject(projectData);
@@ -443,7 +443,7 @@ export default function Gallery() {
           >
             <div className="text-xl font-playfair italic text-blackCustom h-8">
               {view === "grid"
-                ? hoveredId && PROJECTS.find((p) => p.id === hoveredId)?.coords
+                ? hoveredId && projects.find((p) => p.id === hoveredId)?.coords
                 : filteredProjects[currentProjectIndex]?.coords}
             </div>
             {view === "grid" && (

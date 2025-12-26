@@ -56,7 +56,7 @@ export default function Shop() {
     const fetchProducts = async () => {
       try {
         const data = await client.fetch(
-          '*[_type == "shopItem" && available == true] { ..., image{ asset->{ url } }, imgHover{ asset->{ url } } }'
+          '*[_type == "shopItem"] { ..., image{ asset->{ url } }, imgHover{ asset->{ url } } }'
         );
         console.log("Fetched products:", data); // Debug
         const formatted = data.map((p) => ({

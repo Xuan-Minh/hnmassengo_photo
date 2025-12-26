@@ -22,24 +22,28 @@ export default function ShopItem({
         onMouseLeave={() => setHovered(false)}
       >
         {/* Image par défaut, optimisée et chargée en priorité */}
-        <Image
-          src={imgDefault}
-          alt=""
-          fill
-          sizes="100vw"
-          priority
-          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${hovered ? "opacity-0" : "opacity-100"}`}
-          draggable={false}
-        />
+        {imgDefault && (
+          <Image
+            src={imgDefault}
+            alt=""
+            fill
+            sizes="100vw"
+            priority
+            className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${hovered ? "opacity-0" : "opacity-100"}`}
+            draggable={false}
+          />
+        )}
         {/* Image hover, optimisée */}
-        <Image
-          src={imgHover}
-          alt=""
-          fill
-          sizes="100vw"
-          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${hovered ? "opacity-100" : "opacity-0"}`}
-          draggable={false}
-        />
+        {imgHover && (
+          <Image
+            src={imgHover}
+            alt=""
+            fill
+            sizes="100vw"
+            className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${hovered ? "opacity-100" : "opacity-0"}`}
+            draggable={false}
+          />
+        )}
       </div>
       <div className="flex justify-between w-full">
         <span>{title}</span>
