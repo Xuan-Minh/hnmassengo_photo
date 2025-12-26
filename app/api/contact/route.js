@@ -28,18 +28,33 @@ export async function POST(request) {
     entry.count++;
     ipHits.set(ip, entry);
 
-    const formData = await request.formData();
-    const fullName = formData.get("fullName");
-    const email = formData.get("email");
-    const subject = formData.get("subject");
-    const message = formData.get("message");
+    const { fullName, email, subject, message } = await request.json();
 
-    // Ici, vous pouvez ajouter la logique d'envoi d'email
-    // Par exemple avec Nodemailer, SendGrid, etc.
+    // Validation côté serveur
+    const errors = [];
+    if (!fullName || fullName.trim().length < 2) {
+      errors.push("Le nom complet est requis (au moins 2 caractères).");
+    }
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      errors.push("Une adresse email valide est requise.");
+    }
+    if (!message || message.trim().length < 10) {
+      errors.push("Le message est requis (au moins 10 caractères).");
+    }
+    if (subject && subject.length > 100) {
+      errors.push("Le sujet ne peut pas dépasser 100 caractères.");
+    }
 
-    // Pour l'instant, on simule un succès
+    if (errors.length > 0) {
+      return NextResponse.json(
+        { success: false, message: "Erreurs de validation", errors },
+        { status: 400 }
+      );
+    }
+
+    // Ici, la validation est faite, mais l'envoi sera géré par Netlify
     return NextResponse.json(
-      { success: true, message: "Message reçu avec succès!" },
+      { success: true, message: "Validation réussie, envoi en cours..." },
       { status: 200 }
     );
   } catch (error) {

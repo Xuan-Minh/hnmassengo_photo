@@ -10,35 +10,45 @@ function ContactForm({ idSuffix = "", onSubmitSuccess, defaultSubject = "" }) {
   const [showSuccess, setShowSuccess] = useState(false);
   const formRef = useRef(null);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const form = formRef.current;
     if (!form) return;
 
-    // Créer une iframe cachée pour soumettre le formulaire
-    const iframe = document.createElement("iframe");
-    iframe.name = "hidden-iframe";
-    iframe.style.display = "none";
-    document.body.appendChild(iframe);
+    const formData = new FormData(form);
+    const data = {
+      fullName: formData.get("fullName"),
+      email: formData.get("email"),
+      subject: formData.get("subject"),
+      message: formData.get("message"),
+    };
 
-    // Configurer le formulaire pour soumettre dans l'iframe
-    form.target = "hidden-iframe";
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
 
-    // Soumettre le formulaire
-    form.submit();
+      const result = await response.json();
 
-    // Afficher le message de succès
-    setShowSuccess(true);
-    if (onSubmitSuccess) onSubmitSuccess();
-
-    // Réinitialiser le formulaire après un court délai
-    setTimeout(() => {
-      form.reset();
-      // Vérifier que l'iframe existe toujours avant de la supprimer
-      if (iframe && iframe.parentNode === document.body) {
-        document.body.removeChild(iframe);
+      if (response.ok && result.success) {
+        // Validation réussie, soumettre à Netlify
+        form.submit();
+        setShowSuccess(true);
+        if (onSubmitSuccess) onSubmitSuccess();
+      } else {
+        alert(result.message || "Erreurs de validation.");
+        if (result.errors) {
+          console.error("Erreurs:", result.errors);
+        }
       }
-    }, 1000);
+    } catch (error) {
+      console.error("Erreur:", error);
+      alert("Erreur lors de la validation. Veuillez réessayer.");
+    }
   };
 
   return (
