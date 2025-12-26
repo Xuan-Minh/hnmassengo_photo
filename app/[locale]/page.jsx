@@ -29,7 +29,7 @@ function useFadeInOnScreen() {
           observer.disconnect();
         }
       },
-      { threshold: 0.4 }
+      { threshold: 0.6 }
     );
     observer.observe(node);
     return () => observer.disconnect();
