@@ -52,5 +52,10 @@
     "label_subject": "Sujet *",
     "label_message": "Message *",
     "label_send": "Envoyer"
+  },
+  "presentation": {
+    "line1": "Je développe mon sens artistique à travers mes clubs et où je vis.",
+    "line2": "Je suis passionné par la capture de moments qui racontent une histoire,",
+    "line3": "évoquent des émotions et mettent en valeur la beauté de notre monde."
   }
 }

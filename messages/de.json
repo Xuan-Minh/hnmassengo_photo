@@ -52,5 +52,10 @@
     "label_subject": "Betreff *",
     "label_message": "Nachricht *",
     "label_send": "Senden"
+  },
+  "presentation": {
+    "line1": "Ich entwickle meinen künstlerischen Sinn durch meine Clubs und wo ich lebe.",
+    "line2": "Ich bin leidenschaftlich beim Einfangen von Momenten, die eine Geschichte erzählen,",
+    "line3": "Emotionen wecken und die Schönheit unserer Welt zeigen."
   }
 }

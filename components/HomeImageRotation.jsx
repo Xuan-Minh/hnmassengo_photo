@@ -72,7 +72,6 @@ export default function HomeImageRotation({
     typeof current === "string"
       ? current.replace(/^\/+|\/+/g, "/").replace(/^home\//, "/home/")
       : "";
-
   // Positionnement horizontal dynamique
   let justify = "justify-center";
   let marginClass = "";
@@ -93,11 +92,6 @@ export default function HomeImageRotation({
 
   return (
     <div className={`flex ${justify} w-full ${marginClass}`}>
-      {/*
-        Pour garantir le ratio et éviter les warnings Next.js sur width/height,
-        ne modifiez jamais la largeur ou la hauteur de l'image sans l'autre dimension.
-        Le parent gère le ratio via aspect-[3/4] et la hauteur fixe.
-      */}
       <div className="relative h-[55vh] lg:h-[60vh] aspect-[3/4] overflow-hidden mx-auto lg:mx-0">
         <AnimatePresence mode="wait">
           <motion.div

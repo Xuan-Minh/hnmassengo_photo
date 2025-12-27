@@ -9,7 +9,6 @@ import { EVENTS, emitEvent } from "../lib/events";
 export default function Menu() {
   const items = useMemo(() => MENU_ITEMS.slice(0, -1), []); // Tous sauf contact pour mobile
 
-  // Items for desktop (includes contact)
   const desktopItems = useMemo(() => MENU_ITEMS, []);
 
   const [active, setActive] = useState(null);

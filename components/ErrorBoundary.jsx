@@ -27,22 +27,15 @@ class ErrorBoundary extends React.Component {
       error,
       errorInfo,
     };
-
-    // You can also send error to monitoring service (e.g., Sentry)
-    // if (typeof window !== 'undefined' && window.Sentry) {
-    //   window.Sentry.captureException(error);
-    // }
   }
 
   handleReset = () => {
     this.setState({ hasError: false, error: null, errorInfo: null });
-    // Optionally reload the page
-    // window.location.reload();
   };
 
   render() {
     if (this.state.hasError) {
-      // Custom fallback UI
+      // Custom Fallback UI
       return (
         <div className="min-h-screen bg-blackCustom text-whiteCustom flex items-center justify-center p-8">
           <div className="max-w-2xl w-full text-center">
