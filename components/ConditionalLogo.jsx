@@ -11,7 +11,7 @@ export default function ConditionalLogo() {
   React.useEffect(() => {
     const checkVisibility = () => {
       const isLegalPage = pathname.includes("/legal");
-      const hash = typeof window !== 'undefined' ? window.location.hash : '';
+      const hash = typeof window !== "undefined" ? window.location.hash : "";
       const isSnipcartUrl =
         hash.includes("#/cart") ||
         hash.includes("#/checkout") ||
@@ -24,10 +24,10 @@ export default function ConditionalLogo() {
 
     // Écouter les changements de hash
     const handleHashChange = () => checkVisibility();
-    window.addEventListener('hashchange', handleHashChange);
+    window.addEventListener("hashchange", handleHashChange);
 
     return () => {
-      window.removeEventListener('hashchange', handleHashChange);
+      window.removeEventListener("hashchange", handleHashChange);
     };
   }, [pathname]);
 
