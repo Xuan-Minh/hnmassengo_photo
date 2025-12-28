@@ -37,8 +37,13 @@
   "devDependencies": {
     "@netlify/plugin-nextjs": "^5.13.5",
     "@sanity/cli": "^4.13.0",
-    "eslint": "^9.37.0",
+    "@typescript-eslint/eslint-plugin": "^8.50.1",
+    "@typescript-eslint/parser": "^8.50.1",
+    "eslint": "^9.39.2",
+    "eslint-config-next": "^16.1.1",
     "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^7.0.1",
     "prettier": "^3.6.2"
   }
 }

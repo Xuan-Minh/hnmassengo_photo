@@ -8,7 +8,7 @@ const ipHits = new Map();
 
 function cleanupOldEntries() {
   const now = Date.now();
-  for (const [ip, { first, count }] of ipHits.entries()) {
+  for (const [ip, { first }] of ipHits.entries()) {
     if (now - first > WINDOW_MS) ipHits.delete(ip);
   }
 }
