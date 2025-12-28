@@ -225,7 +225,7 @@ export default function IntroOverlay() {
                   userSelect: 'none',
                   filter: 'brightness(0.42) contrast(1.05) saturate(0.9)',
                   transform: 'scale(1.04)',
-                  transition: 'opacity 0.8s ease-in-out',
+                  transition: 'opacity 0.1s ease-in-out',
                   opacity: index === currentIndex ? 1 : 0,
                 }}
                 sizes="100vw"
