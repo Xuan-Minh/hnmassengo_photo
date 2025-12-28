@@ -9,7 +9,7 @@ import dynamic from "next/dynamic";
 import client from "../lib/sanity.client";
 import { CONTENT } from "../lib/constants";
 
-// Lazy load BlogPostOverlay
+// Chargement différé de BlogPostOverlay
 const BlogPostOverlay = dynamic(() => import("./BlogPostOverlay"), {
   loading: () => <div>Loading…</div>,
 });

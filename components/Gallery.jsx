@@ -26,11 +26,11 @@ export default function Gallery() {
   const [isAnimating, setIsAnimating] = useState(false);
   const [selectedProject, setSelectedProject] = useState(null);
 
-  // Custom cursor for project name
+  // Curseur personnalisé pour le nom du projet
   const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
   const [showCustomCursor, setShowCustomCursor] = useState(false);
 
-  // Mouse move for custom cursor
+  // Mouvement de souris pour le curseur personnalisé
   useEffect(() => {
     const handleMouseMove = (e) => {
       setCursorPos({ x: e.clientX, y: e.clientY });
@@ -166,7 +166,7 @@ export default function Gallery() {
     };
   }, [hoveredId, view, projects]);
 
-  // Auto-switch to list view on mobile
+  // Basculement automatique en vue liste sur mobile
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth < 768) {

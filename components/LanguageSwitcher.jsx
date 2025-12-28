@@ -43,7 +43,7 @@ export default function LanguageSwitcher() {
     return () => io.disconnect();
   }, []);
 
-  // Hide language selector when the bottom contact section (#info) is visible in viewport
+  // Masquer le sélecteur de langue quand la section contact du bas (#info) est visible dans le viewport
   useEffect(() => {
     const root = document.getElementById("scroll-root");
     const infoEl = document.getElementById("info");
@@ -52,7 +52,7 @@ export default function LanguageSwitcher() {
     const io = new IntersectionObserver(
       (entries) => {
         const entry = entries[0];
-        // Hide when at least ~20% visible
+        // Masquer quand au moins ~20% visible
         setHideSelector(entry.isIntersecting && entry.intersectionRatio > 0.2);
       },
       { root, threshold: [0, 0.2, 0.4, 0.6, 0.8, 1] }

@@ -16,13 +16,13 @@ export default function Menu() {
   const [isDarkBg, setIsDarkBg] = useState(false);
   const [hideMenu, setHideMenu] = useState(false);
 
-  // Mobile logic
+  // Logique mobile
   const [isMobile, setIsMobile] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [touchStart, setTouchStart] = useState(null);
   const mobileOverlayRef = React.useRef(null);
 
-  // Language switcher logic
+  // Logique du sélecteur de langue
   const langs = LANGUAGES;
   const params = useParams();
   const router = useRouter();
@@ -36,7 +36,7 @@ export default function Menu() {
     if (base === "") base = "/";
     const href = `/${lang}${base === "/" ? "" : base}`;
     router.replace(href, { scroll: false });
-    setMobileMenuOpen(false); // Close menu after lang change
+    setMobileMenuOpen(false); // Fermer le menu après changement de langue
   };
 
   // Trap focus dans le menu mobile
@@ -130,7 +130,7 @@ export default function Menu() {
       root.scrollTop +
       (el.getBoundingClientRect().top - root.getBoundingClientRect().top);
     root.scrollTo({ top, behavior: "smooth" });
-    setMobileMenuOpen(false); // Close mobile menu
+    setMobileMenuOpen(false); // Fermer le menu mobile
   }, []);
 
   useEffect(() => {
@@ -173,7 +173,7 @@ export default function Menu() {
     return () => io.disconnect();
   }, [desktopItems]);
 
-  // Hide menu when the bottom contact section (#info) is visible in viewport
+  // Masquer le menu quand la section contact du bas (#info) est visible dans le viewport
   useEffect(() => {
     const root = document.getElementById("scroll-root");
     const infoEl = document.getElementById("info");
@@ -182,7 +182,7 @@ export default function Menu() {
     const io = new IntersectionObserver(
       (entries) => {
         const entry = entries[0];
-        // Hide when at least ~20% visible
+        // Masquer quand au moins ~20% visible
         setHideMenu(entry.isIntersecting && entry.intersectionRatio > 0.2);
       },
       { root, threshold: [0, 0.2, 0.4, 0.6, 0.8, 1] }
@@ -205,7 +205,7 @@ export default function Menu() {
               : "opacity-100"
           }`}
           onClick={() => setMobileMenuOpen(true)}
-          style={{ color: isDarkBg ? "#F4F3F2" : "#1a1a1a" }} // Fallback color if mix-blend doesn't work well
+          style={{ color: isDarkBg ? "#F4F3F2" : "#1a1a1a" }} // Couleur de secours si mix-blend ne fonctionne pas bien
         >
           menu
         </button>

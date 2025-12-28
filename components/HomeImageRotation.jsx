@@ -5,7 +5,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
 import { TIMING } from "../lib/constants";
 
-// Simple rotating image component. Pass an array of filenames relative to /public/home.
+// Composant simple de rotation d'images. Passer un tableau de noms de fichiers relatifs à /public/home.
 // position: "center" | "left" | "right"
 export default function HomeImageRotation({
   images = [],

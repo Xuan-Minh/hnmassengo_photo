@@ -1,8 +1,8 @@
 // =================================
-// COMPONENTS INDEX - Barrel Exports
+// INDEX DES COMPOSANTS - Exports en baril
 // =================================
 
-// UI Components
+// Composants UI
 export { default as Logo } from "./Logo";
 export { default as Menu } from "./Menu";
 export { default as LanguageSwitcher } from "./LanguageSwitcher";

@@ -154,7 +154,7 @@ export default function IntroOverlay() {
         if (isExiting) {
           setVisible(false);
           setIsExiting(false);
-          setIsReTrigger(false); // Reset for next time
+          setIsReTrigger(false); // Réinitialiser pour la prochaine fois
           emitEvent(EVENTS.INTRO_DISMISSED);
         }
       }}

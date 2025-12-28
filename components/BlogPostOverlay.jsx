@@ -55,9 +55,9 @@ export default function BlogPostOverlay({ post, onClose, onPrevious, onNext }) {
           </button>
         </div>
 
-        {/* Main Content - Two Layouts */}
+        {/* Contenu principal - Deux mises en page */}
         {hasImage ? (
-          // Layout WITH Image (Date/Title, Image, then Content stacked vertically)
+          // Mise en page AVEC Image (Date/Titre, Image, puis Contenu empilé verticalement)
           <div className="flex-1 flex items-start justify-center w-full h-full px-16 md:px-24 py-20 overflow-y-auto">
             <div className="max-w-5xl w-full">
               {/* Date + Title - Left aligned */}
@@ -109,7 +109,7 @@ export default function BlogPostOverlay({ post, onClose, onPrevious, onNext }) {
             </div>
           </div>
         ) : (
-          // Layout WITHOUT Image (Centered content)
+          // Mise en page SANS Image (Contenu centré)
           <div className="flex-1 flex items-center justify-center w-full h-full px-16 md:px-24 py-20 overflow-hidden">
             <div className="max-w-3xl w-full">
               {/* Date + Title - Left aligned */}

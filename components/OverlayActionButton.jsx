@@ -21,15 +21,15 @@ const directionToDeg = {
 export default function OverlayActionButton({
   label = "next",
   onClick,
-  // Visual variants
+  // Variantes visuelles
   intent, // 'submit' | 'back' | 'previous' | 'next' | 'see-more'
-  direction, // overrides intent default: 'right' | 'left' | 'up' | 'down'
+  direction, // remplace la valeur par défaut de intent: 'right' | 'left' | 'up' | 'down'
   arrowPosition = "left", // 'left' | 'right'
   size = "md", // 'sm' | 'md' | 'lg'
-  // Animation control
+  // Contrôle d'animation
   animate = "none", // 'none' | 'exit' | 'click'
-  isActive = false, // used when animate === 'exit'
-  activeDeltaDeg = 0, // additional rotation when isActive=true
+  isActive = false, // utilisé quand animate === 'exit'
+  activeDeltaDeg = 0, // rotation supplémentaire quand isActive=true
   className = "",
   ariaLabel,
 }) {

@@ -1,6 +1,6 @@
 /**
-* This configuration file lets you run `$ sanity [command]` in this folder
-* Go to https://www.sanity.io/docs/cli to learn more.
+* Ce fichier de configuration vous permet d'exécuter `$ sanity [command]` dans ce dossier
+* Allez sur https://www.sanity.io/docs/cli pour en savoir plus.
 **/
 import { defineCliConfig } from 'sanity/cli'
 

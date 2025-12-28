@@ -19,11 +19,11 @@ export default function GalleryGridMore({
   const [filter, setFilter] = useState("all");
   const [hoveredId, setHoveredId] = useState(null);
 
-  // Custom cursor for project name
+  // Curseur personnalisé pour le nom du projet
   const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
   const [showCustomCursor, setShowCustomCursor] = useState(false);
 
-  // Mouse move for custom cursor
+  // Mouvement de souris pour le curseur personnalisé
   useEffect(() => {
     const handleMouseMove = (e) => {
       setCursorPos({ x: e.clientX, y: e.clientY });
@@ -60,7 +60,7 @@ export default function GalleryGridMore({
   const allImages = filteredProjects.flatMap((p) =>
     p.images.map((img, idx) => ({
       projectId: p.id,
-      project: p, // Pass the whole project object
+      project: p, // Passer l'objet projet complet
       name: p.name,
       type: p.type,
       src: img,
@@ -71,10 +71,10 @@ export default function GalleryGridMore({
 
   const handleImageClick = (project) => {
     onProjectClick(project);
-    onClose(); // Close the grid more overlay to show the cartel
+    onClose(); // Fermer l'overlay grille plus pour afficher le cartel
   };
 
-  // Find hovered project to display coords
+  // Trouver le projet survolé pour afficher les coordonnées
   const hoveredProject = projects.find((p) => p.id === hoveredId);
 
   return (

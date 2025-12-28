@@ -43,7 +43,7 @@ function CustomLightbox({ open, onClose, images, project }) {
       exit={{ opacity: 0 }}
       transition={{ duration: 0.3 }}
     >
-      {/* Header */}
+      {/* En-tête */}
       <div className="absolute top-8 left-8 md:left-16 z-40">
         <button
           onClick={onClose}
@@ -53,7 +53,7 @@ function CustomLightbox({ open, onClose, images, project }) {
         </button>
       </div>
 
-      {/* Main Content (MOBILE) */}
+      {/* Contenu principal (MOBILE) */}
       <div className="flex-1 flex flex-col w-full h-full md:hidden">
         <div className="flex-1 flex flex-col w-full justify-center">
           <div className="flex-1 flex flex-col items-center justify-center w-full max-h-[70vh] px-6">
@@ -117,11 +117,11 @@ function CustomLightbox({ open, onClose, images, project }) {
 
       {/* Main Content (DESKTOP) : version d'origine */}
       <div className="hidden md:flex flex-1 relative items-center justify-center overflow-hidden w-full h-full">
-        {/* Prev Image */}
+      {/* Image précédente */}
         <div className="absolute left-8 top-1/2 -translate-y-1/2 h-[50%] w-[15%] opacity-40 blur-[2px] pointer-events-none">
           <Image
             src={images[(currentIndex - 1 + images.length) % images.length]}
-            alt={`${project.name} - Previous image`}
+            alt={`${project.name} - Image précédente`}
             width={300}
             height={200}
             className="w-full h-full object-contain"
@@ -130,7 +130,7 @@ function CustomLightbox({ open, onClose, images, project }) {
           />
         </div>
 
-        {/* Main Image */}
+        {/* Image principale */}
         <div className="relative z-10 h-[60%] w-full max-w-[50%] flex items-center justify-center">
           <motion.div
             key={currentIndex}
@@ -140,7 +140,7 @@ function CustomLightbox({ open, onClose, images, project }) {
           >
             <Image
               src={images[currentIndex]}
-              alt={`${project.name} - Image ${currentIndex + 1} of ${images.length}`}
+              alt={`${project.name} - Image ${currentIndex + 1} sur ${images.length}`}
               width={800}
               height={600}
               className="max-h-[70vh] max-w-[50vw] object-contain "
@@ -150,11 +150,11 @@ function CustomLightbox({ open, onClose, images, project }) {
           </motion.div>
         </div>
 
-        {/* Next Image */}
+        {/* Image suivante */}
         <div className="absolute right-8 top-1/2 -translate-y-1/2 h-[50%] w-[15%] opacity-40 blur-[2px] pointer-events-none">
           <Image
             src={images[(currentIndex + 1) % images.length]}
-            alt="next"
+            alt="suivante"
             width={300}
             height={200}
             className="w-full h-full object-contain"
@@ -163,7 +163,7 @@ function CustomLightbox({ open, onClose, images, project }) {
           />
         </div>
 
-        {/* Navigation Controls - Left Zone */}
+        {/* Contrôles de navigation - Zone gauche */}
         <div
           className="absolute left-0 top-0 h-full w-[20%] z-30 flex items-center justify-start pl-8 md:pl-16 group cursor-pointer"
           onClick={() =>
@@ -173,21 +173,21 @@ function CustomLightbox({ open, onClose, images, project }) {
           }
         >
           <span className="text-xl italic text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-            previous &larr;
+            précédent &larr;
           </span>
         </div>
 
-        {/* Navigation Controls - Right Zone */}
+        {/* Contrôles de navigation - Zone droite */}
         <div
           className="absolute right-0 top-0 h-full w-[20%] z-30 flex items-center justify-end pr-8 md:pr-16 group cursor-pointer"
           onClick={() => setCurrentIndex((prev) => (prev + 1) % images.length)}
         >
           <span className="text-xl italic text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-            &rarr; next
+            &rarr; suivant
           </span>
         </div>
 
-        {/* Footer */}
+        {/* Pied de page */}
         <div className="absolute bottom-20 left-0 w-full h-[1px] bg-white/20 z-20" />
         <div className="absolute bottom-8 left-8 md:left-16 text-xl italic z-40">
           {project.coords}
@@ -350,18 +350,18 @@ Nam dui metus, interdum vitae lobortis vel, viverra consequat neque. Praesent sa
         role="dialog"
         aria-labelledby="project-title"
       >
-        {/* Version Mobile: Layout vertical */}
+        {/* Version Mobile : Mise en page verticale */}
         <div className="md:hidden w-full h-full flex flex-col relative">
-          {/* Back button en position absolute */}
+          {/* Bouton retour en position absolue */}
           <button
             onClick={onClose}
             className="absolute top-6 left-6 z-10 font-playfair text-lg text-blackCustom/60 hover:text-blackCustom transition-colors"
-            aria-label="Close project overlay"
+            aria-label="Fermer l'overlay du projet"
           >
             back
           </button>
 
-          {/* Section supérieure: Marquee horizontal - 50vh */}
+          {/* Section supérieure : Marquee horizontal - 50vh */}
           <div className="h-[50vh] flex-shrink-0 flex items-center">
             <ImageMarqueeHorizontal
               images={project.images}
@@ -372,7 +372,7 @@ Nam dui metus, interdum vitae lobortis vel, viverra consequat neque. Praesent sa
           {/* Ligne de séparation */}
           <div className="border-t border-blackCustom/20"></div>
 
-          {/* Section inférieure: Cartel - reste de l'espace */}
+          {/* Section inférieure : Cartel - reste de l'espace */}
           <div className="flex-1 flex flex-col overflow-y-auto">
             {/* Contenu texte */}
             <div className="p-6 flex-1">
@@ -396,7 +396,7 @@ Nam dui metus, interdum vitae lobortis vel, viverra consequat neque. Praesent sa
           </div>
         </div>
 
-        {/* Version Desktop: Layout horizontal */}
+        {/* Version Desktop : Mise en page horizontale */}
         <main className="hidden md:flex w-[55%] h-full border-r border-blackCustom p-16 flex-col justify-between overflow-y-auto">
           <div>
             <div
@@ -410,7 +410,7 @@ Nam dui metus, interdum vitae lobortis vel, viverra consequat neque. Praesent sa
             <button
               onClick={onClose}
               className="font-playfair text-lg text-blackCustom/60 hover:text-blackCustom transition-colors"
-              aria-label="Close project overlay"
+              aria-label="Fermer l'overlay du projet"
             >
               back
             </button>
@@ -437,7 +437,7 @@ Nam dui metus, interdum vitae lobortis vel, viverra consequat neque. Praesent sa
           </div>
         </main>
 
-        {/* Colonne de droite: Carrousel d'images vertical (desktop only) */}
+        {/* Colonne de droite : Carrousel d'images vertical (desktop uniquement) */}
         <ImageMarquee
           images={project.images}
           onClick={() => setLightboxOpen(true)}

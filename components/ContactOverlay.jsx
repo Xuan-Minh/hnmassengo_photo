@@ -249,13 +249,13 @@ export default function ContactOverlay({
   const [openState, setOpenState] = useState(false);
   const panelRef = useRef(null);
 
-  // Use prop if provided, otherwise use internal state
+  // Utiliser la prop si fournie, sinon utiliser l'état interne
   const open = openProp !== undefined ? openProp : openState;
   const handleClose = onCloseProp || (() => setOpenState(false));
 
-  // Open/close via global events (only if not controlled by props)
+  // Ouvrir/fermer via les événements globaux (seulement si non contrôlé par les props)
   useEffect(() => {
-    if (openProp !== undefined) return; // Skip if controlled
+    if (openProp !== undefined) return; // Ignorer si contrôlé
     const onShow = () => setOpenState(true);
     const onHide = () => setOpenState(false);
     const cleanupShow = addEventHandler(EVENTS.CONTACT_SHOW, onShow);
@@ -266,7 +266,7 @@ export default function ContactOverlay({
     };
   }, [openProp]);
 
-  // Close on ESC when open
+  // Fermer avec Échap quand ouvert
   useEffect(() => {
     if (!open) return;
     const onKey = (e) => {
@@ -276,7 +276,7 @@ export default function ContactOverlay({
     return () => window.removeEventListener("keydown", onKey);
   }, [open, handleClose]);
 
-  // Scroll lock, initial focus and focus trap when overlay is open
+  // Verrouillage du scroll, focus initial et piège de focus quand l'overlay est ouvert
   useEffect(() => {
     if (!open) return;
 
@@ -284,7 +284,7 @@ export default function ContactOverlay({
     const prevOverflow = root ? root.style.overflow : undefined;
     const prevPaddingRight = root ? root.style.paddingRight : undefined;
 
-    // Calculate scrollbar width to prevent layout shift
+    // Calculer la largeur de la barre de défilement pour éviter le décalage de mise en page
     if (root) {
       const scrollbarWidth = root.offsetWidth - root.clientWidth;
       root.style.overflow = "hidden";
@@ -301,7 +301,7 @@ export default function ContactOverlay({
       '[tabindex]:not([tabindex="-1"])',
     ].join(",");
 
-    // Initial focus on first focusable element (prefer fullName-overlay)
+    // Focus initial sur le premier élément focusable (préférer fullName-overlay)
     const raf = requestAnimationFrame(() => {
       const explicit = document.getElementById("fullName-overlay");
       if (explicit && typeof explicit.focus === "function") {
@@ -317,7 +317,7 @@ export default function ContactOverlay({
       }
     });
 
-    // Trap Tab key within panel
+    // Piéger la touche Tab dans le panneau
     const onKeyDown = (e) => {
       if (e.key !== "Tab") return;
       const panel = panelRef.current;
