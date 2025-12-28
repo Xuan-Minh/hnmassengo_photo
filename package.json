@@ -15,7 +15,8 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "sitemap": "next-sitemap",
-    "analyze": "ANALYZE=true npm run build"
+    "analyze": "ANALYZE=true npm run build",
+    "optimize-images": "node scripts/optimize-images.js"
   },
   "keywords": [],
   "author": "",
@@ -60,9 +61,14 @@
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^7.0.1",
+    "imagemin": "^9.0.1",
+    "imagemin-mozjpeg": "^10.0.0",
+    "imagemin-pngquant": "^10.0.0",
+    "imagemin-webp": "^8.0.0",
     "jest": "^30.2.0",
     "jest-environment-jsdom": "^30.2.0",
     "next-sitemap": "^4.2.3",
-    "prettier": "^3.7.4"
+    "prettier": "^3.7.4",
+    "sharp": "^0.34.5"
   }
 }
