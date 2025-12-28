@@ -163,6 +163,8 @@ function ContactForm({ idSuffix = "", onSubmitSuccess, defaultSubject = "" }) {
 
 // Composant pour les informations de contact
 function ContactInfo() {
+  const t = useTranslations();
+
   return (
     <div className="text-whiteCustom/90 space-y-4 md:space-y-6">
       <h3 className="font-playfair italic text-xl md:text-2xl lg:text-3xl leading-tight">
@@ -190,6 +192,14 @@ function ContactInfo() {
       </p>
       <p className="font-playfair text-sm md:text-[16px] leading-relaxed">
         Design & Development by {SITE_CONFIG.developer}
+      </p>
+      <p className="font-playfair text-sm md:text-[16px] leading-relaxed">
+        <a
+          href="/legal"
+          className="hover:text-whiteCustom transition-colors underline"
+        >
+          {t("legal.link")}
+        </a>
       </p>
     </div>
   );

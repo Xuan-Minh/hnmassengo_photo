@@ -1,14 +1,101 @@
 "use client";
 import { useTranslations } from "next-intl";
+import Link from "next/link";
 
 export default function LegalPage() {
+  const t = useTranslations();
+
   return (
-    <main className="p-8">
-      <h2 className="text-3xl font-bold mb-4">Mentions Légales</h2>
-      <p>
-        Ce site est la propriété de HN Massengo, photographe professionnel.
-        Toutes les informations légales sont disponibles ici.
-      </p>
+    <main className="min-h-screen bg-blackCustom text-whiteCustom p-8 md:p-12 lg:p-16">
+      <div className="max-w-4xl mx-auto">
+        <Link
+          href="/"
+          className="inline-block mb-8 text-whiteCustom/70 hover:text-whiteCustom transition-colors font-playfair"
+        >
+          ← back
+        </Link>
+
+        <h1 className="text-4xl md:text-5xl lg:text-6xl font-playfair italic mb-12 leading-tight">
+          {t("legal.title")}
+        </h1>
+
+        <div className="space-y-8 font-playfair text-lg leading-relaxed">
+          <section>
+            <h2 className="text-2xl md:text-3xl font-playfair italic mb-4">
+              {t("legal.editor")}
+            </h2>
+            <p>
+              Han-Noah MASSENGO
+              <br />
+              {t("legal.jobTitle")}
+              <br />
+              Email : contact@hannoahmassengo.fr
+              <br />
+              Website : hannoahmassengo.fr
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-2xl md:text-3xl font-playfair italic mb-4">
+              {t("legal.host")}
+            </h2>
+            <p>
+              {t("legal.hostCompany")}
+              <br />
+              610 22nd Street, Suite 315
+              <br />
+              San Francisco, CA 94107
+              <br />
+              {t("legal.hostCountry")}
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-2xl md:text-3xl font-playfair italic mb-4">
+              {t("legal.intellectualProperty")}
+            </h2>
+            <p>
+              {t("legal.intellectualPropertyText")}
+              Toutes les images présentes sur ce site sont la propriété
+              exclusive de Han-Noah MASSENGO. Toute reproduction, distribution
+              ou publication, même partielle, est interdite sans autorisation
+              écrite préalable.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-2xl md:text-3xl font-playfair italic mb-4">
+              Données personnelles
+            </h2>
+            <p>
+              Les informations recueillies via le formulaire de contact sont
+              destinées uniquement à Han-Noah MASSENGO pour répondre à vos
+              demandes. Elles ne sont ni vendues, ni cédées à des tiers.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-2xl md:text-3xl font-playfair italic mb-4">
+              Cookies
+            </h2>
+            <p>
+              Ce site n'utilise pas de cookies de suivi. Seuls les cookies
+              techniques nécessaires au fonctionnement du site et du panier
+              d'achat sont utilisés.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-2xl md:text-3xl font-playfair italic mb-4">
+              Droit applicable
+            </h2>
+            <p>
+              Le présent site est soumis au droit français. En cas de litige,
+              les tribunaux français seront seuls compétents.
+            </p>
+          </section>
+        </div>
+      </div>
     </main>
   );
 }

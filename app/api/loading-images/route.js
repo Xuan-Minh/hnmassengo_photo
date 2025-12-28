@@ -7,7 +7,8 @@ export async function GET() {
     let entries = [];
     try {
       entries = await fs.promises.readdir(dir);
-    } catch (_) { // eslint-disable-line no-unused-vars
+    } catch (error) {
+      // eslint-disable-line no-unused-vars
       // dossier peut ne pas exister
       entries = [];
     }
@@ -20,7 +21,8 @@ export async function GET() {
       status: 200,
       headers: { "Content-Type": "application/json" },
     });
-  } catch (_) { // eslint-disable-line no-unused-vars
+  } catch (error) {
+    // eslint-disable-line no-unused-vars
     return new Response(JSON.stringify({ images: [], error: "READ_ERROR" }), {
       status: 500,
       headers: { "Content-Type": "application/json" },
