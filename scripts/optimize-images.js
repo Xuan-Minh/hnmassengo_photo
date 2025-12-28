@@ -96,9 +96,36 @@ async function main() {
     await processDirectory(dir);
   }
 
+  // Générer le fichier JSON pour les images de chargement
+  await generateLoadingImagesJSON();
+
   console.log('\n✨ Optimisation terminée !');
   console.log('\n💡 Toutes les nouvelles images seront automatiquement optimisées par Next.js');
-  console.log('💡 Utilisez le composant Next.js <Image> pour bénéficier de l\'optimisation automatique');
+}
+
+// Nouvelle fonction pour générer le JSON des images de chargement
+async function generateLoadingImagesJSON() {
+  const loadingDir = path.join(process.cwd(), 'public', 'loading');
+
+  if (!fs.existsSync(loadingDir)) {
+    console.log('📁 Dossier public/loading n\'existe pas, JSON non généré');
+    return;
+  }
+
+  try {
+    const entries = fs.readdirSync(loadingDir);
+    const images = entries
+      .filter(name => /\.(jpe?g|png|webp|gif)$/i.test(name))
+      .sort()
+      .map(name => `/loading/${name}`);
+
+    const jsonPath = path.join(process.cwd(), 'public', 'loading-images-data.json');
+    fs.writeFileSync(jsonPath, JSON.stringify({ images }, null, 2));
+
+    console.log(`📄 JSON généré: ${jsonPath} (${images.length} images)`);
+  } catch (error) {
+    console.error('❌ Erreur lors de la génération du JSON:', error.message);
+  }
 }
 
 main().catch(console.error);

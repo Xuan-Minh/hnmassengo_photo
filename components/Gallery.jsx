@@ -193,16 +193,18 @@ export default function Gallery() {
           onClick={() => handleViewChange("grid")}
           aria-label="Grid view"
         >
-          <img
+          <Image
             src="/icons/gridOff.png"
             alt="Grid View Off"
+            fill
             className={`absolute inset-0 w-full h-full object-contain transition-opacity duration-300 ${
               view === "grid" ? "opacity-0" : "opacity-100"
             }`}
           />
-          <img
+          <Image
             src="/icons/gridOn.png"
             alt="Grid View On"
+            fill
             className={`absolute inset-0 w-full h-full object-contain transition-opacity duration-300 ${
               view === "grid" ? "opacity-100" : "opacity-0"
             }`}
@@ -215,16 +217,18 @@ export default function Gallery() {
           onClick={() => handleViewChange("list")}
           aria-label="List view"
         >
-          <img
+          <Image
             src="/icons/listOff.png"
             alt="List View Off"
+            fill
             className={`absolute inset-0 w-full h-full object-contain transition-opacity duration-300 ${
               view === "list" ? "opacity-0" : "opacity-100"
             }`}
           />
-          <img
+          <Image
             src="/icons/listOn.png"
             alt="List View On"
+            fill
             className={`absolute inset-0 w-full h-full object-contain transition-opacity duration-300 ${
               view === "list" ? "opacity-100" : "opacity-0"
             }`}
@@ -343,16 +347,18 @@ export default function Gallery() {
                       onClick={() => handleViewChange("grid")}
                       aria-label="Grid view"
                     >
-                      <img
+                      <Image
                         src="/icons/gridOff.png"
                         alt="Grid View Off"
+                        fill
                         className={`absolute inset-0 w-full h-full object-contain transition-opacity duration-300 ${
                           view === "grid" ? "opacity-0" : "opacity-100"
                         }`}
                       />
-                      <img
+                      <Image
                         src="/icons/gridOn.png"
                         alt="Grid View On"
+                        fill
                         className={`absolute inset-0 w-full h-full object-contain transition-opacity duration-300 ${
                           view === "grid" ? "opacity-100" : "opacity-0"
                         }`}
@@ -367,16 +373,18 @@ export default function Gallery() {
                       onClick={() => handleViewChange("list")}
                       aria-label="List view"
                     >
-                      <img
+                      <Image
                         src="/icons/listOff.png"
                         alt="List View Off"
+                        fill
                         className={`absolute inset-0 w-full h-full object-contain transition-opacity duration-300 ${
                           view === "list" ? "opacity-0" : "opacity-100"
                         }`}
                       />
-                      <img
+                      <Image
                         src="/icons/listOn.png"
                         alt="List View On"
+                        fill
                         className={`absolute inset-0 w-full h-full object-contain transition-opacity duration-300 ${
                           view === "list" ? "opacity-100" : "opacity-0"
                         }`}

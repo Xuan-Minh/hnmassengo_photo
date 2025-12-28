@@ -10,7 +10,7 @@ export default function IntroOverlay() {
   // Plus de couleurs flashy: fond neutre sombre pour éviter tout flash de couleur
   const neutralBackground = "#222222";
 
-  // Liste dynamique des images présentes dans /public/loading (récupérée via API route)
+  // Liste dynamique des images présentes dans /public/loading (chargée depuis JSON statique)
   const [imageSources, setImageSources] = useState([]);
 
   const [visible, setVisible] = useState(false);
@@ -40,55 +40,85 @@ export default function IntroOverlay() {
     }
   }, [visible]);
 
-  // Récupère la liste des fichiers dans /public/loading
+  // Charge la liste des fichiers depuis le JSON statique généré au build
   const fetchedOnceRef = useRef(false);
   useEffect(() => {
     if (fetchedOnceRef.current) return;
     fetchedOnceRef.current = true;
-    fetch("/api/loading-images")
+
+    // Charger depuis le fichier JSON statique
+    fetch("/loading-images-data.json")
       .then((r) => r.json())
       .then((data) => {
         if (Array.isArray(data.images) && data.images.length > 0) {
           setImageSources(data.images);
         }
       })
-      .catch(() => {});
+      .catch(() => {
+        // Fallback: essayer l'API si le JSON n'existe pas
+        fetch("/api/loading-images")
+          .then((r) => r.json())
+          .then((data) => {
+            if (Array.isArray(data.images) && data.images.length > 0) {
+              setImageSources(data.images);
+            }
+          })
+          .catch(() => {});
+      });
   }, []);
 
-  // Précharge les images une fois la liste obtenue
+  // Précharge les images de manière progressive - commence dès qu'une image est prête
   useEffect(() => {
     if (imageSources.length === 0) return;
     let isMounted = true;
     const ok = [];
     let done = 0;
+
     imageSources.forEach((src) => {
       // Utilise le constructeur natif window.Image côté client uniquement
       const img = typeof window !== "undefined" ? new window.Image() : null;
       if (!img) return;
+
       img.onload = () => {
         done += 1;
         ok.push(src);
-        if (isMounted && done === imageSources.length) setLoadedImages(ok);
+
+        // Dès qu'au moins une image est chargée, commencer l'animation
+        if (isMounted && ok.length === 1) {
+          setLoadedImages([src]);
+        }
+        // Mettre à jour la liste complète quand toutes sont chargées
+        else if (isMounted && done === imageSources.length) {
+          setLoadedImages(ok);
+        }
       };
+
       img.onerror = () => {
         done += 1;
-        if (isMounted && done === imageSources.length) setLoadedImages(ok);
+        // Même en cas d'erreur, continuer avec les images qui fonctionnent
+        if (isMounted && done === imageSources.length) {
+          setLoadedImages(ok);
+        }
       };
+
       img.src = src;
     });
+
     return () => {
       isMounted = false;
     };
   }, [imageSources]);
 
-  // Rotation du fond uniquement si des images sont disponibles
+  // Rotation du fond dès qu'au moins une image est disponible
   useEffect(() => {
     if (!visible || isExiting) return;
     if (loadedImages.length === 0) return; // pas de rotation sur fallback neutre
+
     const framesCount = loadedImages.length;
     rotateInterval.current = setInterval(() => {
       setCurrentIndex((i) => (i + 1) % framesCount);
     }, 800);
+
     return () => {
       if (rotateInterval.current) clearInterval(rotateInterval.current);
     };
@@ -185,7 +215,7 @@ export default function IntroOverlay() {
                 transition: "filter .4s ease",
               }}
               sizes="100vw"
-              priority
+              priority={currentIndex === 0} // Priorité pour la première image
             />
             <div className="absolute inset-0 bg-black/35 pointer-events-none z-10" />
           </>
