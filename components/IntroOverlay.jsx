@@ -1,14 +1,14 @@
-"use client";
-import { useEffect, useMemo, useRef, useState } from "react";
-import { motion } from "framer-motion";
-import Image from "next/image";
-import OverlayActionButton from "./OverlayActionButton";
-import { EVENTS, emitEvent, addEventHandler } from "../lib/events";
+'use client';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { motion } from 'framer-motion';
+import Image from 'next/image';
+import OverlayActionButton from './OverlayActionButton';
+import { EVENTS, emitEvent, addEventHandler } from '../lib/events';
 
 export default function IntroOverlay() {
   const previouslyFocusedElement = useRef(null);
   // Plus de couleurs flashy: fond neutre sombre pour éviter tout flash de couleur
-  const neutralBackground = "#222222";
+  const neutralBackground = '#222222';
 
   // Liste dynamique des images présentes dans /public/loading (chargée depuis JSON statique)
   const [imageSources, setImageSources] = useState([]);
@@ -47,18 +47,18 @@ export default function IntroOverlay() {
     fetchedOnceRef.current = true;
 
     // Charger depuis le fichier JSON statique
-    fetch("/loading-images-data.json")
-      .then((r) => r.json())
-      .then((data) => {
+    fetch('/loading-images-data.json')
+      .then(r => r.json())
+      .then(data => {
         if (Array.isArray(data.images) && data.images.length > 0) {
           setImageSources(data.images);
         }
       })
       .catch(() => {
         // Fallback: essayer l'API si le JSON n'existe pas
-        fetch("/api/loading-images")
-          .then((r) => r.json())
-          .then((data) => {
+        fetch('/api/loading-images')
+          .then(r => r.json())
+          .then(data => {
             if (Array.isArray(data.images) && data.images.length > 0) {
               setImageSources(data.images);
             }
@@ -74,9 +74,9 @@ export default function IntroOverlay() {
     const ok = [];
     let done = 0;
 
-    imageSources.forEach((src) => {
+    imageSources.forEach(src => {
       // Utilise le constructeur natif window.Image côté client uniquement
-      const img = typeof window !== "undefined" ? new window.Image() : null;
+      const img = typeof window !== 'undefined' ? new window.Image() : null;
       if (!img) return;
 
       img.onload = () => {
@@ -116,7 +116,7 @@ export default function IntroOverlay() {
 
     const framesCount = loadedImages.length;
     rotateInterval.current = setInterval(() => {
-      setCurrentIndex((i) => (i + 1) % framesCount);
+      setCurrentIndex(i => (i + 1) % framesCount);
     }, 800);
 
     return () => {
@@ -151,11 +151,11 @@ export default function IntroOverlay() {
   const showImages = loadedImages.length > 0;
 
   // Swipe up pour fermer (mobile)
-  const handleTouchStart = (e) => {
+  const handleTouchStart = e => {
     setTouchStart(e.touches[0].clientY);
   };
 
-  const handleTouchMove = (e) => {
+  const handleTouchMove = e => {
     if (!touchStart) return;
 
     const currentTouch = e.touches[0].clientY;
@@ -176,10 +176,10 @@ export default function IntroOverlay() {
     <motion.div
       ref={overlayRef}
       className="fixed inset-0 z-[100]"
-      style={{ backgroundColor: neutralBackground, overflow: "hidden" }}
-      initial={isReTrigger ? { y: "-100%", opacity: 1 } : { y: 0, opacity: 1 }}
-      animate={isExiting ? { y: "-100%", opacity: 0 } : { y: 0, opacity: 1 }}
-      transition={{ duration: 0.8, ease: "easeInOut" }}
+      style={{ backgroundColor: neutralBackground, overflow: 'hidden' }}
+      initial={isReTrigger ? { y: '-100%', opacity: 1 } : { y: 0, opacity: 1 }}
+      animate={isExiting ? { y: '-100%', opacity: 0 } : { y: 0, opacity: 1 }}
+      transition={{ duration: 0.8, ease: 'easeInOut' }}
       onAnimationComplete={() => {
         if (isExiting) {
           setVisible(false);
@@ -199,20 +199,20 @@ export default function IntroOverlay() {
             <Image
               key={loadedImages[currentIndex]}
               src={
-                loadedImages[currentIndex].startsWith("/loading/")
+                loadedImages[currentIndex].startsWith('/loading/')
                   ? loadedImages[currentIndex]
-                  : loadedImages[currentIndex].replace(/^\.\./, "")
+                  : loadedImages[currentIndex].replace(/^\.\./, '')
               }
               alt=""
               fill
               className="absolute inset-0 w-full h-full object-cover z-0"
               draggable={false}
               style={{
-                pointerEvents: "none",
-                userSelect: "none",
-                filter: "brightness(0.42) contrast(1.05) saturate(0.9)",
-                transform: "scale(1.04)",
-                transition: "filter .4s ease",
+                pointerEvents: 'none',
+                userSelect: 'none',
+                filter: 'brightness(0.42) contrast(1.05) saturate(0.9)',
+                transform: 'scale(1.04)',
+                transition: 'filter .4s ease',
               }}
               sizes="100vw"
               priority={currentIndex === 0} // Priorité pour la première image
@@ -224,7 +224,7 @@ export default function IntroOverlay() {
         <div className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none select-none">
           <h2
             className="text-whiteCustom flex items-end justify-center gap-4 text-3xl md:text-5xl lg:text-6xl xl:text-7xl 2xl:text-7xl mb-0"
-            style={{ textShadow: "0 2px 12px rgba(0,0,0,0.45)" }}
+            style={{ textShadow: '0 2px 12px rgba(0,0,0,0.45)' }}
           >
             <div className="font-playfair italic leading-none">Han-Noah</div>
             <div className="font-lexend font-bold leading-none">MASSENGO</div>
@@ -238,7 +238,7 @@ export default function IntroOverlay() {
             animate="exit"
             isActive={isExiting}
             activeDeltaDeg={-90}
-            onClick={(e) => {
+            onClick={e => {
               e.stopPropagation();
               dismiss();
             }}
