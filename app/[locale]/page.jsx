@@ -11,6 +11,7 @@ import {
   ContactContent,
   ContactMarquee,
   IntroOverlay,
+  TextScramble,
 } from "../../components";
 import { AnimatePresence, motion } from "framer-motion";
 import { useRef, useState, useEffect } from "react";
@@ -80,12 +81,16 @@ export default function HomePage() {
             {t("home.title")}
           </p>
           <div className="mt-2 lg:mt-4">
-            <h2 className="text-[52px] lg:text-[64px] xl:text-[80px] leading-none font-playfair italic tracking-[-0.05em]">
-              Han-Noah
-            </h2>
-            <h2 className="mt-0 text-[56px] lg:text-[72px] xl:text-[88px] leading-none font-lexend font-semibold tracking-tight">
-              MASSENGO
-            </h2>
+            <TextScramble
+              text="Han-Noah"
+              className="text-[52px] lg:text-[64px] xl:text-[80px] leading-none font-playfair italic tracking-[-0.05em] block"
+              delay={500}
+            />
+            <TextScramble
+              text="MASSENGO"
+              className="mt-0 text-[56px] lg:text-[72px] xl:text-[88px] leading-none font-lexend font-semibold tracking-tight block"
+              delay={1500}
+            />
           </div>
         </div>
 
