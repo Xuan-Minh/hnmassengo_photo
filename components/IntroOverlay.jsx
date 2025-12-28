@@ -7,8 +7,8 @@ import { EVENTS, emitEvent, addEventHandler } from '../lib/events';
 
 export default function IntroOverlay() {
   const previouslyFocusedElement = useRef(null);
-  // Plus de couleurs flashy: fond neutre sombre pour éviter tout flash de couleur
-  const neutralBackground = '#222222';
+  // Fond dégradé élégant au lieu d'un gris uni
+  const elegantBackground = "linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 50%, #1a1a1a 100%)";
 
   // Liste dynamique des images présentes dans /public/loading (chargée depuis JSON statique)
   const [imageSources, setImageSources] = useState([]);
@@ -22,6 +22,7 @@ export default function IntroOverlay() {
   const [isReTrigger, setIsReTrigger] = useState(false);
   const [touchStart, setTouchStart] = useState(null);
   const overlayRef = useRef(null);
+  const [isImageLoading, setIsImageLoading] = useState(false);
   // Survol limité au bouton uniquement (pas de dépendance au mouvement global)
 
   // Affiche toujours l'intro au chargement (plus de gating sessionStorage)
@@ -67,15 +68,15 @@ export default function IntroOverlay() {
       });
   }, []);
 
-  // Précharge les images de manière progressive - commence dès qu'une image est prête
+  // Précharge TOUTES les images en parallèle pour éviter les écrans gris
   useEffect(() => {
     if (imageSources.length === 0) return;
     let isMounted = true;
     const ok = [];
     let done = 0;
 
+    // Précharger toutes les images simultanément
     imageSources.forEach(src => {
-      // Utilise le constructeur natif window.Image côté client uniquement
       const img = typeof window !== 'undefined' ? new window.Image() : null;
       if (!img) return;
 
@@ -87,17 +88,20 @@ export default function IntroOverlay() {
         if (isMounted && ok.length === 1) {
           setLoadedImages([src]);
         }
-        // Mettre à jour la liste complète quand toutes sont chargées
-        else if (isMounted && done === imageSources.length) {
-          setLoadedImages(ok);
+        // Ajouter les images au fur et à mesure qu'elles se chargent
+        else if (isMounted && ok.length > loadedImages.length) {
+          setLoadedImages(prev => [...prev, src]);
         }
       };
 
       img.onerror = () => {
         done += 1;
-        // Même en cas d'erreur, continuer avec les images qui fonctionnent
+        // Continuer même en cas d'erreur
         if (isMounted && done === imageSources.length) {
-          setLoadedImages(ok);
+          // Assurer que nous avons au moins une image de fallback
+          if (ok.length === 0 && imageSources.length > 0) {
+            setLoadedImages([imageSources[0]]);
+          }
         }
       };
 
@@ -116,7 +120,15 @@ export default function IntroOverlay() {
 
     const framesCount = loadedImages.length;
     rotateInterval.current = setInterval(() => {
-      setCurrentIndex(i => (i + 1) % framesCount);
+      setCurrentIndex((i) => {
+        const nextIndex = (i + 1) % framesCount;
+        // Si nous n'avons pas encore chargé toutes les images, rester sur l'index actuel
+        // pour éviter les écrans vides
+        if (nextIndex >= loadedImages.length) {
+          return i;
+        }
+        return nextIndex;
+      });
     }, 800);
 
     return () => {
@@ -176,7 +188,7 @@ export default function IntroOverlay() {
     <motion.div
       ref={overlayRef}
       className="fixed inset-0 z-[100]"
-      style={{ backgroundColor: neutralBackground, overflow: 'hidden' }}
+      style={{ background: elegantBackground, overflow: 'hidden' }}
       initial={isReTrigger ? { y: '-100%', opacity: 1 } : { y: 0, opacity: 1 }}
       animate={isExiting ? { y: '-100%', opacity: 0 } : { y: 0, opacity: 1 }}
       transition={{ duration: 0.8, ease: 'easeInOut' }}
@@ -218,6 +230,13 @@ export default function IntroOverlay() {
               priority={currentIndex === 0} // Priorité pour la première image
             />
             <div className="absolute inset-0 bg-black/35 pointer-events-none z-10" />
+
+            {/* Indicateur de chargement subtil si toutes les images ne sont pas encore chargées */}
+            {loadedImages.length < imageSources.length && (
+              <div className="absolute top-8 right-8 z-20 pointer-events-none">
+                <div className="w-2 h-2 bg-white/30 rounded-full animate-pulse" />
+              </div>
+            )}
           </>
         )}
 
