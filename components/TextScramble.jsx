@@ -45,9 +45,5 @@ export default function TextScramble({ text, className, delay = 0 }) {
     };
   }, [text, delay]);
 
-  return (
-    <span className={className}>
-      {displayText}
-    </span>
-  );
+  return <span className={className}>{displayText}</span>;
 }

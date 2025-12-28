@@ -8,7 +8,8 @@ import { EVENTS, emitEvent, addEventHandler } from '../lib/events';
 export default function IntroOverlay() {
   const previouslyFocusedElement = useRef(null);
   // Fond dégradé élégant au lieu d'un gris uni
-  const elegantBackground = "linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 50%, #1a1a1a 100%)";
+  const elegantBackground =
+    'linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 50%, #1a1a1a 100%)';
 
   // Liste dynamique des images présentes dans /public/loading (chargée depuis JSON statique)
   const [imageSources, setImageSources] = useState([]);
@@ -123,11 +124,12 @@ export default function IntroOverlay() {
   // Rotation du fond uniquement quand TOUTES les images sont chargées
   useEffect(() => {
     if (!visible || isExiting) return;
-    if (loadedImages.length === 0 || loadedImages.length < imageSources.length) return;
+    if (loadedImages.length === 0 || loadedImages.length < imageSources.length)
+      return;
 
     const framesCount = loadedImages.length;
     rotateInterval.current = setInterval(() => {
-      setCurrentIndex((i) => (i + 1) % framesCount);
+      setCurrentIndex(i => (i + 1) % framesCount);
     }, 800);
 
     return () => {
@@ -238,7 +240,9 @@ export default function IntroOverlay() {
             {loadedImages.length === 0 && loadingProgress < 100 && (
               <div className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none">
                 <div className="bg-black/60 backdrop-blur-sm rounded-lg px-6 py-4 flex flex-col items-center gap-3">
-                  <div className="text-white/80 text-sm font-light">Loading</div>
+                  <div className="text-white/80 text-sm font-light">
+                    Loading
+                  </div>
                   <div className="w-32 h-1 bg-white/20 rounded-full overflow-hidden">
                     <div
                       className="h-full bg-white rounded-full transition-all duration-300 ease-out"
@@ -253,11 +257,12 @@ export default function IntroOverlay() {
             )}
 
             {/* Indicateur subtil une fois l'animation démarrée mais si de nouvelles images arrivent */}
-            {loadedImages.length > 0 && loadedImages.length < imageSources.length && (
-              <div className="absolute top-8 right-8 z-20 pointer-events-none">
-                <div className="w-2 h-2 bg-white/30 rounded-full animate-pulse" />
-              </div>
-            )}
+            {loadedImages.length > 0 &&
+              loadedImages.length < imageSources.length && (
+                <div className="absolute top-8 right-8 z-20 pointer-events-none">
+                  <div className="w-2 h-2 bg-white/30 rounded-full animate-pulse" />
+                </div>
+              )}
           </>
         )}
 
