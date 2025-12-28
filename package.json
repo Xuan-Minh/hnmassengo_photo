@@ -5,8 +5,10 @@
   "main": "index.js",
   "scripts": {
     "dev": "next dev",
-    "build": "npm run optimize-images && next build",
+    "build": "next build",
+    "build:optimized": "npm run optimize-images && next build",
     "start": "next start",
+    "optimize-images": "node scripts/optimize-images.js",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
