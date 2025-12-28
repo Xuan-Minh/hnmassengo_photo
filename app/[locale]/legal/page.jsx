@@ -12,7 +12,7 @@ export default function LegalPage() {
           href="/"
           className="inline-block mb-8 text-whiteCustom/70 hover:text-whiteCustom transition-colors font-playfair"
         >
-          ← {t("legal.back", { defaultValue: "Retour à l'accueil" })}
+          ← back
         </Link>
 
         <h1 className="text-4xl md:text-5xl lg:text-6xl font-playfair italic mb-12 leading-tight">

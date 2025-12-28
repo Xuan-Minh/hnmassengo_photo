@@ -173,22 +173,64 @@ export default function Menu() {
     return () => io.disconnect();
   }, [desktopItems]);
 
-  // Masquer le menu quand la section contact du bas (#info) est visible dans le viewport
+  // Logique unifiée pour masquer le menu (section #info OU URLs Snipcart)
   useEffect(() => {
     const root = document.getElementById("scroll-root");
     const infoEl = document.getElementById("info");
     if (!root || !infoEl) return;
 
+    const updateHideMenu = () => {
+      const hash = window.location.hash;
+      const isSnipcartUrl =
+        hash.includes("#/cart") ||
+        hash.includes("#/checkout") ||
+        hash.includes("#snipcart");
+
+      // Priorité aux URLs Snipcart
+      if (isSnipcartUrl) {
+        setHideMenu(true);
+        return;
+      }
+
+      // Sinon, vérifier la visibilité de la section #info
+      const rect = infoEl.getBoundingClientRect();
+      const rootRect = root.getBoundingClientRect();
+      const isInfoVisible =
+        rect.top < rootRect.bottom && rect.bottom > rootRect.top;
+      const intersectionRatio = Math.max(
+        0,
+        Math.min(
+          1,
+          (Math.min(rect.bottom, rootRect.bottom) -
+            Math.max(rect.top, rootRect.top)) /
+            rect.height
+        )
+      );
+      setHideMenu(isInfoVisible && intersectionRatio > 0.2);
+    };
+
+    // Observer pour la section #info
     const io = new IntersectionObserver(
       (entries) => {
-        const entry = entries[0];
-        // Masquer quand au moins ~20% visible
-        setHideMenu(entry.isIntersecting && entry.intersectionRatio > 0.2);
+        updateHideMenu(); // Recalculer à chaque changement d'intersection
       },
       { root, threshold: [0, 0.2, 0.4, 0.6, 0.8, 1] }
     );
     io.observe(infoEl);
-    return () => io.disconnect();
+
+    // Écouter les changements d'URL hash
+    const handleHashChange = () => {
+      updateHideMenu();
+    };
+    window.addEventListener("hashchange", handleHashChange);
+
+    // Vérification initiale
+    updateHideMenu();
+
+    return () => {
+      io.disconnect();
+      window.removeEventListener("hashchange", handleHashChange);
+    };
   }, []);
 
   if (!hydrated || !active) return null;
