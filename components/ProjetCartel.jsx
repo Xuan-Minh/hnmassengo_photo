@@ -117,7 +117,7 @@ function CustomLightbox({ open, onClose, images, project }) {
 
       {/* Main Content (DESKTOP) : version d'origine */}
       <div className="hidden md:flex flex-1 relative items-center justify-center overflow-hidden w-full h-full">
-      {/* Image précédente */}
+        {/* Image précédente */}
         <div className="absolute left-8 top-1/2 -translate-y-1/2 h-[50%] w-[15%] opacity-40 blur-[2px] pointer-events-none">
           <Image
             src={images[(currentIndex - 1 + images.length) % images.length]}
