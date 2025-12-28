@@ -1,12 +1,14 @@
 import "../globals.css";
 
-import Logo from "../components/Logo";
+import ConditionalLogo from "../components/ConditionalLogo";
+import ConditionalMenu from "../components/ConditionalMenu";
+import ConditionalLanguageSwitcher from "../components/ConditionalLanguageSwitcher";
 import { Lexend, Playfair_Display } from "next/font/google";
 import IntroOverlay from "../components/IntroOverlay";
 import RevealRoot from "../components/RevealRoot";
 import ErrorBoundary from "../components/ErrorBoundary";
-import Script from "next/script";
 import SnipcartPortal from "../components/SnipcartPortal";
+import React from "react";
 
 export const metadata = {
   metadataBase: new URL("https://hannoahmassengo.fr"),
@@ -109,7 +111,9 @@ export default function RootLayout({ children }) {
         )}
       >
         <ErrorBoundary>
-          <Logo />
+          <ConditionalLogo />
+          <ConditionalMenu />
+          <ConditionalLanguageSwitcher />
           <IntroOverlay />
           <RevealRoot>{children}</RevealRoot>
         </ErrorBoundary>
