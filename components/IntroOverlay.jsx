@@ -207,27 +207,31 @@ export default function IntroOverlay() {
       <div className="relative w-full h-full">
         {showImages && (
           <>
-            <Image
-              key={loadedImages[currentIndex]}
-              src={
-                loadedImages[currentIndex].startsWith('/loading/')
-                  ? loadedImages[currentIndex]
-                  : loadedImages[currentIndex].replace(/^\.\./, '')
-              }
-              alt=""
-              fill
-              className="absolute inset-0 w-full h-full object-cover z-0"
-              draggable={false}
-              style={{
-                pointerEvents: 'none',
-                userSelect: 'none',
-                filter: 'brightness(0.42) contrast(1.05) saturate(0.9)',
-                transform: 'scale(1.04)',
-                transition: 'filter .4s ease',
-              }}
-              sizes="100vw"
-              priority={currentIndex === 0} // Priorité pour la première image
-            />
+            {/* Afficher toutes les images préchargées avec opacité conditionnelle */}
+            {loadedImages.map((imageSrc, index) => (
+              <Image
+                key={imageSrc} // Clé stable basée sur l'URL
+                src={
+                  imageSrc.startsWith('/loading/')
+                    ? imageSrc
+                    : imageSrc.replace(/^\.\./, '')
+                }
+                alt=""
+                fill
+                className="absolute inset-0 w-full h-full object-cover z-0"
+                draggable={false}
+                style={{
+                  pointerEvents: 'none',
+                  userSelect: 'none',
+                  filter: 'brightness(0.42) contrast(1.05) saturate(0.9)',
+                  transform: 'scale(1.04)',
+                  transition: 'opacity 0.8s ease-in-out',
+                  opacity: index === currentIndex ? 1 : 0,
+                }}
+                sizes="100vw"
+                priority={index === 0} // Priorité pour la première image
+              />
+            ))}
             <div className="absolute inset-0 bg-black/35 pointer-events-none z-10" />
 
             {/* Indicateur de chargement visible tant que toutes les images ne sont pas chargées */}
