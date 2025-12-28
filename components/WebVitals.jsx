@@ -6,7 +6,7 @@ import { useEffect } from 'react';
 export function useWebVitals() {
   useEffect(() => {
     // First Contentful Paint (FCP)
-    const observer = new PerformanceObserver((list) => {
+    const observer = new PerformanceObserver(list => {
       for (const entry of list.getEntries()) {
         if (entry.name === 'first-contentful-paint') {
           console.log('FCP:', entry.startTime, 'ms');
@@ -17,7 +17,7 @@ export function useWebVitals() {
     observer.observe({ entryTypes: ['paint'] });
 
     // Largest Contentful Paint (LCP)
-    const lcpObserver = new PerformanceObserver((list) => {
+    const lcpObserver = new PerformanceObserver(list => {
       const entries = list.getEntries();
       const lastEntry = entries[entries.length - 1];
       console.log('LCP:', lastEntry.startTime, 'ms');
@@ -26,7 +26,7 @@ export function useWebVitals() {
 
     // Cumulative Layout Shift (CLS)
     let clsValue = 0;
-    const clsObserver = new PerformanceObserver((list) => {
+    const clsObserver = new PerformanceObserver(list => {
       for (const entry of list.getEntries()) {
         if (!entry.hadRecentInput) {
           clsValue += entry.value;

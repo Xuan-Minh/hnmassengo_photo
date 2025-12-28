@@ -22,7 +22,11 @@ module.exports = {
 
     return {
       loc: path,
-      changefreq: isHomePage ? 'daily' : isLegalPage ? 'yearly' : config.changefreq,
+      changefreq: isHomePage
+        ? 'daily'
+        : isLegalPage
+          ? 'yearly'
+          : config.changefreq,
       priority: isHomePage ? 1.0 : isLegalPage ? 0.3 : config.priority,
       lastmod: config.autoLastmod ? new Date().toISOString() : undefined,
     };

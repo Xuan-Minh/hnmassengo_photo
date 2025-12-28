@@ -4,7 +4,8 @@ export default function StructuredData() {
     '@type': 'Person',
     name: 'Han-Noah MASSENGO',
     jobTitle: 'Photographer & Visual Artist',
-    description: 'Professional photographer and visual artist specializing in portrait, commissioned work, and fine art prints.',
+    description:
+      'Professional photographer and visual artist specializing in portrait, commissioned work, and fine art prints.',
     url: 'https://hannoahmassengo.fr',
     sameAs: [
       // Ajoutez vos réseaux sociaux ici quand vous les aurez
