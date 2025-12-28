@@ -1,3 +1,11 @@
+# *
 User-agent: *
 Allow: /
+Disallow: /studio/
+Disallow: /api/
+
+# Host
+Host: https://hannoahmassengo.fr
+
+# Sitemaps
 Sitemap: https://hannoahmassengo.fr/sitemap.xml
