@@ -22,7 +22,7 @@ export default function IntroOverlay() {
   const [isReTrigger, setIsReTrigger] = useState(false);
   const [touchStart, setTouchStart] = useState(null);
   const overlayRef = useRef(null);
-  const [isImageLoading, setIsImageLoading] = useState(false);
+  const [loadingProgress, setLoadingProgress] = useState(0);
   // Survol limité au bouton uniquement (pas de dépendance au mouvement global)
 
   // Affiche toujours l'intro au chargement (plus de gating sessionStorage)
@@ -68,7 +68,7 @@ export default function IntroOverlay() {
       });
   }, []);
 
-  // Précharge TOUTES les images en parallèle pour éviter les écrans gris
+  // Précharge TOUTES les images avant de commencer l'animation
   useEffect(() => {
     if (imageSources.length === 0) return;
     let isMounted = true;
@@ -84,24 +84,31 @@ export default function IntroOverlay() {
         done += 1;
         ok.push(src);
 
-        // Dès qu'au moins une image est chargée, commencer l'animation
-        if (isMounted && ok.length === 1) {
-          setLoadedImages([src]);
+        // Mettre à jour la progression
+        if (isMounted) {
+          setLoadingProgress((done / imageSources.length) * 100);
         }
-        // Ajouter les images au fur et à mesure qu'elles se chargent
-        else if (isMounted && ok.length > loadedImages.length) {
-          setLoadedImages(prev => [...prev, src]);
+
+        // Une fois TOUTES les images chargées, démarrer l'animation
+        if (isMounted && done === imageSources.length && ok.length > 0) {
+          setLoadedImages(ok);
+          setLoadingProgress(100);
         }
       };
 
       img.onerror = () => {
         done += 1;
-        // Continuer même en cas d'erreur
+
+        // Mettre à jour la progression même en cas d'erreur
+        if (isMounted) {
+          setLoadingProgress((done / imageSources.length) * 100);
+        }
+
+        // Continuer même en cas d'erreur partielle
         if (isMounted && done === imageSources.length) {
-          // Assurer que nous avons au moins une image de fallback
-          if (ok.length === 0 && imageSources.length > 0) {
-            setLoadedImages([imageSources[0]]);
-          }
+          // Au minimum, utiliser les images qui ont fonctionné
+          setLoadedImages(ok.length > 0 ? ok : [imageSources[0]]);
+          setLoadingProgress(100);
         }
       };
 
@@ -113,28 +120,20 @@ export default function IntroOverlay() {
     };
   }, [imageSources]);
 
-  // Rotation du fond dès qu'au moins une image est disponible
+  // Rotation du fond uniquement quand TOUTES les images sont chargées
   useEffect(() => {
     if (!visible || isExiting) return;
-    if (loadedImages.length === 0) return; // pas de rotation sur fallback neutre
+    if (loadedImages.length === 0 || loadedImages.length < imageSources.length) return;
 
     const framesCount = loadedImages.length;
     rotateInterval.current = setInterval(() => {
-      setCurrentIndex((i) => {
-        const nextIndex = (i + 1) % framesCount;
-        // Si nous n'avons pas encore chargé toutes les images, rester sur l'index actuel
-        // pour éviter les écrans vides
-        if (nextIndex >= loadedImages.length) {
-          return i;
-        }
-        return nextIndex;
-      });
+      setCurrentIndex((i) => (i + 1) % framesCount);
     }, 800);
 
     return () => {
       if (rotateInterval.current) clearInterval(rotateInterval.current);
     };
-  }, [visible, isExiting, loadedImages.length]);
+  }, [visible, isExiting, loadedImages.length, imageSources.length]);
 
   // Pas de timer: l'intro reste affichée jusqu'au clic sur "Next"
 
@@ -231,8 +230,26 @@ export default function IntroOverlay() {
             />
             <div className="absolute inset-0 bg-black/35 pointer-events-none z-10" />
 
-            {/* Indicateur de chargement subtil si toutes les images ne sont pas encore chargées */}
-            {loadedImages.length < imageSources.length && (
+            {/* Indicateur de chargement visible tant que toutes les images ne sont pas chargées */}
+            {loadedImages.length === 0 && loadingProgress < 100 && (
+              <div className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none">
+                <div className="bg-black/60 backdrop-blur-sm rounded-lg px-6 py-4 flex flex-col items-center gap-3">
+                  <div className="text-white/80 text-sm font-light">Loading</div>
+                  <div className="w-32 h-1 bg-white/20 rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-white rounded-full transition-all duration-300 ease-out"
+                      style={{ width: `${loadingProgress}%` }}
+                    />
+                  </div>
+                  <div className="text-white/60 text-xs">
+                    {Math.round(loadingProgress)}%
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Indicateur subtil une fois l'animation démarrée mais si de nouvelles images arrivent */}
+            {loadedImages.length > 0 && loadedImages.length < imageSources.length && (
               <div className="absolute top-8 right-8 z-20 pointer-events-none">
                 <div className="w-2 h-2 bg-white/30 rounded-full animate-pulse" />
               </div>
