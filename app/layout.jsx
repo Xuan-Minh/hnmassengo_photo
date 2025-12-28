@@ -11,11 +11,7 @@ import SnipcartPortal from '../components/SnipcartPortal';
 import StructuredData from '../components/StructuredData';
 import WebVitals from '../components/WebVitals';
 import React from 'react';
-
-// Import dynamique pour éviter les problèmes de prerendering côté serveur
-const IntroOverlay = dynamic(() => import('../components/IntroOverlay'), {
-  ssr: false,
-});
+import ClientLayout from '../components/ClientLayout';
 
 export const metadata = {
   metadataBase: new URL('https://hannoahmassengo.fr'),
@@ -122,8 +118,9 @@ export default function RootLayout({ children }) {
           <ConditionalLogo />
           <ConditionalMenu />
           <ConditionalLanguageSwitcher />
-          <IntroOverlay />
-          <RevealRoot>{children}</RevealRoot>
+          <ClientLayout>
+            <RevealRoot>{children}</RevealRoot>
+          </ClientLayout>
         </ErrorBoundary>
 
         <SnipcartPortal />
