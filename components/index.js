@@ -42,3 +42,4 @@ export { default as IntroOverlay } from "./IntroOverlay";
 
 // Utils
 export { default as TextReveal } from "./TextReveal";
+export { default as TextScramble } from "./TextScramble";
