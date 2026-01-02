@@ -1,8 +1,12 @@
-"use client";
-import { motion } from "framer-motion";
+'use client';
+import { motion } from 'framer-motion';
 
-export default function TextReveal({ text, className = "", delay = 0 }) {
-  const words = text.split(" ");
+export default function TextReveal({ text, className = '', delay = 0 }) {
+  if (!text || typeof text !== 'string') {
+    return null; // or return a default message, but null is fine to avoid rendering
+  }
+
+  const words = text.split(' ');
 
   const container = {
     hidden: { opacity: 0 },
@@ -21,7 +25,7 @@ export default function TextReveal({ text, className = "", delay = 0 }) {
       opacity: 1,
       y: 0,
       transition: {
-        type: "spring",
+        type: 'spring',
         damping: 20,
         stiffness: 100,
       },
