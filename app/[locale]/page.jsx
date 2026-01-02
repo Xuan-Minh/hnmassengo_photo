@@ -1,7 +1,6 @@
 'use client';
 import { useTranslations } from 'next-intl';
 import {
-  LanguageSwitcher,
   HomeImageRotation,
   Gallery,
   Blog,
@@ -60,7 +59,6 @@ export default function HomePage() {
   return (
     <>
       <ContactOverlay />
-      <LanguageSwitcher />
       <motion.section
         ref={homeRef}
         id="home"
@@ -89,7 +87,7 @@ export default function HomePage() {
             <TextScramble
               text="MASSENGO"
               className="mt-0 text-[56px] lg:text-[72px] xl:text-[88px] leading-none font-lexend font-semibold tracking-tight block"
-              delay={1500}
+              delay={1000}
             />
           </div>
         </div>

@@ -1,12 +1,21 @@
 'use client';
 import { useEffect, useState } from 'react';
+import { EVENTS, addEventHandler } from '../lib/events';
 
 export default function TextScramble({ text, className, delay = 0 }) {
   const [displayText, setDisplayText] = useState('');
   const [isAnimating, setIsAnimating] = useState(true);
+  const [canStart, setCanStart] = useState(false);
+
+  // Attendre que l'intro soit terminée avant de commencer l'animation
+  useEffect(() => {
+    const handler = () => setCanStart(true);
+    const cleanup = addEventHandler(EVENTS.INTRO_DISMISSED, handler);
+    return cleanup;
+  }, []);
 
   useEffect(() => {
-    if (!text) return;
+    if (!text || !canStart) return;
 
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()';
     let iteration = 0;
@@ -43,7 +52,7 @@ export default function TextScramble({ text, className, delay = 0 }) {
     return () => {
       clearTimeout(interval);
     };
-  }, [text, delay]);
+  }, [text, delay, canStart]);
 
   return <span className={className}>{displayText}</span>;
 }

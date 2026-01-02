@@ -1,35 +1,39 @@
-"use client";
+'use client';
 
-import React from "react";
-import { usePathname } from "next/navigation";
-import Menu from "./Menu";
+import React from 'react';
+import { usePathname } from 'next/navigation';
+import Menu from './Menu';
 
 export default function ConditionalMenu() {
   const pathname = usePathname();
-  const [shouldShow, setShouldShow] = React.useState(true);
+  const [hash, setHash] = React.useState('');
 
   React.useEffect(() => {
-    const checkVisibility = () => {
-      const isLegalPage = pathname.includes("/legal");
-      const hash = typeof window !== "undefined" ? window.location.hash : "";
-      const isSnipcartUrl =
-        hash.includes("#/cart") ||
-        hash.includes("#/checkout") ||
-        hash.includes("#snipcart");
-
-      setShouldShow(!isLegalPage && !isSnipcartUrl);
+    const updateHash = () => {
+      setHash(typeof window !== 'undefined' ? window.location.hash : '');
     };
 
-    checkVisibility();
+    updateHash();
 
     // Écouter les changements de hash
-    const handleHashChange = () => checkVisibility();
-    window.addEventListener("hashchange", handleHashChange);
+    const handleHashChange = () => updateHash();
+    window.addEventListener('hashchange', handleHashChange);
 
     return () => {
-      window.removeEventListener("hashchange", handleHashChange);
+      window.removeEventListener('hashchange', handleHashChange);
     };
-  }, [pathname]);
+  }, []);
+
+  const shouldShow = React.useMemo(() => {
+    const isLegalPage = pathname.includes('/legal');
+    const isStudioPage = pathname.includes('/studio');
+    const isSnipcartUrl =
+      hash.includes('#/cart') ||
+      hash.includes('#/checkout') ||
+      hash.includes('#snipcart');
+
+    return !isLegalPage && !isSnipcartUrl && !isStudioPage;
+  }, [pathname, hash]);
 
   if (!shouldShow) return null;
   return <Menu />;
