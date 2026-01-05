@@ -1,8 +1,8 @@
-"use client";
-import { useEffect, useRef } from "react";
-import Image from "next/image";
-import { motion } from "framer-motion";
-import { logger } from "../lib/logger";
+'use client';
+import { useEffect, useRef } from 'react';
+import Image from 'next/image';
+import { motion } from 'framer-motion';
+import { logger } from '../lib/logger';
 
 export default function ShopOverlay({ product, onClose, onAddToCart }) {
   const previouslyFocusedElement = useRef(null);
@@ -26,9 +26,9 @@ export default function ShopOverlay({ product, onClose, onAddToCart }) {
   return (
     <motion.div
       className="fixed inset-0 z-[60] bg-blackCustom text-whiteCustom font-playfair flex flex-col"
-      initial={{ x: "100%" }}
+      initial={{ x: '100%' }}
       animate={{ x: 0 }}
-      exit={{ x: "100%" }}
+      exit={{ x: '100%' }}
       transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
       role="dialog"
       aria-modal="true"
@@ -59,7 +59,7 @@ export default function ShopOverlay({ product, onClose, onAddToCart }) {
               height={600}
               sizes="100vw"
               className="max-h-[30vh] w-auto object-contain mx-auto"
-              style={{ objectFit: "contain", height: "auto" }}
+              style={{ objectFit: 'contain', height: 'auto' }}
               priority
             />
           </div>
@@ -70,7 +70,7 @@ export default function ShopOverlay({ product, onClose, onAddToCart }) {
             <h2 className="text-4xl italic mb-6">{product.title}</h2>
             <p className="text-base leading-relaxed text-whiteCustom/80 mb-8 max-w-md">
               {product.description ||
-                "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur posuere tincidunt lacus sit amet porttitor. Aliquam pharetra ante vel nibh accumsan, a bibendum lorem egestas. Sed ac accumsan metus, vitae finibus urna."}
+                'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur posuere tincidunt lacus sit amet porttitor. Aliquam pharetra ante vel nibh accumsan, a bibendum lorem egestas. Sed ac accumsan metus, vitae finibus urna.'}
             </p>
             <div className="mt-auto">
               <div className="text-2xl font-bold mb-2">{product.price}€</div>
@@ -100,7 +100,7 @@ export default function ShopOverlay({ product, onClose, onAddToCart }) {
               fill
               sizes="50vw"
               className="w-full h-full object-cover"
-              style={{ objectFit: "cover" }}
+              style={{ objectFit: 'cover' }}
               priority
             />
           </div>
@@ -109,16 +109,19 @@ export default function ShopOverlay({ product, onClose, onAddToCart }) {
             <h2 className="text-6xl italic mb-8">{product.title}</h2>
             <p className="text-xl leading-relaxed text-whiteCustom/80 mb-12 max-w-md">
               {product.description ||
-                "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur posuere tincidunt lacus sit amet porttitor. Aliquam pharetra ante vel nibh accumsan, a bibendum lorem egestas. Sed ac accumsan metus, vitae finibus urna."}
+                'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur posuere tincidunt lacus sit amet porttitor. Aliquam pharetra ante vel nibh accumsan, a bibendum lorem egestas. Sed ac accumsan metus, vitae finibus urna.'}
             </p>
             <div className="mt-auto">
               <div className="text-3xl font-bold mb-2">{product.price}€</div>
               <button
-                className="text-xl italic text-whiteCustom/60 hover:text-whiteCustom transition-colors"
+                className="snipcart-add-item text-xl italic text-whiteCustom/60 hover:text-whiteCustom transition-colors"
+                data-item-id={product.id}
+                data-item-price={product.price}
+                data-item-url="/api/products"
+                data-item-description={product.description || ''}
+                data-item-image={product.imgDefault}
+                data-item-name={product.title}
                 onClick={() => {
-                  if (onAddToCart) {
-                    onAddToCart(product);
-                  }
                   setTimeout(() => {
                     onClose();
                   }, 200);
