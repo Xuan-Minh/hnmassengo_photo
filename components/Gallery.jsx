@@ -23,7 +23,6 @@ export default function Gallery() {
   const [view, setView] = useState('grid');
   const [hoveredId, setHoveredId] = useState(null);
   const [overlayOpen, setOverlayOpen] = useState(false);
-  const [isAnimating, setIsAnimating] = useState(false);
   const [selectedProject, setSelectedProject] = useState(null);
 
   // Curseur personnalisé pour le nom du projet
@@ -72,11 +71,7 @@ export default function Gallery() {
 
   const handleViewChange = newView => {
     if (view === newView) return;
-    setIsAnimating(true);
-    setTimeout(() => {
-      setView(newView);
-      setIsAnimating(false);
-    }, 300);
+    setView(newView);
   };
 
   // Filtrage des projets
@@ -267,133 +262,197 @@ export default function Gallery() {
         className="relative w-full h-screen overflow-hidden md:pt-10"
       >
         <div
-          className={`w-full h-full flex flex-col justify-center items-center transition-opacity duration-300 ${
-            isAnimating ? 'opacity-0' : 'opacity-100'
-          }`}
+          className={`w-full h-full flex flex-col justify-center items-center`}
         >
           <div
             style={{ width: 'min(1000px, 90vw)', height: 'min(1000px, 85vh)' }}
             className="relative flex flex-col justify-center items-start"
           >
-            {view === 'grid' ? (
-              // --- MODE GRID ---
-              <div className="w-full h-full grid grid-cols-1 md:grid-cols-5 md:grid-rows-5 gap-x-2 gap-y-2 overflow-hidden lg:pt-10">
-                <AnimatePresence mode="popLayout">
-                  {gridItems.map((item, idx) => {
-                    if (idx === 0) {
-                      // Case filtres + view
+            <AnimatePresence mode="wait">
+              {view === 'grid' ? (
+                // --- MODE GRID ---
+                <motion.div
+                  key="grid"
+                  initial={{ opacity: 0, x: -50 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 50 }}
+                  transition={{ duration: 0.5, ease: 'easeInOut' }}
+                  className="w-full h-full grid grid-cols-1 md:grid-cols-5 md:grid-rows-5 gap-x-2 gap-y-2 overflow-hidden lg:pt-10"
+                >
+                  <AnimatePresence mode="popLayout">
+                    {gridItems.map((item, idx) => {
+                      if (idx === 0) {
+                        // Case filtres + view
+                        return (
+                          <div
+                            key="filters"
+                            className="flex items-center justify-center"
+                          >
+                            <Controls />
+                          </div>
+                        );
+                      }
+                      if (!item) return <div key={`empty-${idx}`} />;
+                      // Case image d'un projet
+                      const imgData = item;
+                      const isHovered = hoveredId === imgData.projectId;
                       return (
-                        <div
-                          key="filters"
-                          className="flex items-center justify-center"
+                        <motion.div
+                          layout
+                          exit={{ opacity: 0, scale: 0.7 }}
+                          initial={{ opacity: 0, scale: 0.95 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          transition={{ duration: 0.5, type: 'spring' }}
+                          key={imgData.uniqueKey}
+                          className="relative group cursor-pointer flex items-center justify-center w-full h-full overflow-hidden"
+                          onMouseEnter={() => setHoveredId(imgData.projectId)}
+                          onMouseLeave={() => setHoveredId(null)}
+                          onClick={() => {
+                            const projectData = projects.find(
+                              p => p.id === imgData.projectId
+                            );
+                            setSelectedProject(projectData);
+                          }}
                         >
-                          <Controls />
-                        </div>
+                          <Image
+                            src={imgData.img}
+                            alt={imgData.name}
+                            width={600}
+                            height={400}
+                            className={`max-w-full max-h-full object-contain shadow transition-opacity duration-300 ${
+                              isHovered ? 'opacity-100' : 'opacity-40'
+                            }`}
+                            style={{ objectFit: 'contain' }}
+                            draggable={false}
+                            sizes="(max-width: 768px) 45vw, (max-width: 1200px) 20vw, 18vw"
+                            priority={idx < 5}
+                          />
+                        </motion.div>
                       );
-                    }
-                    if (!item) return <div key={`empty-${idx}`} />;
-                    // Case image d'un projet
-                    const imgData = item;
-                    const isHovered = hoveredId === imgData.projectId;
-                    return (
-                      <motion.div
-                        layout
-                        exit={{ opacity: 0, scale: 0.7 }}
-                        initial={{ opacity: 0, scale: 0.95 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ duration: 0.5, type: 'spring' }}
-                        key={imgData.uniqueKey}
-                        className="relative group cursor-pointer flex items-center justify-center w-full h-full overflow-hidden"
-                        onMouseEnter={() => setHoveredId(imgData.projectId)}
-                        onMouseLeave={() => setHoveredId(null)}
-                        onClick={() => {
-                          const projectData = projects.find(
-                            p => p.id === imgData.projectId
-                          );
-                          setSelectedProject(projectData);
-                        }}
+                    })}
+                  </AnimatePresence>
+                </motion.div>
+              ) : (
+                // --- MODE LIST ---
+                <motion.div
+                  key="list"
+                  initial={{ opacity: 0, x: 50 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -50 }}
+                  transition={{ duration: 0.5, ease: 'easeInOut' }}
+                  className="w-full h-full flex flex-col"
+                >
+                  {/* Ligne du haut : Boutons view + Liste projets - Desktop seulement */}
+                  <div className="hidden lg:flex items-center justify-between gap-8 mb-12 mt-8 md:mt-12 w-full">
+                    {/* Boutons de vue à gauche */}
+                    <div className="flex gap-4 flex-shrink-0">
+                      <button
+                        className={`relative w-6 h-6 transition-opacity duration-300 ease-in-out ${
+                          view === 'grid'
+                            ? 'opacity-100'
+                            : 'opacity-50 hover:opacity-100'
+                        }`}
+                        onClick={() => handleViewChange('grid')}
+                        aria-label="Grid view"
                       >
                         <Image
-                          src={imgData.img}
-                          alt={imgData.name}
-                          width={600}
-                          height={400}
-                          className={`max-w-full max-h-full object-contain shadow transition-opacity duration-300 ${
-                            isHovered ? 'opacity-100' : 'opacity-40'
+                          src="/icons/gridOff.png"
+                          alt="Grid View Off"
+                          fill
+                          className={`absolute inset-0 w-full h-full object-contain transition-opacity duration-300 ${
+                            view === 'grid' ? 'opacity-0' : 'opacity-100'
                           }`}
-                          style={{ objectFit: 'contain' }}
-                          draggable={false}
-                          sizes="(max-width: 768px) 45vw, (max-width: 1200px) 20vw, 18vw"
-                          priority={idx < 5}
                         />
-                      </motion.div>
-                    );
-                  })}
-                </AnimatePresence>
-              </div>
-            ) : (
-              // --- MODE LIST ---
-              <div className="w-full h-full flex flex-col">
-                {/* Ligne du haut : Boutons view + Liste projets - Desktop seulement */}
-                <div className="hidden lg:flex items-center justify-between gap-8 mb-12 mt-8 md:mt-12 w-full">
-                  {/* Boutons de vue à gauche */}
-                  <div className="flex gap-4 flex-shrink-0">
-                    <button
-                      className={`relative w-6 h-6 transition-opacity duration-300 ease-in-out ${
-                        view === 'grid'
-                          ? 'opacity-100'
-                          : 'opacity-50 hover:opacity-100'
-                      }`}
-                      onClick={() => handleViewChange('grid')}
-                      aria-label="Grid view"
-                    >
-                      <Image
-                        src="/icons/gridOff.png"
-                        alt="Grid View Off"
-                        fill
-                        className={`absolute inset-0 w-full h-full object-contain transition-opacity duration-300 ${
-                          view === 'grid' ? 'opacity-0' : 'opacity-100'
+                        <Image
+                          src="/icons/gridOn.png"
+                          alt="Grid View On"
+                          fill
+                          className={`absolute inset-0 w-full h-full object-contain transition-opacity duration-300 ${
+                            view === 'grid' ? 'opacity-100' : 'opacity-0'
+                          }`}
+                        />
+                      </button>
+                      <button
+                        className={`relative w-6 h-6 transition-opacity duration-300 ease-in-out ${
+                          view === 'list'
+                            ? 'opacity-100'
+                            : 'opacity-50 hover:opacity-100'
                         }`}
-                      />
-                      <Image
-                        src="/icons/gridOn.png"
-                        alt="Grid View On"
-                        fill
-                        className={`absolute inset-0 w-full h-full object-contain transition-opacity duration-300 ${
-                          view === 'grid' ? 'opacity-100' : 'opacity-0'
-                        }`}
-                      />
-                    </button>
-                    <button
-                      className={`relative w-6 h-6 transition-opacity duration-300 ease-in-out ${
-                        view === 'list'
-                          ? 'opacity-100'
-                          : 'opacity-50 hover:opacity-100'
-                      }`}
-                      onClick={() => handleViewChange('list')}
-                      aria-label="List view"
-                    >
-                      <Image
-                        src="/icons/listOff.png"
-                        alt="List View Off"
-                        fill
-                        className={`absolute inset-0 w-full h-full object-contain transition-opacity duration-300 ${
-                          view === 'list' ? 'opacity-0' : 'opacity-100'
-                        }`}
-                      />
-                      <Image
-                        src="/icons/listOn.png"
-                        alt="List View On"
-                        fill
-                        className={`absolute inset-0 w-full h-full object-contain transition-opacity duration-300 ${
-                          view === 'list' ? 'opacity-100' : 'opacity-0'
-                        }`}
-                      />
-                    </button>
+                        onClick={() => handleViewChange('list')}
+                        aria-label="List view"
+                      >
+                        <Image
+                          src="/icons/listOff.png"
+                          alt="List View Off"
+                          fill
+                          className={`absolute inset-0 w-full h-full object-contain transition-opacity duration-300 ${
+                            view === 'list' ? 'opacity-0' : 'opacity-100'
+                          }`}
+                        />
+                        <Image
+                          src="/icons/listOn.png"
+                          alt="List View On"
+                          fill
+                          className={`absolute inset-0 w-full h-full object-contain transition-opacity duration-300 ${
+                            view === 'list' ? 'opacity-100' : 'opacity-0'
+                          }`}
+                        />
+                      </button>
+                    </div>
+
+                    {/* Liste des projets au centre */}
+                    <div className="flex flex-wrap justify-center gap-x-8 gap-y-2 flex-1">
+                      {filteredProjects.map((p, idx) => (
+                        <button
+                          key={p.id}
+                          onClick={() => {
+                            setCurrentProjectIndex(idx);
+                            setCurrentImageIndex(0);
+                          }}
+                          className={`text-lg font-playfair transition-all duration-300 ${
+                            idx === currentProjectIndex
+                              ? 'font-bold underline underline-offset-4'
+                              : 'opacity-60 hover:opacity-100'
+                          }`}
+                        >
+                          {p.name}
+                        </button>
+                      ))}
+                    </div>
+
+                    {/* Spacer à droite pour équilibrer */}
+                    <div className="w-[52px] flex-shrink-0"></div>
                   </div>
 
-                  {/* Liste des projets au centre */}
-                  <div className="flex flex-wrap justify-center gap-x-8 gap-y-2 flex-1">
+                  {/* Zone centrale image (Slideshow) */}
+                  <div className="flex-1 relative w-full h-[100vh] flex items-center justify-center overflow-hidden mt-0 md:mt-8 lg:mt-0">
+                    {filteredProjects.length > 0 && (
+                      <Image
+                        src={
+                          filteredProjects[currentProjectIndex].images[
+                            currentImageIndex
+                          ]
+                        }
+                        alt={filteredProjects[currentProjectIndex].name}
+                        width={1200}
+                        height={900}
+                        className={`max-w-[85%] max-h-[50vh] lg:max-w-[70%] lg:max-h-[70%] xl:max-w-[80%] xl:max-h-[80%] object-contain cursor-pointer transition-opacity duration-300 ${
+                          isTransitioning ? 'opacity-0' : 'opacity-100'
+                        }`}
+                        style={{ objectFit: 'contain' }}
+                        sizes="(max-width: 768px) 90vw, (max-width: 1200px) 70vw, 80vw"
+                        onClick={() =>
+                          setSelectedProject(
+                            filteredProjects[currentProjectIndex]
+                          )
+                        }
+                        priority
+                      />
+                    )}
+                  </div>
+
+                  {/* Liste des projets en bas - Mobile seulement */}
+                  <div className="lg:hidden flex flex-row flex-wrap justify-center gap-x-6 gap-y-3 mt-3">
                     {filteredProjects.map((p, idx) => (
                       <button
                         key={p.id}
@@ -404,66 +463,16 @@ export default function Gallery() {
                         className={`text-lg font-playfair transition-all duration-300 ${
                           idx === currentProjectIndex
                             ? 'font-bold underline underline-offset-4'
-                            : 'opacity-60 hover:opacity-100'
+                            : 'opacity-60'
                         }`}
                       >
                         {p.name}
                       </button>
                     ))}
                   </div>
-
-                  {/* Spacer à droite pour équilibrer */}
-                  <div className="w-[52px] flex-shrink-0"></div>
-                </div>
-
-                {/* Zone centrale image (Slideshow) */}
-                <div className="flex-1 relative w-full h-[100vh] flex items-center justify-center overflow-hidden mt-0 md:mt-8 lg:mt-0">
-                  {filteredProjects.length > 0 && (
-                    <Image
-                      src={
-                        filteredProjects[currentProjectIndex].images[
-                          currentImageIndex
-                        ]
-                      }
-                      alt={filteredProjects[currentProjectIndex].name}
-                      width={1200}
-                      height={900}
-                      className={`max-w-[85%] max-h-[50vh] lg:max-w-[70%] lg:max-h-[70%] xl:max-w-[80%] xl:max-h-[80%] object-contain cursor-pointer transition-opacity duration-300 ${
-                        isTransitioning ? 'opacity-0' : 'opacity-100'
-                      }`}
-                      style={{ objectFit: 'contain' }}
-                      sizes="(max-width: 768px) 90vw, (max-width: 1200px) 70vw, 80vw"
-                      onClick={() =>
-                        setSelectedProject(
-                          filteredProjects[currentProjectIndex]
-                        )
-                      }
-                      priority
-                    />
-                  )}
-                </div>
-
-                {/* Liste des projets en bas - Mobile seulement */}
-                <div className="lg:hidden flex flex-row flex-wrap justify-center gap-x-6 gap-y-3 mt-3">
-                  {filteredProjects.map((p, idx) => (
-                    <button
-                      key={p.id}
-                      onClick={() => {
-                        setCurrentProjectIndex(idx);
-                        setCurrentImageIndex(0);
-                      }}
-                      className={`text-lg font-playfair transition-all duration-300 ${
-                        idx === currentProjectIndex
-                          ? 'font-bold underline underline-offset-4'
-                          : 'opacity-60'
-                      }`}
-                    >
-                      {p.name}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
 
           {/* Footer commun */}
