@@ -8,14 +8,14 @@ export default function BlogPostItem({ post, onClick }) {
       onClick={onClick}
     >
       {post.layout === 'image-left' && post.image && (
-        <div className="flex flex-col lg:flex-row gap-8 sm:items-start md:items-center ">
+        <div className="flex flex-col lg:flex-row gap-8 sm:items-start lg:items-center ">
           <div className="w-full lg:w-1/3 flex items-center justify-center">
             <Image
               src={post.image}
               alt={post.title}
               width={400}
               height={300}
-              className="w-full h-auto max-h-[300px] lg:max-h-[150px] object-contain grayscale group-hover:grayscale-0 transition-all duration-500"
+              className="w-full h-auto max-h-[300px] lg:max-h-[150px] object-contain lg:grayscale group-hover:grayscale-0 transition-all duration-500"
               sizes="(max-width: 768px) 100vw, 400px"
               priority={false}
             />
@@ -53,7 +53,7 @@ export default function BlogPostItem({ post, onClick }) {
               alt={post.title}
               width={400}
               height={300}
-              className="w-full h-auto max-h-[300px] lg:max-h-[150px] object-contain grayscale group-hover:grayscale-0 transition-all duration-500"
+              className="w-full h-auto max-h-[300px] lg:max-h-[150px] object-contain lg:grayscale group-hover:grayscale-0 transition-all duration-500"
               sizes="(max-width: 768px) 100vw, 400px"
               priority={false}
             />
