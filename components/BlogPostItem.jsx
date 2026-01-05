@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 export default function BlogPostItem({ post, onClick }) {
   return (
     <div
-      className="w-full lg:border-b lg:border-whiteCustom/20 py-12 lg:py-12 cursor-pointer group lg:hover:border-l-4 lg:hover:border-l-white lg:pl-8 transition-all duration-300"
+      className="w-full lg:border-b lg:border-whiteCustom/20 py-2  lg:py-12 cursor-pointer group lg:hover:border-l-4 lg:hover:border-l-white lg:pl-8 transition-all duration-300"
       onClick={onClick}
     >
       {post.layout === 'image-left' && post.image && (
@@ -35,7 +35,7 @@ export default function BlogPostItem({ post, onClick }) {
       )}
 
       {post.layout === 'image-right' && post.image && (
-        <div className="flex flex-col lg:flex-row gap-8 items-start">
+        <div className="flex flex-col lg:flex-row gap-4 items-start">
           <div className="flex-1 text-whiteCustom order-2 lg:order-1 flex flex-col justify-start">
             <h3 className="text-2xl lg:text-3xl font-playfair italic mb-2">
               {post.title}
