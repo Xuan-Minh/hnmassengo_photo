@@ -1,16 +1,16 @@
-"use client";
-import React, { useState, useEffect } from "react";
-import { useTranslations } from "next-intl";
-import { useParams } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
-import BlogArchives from "./BlogArchives";
-import BlogPostItem from "./BlogPostItem";
-import dynamic from "next/dynamic";
-import client from "../lib/sanity.client";
-import { CONTENT } from "../lib/constants";
+'use client';
+import React, { useState, useEffect } from 'react';
+import { useTranslations } from 'next-intl';
+import { useParams } from 'next/navigation';
+import { motion, AnimatePresence } from 'framer-motion';
+import BlogArchives from './BlogArchives';
+import BlogPostItem from './BlogPostItem';
+import dynamic from 'next/dynamic';
+import client from '../lib/sanity.client';
+import { CONTENT } from '../lib/constants';
 
 // Chargement différé de BlogPostOverlay
-const BlogPostOverlay = dynamic(() => import("./BlogPostOverlay"), {
+const BlogPostOverlay = dynamic(() => import('./BlogPostOverlay'), {
   loading: () => <div>Loading…</div>,
 });
 
@@ -25,8 +25,8 @@ export default function Blog() {
   React.useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 1024);
     checkMobile();
-    window.addEventListener("resize", checkMobile);
-    return () => window.removeEventListener("resize", checkMobile);
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
   // Charger les posts depuis Sanity
@@ -35,8 +35,8 @@ export default function Blog() {
       const data = await client.fetch(
         '*[_type == "blogPost"] | order(date desc) { ..., image{ asset->{ url } } }'
       );
-      console.log("Fetched posts:", data); // Debug
-      const mapped = data.map((p) => ({
+      console.log('Fetched posts:', data); // Debug
+      const mapped = data.map(p => ({
         id: p._id,
         title:
           p.title?.[locale] ||
@@ -44,8 +44,8 @@ export default function Blog() {
           p[`title_${locale}`] ||
           p.title_fr,
         date: new Date(p.date).toLocaleDateString(
-          locale === "fr" ? "fr-FR" : locale === "de" ? "de-DE" : "en-US",
-          { year: "numeric", month: "short", day: "numeric" }
+          locale === 'fr' ? 'fr-FR' : locale === 'de' ? 'de-DE' : 'en-US',
+          { year: 'numeric', month: 'short', day: 'numeric' }
         ),
         content:
           p.content?.[locale] ||
@@ -60,7 +60,7 @@ export default function Blog() {
         image: p.image?.asset?.url,
         layout: p.layout,
       }));
-      console.log("Mapped posts:", mapped); // Debug
+      console.log('Mapped posts:', mapped); // Debug
       setPosts(mapped);
     };
     fetchPosts();
@@ -76,11 +76,11 @@ export default function Blog() {
         aria-label="Section blog"
       >
         <div
-          style={{ width: "min(1000px, 85vw)" }}
+          style={{ width: 'min(1000px, 85vw)' }}
           className="flex flex-col h-full max-h-full 2xl:max-w-5xl"
         >
           {/* Posts List */}
-          <div className="flex-1 flex flex-col justify-center lg:justify-start min-h-0">
+          <div className="flex-1 flex flex-col justify-center min-h-0">
             {latestPosts.map((post, index) => (
               <BlogPostItem
                 key={post.id}
@@ -88,17 +88,17 @@ export default function Blog() {
                 onClick={() => setSelectedPost(post)}
               />
             ))}
+            <div className="w-full xl:justify-end 2xl:justify-center mt-4 shrink-0 hidden lg:flex">
+              <button
+                onClick={() => setArchiveOpen(true)}
+                className="text-lg font-playfair italic text-whiteCustom/60 hover:text-whiteCustom transition-colors"
+              >
+                + More posts
+              </button>
+            </div>
           </div>
 
           {/* Footer / More Posts - caché sur mobile */}
-          <div className="w-full justify-end mt-4 shrink-0 hidden lg:flex">
-            <button
-              onClick={() => setArchiveOpen(true)}
-              className="text-lg font-playfair italic text-whiteCustom/60 hover:text-whiteCustom transition-colors"
-            >
-              more posts ↗
-            </button>
-          </div>
         </div>
       </section>
 
@@ -107,7 +107,7 @@ export default function Blog() {
           <BlogArchives
             posts={posts}
             onClose={() => setArchiveOpen(false)}
-            onPostClick={(post) => setSelectedPost(post)}
+            onPostClick={post => setSelectedPost(post)}
           />
         )}
       </AnimatePresence>
@@ -119,7 +119,7 @@ export default function Blog() {
             onClose={() => setSelectedPost(null)}
             onPrevious={() => {
               const currentIndex = posts.findIndex(
-                (p) => p.id === selectedPost.id
+                p => p.id === selectedPost.id
               );
               if (currentIndex > 0) {
                 setSelectedPost(posts[currentIndex - 1]);
@@ -127,7 +127,7 @@ export default function Blog() {
             }}
             onNext={() => {
               const currentIndex = posts.findIndex(
-                (p) => p.id === selectedPost.id
+                p => p.id === selectedPost.id
               );
               if (currentIndex < posts.length - 1) {
                 setSelectedPost(posts[currentIndex + 1]);

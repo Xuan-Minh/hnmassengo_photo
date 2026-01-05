@@ -469,21 +469,22 @@ export default function Gallery() {
           {/* Footer commun */}
           <div
             style={{ width: 'min(1100px, 90vw)' }}
-            className="flex justify-between items-start mt-4"
+            className="grid grid-cols-3 items-center mt-4"
           >
-            <div className="text-xl font-playfair italic text-blackCustom h-8">
+            <div className="text-xl font-playfair italic text-blackCustom">
               {view === 'grid'
                 ? hoveredId && projects.find(p => p.id === hoveredId)?.coords
                 : filteredProjects[currentProjectIndex]?.coords}
             </div>
             {view === 'grid' && (
               <button
-                className="text-lg font-playfair italic text-accent hover:text-accentHover transition-colors"
+                className="justify-self-center text-xl font-playfair italic text-accent hover:text-accentHover transition-colors px-4 py-2 rounded"
                 onClick={() => setOverlayOpen(true)}
               >
                 see more
               </button>
             )}
+            <div></div>
           </div>
         </div>
       </section>
