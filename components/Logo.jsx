@@ -2,7 +2,7 @@
 import { useRouter, usePathname } from 'next/navigation';
 import { EVENTS, emitEvent } from '../lib/events';
 
-export default function Logo() {
+export default function Logo({ visible = true }) {
   const router = useRouter();
   const pathname = usePathname();
 
@@ -19,7 +19,7 @@ export default function Logo() {
   return (
     <div
       data-layer="HAN-NOAH MASSENGO"
-      className="top-0 left-0 w-full justify-center gap-2 items-center space-x-2 mt-4 z-50 bg-transparent pointer-events-none hidden sm:flex md:text-[36px]"
+      className={`absolute top-0 left-1/2 transform -translate-x-1/2 justify-center gap-2 items-center space-x-2 z-50 bg-transparent pointer-events-none hidden sm:flex md:text-[36px] transition-opacity duration-300 ${visible ? 'opacity-100' : 'opacity-0'}`}
     >
       <span
         onClick={handleLogoClick}

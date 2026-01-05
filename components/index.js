@@ -15,6 +15,7 @@ export { default as RevealRoot } from './RevealRoot';
 // Sections
 export { default as HomePresentation } from './HomePresentation';
 export { default as HomeImageRotation } from './HomeImageRotation';
+export { default as HomeSection } from './HomeSection';
 
 // Gallery
 export { default as Gallery } from './Gallery';
