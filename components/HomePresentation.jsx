@@ -1,13 +1,11 @@
 'use client';
 import { useTranslations } from 'next-intl';
 import TextReveal from './TextReveal';
-import Logo from './Logo';
 
 export default function HomePresentation() {
   const t = useTranslations();
   return (
     <>
-      <Logo />
       <section
         className="h-[40vh] flex flex-col items-center justify-center bg-whiteCustom px-6 lg:px-8"
         aria-label="Section de présentation"
