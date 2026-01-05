@@ -1,6 +1,5 @@
 import '../globals.css';
 
-import ConditionalLogo from '../components/ConditionalLogo';
 import ConditionalMenu from '../components/ConditionalMenu';
 import ConditionalLanguageSwitcher from '../components/ConditionalLanguageSwitcher';
 import { Lexend, Playfair_Display } from 'next/font/google';
@@ -115,7 +114,6 @@ export default function RootLayout({ children }) {
         )}
       >
         <ErrorBoundary>
-          <ConditionalLogo />
           <ConditionalMenu />
           <ConditionalLanguageSwitcher />
           <ClientLayout>

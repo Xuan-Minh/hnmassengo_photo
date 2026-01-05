@@ -1,6 +1,6 @@
-"use client";
-import { useRouter, usePathname } from "next/navigation";
-import { EVENTS, emitEvent } from "../lib/events";
+'use client';
+import { useRouter, usePathname } from 'next/navigation';
+import { EVENTS, emitEvent } from '../lib/events';
 
 export default function Logo() {
   const router = useRouter();
@@ -8,8 +8,8 @@ export default function Logo() {
 
   const handleLogoClick = () => {
     // Si on n'est pas sur la page d'accueil, on y retourne
-    if (pathname !== "/") {
-      router.push("/");
+    if (pathname !== '/') {
+      router.push('/');
     }
 
     // On lance l'animation immédiatement
@@ -19,7 +19,7 @@ export default function Logo() {
   return (
     <div
       data-layer="HAN-NOAH MASSENGO"
-      className="fixed top-0 left-0 w-full justify-center gap-2 items-center space-x-2 mt-4 z-50 bg-transparent pointer-events-none hidden sm:flex md:text-[36px]"
+      className="top-0 left-0 w-full justify-center gap-2 items-center space-x-2 mt-4 z-50 bg-transparent pointer-events-none hidden sm:flex md:text-[36px]"
     >
       <span
         onClick={handleLogoClick}
