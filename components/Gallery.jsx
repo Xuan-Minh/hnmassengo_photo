@@ -265,8 +265,10 @@ export default function Gallery() {
           className={`w-full h-full flex flex-col justify-center items-center`}
         >
           <div
-            style={{ width: 'min(1000px, 90vw)', height: 'min(1000px, 85vh)' }}
-            className="relative flex flex-col justify-center items-start"
+            style={{
+              width: 'min(1000px, 90vw)',
+            }}
+            className="relative flex flex-col justify-center items-start h-[75vh] lg:h-[90vh]"
           >
             <AnimatePresence mode="wait">
               {view === 'grid' ? (
