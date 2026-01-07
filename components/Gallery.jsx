@@ -130,10 +130,30 @@ export default function Gallery() {
     }))
   );
 
-  // Pour la grille 5x5, la première case est réservée aux filtres/view
+  // Nombre d'images à afficher selon la taille d'écran
+  const [maxImages, setMaxImages] = useState(24);
+
+  useEffect(() => {
+    const updateMaxImages = () => {
+      if (window.innerWidth >= 1536) {
+        // 2xl
+        setMaxImages(27); // 7x4 -1
+      } else if (window.innerWidth >= 1280) {
+        // lg
+        setMaxImages(24); // 5x5 -1
+      } else {
+        setMaxImages(24); // md: 5x5 -1
+      }
+    };
+    updateMaxImages();
+    window.addEventListener('resize', updateMaxImages);
+    return () => window.removeEventListener('resize', updateMaxImages);
+  }, []);
+
+  // Pour la grille, la première case est réservée aux filtres/view
   const gridItems = [
     { type: 'filters', uniqueKey: 'filters' },
-    ...allImages.slice(0, 24), // 24 images max affichées (5x5 - 1 pour les filtres)
+    ...allImages.slice(0, maxImages),
   ];
 
   // Gestion du curseur custom
@@ -257,19 +277,11 @@ export default function Gallery() {
 
   return (
     <>
-      <section
-        id="works"
-        className="relative w-full h-screen overflow-hidden md:pt-10"
-      >
+      <section id="works" className="relative w-full h-screen overflow-hidden">
         <div
           className={`w-full h-full flex flex-col justify-center items-center`}
         >
-          <div
-            style={{
-              width: 'min(1000px, 90vw)',
-            }}
-            className="relative flex flex-col justify-center items-start h-[75vh] lg:h-[90vh]"
-          >
+          <div className="relative flex flex-col justify-center items-start h-[75vh] lg:h-[90vh] w-[min(1000px,90vw)] xl:w-[min(1300px,90vw)]">
             <AnimatePresence mode="wait">
               {view === 'grid' ? (
                 // --- MODE GRID ---
@@ -279,7 +291,7 @@ export default function Gallery() {
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: 50 }}
                   transition={{ duration: 0.5, ease: 'easeInOut' }}
-                  className="w-full h-full grid grid-cols-1 md:grid-cols-5 md:grid-rows-5 gap-x-2 gap-y-2 overflow-hidden lg:pt-10"
+                  className="w-full h-full grid grid-cols-1 md:grid-cols-5 lg:grid-cols-5 2xl:grid-cols-7 md:grid-rows-5 lg:grid-rows-5 2xl:grid-rows-4 gap-x-2 gap-y-2 overflow-hidden lg:pt-10"
                 >
                   <AnimatePresence mode="popLayout">
                     {gridItems.map((item, idx) => {
@@ -480,7 +492,7 @@ export default function Gallery() {
           {/* Footer commun */}
           <div
             style={{ width: 'min(1100px, 90vw)' }}
-            className="grid lg:grid-cols-3 grid-cols-2 items-center mt-4"
+            className="grid lg:grid-cols-3 grid-cols-2 items-center mt-16 lg:mt-4"
           >
             <div className="text-xl font-playfair italic text-blackCustom h-8">
               {view === 'grid'
@@ -489,7 +501,7 @@ export default function Gallery() {
             </div>
             {view === 'grid' && (
               <button
-                className="justify-self-center text-xl font-playfair italic text-blackCustom hover:text-accentHover transition-colors px-4 py-2 rounded"
+                className="justify-self-center text-xl font-playfair italic text-blackCustom hover:text-accentHover transition-all duration-300 px-4 py-2 rounded opacity-100 animate-in fade-in"
                 onClick={() => setOverlayOpen(true)}
               >
                 see more
