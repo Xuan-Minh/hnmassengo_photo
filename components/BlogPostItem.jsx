@@ -15,7 +15,7 @@ export default function BlogPostItem({ post, onClick }) {
               alt={post.title}
               width={400}
               height={300}
-              className="w-full h-auto max-h-[300px] lg:max-h-[150px] object-contain lg:grayscale group-hover:grayscale-0 transition-all duration-500"
+              className="w-full h-auto xl:max-h-[150px] 2xl:max-h[300px] object-contain lg:grayscale group-hover:grayscale-0 transition-all duration-500"
               sizes="(max-width: 768px) 100vw, 400px"
               priority={false}
             />
