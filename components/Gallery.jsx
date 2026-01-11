@@ -281,7 +281,7 @@ export default function Gallery() {
         <div
           className={`w-full h-full flex flex-col justify-center items-center`}
         >
-          <div className="relative flex flex-col justify-center items-start h-[75vh] lg:h-[90vh] w-[min(1000px,90vw)] xl:w-[min(1300px,90vw)]">
+          <div className="relative flex flex-col justify-center items-start h-[75vh] lg:h-[90vh] w-[min(1000px,90vw)] 2xl:w-[min(1300px,90vw)]">
             <AnimatePresence mode="wait">
               {view === 'grid' ? (
                 // --- MODE GRID ---
