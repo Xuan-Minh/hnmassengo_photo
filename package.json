@@ -17,8 +17,7 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "sitemap": "next-sitemap",
-    "analyze": "ANALYZE=true npm run build",
-    "optimize-images": "node scripts/optimize-images.js"
+    "analyze": "ANALYZE=true npm run build"
   },
   "keywords": [],
   "author": "",
@@ -49,6 +48,7 @@
     "@babel/core": "^7.28.5",
     "@babel/preset-env": "^7.28.5",
     "@babel/preset-react": "^7.28.5",
+    "@eslint/eslintrc": "^3.3.3",
     "@netlify/plugin-nextjs": "^5.13.5",
     "@next/bundle-analyzer": "^16.1.1",
     "@sanity/cli": "^4.13.0",
