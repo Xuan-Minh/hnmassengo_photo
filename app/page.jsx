@@ -1,3 +1,5 @@
+import { redirect } from 'next/navigation';
+
 export default function Page() {
-  return <div>Hello I'm Han Noah Massengo</div>;
+  redirect('/fr');
 }
