@@ -10,7 +10,7 @@ export async function GET() {
     const formatted = products.map(p => ({
       id: p._id,
       price: p.price,
-      url: '/fr/shop',
+      url: `${process.env.SITE_URL || 'https://hannoahmassengotest.netlify.app'}/fr/shop`,
       name: p.title?.fr || p.title?.en || 'Product',
       description: p.description?.fr || p.description?.en || '',
       image: p.image?.asset?.url || '',
