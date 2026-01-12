@@ -27,12 +27,14 @@ export default function ConditionalLanguageSwitcher() {
   const shouldShow = React.useMemo(() => {
     const isLegalPage = pathname.includes('/legal');
     const isStudioPage = pathname.includes('/studio');
+    const isShopPage = pathname.includes('/shop') || pathname === '/fr' || pathname === '/en' || pathname === '/de';
     const isSnipcartUrl =
       hash.includes('#/cart') ||
       hash.includes('#/checkout') ||
       hash.includes('#snipcart');
 
-    return !isLegalPage && !isSnipcartUrl && !isStudioPage;
+    // Ne pas cacher le selector sur la page shop même avec Snipcart ouvert
+    return !isLegalPage && (!isSnipcartUrl || isShopPage) && !isStudioPage;
   }, [pathname, hash]);
 
   if (!shouldShow) return null;

@@ -38,6 +38,25 @@ export default function Shop() {
   const { locale } = useParams();
   const [cartOpen, setCartOpen] = useState(false);
   const [isDesktop, setIsDesktop] = useState(false);
+
+  // Nettoyer l'URL si elle contient des ancres Snipcart (après refresh)
+  useEffect(() => {
+    if (
+      typeof window !== 'undefined' &&
+      (window.location.hash === '#snipcart' ||
+        window.location.hash === '#cart' ||
+        window.location.hash === '#/cart' ||
+        window.location.hash === '#/checkout')
+    ) {
+      // Remplacer l'URL sans l'ancre
+      window.history.replaceState(
+        null,
+        '',
+        window.location.pathname + window.location.search
+      );
+    }
+  }, []);
+
   // Détecter desktop/mobile côté client
   useEffect(() => {
     const checkDesktop = () => setIsDesktop(window.innerWidth >= 768);

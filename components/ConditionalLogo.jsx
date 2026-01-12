@@ -15,7 +15,6 @@ export default function ConditionalLogo() {
 
     updateHash();
 
-    // Écouter les changements de hash
     const handleHashChange = () => updateHash();
     window.addEventListener('hashchange', handleHashChange);
 

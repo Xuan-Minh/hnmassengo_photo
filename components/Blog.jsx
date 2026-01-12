@@ -9,7 +9,6 @@ import dynamic from 'next/dynamic';
 import client from '../lib/sanity.client';
 import { CONTENT } from '../lib/constants';
 
-// Chargement différé de BlogPostOverlay
 const BlogPostOverlay = dynamic(() => import('./BlogPostOverlay'), {
   loading: () => <div>Loading…</div>,
 });
@@ -29,13 +28,11 @@ export default function Blog() {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  // Charger les posts depuis Sanity
   useEffect(() => {
     const fetchPosts = async () => {
       const data = await client.fetch(
         '*[_type == "blogPost"] | order(date desc) { ..., image{ asset->{ url } } }'
       );
-      console.log('Fetched posts:', data); // Debug
       const mapped = data.map(p => ({
         id: p._id,
         title:
@@ -60,7 +57,6 @@ export default function Blog() {
         image: p.image?.asset?.url,
         layout: p.layout,
       }));
-      console.log('Mapped posts:', mapped); // Debug
       setPosts(mapped);
     };
     fetchPosts();
