@@ -117,7 +117,7 @@ export default function ShopOverlay({ product, onClose, onAddToCart }) {
                 className="snipcart-add-item text-xl italic text-whiteCustom/60 hover:text-whiteCustom transition-colors"
                 data-item-id={product.id}
                 data-item-price={product.price}
-                data-item-url="/api/products"
+                data-item-url={window.location.href}
                 data-item-description={product.description || ''}
                 data-item-image={product.imgDefault}
                 data-item-name={product.title}
