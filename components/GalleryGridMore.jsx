@@ -1,13 +1,13 @@
-"use client";
-import { useState, useEffect } from "react";
-import { useTranslations } from "next-intl";
-import { motion, AnimatePresence } from "framer-motion";
-import Image from "next/image";
+'use client';
+import { useState, useEffect } from 'react';
+import { useTranslations } from 'next-intl';
+import { motion, AnimatePresence } from 'framer-motion';
+import Image from 'next/image';
 
 const FILTERS = [
-  { label: "all", value: "all" },
-  { label: "artworks", value: "artwork" },
-  { label: "commissions", value: "commission" },
+  { label: 'all', value: 'all' },
+  { label: 'artworks', value: 'artwork' },
+  { label: 'commissions', value: 'commission' },
 ];
 
 export default function GalleryGridMore({
@@ -16,7 +16,7 @@ export default function GalleryGridMore({
   projects = [],
 }) {
   const t = useTranslations();
-  const [filter, setFilter] = useState("all");
+  const [filter, setFilter] = useState('all');
   const [hoveredId, setHoveredId] = useState(null);
 
   // Curseur personnalisé pour le nom du projet
@@ -25,39 +25,39 @@ export default function GalleryGridMore({
 
   // Mouvement de souris pour le curseur personnalisé
   useEffect(() => {
-    const handleMouseMove = (e) => {
+    const handleMouseMove = e => {
       setCursorPos({ x: e.clientX, y: e.clientY });
     };
-    window.addEventListener("mousemove", handleMouseMove);
-    return () => window.removeEventListener("mousemove", handleMouseMove);
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
   }, []);
 
   // Gestion du curseur custom
   useEffect(() => {
     if (!hoveredId) {
-      document.body.style.cursor = "default";
+      document.body.style.cursor = 'default';
       setShowCustomCursor(false);
       return;
     }
 
-    const project = projects.find((p) => p.id === hoveredId);
+    const project = projects.find(p => p.id === hoveredId);
     if (project) {
-      document.body.style.cursor = "none";
+      document.body.style.cursor = 'none';
       setShowCustomCursor(true);
     }
     return () => {
-      document.body.style.cursor = "default";
+      document.body.style.cursor = 'default';
       setShowCustomCursor(false);
     };
   }, [hoveredId, projects]);
 
   // Filtrage des projets
   const filteredProjects = projects.filter(
-    (p) => filter === "all" || p.type === filter
+    p => filter === 'all' || p.type === filter
   );
 
   // On veut toutes les images de tous les projets filtrés
-  const allImages = filteredProjects.flatMap((p) =>
+  const allImages = filteredProjects.flatMap(p =>
     p.images.map((img, idx) => ({
       projectId: p.id,
       project: p, // Passer l'objet projet complet
@@ -69,20 +69,20 @@ export default function GalleryGridMore({
     }))
   );
 
-  const handleImageClick = (project) => {
+  const handleImageClick = project => {
     onProjectClick(project);
     onClose(); // Fermer l'overlay grille plus pour afficher le cartel
   };
 
   // Trouver le projet survolé pour afficher les coordonnées
-  const hoveredProject = projects.find((p) => p.id === hoveredId);
+  const hoveredProject = projects.find(p => p.id === hoveredId);
 
   return (
     <motion.div
       className="fixed inset-0 bg-whiteCustom z-[100] flex flex-col"
-      initial={{ x: "100%" }}
+      initial={{ x: '100%' }}
       animate={{ x: 0 }}
-      exit={{ x: "100%" }}
+      exit={{ x: '100%' }}
       transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
     >
       {/* Header */}
@@ -102,18 +102,18 @@ export default function GalleryGridMore({
       <div className="flex-1 flex overflow-hidden px-8 md:px-16 pb-16">
         {/* Sidebar Filters */}
         <div className="w-48 flex flex-col gap-2 pt-8 shrink-0">
-          {FILTERS.map((f) => (
+          {FILTERS.map(f => (
             <motion.button
               layout
               key={f.value}
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.7 }}
-              transition={{ duration: 0.5, type: "spring" }}
+              transition={{ duration: 0.5, type: 'spring' }}
               className={`text-lg text-left font-playfair transition-colors duration-300 ${
                 filter === f.value
-                  ? "font-bold text-blackCustom"
-                  : "text-blackCustom/60 hover:text-blackCustom"
+                  ? 'font-bold text-blackCustom'
+                  : 'text-blackCustom/60 hover:text-blackCustom'
               }`}
               onClick={() => setFilter(f.value)}
             >
@@ -133,8 +133,8 @@ export default function GalleryGridMore({
                   exit={{ opacity: 0, scale: 0.7 }}
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.5, type: "spring" }}
-                  key={imgData.projectId + "-" + index}
+                  transition={{ duration: 0.5, type: 'spring' }}
+                  key={imgData.projectId + '-' + index}
                   className="relative group cursor-pointer flex items-center justify-center w-full h-full overflow-hidden"
                   onMouseEnter={() => setHoveredId(imgData.projectId)}
                   onMouseLeave={() => setHoveredId(null)}
@@ -146,9 +146,9 @@ export default function GalleryGridMore({
                     width={400}
                     height={300}
                     className={`max-w-[90%] max-h-[90%] 2xl:max-w-[98%] 2xl:max-h-[98%] object-contain shadow transition-opacity duration-300 ${
-                      isHovered ? "opacity-100" : "opacity-40"
+                      isHovered ? 'opacity-100' : 'opacity-40'
                     }`}
-                    style={{ objectFit: "contain" }}
+                    style={{ objectFit: 'contain' }}
                     draggable={false}
                     sizes="(max-width: 768px) 45vw, (max-width: 1200px) 20vw, 18vw"
                     priority={index < 8}
@@ -162,7 +162,7 @@ export default function GalleryGridMore({
 
       {/* Footer Coords */}
       <div className="absolute bottom-8 left-8 md:left-16 text-xl font-playfair italic text-blackCustom pointer-events-none">
-        {hoveredProject ? hoveredProject.coords : ""}
+        {hoveredProject ? hoveredProject.coords : ''}
       </div>
       {/* Custom cursor for project name */}
       <AnimatePresence>
@@ -172,14 +172,14 @@ export default function GalleryGridMore({
             style={{
               left: cursorPos.x + 10,
               top: cursorPos.y + 10,
-              transform: "translate(-50%, -50%)",
+              transform: 'translate(-50%, -50%)',
             }}
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.8 }}
             transition={{ duration: 0.2 }}
           >
-            {projects.find((p) => p.id === hoveredId)?.name}
+            {projects.find(p => p.id === hoveredId)?.name}
           </motion.div>
         )}
       </AnimatePresence>

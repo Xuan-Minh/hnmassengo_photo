@@ -1,14 +1,14 @@
-"use client";
+'use client';
 
-import { useState, useEffect, useCallback } from "react";
-import { useTranslations } from "next-intl";
-import { useParams } from "next/navigation";
-import { AnimatePresence, motion } from "framer-motion";
-import ShopItem from "./ShopItem";
-import ShopOverlay from "./ShopOverlay";
-import { formatPrice } from "../lib/utils";
-import { logger } from "../lib/logger";
-import client from "../lib/sanity.client";
+import { useState, useEffect, useCallback } from 'react';
+import { useTranslations } from 'next-intl';
+import { useParams } from 'next/navigation';
+import { AnimatePresence, motion } from 'framer-motion';
+import ShopItem from './ShopItem';
+import ShopOverlay from './ShopOverlay';
+import { formatPrice } from '../lib/utils';
+import { logger } from '../lib/logger';
+import client from '../lib/sanity.client';
 
 // Composant CartItem - Affichage simple des articles Snipcart
 const CartItem = ({ item }) => {
@@ -42,8 +42,8 @@ export default function Shop() {
   useEffect(() => {
     const checkDesktop = () => setIsDesktop(window.innerWidth >= 768);
     checkDesktop();
-    window.addEventListener("resize", checkDesktop);
-    return () => window.removeEventListener("resize", checkDesktop);
+    window.addEventListener('resize', checkDesktop);
+    return () => window.removeEventListener('resize', checkDesktop);
   }, []);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [products, setProducts] = useState([]);
@@ -58,8 +58,8 @@ export default function Shop() {
         const data = await client.fetch(
           '*[_type == "shopItem"] { ..., image{ asset->{ url } }, imgHover{ asset->{ url } } }'
         );
-        console.log("Fetched products:", data); // Debug
-        const formatted = data.map((p) => ({
+        console.log('Fetched products:', data); // Debug
+        const formatted = data.map(p => ({
           id: p._id,
           imgDefault: p.image?.asset?.url,
           imgHover: p.imgHover?.asset?.url,
@@ -77,10 +77,10 @@ export default function Shop() {
           formats: p.formats || [],
           url: `/shop/${p.slug.current}`,
         }));
-        console.log("Formatted products:", formatted); // Debug
+        console.log('Formatted products:', formatted); // Debug
         setProducts(formatted);
       } catch (err) {
-        logger.error("Failed to load products", err);
+        logger.error('Failed to load products', err);
       }
     };
     fetchProducts();
@@ -103,7 +103,7 @@ export default function Shop() {
         setCartTotal(calculatedTotal);
         setCartCount(count);
       } catch (error) {
-        logger.error("Error syncing with Snipcart:", error);
+        logger.error('Error syncing with Snipcart:', error);
       }
     }
   }, []);
@@ -111,71 +111,71 @@ export default function Shop() {
   // Initialiser Snipcart et écouter les événements
   useEffect(() => {
     const initSnipcart = () => {
-      if (typeof window === "undefined" || !window.Snipcart) return;
+      if (typeof window === 'undefined' || !window.Snipcart) return;
       try {
         syncWithSnipcart();
         if (
           window.Snipcart.events &&
-          typeof window.Snipcart.events.on === "function"
+          typeof window.Snipcart.events.on === 'function'
         ) {
-          window.Snipcart.events.on("item.added", syncWithSnipcart);
-          window.Snipcart.events.on("item.removed", syncWithSnipcart);
-          window.Snipcart.events.on("item.updated", syncWithSnipcart);
-          window.Snipcart.events.on("cart.confirmed", syncWithSnipcart);
+          window.Snipcart.events.on('item.added', syncWithSnipcart);
+          window.Snipcart.events.on('item.removed', syncWithSnipcart);
+          window.Snipcart.events.on('item.updated', syncWithSnipcart);
+          window.Snipcart.events.on('cart.confirmed', syncWithSnipcart);
         }
       } catch (e) {
-        if (logger && typeof logger.error === "function")
-          logger.error("Snipcart init error", e);
+        if (logger && typeof logger.error === 'function')
+          logger.error('Snipcart init error', e);
       }
     };
 
     // Attendre que Snipcart soit prêt
     let loadHandler;
-    if (document.readyState === "complete") {
+    if (document.readyState === 'complete') {
       setTimeout(initSnipcart, 1000);
     } else {
       loadHandler = () => setTimeout(initSnipcart, 1000);
-      window.addEventListener("load", loadHandler);
+      window.addEventListener('load', loadHandler);
     }
 
     return () => {
       // Nettoyage défensif des écouteurs Snipcart
       if (
-        typeof window !== "undefined" &&
+        typeof window !== 'undefined' &&
         window.Snipcart &&
         window.Snipcart.events &&
-        typeof window.Snipcart.events.off === "function"
+        typeof window.Snipcart.events.off === 'function'
       ) {
         try {
-          window.Snipcart.events.off("item.added", syncWithSnipcart);
-          window.Snipcart.events.off("item.removed", syncWithSnipcart);
-          window.Snipcart.events.off("item.updated", syncWithSnipcart);
-          window.Snipcart.events.off("cart.confirmed", syncWithSnipcart);
+          window.Snipcart.events.off('item.added', syncWithSnipcart);
+          window.Snipcart.events.off('item.removed', syncWithSnipcart);
+          window.Snipcart.events.off('item.updated', syncWithSnipcart);
+          window.Snipcart.events.off('cart.confirmed', syncWithSnipcart);
         } catch (e) {
-          if (logger && typeof logger.error === "function")
-            logger.error("Snipcart cleanup error", e);
+          if (logger && typeof logger.error === 'function')
+            logger.error('Snipcart cleanup error', e);
         }
       }
       if (loadHandler) {
-        window.removeEventListener("load", loadHandler);
+        window.removeEventListener('load', loadHandler);
       }
     };
   }, [syncWithSnipcart]);
 
   // Fonction pour ajouter directement à Snipcart
   const addToCart = useCallback(
-    (product) => {
-      const tempBtn = document.createElement("button");
-      tempBtn.className = "snipcart-add-item";
-      tempBtn.setAttribute("data-item-id", product.id);
-      tempBtn.setAttribute("data-item-name", product.title);
-      tempBtn.setAttribute("data-item-price", product.price.toString());
+    product => {
+      const tempBtn = document.createElement('button');
+      tempBtn.className = 'snipcart-add-item';
+      tempBtn.setAttribute('data-item-id', product.id);
+      tempBtn.setAttribute('data-item-name', product.title);
+      tempBtn.setAttribute('data-item-price', product.price.toString());
       tempBtn.setAttribute(
-        "data-item-url",
+        'data-item-url',
         product.url || window.location.href
       );
-      tempBtn.setAttribute("data-item-description", product.description || "");
-      tempBtn.style.display = "none";
+      tempBtn.setAttribute('data-item-description', product.description || '');
+      tempBtn.style.display = 'none';
 
       document.body.appendChild(tempBtn);
       tempBtn.click();
@@ -198,13 +198,13 @@ export default function Shop() {
       <main className="flex-1 h-full flex flex-col md:flex-row items-stretch overflow-hidden">
         {/* Panier mobile (en haut, hauteur auto), desktop (gauche, 320px) */}
         <aside
-          className={`w-full md:w-[320px] h-auto md:h-full ${cartOpen ? "border-b" : ""} md:border-b-0 md:border-r border-black/30 p-0 md:p-10 flex flex-col z-10 bg-whiteCustom order-1 md:order-1`}
+          className={`w-full md:w-[320px] h-auto md:h-full ${cartOpen ? 'border-b' : ''} md:border-b-0 md:border-r border-black/30 p-0 md:p-10 flex flex-col z-10 bg-whiteCustom order-1 md:order-1`}
         >
           {/* Header du cart, clickable sur mobile */}
           <div className="flex justify-between items-center mb-0 md:mb-8 px-6 py-4 md:px-0 md:py-0">
             <h2
               className="text-2xl md:text-3xl cursor-pointer select-none"
-              onClick={() => setCartOpen((open) => !open)}
+              onClick={() => setCartOpen(open => !open)}
             >
               cart
             </h2>
@@ -215,7 +215,7 @@ export default function Shop() {
             {(cartOpen || isDesktop) && (
               <motion.div
                 initial={{ height: 0, opacity: 0 }}
-                animate={{ height: "auto", opacity: 1 }}
+                animate={{ height: 'auto', opacity: 1 }}
                 exit={{ height: 0, opacity: 0 }}
                 transition={{ duration: 0.3 }}
                 className="overflow-hidden px-6 pb-6 md:px-0 md:pb-0"
@@ -226,7 +226,7 @@ export default function Shop() {
                       <div className="text-black/40 italic">empty</div>
                     ) : (
                       <ul className="space-y-2 overflow-y-auto max-h-[30vh] md:max-h-[60vh]">
-                        {cartItems.map((item) => (
+                        {cartItems.map(item => (
                           <CartItem
                             key={item.uniqueId || item.id}
                             item={item}
@@ -243,8 +243,8 @@ export default function Shop() {
                   <button
                     className={`snipcart-checkout text-right transition-colors ${
                       cartItems.length > 0
-                        ? "text-gray-300 hover:text-black"
-                        : "text-black/20 pointer-events-none"
+                        ? 'text-gray-300 hover:text-black'
+                        : 'text-black/20 pointer-events-none'
                     }`}
                     disabled={cartItems.length === 0}
                   >
@@ -259,13 +259,13 @@ export default function Shop() {
         <div className="w-full md:flex-1 flex-1 md:h-full flex items-center justify-center bg-whiteCustom order-2 md:order-2">
           <div className="w-full max-w-3xl xl:max-w-3xl 2xl:max-w-4xl p-4 md:p-16">
             <div className="grid grid-cols-2 md:grid-cols-2 gap-4 md:gap-12 w-full pt-2 md:pt-10">
-              {products.map((product) => (
+              {products.map(product => (
                 <ShopItem
                   key={product.id}
                   imgDefault={product.imgDefault}
                   imgHover={product.imgHover}
                   title={product.title}
-                  price={product.price + "€"}
+                  price={product.price + '€'}
                   onClick={() => setSelectedProduct(product)}
                   className="!h-36 md:!h-64" // hauteur réduite sur mobile
                 />

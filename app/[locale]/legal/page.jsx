@@ -1,6 +1,6 @@
-"use client";
-import { useTranslations } from "next-intl";
-import Link from "next/link";
+'use client';
+import { useTranslations } from 'next-intl';
+import Link from 'next/link';
 
 export default function LegalPage() {
   const t = useTranslations();
@@ -16,7 +16,7 @@ export default function LegalPage() {
         </Link>
 
         <h1 className="text-4xl md:text-5xl lg:text-6xl font-playfair italic mb-12 leading-tight">
-          {t("legal.title")}
+          {t('legal.title')}
         </h1>
 
         <div className="space-y-8 font-playfair text-lg leading-relaxed">
@@ -29,9 +29,9 @@ export default function LegalPage() {
               <br />
               Photographe professionnel
               <br />
-              Email : contact@han-noah-massengo.com
+              Email : contact@hnmassengo.com
               <br />
-              Site web : han-noah-massengo.com
+              Site web : hnmassengo.com
             </p>
           </section>
 
