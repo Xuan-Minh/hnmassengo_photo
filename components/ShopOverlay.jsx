@@ -75,11 +75,15 @@ export default function ShopOverlay({ product, onClose, onAddToCart }) {
             <div className="mt-auto">
               <div className="text-2xl font-bold mb-2">{product.price}€</div>
               <button
-                className="text-lg italic text-whiteCustom/60 hover:text-whiteCustom transition-colors"
+                className="snipcart-add-item text-lg italic text-whiteCustom/60 hover:text-whiteCustom transition-colors"
+                data-item-id={product.id}
+                data-item-price={product.price}
+                data-item-url="https://hannoahmassengotest.netlify.app/api/products"
+                data-item-description={product.description || ''}
+                data-item-image={product.imgDefault}
+                data-item-name={product.title}
                 onClick={() => {
-                  if (onAddToCart) {
-                    onAddToCart(product);
-                  }
+                  // On garde ton setTimeout pour l'UX
                   setTimeout(() => {
                     onClose();
                   }, 200);
@@ -117,8 +121,8 @@ export default function ShopOverlay({ product, onClose, onAddToCart }) {
                 className="snipcart-add-item text-xl italic text-whiteCustom/60 hover:text-whiteCustom transition-colors"
                 data-item-id={product.id}
                 data-item-price={product.price}
-                // 👇 CHANGEMENT ICI : On pointe vers l'API JSON
-                data-item-url="/api/products"
+                // 👇 L'URL absolue ici aussi
+                data-item-url="https://hannoahmassengotest.netlify.app/api/products"
                 data-item-description={product.description || ''}
                 data-item-image={product.imgDefault}
                 data-item-name={product.title}
@@ -131,7 +135,6 @@ export default function ShopOverlay({ product, onClose, onAddToCart }) {
                 add to cart
               </button>
             </div>
-          </div>
         </div>
       </div>
 
