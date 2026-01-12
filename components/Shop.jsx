@@ -75,7 +75,7 @@ export default function Shop() {
             p[`description_${locale}`] ||
             p.description_fr,
           formats: p.formats || [],
-          url: `/shop/${p.slug.current}`,
+          url: `/fr/shop`,
         }));
         console.log('Formatted products:', formatted); // Debug
         setProducts(formatted);

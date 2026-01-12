@@ -10,7 +10,8 @@ export async function GET() {
     const formatted = products.map(p => ({
       id: p._id,
       price: p.price,
-      url: `${process.env.SITE_URL || 'https://hannoahmassengotest.netlify.app'}/fr/shop`,
+      // 👇 CHANGEMENT ICI : On pointe vers l'API elle-même, pas la page /shop
+      url: '/api/products',
       name: p.title?.fr || p.title?.en || 'Product',
       description: p.description?.fr || p.description?.en || '',
       image: p.image?.asset?.url || '',
