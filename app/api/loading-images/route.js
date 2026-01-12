@@ -1,29 +1,38 @@
-import fs from 'fs';
-import path from 'path';
+import client from '../../../lib/sanity.client';
 
 export async function GET() {
   try {
-    const dir = path.join(process.cwd(), 'public', 'loading');
-    let entries = [];
-    try {
-      entries = await fs.promises.readdir(dir);
-    } catch {
-      // dossier peut ne pas exister
-      entries = [];
-    }
-    const images = entries
-      .filter(name => /\.(jpe?g|png|webp|gif)$/i.test(name))
-      .sort()
-      .map(name => `/loading/${name}`);
+    // Récupérer les images de chargement depuis Sanity
+    const data = await client.fetch(
+      `*[_type == "loadingImage"] | order(order asc) {
+        image {
+          asset->{
+            url
+          }
+        },
+        alt
+      }`
+    );
+
+    // Transformer les données pour le format attendu par le composant
+    const images = data.map(item => item.image.asset.url);
 
     return new Response(JSON.stringify({ images }), {
       status: 200,
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+      },
     });
-  } catch {
-    return new Response(JSON.stringify({ images: [], error: 'READ_ERROR' }), {
+  } catch (error) {
+    console.error(
+      'Erreur lors de la récupération des images de chargement:',
+      error
+    );
+    return new Response(JSON.stringify({ error: 'Erreur serveur' }), {
       status: 500,
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+      },
     });
   }
 }

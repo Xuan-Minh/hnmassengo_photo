@@ -42,30 +42,22 @@ export default function IntroOverlay() {
     }
   }, [visible]);
 
-  // Charge la liste des fichiers depuis le JSON statique généré au build
+  // Charge la liste des images depuis Sanity via l'API
   const fetchedOnceRef = useRef(false);
   useEffect(() => {
     if (fetchedOnceRef.current) return;
     fetchedOnceRef.current = true;
 
-    // Charger depuis le fichier JSON statique
-    fetch('/loading-images-data.json')
+    // Charger directement depuis l'API Sanity
+    fetch('/api/loading-images')
       .then(r => r.json())
       .then(data => {
         if (Array.isArray(data.images) && data.images.length > 0) {
           setImageSources(data.images);
         }
       })
-      .catch(() => {
-        // Fallback: essayer l'API si le JSON n'existe pas
-        fetch('/api/loading-images')
-          .then(r => r.json())
-          .then(data => {
-            if (Array.isArray(data.images) && data.images.length > 0) {
-              setImageSources(data.images);
-            }
-          })
-          .catch(() => {});
+      .catch(error => {
+        console.error('Erreur chargement images de chargement:', error);
       });
   }, []);
 
