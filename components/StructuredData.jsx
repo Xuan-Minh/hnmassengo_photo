@@ -6,11 +6,10 @@ export default function StructuredData() {
     jobTitle: 'Photographer & Visual Artist',
     description:
       'Professional photographer and visual artist specializing in portrait, commissioned work, and fine art prints.',
-    url: 'https://hannoahmassengo.fr',
+    url: 'https://hnmassengo.com',
     sameAs: [
-      // Ajoutez vos réseaux sociaux ici quand vous les aurez
-      // 'https://instagram.com/hannoahmassengo',
-      // 'https://linkedin.com/in/hannoahmassengo',
+      'https://www.instagram.com/hnmassengo42/',
+      'https://www.instagram.com/studio42archives/',
     ],
     knowsAbout: [
       'Photography',
@@ -27,7 +26,7 @@ export default function StructuredData() {
         name: 'France',
       },
     },
-    image: 'https://hannoahmassengo.fr/ogimage.webp',
+    image: 'https://hnmassengo.com/ogimage.webp',
   };
 
   return (

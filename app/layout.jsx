@@ -13,7 +13,7 @@ import React from 'react';
 import ClientLayout from '../components/ClientLayout';
 
 export const metadata = {
-  metadataBase: new URL('https://hannoahmassengo.fr'),
+  metadataBase: new URL('https://hnmassengo.com'),
   title: 'Han-Noah MASSENGO | Photographer & Visual Artist',
   description:
     'Explore the artistic portfolio of Han-Noah MASSENGO, a photographer capturing moments through light, shadow, and emotion. Discover commissioned works, fine art prints, and visual stories.',
@@ -32,7 +32,7 @@ export const metadata = {
     title: 'Han-Noah MASSENGO | Photographer & Visual Artist',
     description:
       'Explore the artistic portfolio of Han-Noah MASSENGO, a photographer capturing moments through light, shadow, and emotion.',
-    url: 'https://hannoahmassengo.fr',
+    url: 'https://hnmassengo.com',
     siteName: 'Han-Noah MASSENGO Portfolio',
     locale: 'fr_FR',
     type: 'website',
@@ -80,13 +80,13 @@ const playfair = Playfair_Display({
 
 export default function RootLayout({ children }) {
   // Canonical statique (page d'accueil FR par défaut)
-  const canonicalUrl = 'https://hannoahmassengo.fr/fr';
+  const canonicalUrl = 'https://hnmassengo.com/fr';
 
   // Langues disponibles
   const locales = [
-    { code: 'fr', url: 'https://hannoahmassengo.fr/fr' },
-    { code: 'en', url: 'https://hannoahmassengo.fr/en' },
-    { code: 'de', url: 'https://hannoahmassengo.fr/de' },
+    { code: 'fr', url: 'https://hnmassengo.com/fr' },
+    { code: 'en', url: 'https://hnmassengo.com/en' },
+    { code: 'de', url: 'https://hnmassengo.com/de' },
   ];
 
   return (

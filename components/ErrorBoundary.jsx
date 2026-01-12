@@ -1,6 +1,6 @@
-"use client";
-import React from "react";
-import { logger } from "../lib/logger";
+'use client';
+import React from 'react';
+import { logger } from '../lib/logger';
 
 /**
  * Error Boundary component to catch and handle React errors gracefully
@@ -19,7 +19,7 @@ class ErrorBoundary extends React.Component {
 
   componentDidCatch(error, errorInfo) {
     // Logger les détails de l'erreur pour la surveillance
-    logger.error("ErrorBoundary a capturé une erreur:", error, errorInfo);
+    logger.error('ErrorBoundary a capturé une erreur:', error, errorInfo);
 
     // Stocker les détails de l'erreur dans l'état pour l'affichage
     this.state = {
@@ -46,7 +46,7 @@ class ErrorBoundary extends React.Component {
               We're sorry for the inconvenience. An unexpected error occurred.
             </p>
 
-            {process.env.NODE_ENV === "development" && this.state.error && (
+            {process.env.NODE_ENV === 'development' && this.state.error && (
               <details className="text-left bg-whiteCustom/10 p-6 rounded mb-8">
                 <summary className="cursor-pointer font-semibold mb-4 hover:text-accent transition-colors">
                   Error Details (Development Only)
@@ -74,12 +74,12 @@ class ErrorBoundary extends React.Component {
             </div>
 
             <p className="mt-8 text-sm opacity-60">
-              If the problem persists, please contact{" "}
+              If the problem persists, please contact{' '}
               <a
-                href="mailto:contact@hannoahmassengo.fr"
+                href="mailto:contact@hnmassengo.com"
                 className="underline hover:text-accent transition-colors"
               >
-                contact@hannoahmassengo.fr
+                contact@hnmassengo.com
               </a>
             </p>
           </div>

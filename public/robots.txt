@@ -5,7 +5,7 @@ Disallow: /studio/
 Disallow: /api/
 
 # Host
-Host: https://hannoahmassengo.fr
+Host: https://hnmassengo.com
 
 # Sitemaps
-Sitemap: https://hannoahmassengo.fr/sitemap.xml
+Sitemap: https://hnmassengo.com/sitemap.xml

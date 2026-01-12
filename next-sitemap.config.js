@@ -1,6 +1,6 @@
 /** @type {import('next-sitemap').IConfig} */
 module.exports = {
-  siteUrl: process.env.SITE_URL || 'https://hannoahmassengo.fr',
+  siteUrl: process.env.SITE_URL || 'https://hnmassengo.com',
   generateRobotsTxt: true,
   sitemapSize: 7000,
   changefreq: 'weekly',
