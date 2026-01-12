@@ -27,7 +27,11 @@ export default function ConditionalLanguageSwitcher() {
   const shouldShow = React.useMemo(() => {
     const isLegalPage = pathname.includes('/legal');
     const isStudioPage = pathname.includes('/studio');
-    const isShopPage = pathname.includes('/shop') || pathname === '/fr' || pathname === '/en' || pathname === '/de';
+    const isShopPage =
+      pathname.includes('/shop') ||
+      pathname === '/fr' ||
+      pathname === '/en' ||
+      pathname === '/de';
     const isSnipcartUrl =
       hash.includes('#/cart') ||
       hash.includes('#/checkout') ||
