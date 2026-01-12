@@ -135,6 +135,7 @@ export default function ShopOverlay({ product, onClose, onAddToCart }) {
                 add to cart
               </button>
             </div>
+          </div>
         </div>
       </div>
 
