@@ -11,7 +11,7 @@ export default function IntroOverlay() {
   const elegantBackground =
     'linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 50%, #1a1a1a 100%)';
 
-  // Liste dynamique des images présentes dans /public/loading (chargée depuis JSON statique)
+  // Liste dynamique des images de chargement chargées depuis Sanity via l'API
   const [imageSources, setImageSources] = useState([]);
 
   const [visible, setVisible] = useState(false);
@@ -205,11 +205,7 @@ export default function IntroOverlay() {
             {loadedImages.map((imageSrc, index) => (
               <Image
                 key={imageSrc} // Clé stable basée sur l'URL
-                src={
-                  imageSrc.startsWith('/loading/')
-                    ? imageSrc
-                    : imageSrc.replace(/^\.\./, '')
-                }
+                src={imageSrc}
                 alt=""
                 fill
                 className="absolute inset-0 w-full h-full object-cover z-0"
