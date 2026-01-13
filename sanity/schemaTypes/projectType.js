@@ -34,18 +34,20 @@ export const projectType = defineType({
     defineField({
       name: 'type',
       title: 'Type de Projet',
+      description: 'Catégorie principale du projet photographique',
       type: 'string',
       options: {
         list: [
-          { title: 'Artwork', value: 'artwork' },
-          { title: 'Commission', value: 'commission' },
+          { title: 'Artwork - Œuvre Artistique', value: 'artwork' },
+          { title: 'Commission - Projet sur Mesure', value: 'commission' },
         ],
       },
       validation: Rule => Rule.required(),
     }),
     defineField({
       name: 'images',
-      title: 'Images',
+      title: 'Images du Projet',
+      description: 'Galerie d\'images du projet (minimum 1 image requise)',
       type: 'array',
       of: [
         {
@@ -54,7 +56,8 @@ export const projectType = defineType({
           fields: [
             defineField({
               name: 'alt',
-              title: 'Texte alternatif',
+              title: 'Texte Alternatif (SEO)',
+              description: 'Description de l\'image pour l\'accessibilité et le SEO',
               type: 'object',
               fields: [
                 { name: 'fr', title: 'Français', type: 'string' },
@@ -70,12 +73,12 @@ export const projectType = defineType({
     defineField({
       name: 'coords',
       title: 'Coordonnées Géographiques',
-      type: 'string',
-      description: 'Ex: 48.3705° N, 10.8978° E',
+      description: 'Lieu de prise de vue (optionnel) - Format: latitude, longitude',
     }),
     defineField({
       name: 'description',
-      title: 'Description',
+      title: 'Description du Projet',
+      description: 'Description détaillée du projet photographique',
       type: 'object',
       fields: [
         {
@@ -101,7 +104,8 @@ export const projectType = defineType({
     }),
     defineField({
       name: 'date',
-      title: 'Date (optionnel)',
+      title: 'Date de Réalisation',
+      description: 'Date de prise de vue ou de réalisation du projet (optionnel)',
       type: 'datetime',
     }),
   ],
