@@ -4,6 +4,18 @@ export const eventType = defineType({
   name: 'blogPost',
   title: 'Article de Blog',
   type: 'document',
+  orderings: [
+    {
+      title: 'Date (Plus récent)',
+      name: 'dateDesc',
+      by: [{ field: 'date', direction: 'desc' }],
+    },
+    {
+      title: 'Date (Plus ancien)',
+      name: 'dateAsc',
+      by: [{ field: 'date', direction: 'asc' }],
+    },
+  ],
   preview: {
     select: {
       title: 'title.fr',
