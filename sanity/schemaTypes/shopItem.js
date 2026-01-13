@@ -69,7 +69,7 @@ export default defineType({
         defineField({
           name: 'alt',
           title: 'Texte Alternatif (SEO)',
-          description: 'Description de l\'image pour l\'accessibilité et le SEO',
+          description: "Description de l'image pour l'accessibilité et le SEO",
           type: 'object',
           fields: [
             { name: 'fr', title: 'Français', type: 'string' },
@@ -82,14 +82,15 @@ export default defineType({
     defineField({
       name: 'imgHover',
       title: 'Image au Survol',
-      description: 'Image affichée quand la souris passe sur le produit (optionnel)',
+      description:
+        'Image affichée quand la souris passe sur le produit (optionnel)',
       type: 'image',
       options: { hotspot: true },
     }),
     defineField({
       name: 'formats',
       title: 'Formats Disponibles',
-      description: 'Formats d\'impression disponibles (ex: A4, A3, 30x40cm)',
+      description: "Formats d'impression disponibles (ex: A4, A3, 30x40cm)",
       type: 'array',
       of: [{ type: 'string' }],
     }),

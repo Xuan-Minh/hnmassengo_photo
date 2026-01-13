@@ -47,7 +47,7 @@ export const projectType = defineType({
     defineField({
       name: 'images',
       title: 'Images du Projet',
-      description: 'Galerie d\'images du projet (minimum 1 image requise)',
+      description: "Galerie d'images du projet (minimum 1 image requise)",
       type: 'array',
       of: [
         {
@@ -57,7 +57,8 @@ export const projectType = defineType({
             defineField({
               name: 'alt',
               title: 'Texte Alternatif (SEO)',
-              description: 'Description de l\'image pour l\'accessibilité et le SEO',
+              description:
+                "Description de l'image pour l'accessibilité et le SEO",
               type: 'object',
               fields: [
                 { name: 'fr', title: 'Français', type: 'string' },
@@ -73,7 +74,8 @@ export const projectType = defineType({
     defineField({
       name: 'coords',
       title: 'Coordonnées Géographiques',
-      description: 'Lieu de prise de vue (optionnel) - Format: latitude, longitude',
+      description:
+        'Lieu de prise de vue (optionnel) - Format: latitude, longitude',
     }),
     defineField({
       name: 'description',
@@ -105,7 +107,8 @@ export const projectType = defineType({
     defineField({
       name: 'date',
       title: 'Date de Réalisation',
-      description: 'Date de prise de vue ou de réalisation du projet (optionnel)',
+      description:
+        'Date de prise de vue ou de réalisation du projet (optionnel)',
       type: 'datetime',
     }),
   ],
