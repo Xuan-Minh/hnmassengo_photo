@@ -4,6 +4,21 @@ export const eventType = defineType({
   name: 'blogPost',
   title: 'Article de Blog',
   type: 'document',
+  preview: {
+    select: {
+      title: 'title.fr',
+      subtitle: 'date',
+      media: 'image',
+    },
+    prepare(selection) {
+      const { title, subtitle, media } = selection;
+      return {
+        title: title || 'Sans titre',
+        subtitle: subtitle ? new Date(subtitle).toLocaleDateString('fr-FR') : 'Date non définie',
+        media,
+      };
+    },
+  },
   fields: [
     defineField({
       name: 'title',

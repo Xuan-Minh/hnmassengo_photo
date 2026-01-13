@@ -4,6 +4,26 @@ export const projectType = defineType({
   name: 'project',
   title: 'Projet Galerie',
   type: 'document',
+  preview: {
+    select: {
+      title: 'name.fr',
+      subtitle: 'type',
+      media: 'images.0',
+    },
+    prepare(selection) {
+      const { title, subtitle, media } = selection;
+      return {
+        title: title || 'Sans titre',
+        subtitle:
+          subtitle === 'artwork'
+            ? 'Artwork'
+            : subtitle === 'commission'
+              ? 'Commission'
+              : subtitle,
+        media,
+      };
+    },
+  },
   fields: [
     defineField({
       name: 'name',
@@ -76,6 +96,7 @@ export const projectType = defineType({
       title: 'Coordonnées Géographiques',
       description:
         'Lieu de prise de vue (optionnel) - Format: latitude, longitude',
+      type: 'string',
     }),
     defineField({
       name: 'description',

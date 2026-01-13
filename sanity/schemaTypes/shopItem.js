@@ -4,6 +4,21 @@ export default defineType({
   name: 'shopItem',
   title: 'Produit de la Boutique',
   type: 'document',
+  preview: {
+    select: {
+      title: 'title.fr',
+      subtitle: 'price',
+      media: 'image',
+    },
+    prepare(selection) {
+      const { title, subtitle, media } = selection;
+      return {
+        title: title || 'Sans nom',
+        subtitle: subtitle ? `${subtitle}€` : 'Prix non défini',
+        media,
+      };
+    },
+  },
   fields: [
     defineField({
       name: 'title',
