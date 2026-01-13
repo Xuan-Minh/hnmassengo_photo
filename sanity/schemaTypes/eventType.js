@@ -14,7 +14,9 @@ export const eventType = defineType({
       const { title, subtitle, media } = selection;
       return {
         title: title || 'Sans titre',
-        subtitle: subtitle ? new Date(subtitle).toLocaleDateString('fr-FR') : 'Date non définie',
+        subtitle: subtitle
+          ? new Date(subtitle).toLocaleDateString('fr-FR')
+          : 'Date non définie',
         media,
       };
     },
