@@ -1,16 +1,16 @@
-"use client";
-import { useState, useEffect } from "react";
-import Image from "next/image";
-import { useRouter } from "next/navigation";
-import PropTypes from "prop-types";
-import dynamic from "next/dynamic";
-import { motion } from "framer-motion";
+'use client';
+import { useState, useEffect } from 'react';
+import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+import PropTypes from 'prop-types';
+import dynamic from 'next/dynamic';
+import { motion } from 'framer-motion';
 const AnimatePresence = dynamic(
-  () => import("framer-motion").then((mod) => mod.AnimatePresence),
+  () => import('framer-motion').then(mod => mod.AnimatePresence),
   { ssr: false }
 );
-import TextReveal from "./TextReveal";
-import { EVENTS, emitEvent } from "../lib/events";
+import TextReveal from './TextReveal';
+import { EVENTS, emitEvent } from '../lib/events';
 
 // Composant CustomLightbox
 function CustomLightbox({ open, onClose, images, project }) {
@@ -21,16 +21,16 @@ function CustomLightbox({ open, onClose, images, project }) {
   }, [open]);
 
   useEffect(() => {
-    const handleKeyDown = (e) => {
+    const handleKeyDown = e => {
       if (!open) return;
-      if (e.key === "Escape") onClose();
-      if (e.key === "ArrowRight")
-        setCurrentIndex((prev) => (prev + 1) % images.length);
-      if (e.key === "ArrowLeft")
-        setCurrentIndex((prev) => (prev - 1 + images.length) % images.length);
+      if (e.key === 'Escape') onClose();
+      if (e.key === 'ArrowRight')
+        setCurrentIndex(prev => (prev + 1) % images.length);
+      if (e.key === 'ArrowLeft')
+        setCurrentIndex(prev => (prev - 1 + images.length) % images.length);
     };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
   }, [open, onClose, images.length]);
 
   if (!open) return null;
@@ -96,8 +96,8 @@ function CustomLightbox({ open, onClose, images, project }) {
                 onClick={() => setCurrentIndex(idx)}
                 className={`border-2 rounded transition-all duration-200 ${
                   idx === currentIndex
-                    ? "border-white/80 scale-105"
-                    : "border-transparent opacity-60 hover:opacity-100"
+                    ? 'border-white/80 scale-105'
+                    : 'border-transparent opacity-60 hover:opacity-100'
                 }`}
                 style={{ minWidth: 80, minHeight: 80 }}
               >
@@ -167,9 +167,7 @@ function CustomLightbox({ open, onClose, images, project }) {
         <div
           className="absolute left-0 top-0 h-full w-[20%] z-30 flex items-center justify-start pl-8 md:pl-16 group cursor-pointer"
           onClick={() =>
-            setCurrentIndex(
-              (prev) => (prev - 1 + images.length) % images.length
-            )
+            setCurrentIndex(prev => (prev - 1 + images.length) % images.length)
           }
         >
           <span className="text-xl italic text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
@@ -180,7 +178,7 @@ function CustomLightbox({ open, onClose, images, project }) {
         {/* Contrôles de navigation - Zone droite */}
         <div
           className="absolute right-0 top-0 h-full w-[20%] z-30 flex items-center justify-end pr-8 md:pr-16 group cursor-pointer"
-          onClick={() => setCurrentIndex((prev) => (prev + 1) % images.length)}
+          onClick={() => setCurrentIndex(prev => (prev + 1) % images.length)}
         >
           <span className="text-xl italic text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
             &rarr; suivant
@@ -202,31 +200,18 @@ function CustomLightbox({ open, onClose, images, project }) {
 
 // Composant pour le carrousel d'images horizontal (mobile)
 function ImageMarqueeHorizontal({ images, onClick }) {
-  const allImages = [...images, ...images];
-
   return (
     <div
-      className="w-full h-full relative bg-whiteCustom cursor-pointer overflow-hidden flex items-center"
+      className={`w-full h-full relative bg-whiteCustom flex items-center overflow-x-auto snap-x snap-mandatory touch-pan-x scroll-smooth ${
+        onClick ? 'cursor-pointer' : 'cursor-default'
+      }`}
       onClick={onClick}
     >
-      <motion.div
-        className="flex items-center"
-        drag="x"
-        dragConstraints={{ left: 0, right: 0 }}
-        dragElastic={0.2}
-        animate={{
-          x: ["0%", "-50%"],
-        }}
-        transition={{
-          ease: "linear",
-          duration: images.length * 4,
-          repeat: Infinity,
-        }}
-      >
-        {allImages.map((img, index) => (
+      <div className="flex items-center gap-12 px-10">
+        {images.map((img, index) => (
           <div
-            key={index}
-            className="flex-shrink-0 flex justify-center items-center px-8"
+            key={img + index}
+            className="flex-shrink-0 flex justify-center items-center snap-center"
           >
             <Image
               src={img}
@@ -240,7 +225,7 @@ function ImageMarqueeHorizontal({ images, onClick }) {
             />
           </div>
         ))}
-      </motion.div>
+      </div>
     </div>
   );
 }
@@ -259,10 +244,10 @@ function ImageMarquee({ images, onClick }) {
         <motion.div
           className="flex flex-col"
           animate={{
-            y: ["0%", "-50%"],
+            y: ['0%', '-50%'],
           }}
           transition={{
-            ease: "linear",
+            ease: 'linear',
             duration: images.length * 8, // Ralentit la durée du défilement
             repeat: Infinity,
           }}
@@ -296,14 +281,14 @@ export default function ProjetCartel({ project, onClose }) {
 
   // Fermeture avec la touche Echap
   useEffect(() => {
-    const handleKeyDown = (event) => {
-      if (event.key === "Escape") {
+    const handleKeyDown = event => {
+      if (event.key === 'Escape') {
         onClose();
       }
     };
-    window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener('keydown', handleKeyDown);
     return () => {
-      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener('keydown', handleKeyDown);
     };
   }, [onClose]);
 
@@ -313,13 +298,10 @@ export default function ProjetCartel({ project, onClose }) {
     // Après un délai pour laisser l'animation se jouer, on navigue et on lance l'intro
     setTimeout(() => {
       emitEvent(EVENTS.INTRO_SHOW);
-      router.push("/");
+      router.push('/');
     }, 800); // Délai légèrement inférieur à la durée de l'animation (1s)
   };
-
   if (!project) return null;
-
-  const slides = project.images.map((src) => ({ src }));
 
   // Placeholder pour la description
   const description =
@@ -328,7 +310,7 @@ export default function ProjetCartel({ project, onClose }) {
 
 Nam dui metus, interdum vitae lobortis vel, viverra consequat neque. Praesent sagittis aliquet posuere. Aenean suscipit, mi quis viverra pulvinar, purus nulla placerat mi, quis mollis lectus ipsum vitae velit. Sed vehicula est in lobortis tincidunt.`;
 
-  const paragraphs = description.split("\n\n");
+  const paragraphs = description.split('\n\n');
 
   return (
     <>
@@ -342,9 +324,9 @@ Nam dui metus, interdum vitae lobortis vel, viverra consequat neque. Praesent sa
       ></motion.div>
       <motion.section
         className="fixed top-0 right-0 w-screen h-screen bg-whiteCustom z-50 flex flex-col md:flex-row shadow-2xl"
-        initial={{ x: "100%" }}
+        initial={{ x: '100%' }}
         animate={{ x: 0 }}
-        exit={{ x: "100%" }}
+        exit={{ x: '100%' }}
         transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
         aria-modal="true"
         role="dialog"
@@ -363,10 +345,7 @@ Nam dui metus, interdum vitae lobortis vel, viverra consequat neque. Praesent sa
 
           {/* Section supérieure : Marquee horizontal - 50vh */}
           <div className="h-[50vh] flex-shrink-0 flex items-center">
-            <ImageMarqueeHorizontal
-              images={project.images}
-              onClick={() => setLightboxOpen(true)}
-            />
+            <ImageMarqueeHorizontal images={project.images} />
           </div>
 
           {/* Ligne de séparation */}

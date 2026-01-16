@@ -12,12 +12,12 @@ export default function HomePresentation() {
       >
         <TextReveal
           text={t('presentation.line1')}
-          className="text-lg lg:text-2xl xl:text-3xl text-center font-playfair italic mb-3 lg:mb-4 text-accent max-w-[90vw] lg:max-w-none"
+          className="text-lg lg:text-2xl xl:text-3xl text-center font-playfair italic mb-3 lg:mb-4 text-blackCustom  max-w-[90vw] lg:max-w-none"
         />
         <TextReveal
           delay={0.7}
           text={t('presentation.line2')}
-          className="text-lg lg:text-2xl xl:text-3xl text-left font-playfair italic mb-3 lg:mb-4 text-accent self-start pl-[5vw] lg:pl-[10vw] max-w-[90vw] lg:max-w-none"
+          className="text-lg lg:text-2xl xl:text-3xl text-left font-playfair italic mb-3 lg:mb-4 text-blackCustom self-start pl-[5vw] lg:pl-[10vw] max-w-[90vw] lg:max-w-none"
         />
         <TextReveal
           delay={1}

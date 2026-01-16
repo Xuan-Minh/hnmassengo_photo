@@ -27,7 +27,7 @@ export default function BlogPostItem({ post, onClick }) {
             <div className="text-xl lg:text-xl font-playfair mb-4">
               {post.date}
             </div>
-            <p className="text-2xl lg:text-base font-playfair text-whiteCustom/80 leading-loose">
+            <p className="sm:text-xl lg:text-base font-playfair text-whiteCustom/80 leading-loose">
               {post.content}
             </p>
           </div>
