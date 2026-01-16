@@ -209,7 +209,7 @@ export default function Gallery() {
           aria-label="Grid view"
         >
           <Image
-            src="/icons/gridOff.png"
+            src="/icons/gridOff.webp"
             alt="Grid View Off"
             fill
             className={`absolute inset-0 w-full h-full object-contain transition-opacity duration-300 ${
@@ -217,7 +217,7 @@ export default function Gallery() {
             }`}
           />
           <Image
-            src="/icons/gridOn.png"
+            src="/icons/gridOn.webp"
             alt="Grid View On"
             fill
             className={`absolute inset-0 w-full h-full object-contain transition-opacity duration-300 ${
@@ -233,7 +233,7 @@ export default function Gallery() {
           aria-label="List view"
         >
           <Image
-            src="/icons/listOff.png"
+            src="/icons/listOff.webp"
             alt="List View Off"
             fill
             className={`absolute inset-0 w-full h-full object-contain transition-opacity duration-300 ${
@@ -241,7 +241,7 @@ export default function Gallery() {
             }`}
           />
           <Image
-            src="/icons/listOn.png"
+            src="/icons/listOn.webp"
             alt="List View On"
             fill
             className={`absolute inset-0 w-full h-full object-contain transition-opacity duration-300 ${
@@ -370,7 +370,7 @@ export default function Gallery() {
                         aria-label="Grid view"
                       >
                         <Image
-                          src="/icons/gridOff.png"
+                          src="/icons/gridOff.webp"
                           alt="Grid View Off"
                           fill
                           className={`absolute inset-0 w-full h-full object-contain transition-opacity duration-300 ${
@@ -378,7 +378,7 @@ export default function Gallery() {
                           }`}
                         />
                         <Image
-                          src="/icons/gridOn.png"
+                          src="/icons/gridOn.webp"
                           alt="Grid View On"
                           fill
                           className={`absolute inset-0 w-full h-full object-contain transition-opacity duration-300 ${
@@ -396,7 +396,7 @@ export default function Gallery() {
                         aria-label="List view"
                       >
                         <Image
-                          src="/icons/listOff.png"
+                          src="/icons/listOff.webp"
                           alt="List View Off"
                           fill
                           className={`absolute inset-0 w-full h-full object-contain transition-opacity duration-300 ${
@@ -404,7 +404,7 @@ export default function Gallery() {
                           }`}
                         />
                         <Image
-                          src="/icons/listOn.png"
+                          src="/icons/listOn.webp"
                           alt="List View On"
                           fill
                           className={`absolute inset-0 w-full h-full object-contain transition-opacity duration-300 ${

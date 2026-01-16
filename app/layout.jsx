@@ -8,7 +8,6 @@ import RevealRoot from '../components/RevealRoot';
 import ErrorBoundary from '../components/ErrorBoundary';
 import SnipcartPortal from '../components/SnipcartPortal';
 import StructuredData from '../components/StructuredData';
-import WebVitals from '../components/WebVitals';
 import React from 'react';
 import ClientLayout from '../components/ClientLayout';
 
@@ -118,9 +117,7 @@ export default function RootLayout({ children }) {
             <RevealRoot>{children}</RevealRoot>
           </ClientLayout>
         </ErrorBoundary>
-
         <SnipcartPortal />
-        <WebVitals />
       </body>
     </html>
   );
