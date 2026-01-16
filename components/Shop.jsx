@@ -1,7 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
-import { useTranslations } from 'next-intl';
+import { useMemo, useState, useEffect, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import { AnimatePresence, motion } from 'framer-motion';
 import ShopItem from './ShopItem';
@@ -10,13 +9,34 @@ import { formatPrice } from '../lib/utils';
 import { logger } from '../lib/logger';
 import client from '../lib/sanity.client';
 
+const SNIPCART_ITEM_URL =
+  'https://hannoahmassengotest.netlify.app/api/products';
+
+function localizeField(value, locale) {
+  if (!value) return '';
+  if (typeof value === 'string') return value;
+  return value?.[locale] || value?.fr || value?.en || value?.de || '';
+}
+
 // Composant CartItem - Affichage simple des articles Snipcart
-const CartItem = ({ item }) => {
+const CartItem = ({ item, productsById, locale, onRemove }) => {
+  const matchingProduct = productsById.get(item.id);
+  const displayName = matchingProduct
+    ? localizeField(matchingProduct.title, locale)
+    : item.name;
+
   return (
     <li className="py-2 border-b border-gray-200/20">
       <div className="flex justify-between items-start gap-3">
         <div className="flex-1">
-          <h3 className="text-sm text-gray-800">{item.name}</h3>
+          <button
+            type="button"
+            className="text-left text-sm text-gray-800 hover:text-red-600 hover:underline underline-offset-4 transition-colors"
+            title="Remove from cart"
+            onClick={() => onRemove?.(item)}
+          >
+            {displayName}
+          </button>
           <div className="flex items-center gap-2 mt-1">
             <span className="text-xs text-gray-600">
               {item.quantity} × {item.price?.toFixed(2)}€
@@ -34,7 +54,6 @@ const CartItem = ({ item }) => {
 };
 
 export default function Shop() {
-  const t = useTranslations();
   const { locale } = useParams();
   const [cartOpen, setCartOpen] = useState(false);
   const [isDesktop, setIsDesktop] = useState(false);
@@ -70,6 +89,14 @@ export default function Shop() {
   const [cartTotal, setCartTotal] = useState(0);
   const [cartCount, setCartCount] = useState(0);
 
+  const cartItemIds = useMemo(() => {
+    return new Set((cartItems || []).map(item => item.id));
+  }, [cartItems]);
+
+  const productsById = useMemo(() => {
+    return new Map(products.map(p => [p.id, p]));
+  }, [products]);
+
   // Charger les produits depuis Sanity
   useEffect(() => {
     const fetchProducts = async () => {
@@ -77,26 +104,23 @@ export default function Shop() {
         const data = await client.fetch(
           '*[_type == "shopItem"] { ..., image{ asset->{ url } }, imgHover{ asset->{ url } } }'
         );
-        console.log('Fetched products:', data); // Debug
+        logger.debug('Fetched products:', data);
         const formatted = data.map(p => ({
           id: p._id,
           imgDefault: p.image?.asset?.url,
           imgHover: p.imgHover?.asset?.url,
-          title:
-            p.title?.[locale] ||
-            p.title?.fr ||
-            p[`title_${locale}`] ||
-            p.title_fr,
+          title: p.title,
           price: p.price,
-          description:
-            p.description?.[locale] ||
-            p.description?.fr ||
-            p[`description_${locale}`] ||
-            p.description_fr,
+          description: p.description,
+          // ⚠️ Ne pas varier ces valeurs selon la langue, sinon Snipcart peut créer des doublons
+          // pour le même produit lors d'un switch FR/EN/DE.
+          snipcartName:
+            localizeField(p.title, 'fr') || localizeField(p.title, locale),
+          snipcartDescription: localizeField(p.description, 'fr') || '',
           formats: p.formats || [],
-          url: `/fr/shop`,
+          snipcartUrl: SNIPCART_ITEM_URL,
         }));
-        console.log('Formatted products:', formatted); // Debug
+        logger.debug('Formatted products:', formatted);
         setProducts(formatted);
       } catch (err) {
         logger.error('Failed to load products', err);
@@ -126,6 +150,73 @@ export default function Shop() {
       }
     }
   }, []);
+
+  const removeFromCart = useCallback(
+    async item => {
+      if (typeof window === 'undefined' || !window.Snipcart) return;
+
+      // Snipcart supprime via `uniqueId` (pas le product id)
+      let uniqueId = item.uniqueId;
+      if (!uniqueId && window.Snipcart.store?.getState) {
+        try {
+          const state = window.Snipcart.store.getState();
+          const items = state?.cart?.items?.items || [];
+          uniqueId = items.find(i => i.id === item.id)?.uniqueId;
+        } catch {
+          // ignore
+        }
+      }
+
+      if (!uniqueId) {
+        logger.error('Failed to remove item from Snipcart (missing uniqueId)', {
+          id: item.id,
+          name: item.name,
+          uniqueId: item.uniqueId,
+        });
+        return;
+      }
+
+      try {
+        if (window.Snipcart.api?.cart?.items?.remove) {
+          await window.Snipcart.api.cart.items.remove(uniqueId);
+        } else if (window.Snipcart.api?.items?.remove) {
+          await window.Snipcart.api.items.remove(uniqueId);
+        } else if (window.Snipcart.store?.dispatch) {
+          // Certaines versions exposent un dispatch « shortcut » (type, payload)
+          try {
+            window.Snipcart.store.dispatch('cart.items.remove', uniqueId);
+          } catch {
+            // ...d'autres demandent une action redux complète
+            window.Snipcart.store.dispatch({
+              type: 'cart.items.remove',
+              payload: uniqueId,
+            });
+          }
+        } else {
+          logger.error(
+            'Failed to remove item from Snipcart (no API available)',
+            {
+              hasApi: !!window.Snipcart.api,
+              hasStore: !!window.Snipcart.store,
+            }
+          );
+        }
+      } catch (e) {
+        logger.error('Failed to remove item from Snipcart', {
+          error: e,
+          uniqueId,
+          id: item.id,
+          name: item.name,
+          hasApi: !!window.Snipcart.api,
+          hasStore: !!window.Snipcart.store,
+        });
+      } finally {
+        // resync, même si l'appel API est asynchrone côté Snipcart
+        setTimeout(syncWithSnipcart, 150);
+      }
+    },
+    [syncWithSnipcart]
+  );
 
   // Initialiser Snipcart et écouter les événements
   useEffect(() => {
@@ -184,16 +275,27 @@ export default function Shop() {
   // Fonction pour ajouter directement à Snipcart
   const addToCart = useCallback(
     product => {
+      if (cartItemIds.has(product.id)) {
+        setCartOpen(true);
+        return;
+      }
+
       const tempBtn = document.createElement('button');
       tempBtn.className = 'snipcart-add-item';
       tempBtn.setAttribute('data-item-id', product.id);
-      tempBtn.setAttribute('data-item-name', product.title);
+      tempBtn.setAttribute(
+        'data-item-name',
+        product.snipcartName || product.title
+      );
       tempBtn.setAttribute('data-item-price', product.price.toString());
       tempBtn.setAttribute(
         'data-item-url',
-        product.url || window.location.href
+        product.snipcartUrl || SNIPCART_ITEM_URL
       );
-      tempBtn.setAttribute('data-item-description', product.description || '');
+      tempBtn.setAttribute(
+        'data-item-description',
+        product.snipcartDescription || ''
+      );
       tempBtn.style.display = 'none';
 
       document.body.appendChild(tempBtn);
@@ -205,7 +307,7 @@ export default function Shop() {
         setCartOpen(true); // Ouvre le cart sur ajout
       }, 100);
     },
-    [syncWithSnipcart]
+    [cartItemIds, syncWithSnipcart]
   );
 
   return (
@@ -249,6 +351,9 @@ export default function Shop() {
                           <CartItem
                             key={item.uniqueId || item.id}
                             item={item}
+                            productsById={productsById}
+                            locale={locale}
+                            onRemove={removeFromCart}
                           />
                         ))}
                       </ul>
@@ -283,9 +388,14 @@ export default function Shop() {
                   key={product.id}
                   imgDefault={product.imgDefault}
                   imgHover={product.imgHover}
-                  title={product.title}
+                  title={localizeField(product.title, locale)}
                   price={product.price + '€'}
-                  onClick={() => setSelectedProduct(product)}
+                  onClick={
+                    cartItemIds.has(product.id)
+                      ? undefined
+                      : () => setSelectedProduct(product)
+                  }
+                  inCart={cartItemIds.has(product.id)}
                   className="!h-36 md:!h-64" // hauteur réduite sur mobile
                 />
               ))}
@@ -302,6 +412,8 @@ export default function Shop() {
           <ShopOverlay
             isOpen={!!selectedProduct}
             product={selectedProduct}
+            locale={locale}
+            inCart={cartItemIds.has(selectedProduct.id)}
             onClose={() => setSelectedProduct(null)}
             onAddToCart={addToCart}
           />

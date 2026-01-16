@@ -2,9 +2,20 @@
 import { useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
-import { logger } from '../lib/logger';
 
-export default function ShopOverlay({ product, onClose, onAddToCart }) {
+function localizeField(value, locale) {
+  if (!value) return '';
+  if (typeof value === 'string') return value;
+  return value?.[locale] || value?.fr || value?.en || value?.de || '';
+}
+
+export default function ShopOverlay({
+  product,
+  onClose,
+  onAddToCart,
+  locale,
+  inCart = false,
+}) {
   const previouslyFocusedElement = useRef(null);
 
   // Mémoriser l'élément actif à l'ouverture
@@ -22,6 +33,9 @@ export default function ShopOverlay({ product, onClose, onAddToCart }) {
   }, [product]);
 
   if (!product) return null;
+
+  const displayTitle = localizeField(product.title, locale);
+  const displayDescription = localizeField(product.description, locale);
 
   return (
     <motion.div
@@ -54,7 +68,7 @@ export default function ShopOverlay({ product, onClose, onAddToCart }) {
           <div className="w-full h-[50vh] flex items-center justify-center bg-blackCustom relative">
             <Image
               src={product.imgDefault}
-              alt={product.title}
+              alt={displayTitle}
               width={600}
               height={600}
               sizes="100vw"
@@ -67,29 +81,30 @@ export default function ShopOverlay({ product, onClose, onAddToCart }) {
           <div className="border-t border-whiteCustom/20"></div>
           {/* Infos 50vh */}
           <div className="w-full h-[50vh] flex flex-col items-start text-left p-8 overflow-y-auto bg-blackCustom">
-            <h2 className="text-4xl italic mb-6">{product.title}</h2>
+            <h2 className="text-4xl italic mb-6">{displayTitle}</h2>
             <p className="text-base leading-relaxed text-whiteCustom/80 mb-8 max-w-md">
-              {product.description ||
+              {displayDescription ||
                 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur posuere tincidunt lacus sit amet porttitor. Aliquam pharetra ante vel nibh accumsan, a bibendum lorem egestas. Sed ac accumsan metus, vitae finibus urna.'}
             </p>
             <div className="mt-auto">
               <div className="text-2xl font-bold mb-2">{product.price}€</div>
               <button
-                className="snipcart-add-item text-lg italic text-whiteCustom/60 hover:text-whiteCustom transition-colors"
-                data-item-id={product.id}
-                data-item-price={product.price}
-                data-item-url="https://hannoahmassengotest.netlify.app/api/products"
-                data-item-description={product.description || ''}
-                data-item-image={product.imgDefault}
-                data-item-name={product.title}
+                className={`text-lg italic transition-colors ${
+                  inCart
+                    ? 'text-whiteCustom/30 cursor-not-allowed'
+                    : 'text-whiteCustom/60 hover:text-whiteCustom'
+                }`}
+                disabled={inCart}
                 onClick={() => {
+                  if (inCart) return;
+                  onAddToCart?.(product);
                   // On garde ton setTimeout pour l'UX
                   setTimeout(() => {
                     onClose();
                   }, 200);
                 }}
               >
-                add to cart
+                {inCart ? 'in cart' : 'add to cart'}
               </button>
             </div>
           </div>
@@ -100,7 +115,7 @@ export default function ShopOverlay({ product, onClose, onAddToCart }) {
           <div className="w-1/2 max-w-xl aspect-square relative shadow-2xl flex items-center justify-center">
             <Image
               src={product.imgDefault}
-              alt={product.title}
+              alt={displayTitle}
               fill
               sizes="50vw"
               className="w-full h-full object-cover"
@@ -110,29 +125,29 @@ export default function ShopOverlay({ product, onClose, onAddToCart }) {
           </div>
           {/* Infos */}
           <div className="w-1/3 flex flex-col items-start text-left">
-            <h2 className="text-6xl italic mb-8">{product.title}</h2>
+            <h2 className="text-6xl italic mb-8">{displayTitle}</h2>
             <p className="text-xl leading-relaxed text-whiteCustom/80 mb-12 max-w-md">
-              {product.description ||
+              {displayDescription ||
                 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur posuere tincidunt lacus sit amet porttitor. Aliquam pharetra ante vel nibh accumsan, a bibendum lorem egestas. Sed ac accumsan metus, vitae finibus urna.'}
             </p>
             <div className="mt-auto">
               <div className="text-3xl font-bold mb-2">{product.price}€</div>
               <button
-                className="snipcart-add-item text-xl italic text-whiteCustom/60 hover:text-whiteCustom transition-colors"
-                data-item-id={product.id}
-                data-item-price={product.price}
-                // 👇 L'URL absolue ici aussi
-                data-item-url="https://hannoahmassengotest.netlify.app/api/products"
-                data-item-description={product.description || ''}
-                data-item-image={product.imgDefault}
-                data-item-name={product.title}
+                className={`text-xl italic transition-colors ${
+                  inCart
+                    ? 'text-whiteCustom/30 cursor-not-allowed'
+                    : 'text-whiteCustom/60 hover:text-whiteCustom'
+                }`}
+                disabled={inCart}
                 onClick={() => {
+                  if (inCart) return;
+                  onAddToCart?.(product);
                   setTimeout(() => {
                     onClose();
                   }, 200);
                 }}
               >
-                add to cart
+                {inCart ? 'in cart' : 'add to cart'}
               </button>
             </div>
           </div>
@@ -142,7 +157,7 @@ export default function ShopOverlay({ product, onClose, onAddToCart }) {
       {/* Footer */}
       <div className="w-full border-t border-whiteCustom/20 p-8 text-center relative">
         <span className="text-xl italic">
-          {product.title.toLowerCase()} - 20XX
+          {(displayTitle || '').toLowerCase()} - 20XX
         </span>
       </div>
     </motion.div>
