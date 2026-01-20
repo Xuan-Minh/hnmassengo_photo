@@ -14,7 +14,7 @@ export async function GET(request) {
     const formatted = products.map(p => ({
       id: p._id,
       price: p.price,
-      url: `${origin}/api/products`,
+      url: `${origin}/snipcart-products`,
       name: p.title?.fr || p.title?.en || 'Product',
       description: p.description?.fr || p.description?.en || '',
       image: p.image?.asset?.url || '',

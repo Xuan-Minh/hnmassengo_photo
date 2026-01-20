@@ -10,11 +10,11 @@ import { logger } from '../lib/logger';
 import client from '../lib/sanity.client';
 
 function getSnipcartItemUrl() {
-  const fromEnv = (process.env.NEXT_PUBLIC_SITE_URL || '').replace(/\/$/, '');
-  if (fromEnv) return `${fromEnv}/api/products`;
   if (typeof window !== 'undefined')
-    return `${window.location.origin}/api/products`;
-  return '/api/products';
+    return `${window.location.origin}/snipcart-products`;
+  const fromEnv = (process.env.NEXT_PUBLIC_SITE_URL || '').replace(/\/$/, '');
+  if (fromEnv) return `${fromEnv}/snipcart-products`;
+  return '/snipcart-products';
 }
 
 function localizeField(value, locale) {
