@@ -9,8 +9,12 @@ import { formatPrice } from '../lib/utils';
 import { logger } from '../lib/logger';
 import client from '../lib/sanity.client';
 
-const SNIPCART_ITEM_URL =
-  'https://hannoahmassengotest.netlify.app/api/products';
+function getSnipcartItemUrl() {
+  const fromEnv = (process.env.NEXT_PUBLIC_SITE_URL || '').replace(/\/$/, '');
+  if (fromEnv) return `${fromEnv}/api/products`;
+  if (typeof window !== 'undefined') return `${window.location.origin}/api/products`;
+  return '/api/products';
+}
 
 function localizeField(value, locale) {
   if (!value) return '';
@@ -57,6 +61,7 @@ export default function Shop() {
   const { locale } = useParams();
   const [cartOpen, setCartOpen] = useState(false);
   const [isDesktop, setIsDesktop] = useState(false);
+  const snipcartItemUrl = useMemo(() => getSnipcartItemUrl(), []);
 
   // Nettoyer l'URL si elle contient des ancres Snipcart (après refresh)
   useEffect(() => {
@@ -118,7 +123,7 @@ export default function Shop() {
             localizeField(p.title, 'fr') || localizeField(p.title, locale),
           snipcartDescription: localizeField(p.description, 'fr') || '',
           formats: p.formats || [],
-          snipcartUrl: SNIPCART_ITEM_URL,
+          snipcartUrl: snipcartItemUrl,
         }));
         logger.debug('Formatted products:', formatted);
         setProducts(formatted);
@@ -127,7 +132,7 @@ export default function Shop() {
       }
     };
     fetchProducts();
-  }, [locale]);
+  }, [locale, snipcartItemUrl]);
 
   // Synchroniser avec Snipcart - lire l'état du panier
   const syncWithSnipcart = useCallback(() => {
@@ -290,7 +295,7 @@ export default function Shop() {
       tempBtn.setAttribute('data-item-price', product.price.toString());
       tempBtn.setAttribute(
         'data-item-url',
-        product.snipcartUrl || SNIPCART_ITEM_URL
+        product.snipcartUrl || snipcartItemUrl
       );
       tempBtn.setAttribute(
         'data-item-description',
@@ -307,7 +312,7 @@ export default function Shop() {
         setCartOpen(true); // Ouvre le cart sur ajout
       }, 100);
     },
-    [cartItemIds, syncWithSnipcart]
+    [cartItemIds, snipcartItemUrl, syncWithSnipcart]
   );
 
   return (
