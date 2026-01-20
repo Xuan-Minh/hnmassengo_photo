@@ -1,4 +1,5 @@
 import { defineField, defineType } from 'sanity';
+import ProjectImagesFolderInput from '../components/ProjectImagesFolderInput';
 
 export const projectType = defineType({
   name: 'project',
@@ -69,6 +70,9 @@ export const projectType = defineType({
       title: 'Images du Projet',
       description: "Galerie d'images du projet (minimum 1 image requise)",
       type: 'array',
+      components: {
+        input: ProjectImagesFolderInput,
+      },
       of: [
         {
           type: 'image',
