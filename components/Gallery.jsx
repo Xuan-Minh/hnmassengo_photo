@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { useTranslations } from 'next-intl';
 import { useParams } from 'next/navigation';
 import { GALLERY_FILTERS } from '../lib/constants';
@@ -13,6 +13,35 @@ import ProjetCartel from './ProjetCartel';
 import { AnimatePresence } from 'framer-motion';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
+
+function buildSanityImageUrl(url, { w, q, auto } = {}) {
+  if (!url || typeof url !== 'string') return url;
+  // Sanity CDN accepte des query params (w, q, auto=format, etc.)
+  // On conserve d'éventuels paramètres existants.
+  const [base, query = ''] = url.split('?');
+  const SearchParams = globalThis.URLSearchParams;
+  if (!SearchParams) {
+    const parts = [];
+    if (w) parts.push(`w=${encodeURIComponent(String(w))}`);
+    if (q) parts.push(`q=${encodeURIComponent(String(q))}`);
+    if (auto) parts.push(`auto=${encodeURIComponent(String(auto))}`);
+    return parts.length ? `${base}?${parts.join('&')}` : base;
+  }
+
+  const sp = new SearchParams(query);
+  if (w) sp.set('w', String(w));
+  if (q) sp.set('q', String(q));
+  if (auto) sp.set('auto', String(auto));
+  const qs = sp.toString();
+  return qs ? `${base}?${qs}` : base;
+}
+
+function getProjectDateMs(project) {
+  const raw = project?.date;
+  if (!raw) return null;
+  const ms = new Date(raw).getTime();
+  return Number.isFinite(ms) ? ms : null;
+}
 
 export default function Gallery() {
   const t = useTranslations();
@@ -42,6 +71,10 @@ export default function Gallery() {
   const [currentProjectIndex, setCurrentProjectIndex] = useState(0);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [isListImageLoaded, setIsListImageLoaded] = useState(false);
+  const [listImageError, setListImageError] = useState(false);
+
+  const listTimersRef = useRef({ tick: null, swap: null, cancelled: 0 });
 
   // Charger les projets depuis Sanity
   useEffect(() => {
@@ -49,21 +82,20 @@ export default function Gallery() {
       const data = await client.fetch(
         '*[_type == "project"] { ..., images[]{ asset->{ url } } }'
       );
-      console.log('Fetched projects:', data); // Debug
       const mapped = data.map(p => ({
         id: p._id,
         name:
           p.name?.[locale] || p.name?.fr || p[`name_${locale}`] || p.name_fr,
         type: p.type,
-        images: p.images?.map(img => img.asset?.url) || [],
+        images: (p.images || []).map(img => img?.asset?.url).filter(Boolean),
         coords: p.coords,
+        date: p.date,
         description:
           p.description?.[locale] ||
           p.description?.fr ||
           p[`description_${locale}`] ||
           p.description_fr,
       }));
-      console.log('Mapped projects:', mapped); // Debug
       setProjects(mapped);
     };
     fetchProjects();
@@ -74,10 +106,54 @@ export default function Gallery() {
     setView(newView);
   };
 
-  // Filtrage des projets
-  const filteredProjects = projects.filter(
-    p => filter === 'all' || p.type === filter
-  );
+  const projectsChrono = useMemo(() => {
+    const arr = [...projects];
+    arr.sort((a, b) => {
+      const am = getProjectDateMs(a);
+      const bm = getProjectDateMs(b);
+
+      // Sans date: on les met à la fin dans tous les cas
+      if (am === null && bm === null)
+        return (a?.name || '').localeCompare(b?.name || '');
+      if (am === null) return 1;
+      if (bm === null) return -1;
+
+      return am - bm; // ancien -> récent
+    });
+    return arr;
+  }, [projects]);
+
+  const projectsRecentFirst = useMemo(() => {
+    return [...projectsChrono].reverse();
+  }, [projectsChrono]);
+
+  // Filtrage + ordre selon la vue
+  const filteredProjectsList = useMemo(() => {
+    return projectsChrono.filter(p => filter === 'all' || p.type === filter);
+  }, [projectsChrono, filter]);
+
+  const filteredProjectsGrid = useMemo(() => {
+    return projectsRecentFirst.filter(
+      p => filter === 'all' || p.type === filter
+    );
+  }, [projectsRecentFirst, filter]);
+
+  const currentListSrc = useMemo(() => {
+    return (
+      filteredProjectsList[currentProjectIndex]?.images?.[currentImageIndex] ||
+      null
+    );
+  }, [filteredProjectsList, currentProjectIndex, currentImageIndex]);
+
+  const currentListDisplaySrc = useMemo(() => {
+    // L'image "source" Sanity peut être énorme; on la redimensionne côté CDN
+    // et on charge directement (unoptimized) pour éviter le coût d'optimisation Next au 1er hit.
+    return buildSanityImageUrl(currentListSrc, {
+      w: 1600,
+      q: 70,
+      auto: 'format',
+    });
+  }, [currentListSrc]);
 
   // Reset index si on change de filtre
   useEffect(() => {
@@ -85,50 +161,110 @@ export default function Gallery() {
     setCurrentImageIndex(0);
   }, [filter]);
 
-  // Timer pour le slideshow en mode LIST
+  // Reset état de chargement quand la source change
   useEffect(() => {
     if (view !== 'list') return;
-    if (filteredProjects.length === 0) return;
+    setIsListImageLoaded(false);
+    setListImageError(false);
+  }, [view, currentListDisplaySrc]);
 
-    const timer = setInterval(() => {
-      // On lance la transition fade-out
+  // Slideshow pour le mode LIST (précharge la prochaine image pour éviter blink/superposition)
+  useEffect(() => {
+    const timers = listTimersRef.current;
+
+    // Nettoyage des timers précédents
+    if (timers.tick) clearTimeout(timers.tick);
+    if (timers.swap) clearTimeout(timers.swap);
+    timers.tick = null;
+    timers.swap = null;
+
+    if (view !== 'list') return;
+    if (filteredProjectsList.length === 0) return;
+
+    const currentProject = filteredProjectsList[currentProjectIndex];
+    const currentImages = currentProject?.images || [];
+    if (currentImages.length === 0) return;
+
+    const token = (timers.cancelled += 1);
+
+    const computeNext = () => {
+      const proj = filteredProjectsList[currentProjectIndex];
+      const imgs = proj?.images || [];
+      if (imgs.length === 0) return null;
+
+      if (currentImageIndex < imgs.length - 1) {
+        return {
+          nextProjectIndex: currentProjectIndex,
+          nextImageIndex: currentImageIndex + 1,
+        };
+      }
+      return {
+        nextProjectIndex:
+          (currentProjectIndex + 1) % filteredProjectsList.length,
+        nextImageIndex: 0,
+      };
+    };
+
+    const preload = src => {
+      return new Promise(resolve => {
+        if (!src || typeof window === 'undefined') return resolve();
+        const img = new window.Image();
+        const done = () => resolve();
+        img.onload = done;
+        img.onerror = done;
+        img.src = src;
+      });
+    };
+
+    listTimersRef.current.tick = setTimeout(async () => {
+      const next = computeNext();
+      if (!next) return;
+
+      const nextRaw =
+        filteredProjectsList[next.nextProjectIndex]?.images?.[
+          next.nextImageIndex
+        ];
+      const nextSrc = buildSanityImageUrl(nextRaw, {
+        w: 1600,
+        q: 70,
+        auto: 'format',
+      });
+
+      // Précharger la prochaine image, puis fade-out -> swap -> fade-in
+      await preload(nextSrc);
+      if (timers.cancelled !== token) return;
+
       setIsTransitioning(true);
-
-      setTimeout(() => {
-        // Après le fade-out, on change l'image
-        const currentProject = filteredProjects[currentProjectIndex];
-        if (!currentProject) return;
-
-        if (currentImageIndex < currentProject.images.length - 1) {
-          // Image suivante du même projet
-          setCurrentImageIndex(prev => prev + 1);
-        } else {
-          // Projet suivant
-          const nextProjIndex =
-            (currentProjectIndex + 1) % filteredProjects.length;
-          setCurrentProjectIndex(nextProjIndex);
-          setCurrentImageIndex(0);
-        }
-        // On relance le fade-in
+      timers.swap = setTimeout(() => {
+        if (timers.cancelled !== token) return;
+        setCurrentProjectIndex(next.nextProjectIndex);
+        setCurrentImageIndex(next.nextImageIndex);
         setIsTransitioning(false);
-      }, 300); // Durée du fade-out
-    }, 3000); // Durée d'affichage de chaque image
+      }, 250);
+    }, 3000);
 
-    return () => clearInterval(timer);
-  }, [view, filteredProjects, currentProjectIndex, currentImageIndex]);
+    return () => {
+      if (timers.tick) clearTimeout(timers.tick);
+      if (timers.swap) clearTimeout(timers.swap);
+      timers.tick = null;
+      timers.swap = null;
+    };
+  }, [view, filteredProjectsList, currentProjectIndex, currentImageIndex]);
 
   // On veut toutes les images de tous les projets filtrés (pour le mode GRID)
-  const allImages = filteredProjects.flatMap(p =>
-    p.images.map((img, idx) => ({
-      projectId: p.id,
-      uniqueKey: `${p.id}-${idx}`,
-      name: p.name,
-      type: p.type,
-      img,
-      coords: p.coords,
-      isFirst: idx === 0,
-    }))
-  );
+  const allImages = useMemo(() => {
+    return filteredProjectsGrid.flatMap(p =>
+      (p.images || []).map((img, idx) => ({
+        projectId: p.id,
+        uniqueKey: `${p.id}-${idx}`,
+        name: p.name,
+        type: p.type,
+        img,
+        coords: p.coords,
+        isFirst: idx === 0,
+      }))
+    );
+  }, [filteredProjectsGrid]);
 
   // Nombre d'images à afficher selon la taille d'écran
   const [maxImages, setMaxImages] = useState(24);
@@ -150,11 +286,14 @@ export default function Gallery() {
     return () => window.removeEventListener('resize', updateMaxImages);
   }, []);
 
-  // Pour la grille, la première case est réservée aux filtres/view
-  const gridItems = [
-    { type: 'filters', uniqueKey: 'filters' },
-    ...allImages.slice(0, maxImages),
-  ];
+  // Pour la grille, on garde toujours le même nombre de slots
+  // afin d'avoir des transitions uniformes entre filtres.
+  const gridSlots = useMemo(() => {
+    return Array.from(
+      { length: maxImages },
+      (_, idx) => allImages[idx] || null
+    );
+  }, [allImages, maxImages]);
 
   // Gestion du curseur custom
   useEffect(() => {
@@ -251,22 +390,29 @@ export default function Gallery() {
         </button>
       </div>
       {view === 'grid' && (
-        <div className="flex flex-col gap-1 items-start">
+        <div className="relative z-10 flex flex-col gap-1 items-start pointer-events-auto">
           {FILTERS.map(f => (
             <button
               key={f.value}
+              type="button"
               className={`text-lg text-left relative group transition-opacity duration-300 ${
                 filter === f.value
                   ? 'font-bold opacity-100'
                   : 'opacity-60 hover:opacity-100'
               }`}
-              onClick={() => setFilter(f.value)}
+              onPointerDown={e => {
+                // Empêche un parent/overlay de capter le premier clic
+                e.preventDefault();
+                e.stopPropagation();
+                setFilter(f.value);
+              }}
             >
               {f.label}
               <span
                 className={`absolute left-0 bottom-0 h-[1px] bg-current transition-all duration-300 ease-in-out ${
                   filter === f.value ? 'w-full' : 'w-0 group-hover:w-full'
                 }`}
+                style={{ pointerEvents: 'none' }}
               />
             </button>
           ))}
@@ -293,58 +439,75 @@ export default function Gallery() {
                   transition={{ duration: 0.5, ease: 'easeInOut' }}
                   className="w-full h-full grid grid-cols-1 md:grid-cols-5 lg:grid-cols-5 2xl:grid-cols-7 md:grid-rows-5 lg:grid-rows-5 2xl:grid-rows-4 gap-x-2 gap-y-2 overflow-hidden lg:pt-10"
                 >
-                  <AnimatePresence mode="popLayout">
-                    {gridItems.map((item, idx) => {
-                      if (idx === 0) {
-                        // Case filtres + view
-                        return (
-                          <div
-                            key="filters"
-                            className="flex items-center justify-center"
-                          >
-                            <Controls />
-                          </div>
-                        );
-                      }
-                      if (!item) return <div key={`empty-${idx}`} />;
-                      // Case image d'un projet
-                      const imgData = item;
-                      const isHovered = hoveredId === imgData.projectId;
-                      return (
-                        <motion.div
-                          layout
-                          exit={{ opacity: 0, scale: 0.7 }}
-                          initial={{ opacity: 0, scale: 0.95 }}
-                          animate={{ opacity: 1, scale: 1 }}
-                          transition={{ duration: 0.5, type: 'spring' }}
-                          key={imgData.uniqueKey}
-                          className="relative group cursor-pointer flex items-center justify-center w-full h-full overflow-hidden"
-                          onMouseEnter={() => setHoveredId(imgData.projectId)}
-                          onMouseLeave={() => setHoveredId(null)}
-                          onClick={() => {
-                            const projectData = projects.find(
-                              p => p.id === imgData.projectId
-                            );
-                            setSelectedProject(projectData);
-                          }}
-                        >
-                          <Image
-                            src={imgData.img}
-                            alt={imgData.name}
-                            width={600}
-                            height={400}
-                            className={`max-w-full max-h-full object-contain shadow transition-opacity duration-300 ${
-                              isHovered ? 'opacity-100' : 'opacity-40'
-                            }`}
-                            style={{ objectFit: 'contain' }}
-                            draggable={false}
-                            sizes="(max-width: 768px) 45vw, (max-width: 1200px) 20vw, 18vw"
-                            priority={idx < 5}
-                          />
-                        </motion.div>
-                      );
-                    })}
-                  </AnimatePresence>
+                  {/* Case filtres + view */}
+                  <div
+                    key="filters"
+                    className="flex items-center justify-center"
+                  >
+                    <Controls />
+                  </div>
+
+                  {/* Slots d'images (toujours maxImages) */}
+                  {gridSlots.map((imgData, slotIdx) => {
+                    const isHovered =
+                      imgData && hoveredId === imgData.projectId;
+                    const contentKey = imgData
+                      ? `${filter}-${imgData.uniqueKey}`
+                      : `${filter}-empty-${slotIdx}`;
+
+                    return (
+                      <div
+                        key={`slot-${slotIdx}`}
+                        className="relative w-full h-full overflow-hidden"
+                      >
+                        <AnimatePresence mode="wait" initial={false}>
+                          {imgData ? (
+                            <motion.div
+                              key={contentKey}
+                              initial={{ opacity: 0, scale: 0.98 }}
+                              animate={{ opacity: 1, scale: 1 }}
+                              exit={{ opacity: 0, scale: 0.98 }}
+                              transition={{ duration: 0.35, ease: 'easeInOut' }}
+                              className="relative group cursor-pointer flex items-center justify-center w-full h-full"
+                              onMouseEnter={() =>
+                                setHoveredId(imgData.projectId)
+                              }
+                              onMouseLeave={() => setHoveredId(null)}
+                              onClick={() => {
+                                const projectData = projects.find(
+                                  p => p.id === imgData.projectId
+                                );
+                                setSelectedProject(projectData);
+                              }}
+                            >
+                              <Image
+                                src={imgData.img}
+                                alt={imgData.name}
+                                width={600}
+                                height={400}
+                                className={`max-w-full max-h-full object-contain shadow transition-opacity duration-300 ${
+                                  isHovered ? 'opacity-100' : 'opacity-40'
+                                }`}
+                                style={{ objectFit: 'contain' }}
+                                draggable={false}
+                                sizes="(max-width: 768px) 45vw, (max-width: 1200px) 20vw, 18vw"
+                                priority={slotIdx < 5}
+                              />
+                            </motion.div>
+                          ) : (
+                            <motion.div
+                              key={contentKey}
+                              initial={{ opacity: 0 }}
+                              animate={{ opacity: 1 }}
+                              exit={{ opacity: 0 }}
+                              transition={{ duration: 0.35, ease: 'easeInOut' }}
+                              className="w-full h-full bg-transparent"
+                            />
+                          )}
+                        </AnimatePresence>
+                      </div>
+                    );
+                  })}
                 </motion.div>
               ) : (
                 // --- MODE LIST ---
@@ -416,7 +579,7 @@ export default function Gallery() {
 
                     {/* Liste des projets au centre */}
                     <div className="flex flex-wrap justify-center gap-x-8 gap-y-2 flex-1">
-                      {filteredProjects.map((p, idx) => (
+                      {filteredProjectsList.map((p, idx) => (
                         <button
                           key={p.id}
                           onClick={() => {
@@ -440,34 +603,64 @@ export default function Gallery() {
 
                   {/* Zone centrale image (Slideshow) */}
                   <div className="flex-1 relative w-full h-[100vh] flex items-center justify-center overflow-hidden mt-0 md:mt-8 lg:mt-0">
-                    {filteredProjects.length > 0 && (
-                      <Image
-                        src={
-                          filteredProjects[currentProjectIndex].images[
-                            currentImageIndex
-                          ]
-                        }
-                        alt={filteredProjects[currentProjectIndex].name}
-                        width={1200}
-                        height={900}
-                        className={`max-w-[85%] max-h-[50vh] lg:max-w-[70%] lg:max-h-[70%] xl:max-w-[80%] xl:max-h-[80%] object-contain cursor-pointer transition-opacity duration-300 ${
-                          isTransitioning ? 'opacity-0' : 'opacity-100'
-                        }`}
-                        style={{ objectFit: 'contain' }}
-                        sizes="(max-width: 768px) 90vw, (max-width: 1200px) 70vw, 80vw"
-                        onClick={() =>
-                          setSelectedProject(
-                            filteredProjects[currentProjectIndex]
-                          )
-                        }
-                        priority
-                      />
-                    )}
+                    {(() => {
+                      const src = currentListDisplaySrc;
+                      if (!src) return null;
+                      return (
+                        <div
+                          className="relative w-[85%] h-[50vh] lg:w-[70%] lg:h-[70vh] xl:w-[80%] xl:h-[80vh] cursor-pointer"
+                          onClick={() =>
+                            setSelectedProject(
+                              filteredProjectsList[currentProjectIndex]
+                            )
+                          }
+                        >
+                          <div
+                            className={`absolute inset-0 bg-black/5 animate-pulse transition-opacity duration-300 ${
+                              isListImageLoaded || listImageError
+                                ? 'opacity-0'
+                                : 'opacity-100'
+                            }`}
+                          />
+                          {listImageError && (
+                            <div className="absolute inset-0 flex items-center justify-center text-blackCustom/60 font-playfair">
+                              image indisponible
+                            </div>
+                          )}
+                          <Image
+                            key={`${currentProjectIndex}-${currentImageIndex}-${
+                              filteredProjectsList[currentProjectIndex]
+                                ?.images?.[currentImageIndex] || 'empty'
+                            }`}
+                            src={src}
+                            alt={
+                              filteredProjectsList[currentProjectIndex]?.name ||
+                              ''
+                            }
+                            fill
+                            className={`object-contain transition-opacity duration-300 ${
+                              isTransitioning ||
+                              (!isListImageLoaded && !listImageError)
+                                ? 'opacity-0'
+                                : 'opacity-100'
+                            }`}
+                            // En LIST, on demande volontairement un peu plus petit qu'en GRID
+                            // pour réduire le temps de chargement du premier affichage.
+                            sizes="(max-width: 768px) 90vw, (max-width: 1200px) 60vw, 55vw"
+                            quality={60}
+                            unoptimized
+                            onError={() => setListImageError(true)}
+                            onLoadingComplete={() => setIsListImageLoaded(true)}
+                            priority
+                          />
+                        </div>
+                      );
+                    })()}
                   </div>
 
                   {/* Liste des projets en bas - Mobile seulement */}
                   <div className="lg:hidden flex flex-row flex-wrap justify-center gap-x-6 gap-y-3 mt-3">
-                    {filteredProjects.map((p, idx) => (
+                    {filteredProjectsList.map((p, idx) => (
                       <button
                         key={p.id}
                         onClick={() => {
@@ -497,7 +690,7 @@ export default function Gallery() {
             <div className="text-xl font-playfair italic text-blackCustom h-8">
               {view === 'grid'
                 ? hoveredId && projects.find(p => p.id === hoveredId)?.coords
-                : filteredProjects[currentProjectIndex]?.coords}
+                : filteredProjectsList[currentProjectIndex]?.coords}
             </div>
             {view === 'grid' && (
               <button

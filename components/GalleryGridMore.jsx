@@ -1,8 +1,15 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useTranslations } from 'next-intl';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
+
+function getProjectDateMs(project) {
+  const raw = project?.date;
+  if (!raw) return null;
+  const ms = new Date(raw).getTime();
+  return Number.isFinite(ms) ? ms : null;
+}
 
 const FILTERS = [
   { label: 'all', value: 'all' },
@@ -18,6 +25,23 @@ export default function GalleryGridMore({
   const t = useTranslations();
   const [filter, setFilter] = useState('all');
   const [hoveredId, setHoveredId] = useState(null);
+
+  const projectsRecentFirst = useMemo(() => {
+    const arr = [...projects];
+    arr.sort((a, b) => {
+      const am = getProjectDateMs(a);
+      const bm = getProjectDateMs(b);
+
+      // Sans date: on les met à la fin
+      if (am === null && bm === null)
+        return (a?.name || '').localeCompare(b?.name || '');
+      if (am === null) return 1;
+      if (bm === null) return -1;
+
+      return bm - am; // récent -> ancien
+    });
+    return arr;
+  }, [projects]);
 
   // Curseur personnalisé pour le nom du projet
   const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
@@ -40,7 +64,7 @@ export default function GalleryGridMore({
       return;
     }
 
-    const project = projects.find(p => p.id === hoveredId);
+    const project = projectsRecentFirst.find(p => p.id === hoveredId);
     if (project) {
       document.body.style.cursor = 'none';
       setShowCustomCursor(true);
@@ -49,25 +73,29 @@ export default function GalleryGridMore({
       document.body.style.cursor = 'default';
       setShowCustomCursor(false);
     };
-  }, [hoveredId, projects]);
+  }, [hoveredId, projectsRecentFirst]);
 
   // Filtrage des projets
-  const filteredProjects = projects.filter(
-    p => filter === 'all' || p.type === filter
-  );
+  const filteredProjects = useMemo(() => {
+    return projectsRecentFirst.filter(
+      p => filter === 'all' || p.type === filter
+    );
+  }, [projectsRecentFirst, filter]);
 
   // On veut toutes les images de tous les projets filtrés
-  const allImages = filteredProjects.flatMap(p =>
-    p.images.map((img, idx) => ({
-      projectId: p.id,
-      project: p, // Passer l'objet projet complet
-      name: p.name,
-      type: p.type,
-      src: img,
-      coords: p.coords,
-      isFirst: idx === 0,
-    }))
-  );
+  const allImages = useMemo(() => {
+    return filteredProjects.flatMap(p =>
+      (p.images || []).filter(Boolean).map((img, idx) => ({
+        projectId: p.id,
+        project: p,
+        name: p.name,
+        type: p.type,
+        src: img,
+        coords: p.coords,
+        isFirst: idx === 0,
+      }))
+    );
+  }, [filteredProjects]);
 
   const handleImageClick = project => {
     onProjectClick(project);
@@ -75,7 +103,7 @@ export default function GalleryGridMore({
   };
 
   // Trouver le projet survolé pour afficher les coordonnées
-  const hoveredProject = projects.find(p => p.id === hoveredId);
+  const hoveredProject = projectsRecentFirst.find(p => p.id === hoveredId);
 
   return (
     <motion.div
@@ -179,7 +207,7 @@ export default function GalleryGridMore({
             exit={{ opacity: 0, scale: 0.8 }}
             transition={{ duration: 0.2 }}
           >
-            {projects.find(p => p.id === hoveredId)?.name}
+            {projectsRecentFirst.find(p => p.id === hoveredId)?.name}
           </motion.div>
         )}
       </AnimatePresence>
