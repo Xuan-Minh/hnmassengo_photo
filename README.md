@@ -81,6 +81,10 @@ SANITY_DATASET=production
 SANITY_API_VERSION=2024-01-01
 
 # Snipcart (optionnel pour la boutique)
+# Clé publique (utilisée côté navigateur)
+NEXT_PUBLIC_SNIPCART_API_KEY=votre_cle_api_snipcart
+
+# (Optionnel) ancien nom gardé pour compat
 SNIPCART_API_KEY=votre_cle_api_snipcart
 
 # Autres variables si nécessaire
