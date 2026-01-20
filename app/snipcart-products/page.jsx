@@ -18,22 +18,30 @@ export default async function SnipcartProductsPage() {
     (process.env.NEXT_PUBLIC_SITE_URL || '').replace(/\/$/, '') ||
     getOriginFromHeaders();
 
-  const validationUrl = origin ? `${origin}/snipcart-products` : '/snipcart-products';
+  const validationUrl = origin
+    ? `${origin}/snipcart-products`
+    : '/snipcart-products';
 
   const products = await client.fetch(
     '*[_type == "shopItem" && available == true] { _id, title, price, description, image{ asset->{ url } } }'
   );
 
   return (
-    <main style={{ padding: 24, fontFamily: 'system-ui, -apple-system, Segoe UI, Roboto, sans-serif' }}>
+    <main
+      style={{
+        padding: 24,
+        fontFamily: 'system-ui, -apple-system, Segoe UI, Roboto, sans-serif',
+      }}
+    >
       <h1>Snipcart product validation</h1>
       <p>
-        Cette page sert uniquement à la validation/crawl Snipcart (test/prod). Elle expose les
-        produits sous forme de boutons <code>snipcart-add-item</code>.
+        Cette page sert uniquement à la validation/crawl Snipcart (test/prod).
+        Elle expose les produits sous forme de boutons{' '}
+        <code>snipcart-add-item</code>.
       </p>
 
       <div style={{ display: 'none' }}>
-        {products.map((p) => (
+        {products.map(p => (
           <button
             key={p._id}
             className="snipcart-add-item"
@@ -50,9 +58,7 @@ export default async function SnipcartProductsPage() {
         ))}
       </div>
 
-      <p>
-        OK ({products?.length || 0} produit(s)).
-      </p>
+      <p>OK ({products?.length || 0} produit(s)).</p>
     </main>
   );
 }
