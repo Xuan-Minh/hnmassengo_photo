@@ -50,12 +50,20 @@ export default function ProjectImagesFolderInput(props) {
   async function handleFilesSelected(fileList) {
     const allFiles = Array.from(fileList || []);
     const imageFiles = allFiles
-      .filter(file => file && typeof file.type === 'string' && file.type.startsWith('image/'))
+      .filter(
+        file =>
+          file &&
+          typeof file.type === 'string' &&
+          file.type.startsWith('image/')
+      )
       .sort((a, b) => {
         // Pour un dossier, on conserve l'ordre du chemin relatif quand dispo
         const ap = a.webkitRelativePath || a.name;
         const bp = b.webkitRelativePath || b.name;
-        return ap.localeCompare(bp, undefined, { numeric: true, sensitivity: 'base' });
+        return ap.localeCompare(bp, undefined, {
+          numeric: true,
+          sensitivity: 'base',
+        });
       });
 
     if (imageFiles.length === 0) return;
@@ -72,9 +80,12 @@ export default function ProjectImagesFolderInput(props) {
         const file = imageFiles[i];
         const photoNumber = currentCount + i + 1;
 
-        const baseFr = (typeof nameFr === 'string' && nameFr.trim()) || fallbackName;
-        const baseEn = (typeof nameEn === 'string' && nameEn.trim()) || fallbackName;
-        const baseDe = (typeof nameDe === 'string' && nameDe.trim()) || fallbackName;
+        const baseFr =
+          (typeof nameFr === 'string' && nameFr.trim()) || fallbackName;
+        const baseEn =
+          (typeof nameEn === 'string' && nameEn.trim()) || fallbackName;
+        const baseDe =
+          (typeof nameDe === 'string' && nameDe.trim()) || fallbackName;
 
         // Si aucun nom de projet n'est encore rempli, on bascule sur le nom de fichier
         const safeBase = fallbackName || stripExtension(file.name) || 'Projet';
@@ -106,9 +117,7 @@ export default function ProjectImagesFolderInput(props) {
     } catch (err) {
       // eslint-disable-next-line no-console
       console.error(err);
-      setStatus(
-        `Erreur pendant l'upload : ${err?.message || 'échec inconnu'}`
-      );
+      setStatus(`Erreur pendant l'upload : ${err?.message || 'échec inconnu'}`);
     } finally {
       setIsUploading(false);
       // Permet de re-sélectionner le même dossier/fichiers
