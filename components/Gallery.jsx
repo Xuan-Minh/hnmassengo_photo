@@ -48,7 +48,8 @@ export default function Gallery() {
   const { locale } = useParams();
   const [projects, setProjects] = useState([]);
 
-  const [filter, setFilter] = useState('all');
+  // Le filtre ne doit impacter que la vue GRILLE
+  const [gridFilter, setGridFilter] = useState('all');
   const [view, setView] = useState('grid');
   const [hoveredId, setHoveredId] = useState(null);
   const [overlayOpen, setOverlayOpen] = useState(false);
@@ -127,16 +128,17 @@ export default function Gallery() {
     return [...projectsChrono].reverse();
   }, [projectsChrono]);
 
-  // Filtrage + ordre selon la vue
+  // Ordre selon la vue
   const filteredProjectsList = useMemo(() => {
-    return projectsChrono.filter(p => filter === 'all' || p.type === filter);
-  }, [projectsChrono, filter]);
+    // Important: la LISTE ne dépend pas des filtres de la grille
+    return projectsChrono;
+  }, [projectsChrono]);
 
   const filteredProjectsGrid = useMemo(() => {
     return projectsRecentFirst.filter(
-      p => filter === 'all' || p.type === filter
+      p => gridFilter === 'all' || p.type === gridFilter
     );
-  }, [projectsRecentFirst, filter]);
+  }, [projectsRecentFirst, gridFilter]);
 
   const currentListSrc = useMemo(() => {
     return (
@@ -155,11 +157,12 @@ export default function Gallery() {
     });
   }, [currentListSrc]);
 
-  // Reset index si on change de filtre
+  // Reset index quand la liste change (ex: changement de locale/données)
   useEffect(() => {
+    if (view !== 'list') return;
     setCurrentProjectIndex(0);
     setCurrentImageIndex(0);
-  }, [filter]);
+  }, [view, filteredProjectsList]);
 
   // Reset état de chargement quand la source change
   useEffect(() => {
@@ -396,7 +399,7 @@ export default function Gallery() {
               key={f.value}
               type="button"
               className={`text-lg text-left relative group transition-opacity duration-300 ${
-                filter === f.value
+                gridFilter === f.value
                   ? 'font-bold opacity-100'
                   : 'opacity-60 hover:opacity-100'
               }`}
@@ -404,13 +407,13 @@ export default function Gallery() {
                 // Empêche un parent/overlay de capter le premier clic
                 e.preventDefault();
                 e.stopPropagation();
-                setFilter(f.value);
+                setGridFilter(f.value);
               }}
             >
               {f.label}
               <span
                 className={`absolute left-0 bottom-0 h-[1px] bg-current transition-all duration-300 ease-in-out ${
-                  filter === f.value ? 'w-full' : 'w-0 group-hover:w-full'
+                  gridFilter === f.value ? 'w-full' : 'w-0 group-hover:w-full'
                 }`}
                 style={{ pointerEvents: 'none' }}
               />
@@ -452,8 +455,8 @@ export default function Gallery() {
                     const isHovered =
                       imgData && hoveredId === imgData.projectId;
                     const contentKey = imgData
-                      ? `${filter}-${imgData.uniqueKey}`
-                      : `${filter}-empty-${slotIdx}`;
+                      ? `${gridFilter}-${imgData.uniqueKey}`
+                      : `${gridFilter}-empty-${slotIdx}`;
 
                     return (
                       <div
