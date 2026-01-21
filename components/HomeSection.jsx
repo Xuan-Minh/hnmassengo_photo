@@ -3,6 +3,7 @@ import { useTranslations } from 'next-intl';
 import { HomeImageRotation, TextScramble, Logo } from './';
 import { motion } from 'framer-motion';
 import { useRef, useState, useEffect } from 'react';
+import client from '../lib/sanity.client';
 
 // Hook utilitaire pour fade-in à la première apparition
 function useFadeInOnScreen() {
@@ -26,8 +27,8 @@ function useFadeInOnScreen() {
   return [ref, visible];
 }
 
-// Liste statique des images à afficher
-const imageFiles = [
+// Fallback local si Sanity ne retourne rien
+const fallbackImageFiles = [
   '/home/home1.webp',
   '/home/home2.webp',
   '/home/home3.webp',
@@ -37,7 +38,32 @@ const imageFiles = [
 export default function HomeSection() {
   const t = useTranslations();
 
+  const [homeImages, setHomeImages] = useState(fallbackImageFiles);
+
   const [ref, visible] = useFadeInOnScreen();
+
+  useEffect(() => {
+    let cancelled = false;
+    const fetchHomeImages = async () => {
+      try {
+        const data = await client.fetch(
+          `*[_type == "homeSectionImage"] | order(order asc) { image{asset->{url}}, order }`
+        );
+
+        const urls = (data || [])
+          .map(d => d?.image?.asset?.url)
+          .filter(Boolean);
+
+        if (!cancelled && urls.length > 0) setHomeImages(urls);
+      } catch {
+        // On conserve le fallback local
+      }
+    };
+    fetchHomeImages();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   return (
     <motion.section
@@ -52,7 +78,7 @@ export default function HomeSection() {
       <Logo />
       {/* Bloc rotation image - centré et plus grand sur mobile, positionnable sur desktop */}
       <div className="flex items-center justify-center pt-20 pb-8 lg:absolute lg:top-[40%] lg:left-0 lg:-translate-y-1/2 w-full lg:w-full z-20 pointer-events-none lg:pt-0 lg:pb-0">
-        <HomeImageRotation images={imageFiles} />
+        <HomeImageRotation images={homeImages} />
       </div>
 
       {/* Bloc texte - juste en dessous de l'image sur mobile/tablet, bas gauche sur desktop */}

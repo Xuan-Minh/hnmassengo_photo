@@ -128,9 +128,7 @@ export default function Gallery() {
     return [...projectsChrono].reverse();
   }, [projectsChrono]);
 
-  // Ordre selon la vue
   const filteredProjectsList = useMemo(() => {
-    // Important: la LISTE ne dépend pas des filtres de la grille
     return projectsChrono;
   }, [projectsChrono]);
 
@@ -148,8 +146,6 @@ export default function Gallery() {
   }, [filteredProjectsList, currentProjectIndex, currentImageIndex]);
 
   const currentListDisplaySrc = useMemo(() => {
-    // L'image "source" Sanity peut être énorme; on la redimensionne côté CDN
-    // et on charge directement (unoptimized) pour éviter le coût d'optimisation Next au 1er hit.
     return buildSanityImageUrl(currentListSrc, {
       w: 1600,
       q: 70,
@@ -157,21 +153,18 @@ export default function Gallery() {
     });
   }, [currentListSrc]);
 
-  // Reset index quand la liste change (ex: changement de locale/données)
   useEffect(() => {
     if (view !== 'list') return;
     setCurrentProjectIndex(0);
     setCurrentImageIndex(0);
   }, [view, filteredProjectsList]);
 
-  // Reset état de chargement quand la source change
   useEffect(() => {
     if (view !== 'list') return;
     setIsListImageLoaded(false);
     setListImageError(false);
   }, [view, currentListDisplaySrc]);
 
-  // Slideshow pour le mode LIST (précharge la prochaine image pour éviter blink/superposition)
   useEffect(() => {
     const timers = listTimersRef.current;
 
