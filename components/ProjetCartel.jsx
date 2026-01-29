@@ -47,18 +47,21 @@ function CustomLightbox({ open, onClose, images, project }) {
     [images]
   );
 
-  const goToIndex = useCallback(nextIndex => {
-    if (!images?.length) return;
-    const safeIndex =
-      ((nextIndex % images.length) + images.length) % images.length;
-    const nextSrc = getDisplaySrcForIndex(safeIndex);
+  const goToIndex = useCallback(
+    nextIndex => {
+      if (!images?.length) return;
+      const safeIndex =
+        ((nextIndex % images.length) + images.length) % images.length;
+      const nextSrc = getDisplaySrcForIndex(safeIndex);
 
-    // Important: on met à jour l'état de chargement AVANT le render suivant
-    // pour éviter un frame d'opacité à 0 quand l'image est déjà décodée/cachée.
-    setHasCurrentError(false);
-    setIsCurrentLoaded(decodedSrcsRef.current.has(nextSrc));
-    setCurrentIndex(safeIndex);
-  }, [images, getDisplaySrcForIndex]);
+      // Important: on met à jour l'état de chargement AVANT le render suivant
+      // pour éviter un frame d'opacité à 0 quand l'image est déjà décodée/cachée.
+      setHasCurrentError(false);
+      setIsCurrentLoaded(decodedSrcsRef.current.has(nextSrc));
+      setCurrentIndex(safeIndex);
+    },
+    [images, getDisplaySrcForIndex]
+  );
 
   const currentDisplaySrc = useMemo(() => {
     const raw = images?.[currentIndex];
@@ -306,11 +309,14 @@ function CustomLightbox({ open, onClose, images, project }) {
         {/* Image suivante */}
         <div className="absolute right-8 top-1/2 -translate-y-1/2 h-[50%] w-[15%] opacity-40 blur-[2px] pointer-events-none">
           <Image
-            src={buildSanityImageUrl(images[(currentIndex + 1) % images.length], {
-              w: 600,
-              q: 60,
-              auto: 'format',
-            })}
+            src={buildSanityImageUrl(
+              images[(currentIndex + 1) % images.length],
+              {
+                w: 600,
+                q: 60,
+                auto: 'format',
+              }
+            )}
             alt="suivante"
             width={300}
             height={200}

@@ -1,34 +1,34 @@
-"use client";
-import { useEffect, useRef, useState } from "react";
-import { useTranslations } from "next-intl";
-import { AnimatePresence, motion } from "framer-motion";
-import { SITE_CONFIG } from "../lib/constants";
-import { EVENTS, addEventHandler } from "../lib/events";
-import { Link } from "../src/i18n/navigation";
+'use client';
+import { useEffect, useRef, useState } from 'react';
+import { useTranslations } from 'next-intl';
+import { AnimatePresence, motion } from 'framer-motion';
+import { SITE_CONFIG } from '../lib/constants';
+import { EVENTS, addEventHandler } from '../lib/events';
+import { Link } from '../src/i18n/navigation';
 
 // Composant pour le formulaire de contact réutilisable
-function ContactForm({ idSuffix = "", onSubmitSuccess, defaultSubject = "" }) {
+function ContactForm({ idSuffix = '', onSubmitSuccess, defaultSubject = '' }) {
   const [showSuccess, setShowSuccess] = useState(false);
   const formRef = useRef(null);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
     const form = formRef.current;
     if (!form) return;
 
     const formData = new FormData(form);
     const data = {
-      fullName: formData.get("fullName"),
-      email: formData.get("email"),
-      subject: formData.get("subject"),
-      message: formData.get("message"),
+      fullName: formData.get('fullName'),
+      email: formData.get('email'),
+      subject: formData.get('subject'),
+      message: formData.get('message'),
     };
 
     try {
-      const response = await fetch("/api/contact", {
-        method: "POST",
+      const response = await fetch('/api/contact', {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify(data),
       });
@@ -41,14 +41,14 @@ function ContactForm({ idSuffix = "", onSubmitSuccess, defaultSubject = "" }) {
         setShowSuccess(true);
         if (onSubmitSuccess) onSubmitSuccess();
       } else {
-        alert(result.message || "Erreurs de validation.");
+        alert(result.message || 'Erreurs de validation.');
         if (result.errors) {
-          console.error("Erreurs:", result.errors);
+          console.error('Erreurs:', result.errors);
         }
       }
     } catch (error) {
-      console.error("Erreur:", error);
-      alert("Erreur lors de la validation. Veuillez réessayer.");
+      console.error('Erreur:', error);
+      alert('Erreur lors de la validation. Veuillez réessayer.');
     }
   };
 
@@ -65,7 +65,7 @@ function ContactForm({ idSuffix = "", onSubmitSuccess, defaultSubject = "" }) {
       onSubmit={handleSubmit}
     >
       <input type="hidden" name="form-name" value="contact" />
-      <input type="hidden" name="bot-field" style={{ display: "none" }} />
+      <input type="hidden" name="bot-field" style={{ display: 'none' }} />
 
       {showSuccess && (
         <div className="bg-green-600/20 border border-green-500 text-green-300 p-3 md:p-4 rounded mb-4 md:mb-6">
@@ -177,7 +177,7 @@ function ContactInfo() {
         >
           Instagram
         </a>
-        ,{" "}
+        ,{' '}
         <a
           href={`mailto:${SITE_CONFIG.email}`}
           className="hover:text-whiteCustom transition-colors"
@@ -195,8 +195,11 @@ function ContactInfo() {
         Design & Development by {SITE_CONFIG.developer}
       </p>
       <p className="font-playfair text-sm md:text-[16px] leading-relaxed">
-        <Link href="/legal" className="hover:text-whiteCustom transition-colors underline">
-          {t("legal.link")}
+        <Link
+          href="/legal"
+          className="hover:text-whiteCustom transition-colors underline"
+        >
+          {t('legal.link')}
         </Link>
       </p>
     </div>
@@ -205,10 +208,10 @@ function ContactInfo() {
 
 // Composant pour le contenu principal (formulaire + informations)
 export function ContactContent({
-  idSuffix = "",
+  idSuffix = '',
   headingId,
-  variant = "default",
-  defaultSubject = "",
+  variant = 'default',
+  defaultSubject = '',
 }) {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-8 lg:gap-10 xl:gap-14">
@@ -235,9 +238,9 @@ export function ContactMarquee() {
     <div className="absolute inset-x-0 bottom-0 border-t border-whiteCustom/60 overflow-hidden pointer-events-none">
       <motion.div
         className="whitespace-nowrap text-whiteCustom/90 font-playfair text-[18px] sm:text-[24px] md:text-[32px] lg:text-[38px] xl:text-[44px] py-1 sm:py-1.5 md:py-2 -tracking-normal"
-        animate={{ x: ["0%", "-50%"] }}
-        transition={{ duration: 30, ease: "linear", repeat: Infinity }}
-        style={{ willChange: "transform" }}
+        animate={{ x: ['0%', '-50%'] }}
+        transition={{ duration: 30, ease: 'linear', repeat: Infinity }}
+        style={{ willChange: 'transform' }}
       >
         <span className="inline-block">{SITE_CONFIG.copyright}</span>
         <span className="inline-block">{SITE_CONFIG.copyright}</span>
@@ -251,7 +254,7 @@ export function ContactMarquee() {
 export default function ContactOverlay({
   open: openProp,
   onClose: onCloseProp,
-  defaultSubject = "",
+  defaultSubject = '',
 } = {}) {
   const t = useTranslations();
   const [openState, setOpenState] = useState(false);
@@ -277,42 +280,42 @@ export default function ContactOverlay({
   // Fermer avec Échap quand ouvert
   useEffect(() => {
     if (!open) return;
-    const onKey = (e) => {
-      if (e.key === "Escape") handleClose();
+    const onKey = e => {
+      if (e.key === 'Escape') handleClose();
     };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
   }, [open, handleClose]);
 
   // Verrouillage du scroll, focus initial et piège de focus quand l'overlay est ouvert
   useEffect(() => {
     if (!open) return;
 
-    const root = document.getElementById("scroll-root");
+    const root = document.getElementById('scroll-root');
     const prevOverflow = root ? root.style.overflow : undefined;
     const prevPaddingRight = root ? root.style.paddingRight : undefined;
 
     // Calculer la largeur de la barre de défilement pour éviter le décalage de mise en page
     if (root) {
       const scrollbarWidth = root.offsetWidth - root.clientWidth;
-      root.style.overflow = "hidden";
+      root.style.overflow = 'hidden';
       root.style.paddingRight = `${scrollbarWidth}px`;
     }
 
     const focusSelectors = [
-      "a[href]",
-      "area[href]",
+      'a[href]',
+      'area[href]',
       'input:not([disabled]):not([tabindex="-1"])',
       'select:not([disabled]):not([tabindex="-1"])',
       'textarea:not([disabled]):not([tabindex="-1"])',
       'button:not([disabled]):not([tabindex="-1"])',
       '[tabindex]:not([tabindex="-1"])',
-    ].join(",");
+    ].join(',');
 
     // Focus initial sur le premier élément focusable (préférer fullName-overlay)
     const raf = requestAnimationFrame(() => {
-      const explicit = document.getElementById("fullName-overlay");
-      if (explicit && typeof explicit.focus === "function") {
+      const explicit = document.getElementById('fullName-overlay');
+      if (explicit && typeof explicit.focus === 'function') {
         explicit.focus();
         return;
       }
@@ -321,13 +324,13 @@ export default function ContactOverlay({
       const nodes = panel.querySelectorAll(focusSelectors);
       if (nodes.length > 0) {
         const first = nodes[0];
-        if (first && typeof first.focus === "function") first.focus();
+        if (first && typeof first.focus === 'function') first.focus();
       }
     });
 
     // Piéger la touche Tab dans le panneau
-    const onKeyDown = (e) => {
-      if (e.key !== "Tab") return;
+    const onKeyDown = e => {
+      if (e.key !== 'Tab') return;
       const panel = panelRef.current;
       if (!panel) return;
       const nodes = Array.from(panel.querySelectorAll(focusSelectors));
@@ -344,14 +347,14 @@ export default function ContactOverlay({
         first.focus();
       }
     };
-    window.addEventListener("keydown", onKeyDown);
+    window.addEventListener('keydown', onKeyDown);
 
     return () => {
       cancelAnimationFrame(raf);
-      window.removeEventListener("keydown", onKeyDown);
+      window.removeEventListener('keydown', onKeyDown);
       if (root) {
-        root.style.overflow = prevOverflow || "";
-        root.style.paddingRight = prevPaddingRight || "";
+        root.style.overflow = prevOverflow || '';
+        root.style.paddingRight = prevPaddingRight || '';
       }
     };
   }, [open]);
@@ -381,11 +384,11 @@ export default function ContactOverlay({
               aria-modal="true"
               aria-labelledby="contact-title-overlay"
               className="absolute inset-x-0 bottom-0 bg-blackCustom border-t-2 border-whiteCustom max-h-[85vh] flex flex-col"
-              initial={{ y: "100%" }}
+              initial={{ y: '100%' }}
               animate={{ y: 0 }}
-              exit={{ y: "100%" }}
-              transition={{ duration: 0.5, ease: "easeInOut" }}
-              onClick={(e) => e.stopPropagation()}
+              exit={{ y: '100%' }}
+              transition={{ duration: 0.5, ease: 'easeInOut' }}
+              onClick={e => e.stopPropagation()}
               ref={panelRef}
             >
               {/* Contenu principal - prend l'espace disponible */}
@@ -404,13 +407,13 @@ export default function ContactOverlay({
               <div className="flex-shrink-0 border-t border-whiteCustom/60 overflow-hidden pointer-events-none">
                 <motion.div
                   className="whitespace-nowrap text-whiteCustom/90 font-playfair text-[18px] sm:text-[24px] md:text-[32px] lg:text-[38px] xl:text-[44px] py-1 sm:py-1.5 md:py-2 -tracking-normal"
-                  animate={{ x: ["0%", "-50%"] }}
+                  animate={{ x: ['0%', '-50%'] }}
                   transition={{
                     duration: 30,
-                    ease: "linear",
+                    ease: 'linear',
                     repeat: Infinity,
                   }}
-                  style={{ willChange: "transform" }}
+                  style={{ willChange: 'transform' }}
                 >
                   <span className="inline-block">{SITE_CONFIG.copyright}</span>
                   <span className="inline-block">{SITE_CONFIG.copyright}</span>
