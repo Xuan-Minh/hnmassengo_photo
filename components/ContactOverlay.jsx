@@ -41,10 +41,10 @@ function ContactForm({ idSuffix = '', onSubmitSuccess, defaultSubject = '' }) {
         setShowSuccess(true);
         if (onSubmitSuccess) onSubmitSuccess();
       } else {
-        alert(result.message || 'Erreurs de validation.');
-        if (result.errors) {
-          console.error('Erreurs:', result.errors);
-        }
+        const details = Array.isArray(result?.errors)
+          ? `\n\n${result.errors.join('\n')}`
+          : '';
+        alert((result?.message || 'Erreurs de validation.') + details);
       }
     } catch (error) {
       console.error('Erreur:', error);
@@ -95,6 +95,7 @@ function ContactForm({ idSuffix = '', onSubmitSuccess, defaultSubject = '' }) {
           name="fullName"
           type="text"
           required
+          minLength={2}
           className="w-full bg-formBG text-whiteCustom placeholder-whiteCustom/40 border border-whiteCustom/60 focus:border-whiteCustom outline-none px-3 py-2 text-sm md:text-base"
         />
       </div>
@@ -127,6 +128,7 @@ function ContactForm({ idSuffix = '', onSubmitSuccess, defaultSubject = '' }) {
             name="subject"
             type="text"
             required
+            maxLength={100}
             defaultValue={defaultSubject}
             className="w-full bg-formBG text-whiteCustom placeholder-whiteCustom/40 border border-whiteCustom/60 focus:border-whiteCustom outline-none px-3 py-2 text-sm md:text-base"
           />
@@ -145,6 +147,7 @@ function ContactForm({ idSuffix = '', onSubmitSuccess, defaultSubject = '' }) {
           name="message"
           rows={5}
           required
+          minLength={10}
           className="w-full bg-formBG text-whiteCustom placeholder-whiteCustom/40 border border-whiteCustom/60 focus:border-whiteCustom outline-none px-3 py-2 resize-y text-sm md:text-base"
         />
       </div>
