@@ -1,10 +1,10 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import PropTypes from 'prop-types';
 import dynamic from 'next/dynamic';
-import { motion } from 'framer-motion';
+import { motion, animate, useMotionValue } from 'framer-motion';
 const AnimatePresence = dynamic(
   () => import('framer-motion').then(mod => mod.AnimatePresence),
   { ssr: false }
@@ -12,26 +12,143 @@ const AnimatePresence = dynamic(
 import TextReveal from './TextReveal';
 import { EVENTS, emitEvent } from '../lib/events';
 
+function buildSanityImageUrl(url, { w, q, auto } = {}) {
+  if (!url || typeof url !== 'string') return url;
+  const [base, query = ''] = url.split('?');
+  const SearchParams = globalThis.URLSearchParams;
+  if (!SearchParams) {
+    const parts = [];
+    if (w) parts.push(`w=${encodeURIComponent(String(w))}`);
+    if (q) parts.push(`q=${encodeURIComponent(String(q))}`);
+    if (auto) parts.push(`auto=${encodeURIComponent(String(auto))}`);
+    return parts.length ? `${base}?${parts.join('&')}` : base;
+  }
+
+  const sp = new SearchParams(query);
+  if (w) sp.set('w', String(w));
+  if (q) sp.set('q', String(q));
+  if (auto) sp.set('auto', String(auto));
+  const qs = sp.toString();
+  return qs ? `${base}?${qs}` : base;
+}
+
 // Composant CustomLightbox
 function CustomLightbox({ open, onClose, images, project }) {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [isCurrentLoaded, setIsCurrentLoaded] = useState(false);
+  const [hasCurrentError, setHasCurrentError] = useState(false);
+  const decodedSrcsRef = useRef(new Set());
+
+  const getDisplaySrcForIndex = useCallback(
+    idx => {
+      const raw = images?.[idx];
+      return buildSanityImageUrl(raw, { w: 2200, q: 75, auto: 'format' });
+    },
+    [images]
+  );
+
+  const goToIndex = useCallback(nextIndex => {
+    if (!images?.length) return;
+    const safeIndex =
+      ((nextIndex % images.length) + images.length) % images.length;
+    const nextSrc = getDisplaySrcForIndex(safeIndex);
+
+    // Important: on met à jour l'état de chargement AVANT le render suivant
+    // pour éviter un frame d'opacité à 0 quand l'image est déjà décodée/cachée.
+    setHasCurrentError(false);
+    setIsCurrentLoaded(decodedSrcsRef.current.has(nextSrc));
+    setCurrentIndex(safeIndex);
+  }, [images, getDisplaySrcForIndex]);
+
+  const currentDisplaySrc = useMemo(() => {
+    const raw = images?.[currentIndex];
+    return buildSanityImageUrl(raw, { w: 2200, q: 75, auto: 'format' });
+  }, [images, currentIndex]);
 
   useEffect(() => {
-    if (open) setCurrentIndex(0);
-  }, [open]);
+    if (open) {
+      goToIndex(0);
+    }
+  }, [open, goToIndex]);
+
+  useEffect(() => {
+    if (!open) return;
+    setHasCurrentError(false);
+
+    // Évite un flash/blank si l'image est déjà en cache (et décodée).
+    setIsCurrentLoaded(decodedSrcsRef.current.has(currentDisplaySrc));
+  }, [open, currentIndex, currentDisplaySrc]);
+
+  // Précharger réellement la version "centre" (haute résolution) et les voisins.
+  // Les images sur les côtés sont souvent de plus petite taille / URL différente,
+  // donc elles ne garantissent pas que la version centrale soit déjà en cache.
+  useEffect(() => {
+    if (!open) return;
+    if (typeof window === 'undefined') return;
+    if (!images?.length) return;
+
+    let cancelled = false;
+
+    const preload = src => {
+      if (!src) return;
+      const img = new window.Image();
+      img.src = src;
+
+      const markReady = () => {
+        decodedSrcsRef.current.add(src);
+        if (!cancelled && src === currentDisplaySrc) {
+          setIsCurrentLoaded(true);
+        }
+      };
+
+      // decode() réduit le micro délai "image visible mais pas encore rendue".
+      if (typeof img.decode === 'function') {
+        img
+          .decode()
+          .then(markReady)
+          .catch(() => {
+            // Certaines images peuvent ne pas supporter decode() selon navigateur/format.
+          });
+      } else {
+        img.onload = markReady;
+      }
+    };
+
+    preload(currentDisplaySrc);
+
+    if (images.length > 1) {
+      const nextIndex = (currentIndex + 1) % images.length;
+      const prevIndex = (currentIndex - 1 + images.length) % images.length;
+
+      const nextSrc = buildSanityImageUrl(images[nextIndex], {
+        w: 2200,
+        q: 75,
+        auto: 'format',
+      });
+      const prevSrc = buildSanityImageUrl(images[prevIndex], {
+        w: 2200,
+        q: 75,
+        auto: 'format',
+      });
+      preload(nextSrc);
+      preload(prevSrc);
+    }
+
+    return () => {
+      cancelled = true;
+    };
+  }, [open, images, currentIndex, currentDisplaySrc]);
 
   useEffect(() => {
     const handleKeyDown = e => {
       if (!open) return;
       if (e.key === 'Escape') onClose();
-      if (e.key === 'ArrowRight')
-        setCurrentIndex(prev => (prev + 1) % images.length);
-      if (e.key === 'ArrowLeft')
-        setCurrentIndex(prev => (prev - 1 + images.length) % images.length);
+      if (e.key === 'ArrowRight') goToIndex(currentIndex + 1);
+      if (e.key === 'ArrowLeft') goToIndex(currentIndex - 1);
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [open, onClose, images.length]);
+  }, [open, onClose, images.length, currentIndex, goToIndex]);
 
   if (!open) return null;
 
@@ -56,7 +173,7 @@ function CustomLightbox({ open, onClose, images, project }) {
       {/* Contenu principal (MOBILE) */}
       <div className="flex-1 flex flex-col w-full h-full md:hidden">
         <div className="flex-1 flex flex-col w-full justify-center">
-          <div className="flex-1 flex flex-col items-center justify-center w-full max-h-[70vh] px-6">
+          <div className="flex-1 flex flex-col items-center justify-center w-full max-h-[70vh] px-6 relative">
             <motion.div
               key={currentIndex}
               initial={{ opacity: 0, scale: 0.95 }}
@@ -65,15 +182,28 @@ function CustomLightbox({ open, onClose, images, project }) {
               className="w-full flex items-center justify-center flex-nowrap"
             >
               <Image
-                src={images[currentIndex]}
+                src={currentDisplaySrc}
                 alt={`${project.name} - Image ${currentIndex + 1} of ${images.length}`}
                 width={900}
                 height={700}
                 className="max-h-[65vh] max-w-full w-auto object-contain shadow-2xl mx-auto"
                 sizes="(max-width : 1200px) 100vw, 900px"
+                unoptimized
+                fetchPriority="high"
+                decoding="async"
+                onError={() => setHasCurrentError(true)}
+                onLoadingComplete={() => setIsCurrentLoaded(true)}
                 priority
               />
             </motion.div>
+            {!isCurrentLoaded && !hasCurrentError && (
+              <div className="absolute inset-0 bg-white/5 animate-pulse" />
+            )}
+            {hasCurrentError && (
+              <div className="absolute inset-0 flex items-center justify-center text-white/70">
+                image indisponible
+              </div>
+            )}
             <div className="text-center w-full z-40 text-lg italic mt-2">
               {currentIndex + 1} / {images.length}
             </div>
@@ -93,7 +223,7 @@ function CustomLightbox({ open, onClose, images, project }) {
             {images.map((img, idx) => (
               <button
                 key={img + idx}
-                onClick={() => setCurrentIndex(idx)}
+                onClick={() => goToIndex(idx)}
                 className={`border-2 rounded transition-all duration-200 ${
                   idx === currentIndex
                     ? 'border-white/80 scale-105'
@@ -120,55 +250,81 @@ function CustomLightbox({ open, onClose, images, project }) {
         {/* Image précédente */}
         <div className="absolute left-8 top-1/2 -translate-y-1/2 h-[50%] w-[15%] opacity-40 blur-[2px] pointer-events-none">
           <Image
-            src={images[(currentIndex - 1 + images.length) % images.length]}
+            src={buildSanityImageUrl(
+              images[(currentIndex - 1 + images.length) % images.length],
+              { w: 600, q: 60, auto: 'format' }
+            )}
             alt={`${project.name} - Image précédente`}
             width={300}
             height={200}
             className="w-full h-full object-contain"
             sizes="(max-width: 768px) 100vw, 300px"
             priority={false}
+            unoptimized
           />
         </div>
 
         {/* Image principale */}
-        <div className="relative z-10 h-[60%] w-full max-w-[50%] flex items-center justify-center">
+        <div className="relative z-10 h-[60%] w-full max-w-[60%] flex items-center justify-center">
           <motion.div
             key={currentIndex}
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.3 }}
           >
-            <Image
-              src={images[currentIndex]}
-              alt={`${project.name} - Image ${currentIndex + 1} sur ${images.length}`}
-              width={800}
-              height={600}
-              className="max-h-[70vh] max-w-[50vw] object-contain "
-              sizes="(max-width: 1200px) 50vw, 800px"
-              priority
-            />
+            <div className="relative">
+              {!isCurrentLoaded && !hasCurrentError && (
+                <div className="absolute inset-0 bg-white/5 animate-pulse" />
+              )}
+              {hasCurrentError && (
+                <div className="absolute inset-0 flex items-center justify-center text-white/70">
+                  image indisponible
+                </div>
+              )}
+              <Image
+                src={currentDisplaySrc}
+                alt={`${project.name} - Image ${currentIndex + 1} sur ${images.length}`}
+                width={1100}
+                height={800}
+                className={`max-h-[75vh] max-w-[60vw] object-contain transition-opacity duration-300 ${
+                  isCurrentLoaded && !hasCurrentError
+                    ? 'opacity-100'
+                    : 'opacity-0'
+                }`}
+                sizes="(max-width: 1200px) 70vw, 1100px"
+                unoptimized
+                fetchPriority="high"
+                decoding="async"
+                onError={() => setHasCurrentError(true)}
+                onLoadingComplete={() => setIsCurrentLoaded(true)}
+                priority
+              />
+            </div>
           </motion.div>
         </div>
 
         {/* Image suivante */}
         <div className="absolute right-8 top-1/2 -translate-y-1/2 h-[50%] w-[15%] opacity-40 blur-[2px] pointer-events-none">
           <Image
-            src={images[(currentIndex + 1) % images.length]}
+            src={buildSanityImageUrl(images[(currentIndex + 1) % images.length], {
+              w: 600,
+              q: 60,
+              auto: 'format',
+            })}
             alt="suivante"
             width={300}
             height={200}
             className="w-full h-full object-contain"
             sizes="(max-width: 768px) 100vw, 300px"
             priority={false}
+            unoptimized
           />
         </div>
 
         {/* Contrôles de navigation - Zone gauche */}
         <div
           className="absolute left-0 top-0 h-full w-[20%] z-30 flex items-center justify-start pl-8 md:pl-16 group cursor-pointer"
-          onClick={() =>
-            setCurrentIndex(prev => (prev - 1 + images.length) % images.length)
-          }
+          onClick={() => goToIndex(currentIndex - 1)}
         >
           <span className="text-xl italic text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
             précédent &larr;
@@ -178,7 +334,7 @@ function CustomLightbox({ open, onClose, images, project }) {
         {/* Contrôles de navigation - Zone droite */}
         <div
           className="absolute right-0 top-0 h-full w-[20%] z-30 flex items-center justify-end pr-8 md:pr-16 group cursor-pointer"
-          onClick={() => setCurrentIndex(prev => (prev + 1) % images.length)}
+          onClick={() => goToIndex(currentIndex + 1)}
         >
           <span className="text-xl italic text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
             &rarr; suivant
@@ -235,23 +391,51 @@ function ImageMarquee({ images, onClick }) {
   // On duplique les images pour créer une boucle parfaite
   const allImages = [...images, ...images];
 
+  const trackRef = useRef(null);
+  const y = useMotionValue(0);
+
+  useEffect(() => {
+    if (!images?.length) return;
+    if (images.length < 2) return;
+
+    let controls;
+    let rafId;
+
+    const start = () => {
+      if (!trackRef.current) return;
+
+      // La hauteur totale = 2x, on boucle sur la moitié
+      const halfHeight = trackRef.current.scrollHeight / 2;
+      if (!Number.isFinite(halfHeight) || halfHeight <= 0) return;
+
+      if (controls) controls.stop();
+      y.set(0);
+      controls = animate(y, -halfHeight, {
+        ease: 'linear',
+        duration: images.length * 8,
+        repeat: Infinity,
+        repeatType: 'loop',
+      });
+    };
+
+    // Attendre le layout (images) avant de mesurer
+    rafId = window.requestAnimationFrame(start);
+    window.addEventListener('resize', start);
+
+    return () => {
+      if (rafId) window.cancelAnimationFrame(rafId);
+      window.removeEventListener('resize', start);
+      if (controls) controls.stop();
+    };
+  }, [images, y]);
+
   return (
     <aside
       className="hidden md:flex flex-col w-[45%] h-full relative bg-whiteCustom cursor-pointer"
       onClick={onClick}
     >
       <div className="w-full h-full overflow-hidden relative">
-        <motion.div
-          className="flex flex-col"
-          animate={{
-            y: ['0%', '-50%'],
-          }}
-          transition={{
-            ease: 'linear',
-            duration: images.length * 8, // Ralentit la durée du défilement
-            repeat: Infinity,
-          }}
-        >
+        <motion.div ref={trackRef} className="flex flex-col" style={{ y }}>
           {allImages.map((img, index) => (
             <div
               key={index}

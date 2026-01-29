@@ -612,7 +612,7 @@ export default function Gallery() {
                           }
                         >
                           <div
-                            className={`absolute inset-0 bg-black/5 animate-pulse transition-opacity duration-300 ${
+                            className={`absolute inset-0 animate-pulse transition-opacity duration-300 ${
                               isListImageLoaded || listImageError
                                 ? 'opacity-0'
                                 : 'opacity-100'

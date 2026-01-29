@@ -4,6 +4,7 @@ import { useTranslations } from "next-intl";
 import { AnimatePresence, motion } from "framer-motion";
 import { SITE_CONFIG } from "../lib/constants";
 import { EVENTS, addEventHandler } from "../lib/events";
+import { Link } from "../src/i18n/navigation";
 
 // Composant pour le formulaire de contact réutilisable
 function ContactForm({ idSuffix = "", onSubmitSuccess, defaultSubject = "" }) {
@@ -194,12 +195,9 @@ function ContactInfo() {
         Design & Development by {SITE_CONFIG.developer}
       </p>
       <p className="font-playfair text-sm md:text-[16px] leading-relaxed">
-        <a
-          href="/legal"
-          className="hover:text-whiteCustom transition-colors underline"
-        >
+        <Link href="/legal" className="hover:text-whiteCustom transition-colors underline">
           {t("legal.link")}
-        </a>
+        </Link>
       </p>
     </div>
   );
