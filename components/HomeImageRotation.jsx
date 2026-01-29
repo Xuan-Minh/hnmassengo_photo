@@ -17,6 +17,8 @@ export default function HomeImageRotation({
   const lastPosition = useRef(position);
   const [pendingPosition, setPendingPosition] = useState(null);
   const [isMobile, setIsMobile] = useState(false);
+  const loadedSrcsRef = useRef(new Set());
+  const [isCurrentLoaded, setIsCurrentLoaded] = useState(false);
 
   // Détection du mobile
   useEffect(() => {
@@ -61,12 +63,6 @@ export default function HomeImageRotation({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [index]);
 
-  if (!images.length) {
-    return null;
-  }
-
-  const current = images[index];
-
   const normalizeImageSrc = value => {
     if (typeof value !== 'string') return '';
     const raw = value.trim();
@@ -93,7 +89,43 @@ export default function HomeImageRotation({
     return `/${withoutLeading}`;
   };
 
+  const current = images[index];
+
   const imgSrc = normalizeImageSrc(current);
+
+  // Au premier affichage (et à chaque changement), on évite un "pop" en faisant
+  // dépendre l'opacité du vrai état de chargement de l'image.
+  useEffect(() => {
+    if (!imgSrc) return;
+    setIsCurrentLoaded(loadedSrcsRef.current.has(imgSrc));
+  }, [imgSrc]);
+
+  // Précharge l'image suivante pour que la transition soit déjà chaude.
+  useEffect(() => {
+    if (!images.length) return;
+    if (typeof window === 'undefined') return;
+    if (!imgSrc) return;
+
+    const next = normalizeImageSrc(images[(index + 1) % images.length]);
+    if (!next || loadedSrcsRef.current.has(next)) return;
+
+    const img = new window.Image();
+    img.src = next;
+    if (typeof img.decode === 'function') {
+      img
+        .decode()
+        .then(() => loadedSrcsRef.current.add(next))
+        .catch(() => {
+          // ignore
+        });
+    } else {
+      img.onload = () => loadedSrcsRef.current.add(next);
+    }
+  }, [images, index, imgSrc]);
+
+  if (!imgSrc) {
+    return null;
+  }
   // Positionnement horizontal dynamique
   let justify = 'justify-center';
   let marginClass = '';
@@ -120,10 +152,13 @@ export default function HomeImageRotation({
             key={imgSrc}
             className="absolute inset-0"
             initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
+            animate={{ opacity: isCurrentLoaded ? 1 : 0 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.8, ease: 'easeInOut' }}
           >
+            {!isCurrentLoaded && (
+              <div className="absolute inset-0 bg-black/5 animate-pulse" />
+            )}
             <Image
               src={imgSrc}
               alt="Han-Noah profile illustration"
@@ -131,6 +166,10 @@ export default function HomeImageRotation({
               sizes="(max-width: 768px) 50vh, 55vh"
               className="object-contain"
               priority
+              onLoadingComplete={() => {
+                loadedSrcsRef.current.add(imgSrc);
+                setIsCurrentLoaded(true);
+              }}
             />
           </motion.div>
         </AnimatePresence>
