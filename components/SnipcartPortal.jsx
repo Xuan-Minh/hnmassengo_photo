@@ -1,16 +1,8 @@
 'use client';
 import Script from 'next/script';
 
-export default function SnipcartPortal() {
-  const apiKey =
-    process.env.NEXT_PUBLIC_SNIPCART_API_KEY || process.env.SNIPCART_API_KEY;
-
-  if (!apiKey) {
-    // eslint-disable-next-line no-console
-    console.warn(
-      'Missing Snipcart public API key. Set NEXT_PUBLIC_SNIPCART_API_KEY (recommended) or SNIPCART_API_KEY.'
-    );
-  }
+export default function SnipcartPortal({ apiKey }) {
+  if (!apiKey) return null;
 
   return (
     <>

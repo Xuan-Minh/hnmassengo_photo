@@ -117,7 +117,7 @@ export default function RootLayout({ children }) {
             <RevealRoot>{children}</RevealRoot>
           </ClientLayout>
         </ErrorBoundary>
-        <SnipcartPortal />
+        <SnipcartPortal apiKey={process.env.SNIPCART_PUBLIC_API_KEY || ''} />
       </body>
     </html>
   );

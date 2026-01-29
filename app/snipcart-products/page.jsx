@@ -15,7 +15,7 @@ export const dynamic = 'force-dynamic';
 
 export default async function SnipcartProductsPage() {
   const origin =
-    (process.env.NEXT_PUBLIC_SITE_URL || '').replace(/\/$/, '') ||
+    (process.env.SITE_URL || '').replace(/\/$/, '') ||
     getOriginFromHeaders();
 
   const validationUrl = origin

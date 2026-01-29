@@ -4,7 +4,7 @@ import client from '../../../lib/sanity.client';
 export async function GET(request) {
   try {
     const origin =
-      (process.env.NEXT_PUBLIC_SITE_URL || '').replace(/\/$/, '') ||
+      (process.env.SITE_URL || '').replace(/\/$/, '') ||
       new URL(request.url).origin;
 
     const products = await client.fetch(

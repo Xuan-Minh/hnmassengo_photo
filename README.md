@@ -75,20 +75,22 @@ npm install
 Créez un fichier `.env.local` à la racine :
 
 ```env
-# Sanity CMS
-SANITY_PROJECT_ID=votre_project_id
-SANITY_DATASET=production
-SANITY_API_VERSION=2024-01-01
+# Sanity (public)
+NEXT_PUBLIC_SANITY_PROJECT_ID=votre_project_id
+NEXT_PUBLIC_SANITY_DATASET=production
+NEXT_PUBLIC_SANITY_API_VERSION=2025-12-07
 
 # Snipcart (optionnel pour la boutique)
-# Clé publique (utilisée côté navigateur)
-NEXT_PUBLIC_SNIPCART_API_KEY=votre_cle_api_snipcart
+# Clé publique (elle sera forcément exposée côté navigateur par Snipcart)
+# Sur Netlify, évitez de la définir en NEXT_PUBLIC_* (le secret scanning peut bloquer le build).
+SNIPCART_PUBLIC_API_KEY=votre_cle_publique_snipcart
 
-# (Optionnel) ancien nom gardé pour compat
-SNIPCART_API_KEY=votre_cle_api_snipcart
+# Clé secrète (serveur uniquement) — si vous utilisez l’API Snipcart côté serveur
+SNIPCART_SECRET_API_KEY=votre_cle_secrete_snipcart
 
 # Autres variables si nécessaire
-NEXT_PUBLIC_SITE_URL=https://votre-domaine.netlify.app
+# URL publique du site (utile pour sitemap/crawl/URLs absolues)
+SITE_URL=https://votre-domaine.com
 ```
 
 ### 4. Configuration Sanity
