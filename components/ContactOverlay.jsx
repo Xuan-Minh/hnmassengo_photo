@@ -11,6 +11,21 @@ function ContactForm({ idSuffix = '', onSubmitSuccess, defaultSubject = '' }) {
   const [showSuccess, setShowSuccess] = useState(false);
   const formRef = useRef(null);
 
+  const submitToNetlify = async payload => {
+    const body = new URLSearchParams(payload).toString();
+    const res = await fetch('/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body,
+    });
+
+    if (!res.ok) {
+      throw new Error('Netlify form submit failed');
+    }
+  };
+
   const handleSubmit = async e => {
     e.preventDefault();
     const form = formRef.current;
@@ -36,8 +51,15 @@ function ContactForm({ idSuffix = '', onSubmitSuccess, defaultSubject = '' }) {
       const result = await response.json();
 
       if (response.ok && result.success) {
-        // Validation réussie, soumettre à Netlify
-        form.submit();
+        // Validation réussie, soumettre à Netlify sans redirection
+        await submitToNetlify({
+          'form-name': 'contact',
+          'bot-field': formData.get('bot-field') || '',
+          fullName: data.fullName || '',
+          email: data.email || '',
+          subject: data.subject || '',
+          message: data.message || '',
+        });
         setShowSuccess(true);
         if (onSubmitSuccess) onSubmitSuccess();
       } else {
@@ -58,7 +80,6 @@ function ContactForm({ idSuffix = '', onSubmitSuccess, defaultSubject = '' }) {
       className="space-y-4 md:space-y-6"
       name="contact"
       method="POST"
-      action="/success.html"
       aria-label="Contact form"
       data-netlify="true"
       data-netlify-honeypot="bot-field"
