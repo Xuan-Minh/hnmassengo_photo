@@ -67,86 +67,35 @@ export const eventType = defineType({
       validation: Rule => Rule.required(),
     }),
     defineField({
-      name: 'excerpt',
-      title: 'Extrait (court)',
+      name: 'texte',
+      title: 'Texte',
       type: 'object',
       fields: [
         {
           name: 'fr',
           title: 'Français',
           type: 'text',
-          rows: 3,
+          rows: 6,
           validation: Rule => Rule.required(),
         },
         {
           name: 'en',
           title: 'Anglais',
           type: 'text',
-          rows: 3,
+          rows: 6,
           validation: Rule => Rule.required(),
         },
         {
           name: 'de',
           title: 'Allemand',
           type: 'text',
-          rows: 3,
+          rows: 6,
           validation: Rule => Rule.required(),
         },
       ],
       validation: Rule => Rule.required(),
-      description: "Texte court affiché dans les listes d'articles",
-    }),
-    defineField({
-      name: 'content',
-      title: 'Contenu Court (obsolète - utiliser Excerpt)',
-      type: 'object',
-      fields: [
-        {
-          name: 'fr',
-          title: 'Français',
-          type: 'text',
-          validation: Rule => Rule.required(),
-        },
-        {
-          name: 'en',
-          title: 'Anglais',
-          type: 'text',
-          validation: Rule => Rule.required(),
-        },
-        {
-          name: 'de',
-          title: 'Allemand',
-          type: 'text',
-          validation: Rule => Rule.required(),
-        },
-      ],
-      validation: Rule => Rule.required(),
-    }),
-    defineField({
-      name: 'fullContent',
-      title: 'Contenu Complet',
-      type: 'object',
-      fields: [
-        {
-          name: 'fr',
-          title: 'Français',
-          type: 'text',
-          validation: Rule => Rule.required(),
-        },
-        {
-          name: 'en',
-          title: 'Anglais',
-          type: 'text',
-          validation: Rule => Rule.required(),
-        },
-        {
-          name: 'de',
-          title: 'Allemand',
-          type: 'text',
-          validation: Rule => Rule.required(),
-        },
-      ],
-      validation: Rule => Rule.required(),
+      description:
+        "Texte affiché dans le home (tronqué automatiquement) et en entier dans l'article.",
     }),
     defineField({
       name: 'image',
@@ -165,20 +114,6 @@ export const eventType = defineType({
           ],
         }),
       ],
-    }),
-    defineField({
-      name: 'category',
-      title: 'Catégorie',
-      type: 'string',
-      options: {
-        list: [
-          { title: 'Actualités', value: 'news' },
-          { title: 'Technique', value: 'technique' },
-          { title: 'Derrière les scènes', value: 'behind-scenes' },
-          { title: 'Expositions', value: 'exhibitions' },
-          { title: 'Autre', value: 'other' },
-        ],
-      },
     }),
     defineField({
       name: 'layout',

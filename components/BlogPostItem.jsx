@@ -27,8 +27,8 @@ export default function BlogPostItem({ post, onClick }) {
             <div className="text-xl lg:text-xl font-playfair mb-4">
               {post.date}
             </div>
-            <p className="sm:text-xl lg:text-base font-playfair text-whiteCustom/80 leading-loose">
-              {post.content}
+            <p className="sm:text-xl lg:text-base font-playfair text-whiteCustom/80 leading-loose overflow-hidden text-ellipsis [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:4] lg:[-webkit-line-clamp:3]">
+              {post.text}
             </p>
           </div>
         </div>
@@ -43,8 +43,8 @@ export default function BlogPostItem({ post, onClick }) {
             <div className="text-lg lg:text-xl font-playfair mb-4">
               {post.date}
             </div>
-            <p className="text-xl lg:text-base font-playfair text-whiteCustom/80 leading-loose">
-              {post.content}
+            <p className="text-xl lg:text-base font-playfair text-whiteCustom/80 leading-loose overflow-hidden text-ellipsis [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:4] lg:[-webkit-line-clamp:3]">
+              {post.text}
             </p>
           </div>
           <div className="w-full lg:w-1/3 flex items-center justify-center order-1 lg:order-2">
@@ -72,7 +72,7 @@ export default function BlogPostItem({ post, onClick }) {
             </span>
           </div>
           <p className="text-xl lg:text-base font-playfair text-whiteCustom/80 leading-loose max-w-3xl">
-            {post.content}
+            {post.text}
           </p>
         </div>
       )}
@@ -84,7 +84,7 @@ BlogPostItem.propTypes = {
   post: PropTypes.shape({
     title: PropTypes.string.isRequired,
     date: PropTypes.string.isRequired,
-    content: PropTypes.string.isRequired,
+    text: PropTypes.string.isRequired,
     image: PropTypes.string,
     layout: PropTypes.oneOf(['image-left', 'image-right', 'text-only'])
       .isRequired,

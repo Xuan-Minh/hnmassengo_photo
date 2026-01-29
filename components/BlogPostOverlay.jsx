@@ -1,13 +1,13 @@
-"use client";
-import Image from "next/image";
-import { useState, useEffect, useRef } from "react";
-import { motion } from "framer-motion";
-import dynamic from "next/dynamic";
+'use client';
+import Image from 'next/image';
+import { useState, useEffect, useRef } from 'react';
+import { motion } from 'framer-motion';
+import dynamic from 'next/dynamic';
 const AnimatePresence = dynamic(
-  () => import("framer-motion").then((mod) => mod.AnimatePresence),
+  () => import('framer-motion').then(mod => mod.AnimatePresence),
   { ssr: false }
 );
-import ContactOverlay from "./ContactOverlay";
+import ContactOverlay from './ContactOverlay';
 
 export default function BlogPostOverlay({ post, onClose, onPrevious, onNext }) {
   const [contactOpen, setContactOpen] = useState(false);
@@ -29,16 +29,16 @@ export default function BlogPostOverlay({ post, onClose, onPrevious, onNext }) {
 
   if (!post) return null;
 
-  const hasImage = post.image && post.image.trim() !== "";
+  const hasImage = post.image && post.image.trim() !== '';
   const contactSubject = `${post.title || post.date} - Reply`;
 
   return (
     <>
       <motion.div
         className="fixed inset-0 z-[60] bg-blackCustom text-whiteCustom font-playfair flex flex-col"
-        initial={{ x: "100%" }}
+        initial={{ x: '100%' }}
         animate={{ x: 0 }}
-        exit={{ x: "100%" }}
+        exit={{ x: '100%' }}
         transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
         role="dialog"
         aria-modal="true"
@@ -76,21 +76,21 @@ export default function BlogPostOverlay({ post, onClose, onPrevious, onNext }) {
               </div>
 
               {/* Image */}
-              <div className="relative w-full mb-8 max-w-md mx-auto">
+              <div className="relative w-full mb-10 max-w-xl lg:max-w-2xl mx-auto">
                 <Image
                   src={post.image}
                   alt={post.title}
-                  width={600}
-                  height={400}
+                  width={1200}
+                  height={800}
                   className="w-full h-auto object-contain"
-                  sizes="(max-width: 768px) 100vw, 600px"
+                  sizes="(max-width: 768px) 100vw, (max-width: 1024px) 800px, 1000px"
                   priority
                 />
               </div>
 
               {/* Content - Left aligned and justified */}
               <div className="text-base md:text-lg leading-relaxed text-whiteCustom space-y-4 max-w-2xl mx-auto">
-                {post.fullContent?.split("\n\n").map((paragraph, idx) => (
+                {post.text?.split('\n\n').map((paragraph, idx) => (
                   <p key={idx} className="text-justify">
                     {paragraph}
                   </p>
@@ -116,11 +116,11 @@ export default function BlogPostOverlay({ post, onClose, onPrevious, onNext }) {
               <div className="mb-12">
                 {/* Date on 2 lines */}
                 <div className="text-7xl md:text-8xl lg:text-9xl font-normal leading-[0.85]">
-                  {post.date?.split(" ")[0] || "12"}{" "}
-                  {post.date?.split(" ")[1] || "oct."}
+                  {post.date?.split(' ')[0] || '12'}{' '}
+                  {post.date?.split(' ')[1] || 'oct.'}
                 </div>
                 <div className="text-7xl md:text-8xl lg:text-9xl font-normal leading-[0.85]">
-                  {post.date?.split(" ")[2] || "2025"}
+                  {post.date?.split(' ')[2] || '2025'}
                 </div>
                 {/* Title separate */}
                 <h1 className="text-7xl md:text-8xl lg:text-9xl italic font-normal leading-[0.85] mt-0">
@@ -130,7 +130,7 @@ export default function BlogPostOverlay({ post, onClose, onPrevious, onNext }) {
 
               {/* Content - Left aligned and justified */}
               <div className="text-base md:text-lg leading-relaxed text-whiteCustom space-y-4 max-w-2xl mx-auto">
-                {post.fullContent?.split("\n\n").map((paragraph, idx) => (
+                {post.text?.split('\n\n').map((paragraph, idx) => (
                   <p key={idx} className="text-justify">
                     {paragraph}
                   </p>

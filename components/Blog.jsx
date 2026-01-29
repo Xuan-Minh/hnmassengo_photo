@@ -1,8 +1,7 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import { useTranslations } from 'next-intl';
 import { useParams } from 'next/navigation';
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence } from 'framer-motion';
 import BlogArchives from './BlogArchives';
 import BlogPostItem from './BlogPostItem';
 import dynamic from 'next/dynamic';
@@ -14,7 +13,6 @@ const BlogPostOverlay = dynamic(() => import('./BlogPostOverlay'), {
 });
 
 export default function Blog() {
-  const t = useTranslations();
   const { locale } = useParams();
   const [posts, setPosts] = useState([]);
   const [archiveOpen, setArchiveOpen] = useState(false);
@@ -44,16 +42,17 @@ export default function Blog() {
           locale === 'fr' ? 'fr-FR' : locale === 'de' ? 'de-DE' : 'en-US',
           { year: 'numeric', month: 'short', day: 'numeric' }
         ),
-        content:
-          p.content?.[locale] ||
-          p.content?.fr ||
-          p[`content_${locale}`] ||
-          p.content_fr,
-        fullContent:
+        text:
+          p.texte?.[locale] ||
+          p.texte?.fr ||
+          // Compat ancien schéma (avant "texte")
           p.fullContent?.[locale] ||
           p.fullContent?.fr ||
-          p[`fullContent_${locale}`] ||
-          p.fullContent_fr,
+          p.excerpt?.[locale] ||
+          p.excerpt?.fr ||
+          p.content?.[locale] ||
+          p.content?.fr ||
+          '',
         image: p.image?.asset?.url,
         layout: p.layout,
       }));
@@ -77,7 +76,7 @@ export default function Blog() {
         >
           {/* Posts List */}
           <div className="flex-1 flex flex-col justify-center min-h-0">
-            {latestPosts.map((post, index) => (
+            {latestPosts.map(post => (
               <BlogPostItem
                 key={post.id}
                 post={post}
