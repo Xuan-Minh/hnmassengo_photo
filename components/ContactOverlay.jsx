@@ -10,6 +10,7 @@ import { Link } from '../src/i18n/navigation';
 function ContactForm({ idSuffix = '', onSubmitSuccess, defaultSubject = '' }) {
   const [showSuccess, setShowSuccess] = useState(false);
   const formRef = useRef(null);
+  const iframeTargetName = `netlify-contact-target${idSuffix || ''}`;
 
   const submitToNetlify = async payload => {
     const body = new URLSearchParams(payload).toString();
@@ -75,16 +76,23 @@ function ContactForm({ idSuffix = '', onSubmitSuccess, defaultSubject = '' }) {
   };
 
   return (
-    <form
-      ref={formRef}
-      className="space-y-4 md:space-y-6"
-      name="contact"
-      method="POST"
-      aria-label="Contact form"
-      data-netlify="true"
-      data-netlify-honeypot="bot-field"
-      onSubmit={handleSubmit}
-    >
+    <>
+      <iframe
+        name={iframeTargetName}
+        title="netlify-form-target"
+        style={{ display: 'none' }}
+      />
+      <form
+        ref={formRef}
+        className="space-y-4 md:space-y-6"
+        name="contact"
+        method="POST"
+        target={iframeTargetName}
+        aria-label="Contact form"
+        data-netlify="true"
+        data-netlify-honeypot="bot-field"
+        onSubmit={handleSubmit}
+      >
       <input type="hidden" name="form-name" value="contact" />
       <input type="hidden" name="bot-field" style={{ display: 'none' }} />
 
@@ -182,7 +190,8 @@ function ContactForm({ idSuffix = '', onSubmitSuccess, defaultSubject = '' }) {
           <span>send</span>
         </button>
       </div>
-    </form>
+      </form>
+    </>
   );
 }
 
