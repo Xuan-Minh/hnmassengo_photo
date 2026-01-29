@@ -1,6 +1,7 @@
 'use client';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
+import { useParams, useRouter } from 'next/navigation';
 import { AnimatePresence, motion } from 'framer-motion';
 import { SITE_CONFIG } from '../lib/constants';
 import { EVENTS, addEventHandler } from '../lib/events';
@@ -11,21 +12,10 @@ function ContactForm({ idSuffix = '', onSubmitSuccess, defaultSubject = '' }) {
   const [showSuccess, setShowSuccess] = useState(false);
   const formRef = useRef(null);
   const iframeTargetName = `netlify-contact-target${idSuffix || ''}`;
-
-  const submitToNetlify = async payload => {
-    const body = new URLSearchParams(payload).toString();
-    const res = await fetch('/', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      body,
-    });
-
-    if (!res.ok) {
-      throw new Error('Netlify form submit failed');
-    }
-  };
+  const router = useRouter();
+  const params = useParams();
+  const locale = typeof params?.locale === 'string' ? params.locale : null;
+  const homeHref = locale ? `/${locale}` : '/';
 
   const handleSubmit = async e => {
     e.preventDefault();
@@ -52,25 +42,22 @@ function ContactForm({ idSuffix = '', onSubmitSuccess, defaultSubject = '' }) {
       const result = await response.json();
 
       if (response.ok && result.success) {
-        // Validation réussie, soumettre à Netlify sans redirection
-        await submitToNetlify({
-          'form-name': 'contact',
-          'bot-field': formData.get('bot-field') || '',
-          fullName: data.fullName || '',
-          email: data.email || '',
-          subject: data.subject || '',
-          message: data.message || '',
-        });
+        // Validation réussie, soumettre à Netlify (sans navigation grâce au target iframe)
+        form.submit();
         setShowSuccess(true);
         if (onSubmitSuccess) onSubmitSuccess();
+
+        // Redirection douce vers le home après soumission
+        window.setTimeout(() => {
+          router.replace(homeHref);
+        }, 1500);
       } else {
         const details = Array.isArray(result?.errors)
           ? `\n\n${result.errors.join('\n')}`
           : '';
         alert((result?.message || 'Erreurs de validation.') + details);
       }
-    } catch (error) {
-      console.error('Erreur:', error);
+    } catch {
       alert('Erreur lors de la validation. Veuillez réessayer.');
     }
   };
@@ -87,6 +74,7 @@ function ContactForm({ idSuffix = '', onSubmitSuccess, defaultSubject = '' }) {
         className="space-y-4 md:space-y-6"
         name="contact"
         method="POST"
+        action="/"
         target={iframeTargetName}
         aria-label="Contact form"
         data-netlify="true"
@@ -243,7 +231,7 @@ function ContactInfo() {
 export function ContactContent({
   idSuffix = '',
   headingId,
-  variant = 'default',
+  variant: _variant = 'default',
   defaultSubject = '',
 }) {
   return (
@@ -289,13 +277,18 @@ export default function ContactOverlay({
   onClose: onCloseProp,
   defaultSubject = '',
 } = {}) {
-  const t = useTranslations();
   const [openState, setOpenState] = useState(false);
   const panelRef = useRef(null);
 
   // Utiliser la prop si fournie, sinon utiliser l'état interne
   const open = openProp !== undefined ? openProp : openState;
-  const handleClose = onCloseProp || (() => setOpenState(false));
+  const handleClose = useCallback(() => {
+    if (onCloseProp) {
+      onCloseProp();
+      return;
+    }
+    setOpenState(false);
+  }, [onCloseProp]);
 
   // Ouvrir/fermer via les événements globaux (seulement si non contrôlé par les props)
   useEffect(() => {
