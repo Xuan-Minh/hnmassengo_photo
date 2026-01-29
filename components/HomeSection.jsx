@@ -38,7 +38,12 @@ const fallbackImageFiles = [
 export default function HomeSection() {
   const t = useTranslations();
 
-  const [homeImages, setHomeImages] = useState(fallbackImageFiles);
+  const [homeImages, setHomeImages] = useState(() => {
+    // Par défaut: on utilise Sanity. Le fallback local est optionnel.
+    return process.env.NEXT_PUBLIC_USE_LOCAL_HOME_FALLBACK === 'true'
+      ? fallbackImageFiles
+      : [];
+  });
 
   const [ref, visible] = useFadeInOnScreen();
 
@@ -56,7 +61,7 @@ export default function HomeSection() {
 
         if (!cancelled && urls.length > 0) setHomeImages(urls);
       } catch {
-        // On conserve le fallback local
+        // On conserve l'état actuel (fallback optionnel uniquement)
       }
     };
     fetchHomeImages();

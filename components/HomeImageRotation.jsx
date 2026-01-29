@@ -1,16 +1,16 @@
-"use client";
+'use client';
 
-import { useState, useEffect, useRef } from "react";
-import { AnimatePresence, motion } from "framer-motion";
-import Image from "next/image";
-import { TIMING } from "../lib/constants";
+import { useState, useEffect, useRef } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
+import Image from 'next/image';
+import { TIMING } from '../lib/constants';
 
 // Composant simple de rotation d'images. Passer un tableau de noms de fichiers relatifs à /public/home.
 // position: "center" | "left" | "right"
 export default function HomeImageRotation({
   images = [],
   interval = TIMING.IMAGE_ROTATION_INTERVAL,
-  position = "left",
+  position = 'left',
 }) {
   const [index, setIndex] = useState(0);
   const [imgPosition, setImgPosition] = useState(position);
@@ -24,8 +24,8 @@ export default function HomeImageRotation({
       setIsMobile(window.innerWidth < 768);
     };
     checkMobile();
-    window.addEventListener("resize", checkMobile);
-    return () => window.removeEventListener("resize", checkMobile);
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
   useEffect(() => {
@@ -33,9 +33,9 @@ export default function HomeImageRotation({
     const id = setInterval(() => {
       // Sur mobile, toujours center. Sur desktop, alternance left/center
       if (isMobile) {
-        setPendingPosition("center");
+        setPendingPosition('center');
       } else {
-        const positions = ["left", "center"];
+        const positions = ['left', 'center'];
         let nextPos = lastPosition.current;
         let tries = 0;
         while (nextPos === lastPosition.current && tries < 10) {
@@ -44,7 +44,7 @@ export default function HomeImageRotation({
         }
         setPendingPosition(nextPos);
       }
-      setIndex((prev) => (prev + 1) % images.length);
+      setIndex(prev => (prev + 1) % images.length);
     }, interval);
     return () => clearInterval(id);
   }, [images, interval, isMobile]);
@@ -67,26 +67,48 @@ export default function HomeImageRotation({
 
   const current = images[index];
 
-  // Correction du chemin : retire les slashs en trop
-  const imgSrc =
-    typeof current === "string"
-      ? current.replace(/^\/+|\/+/g, "/").replace(/^home\//, "/home/")
-      : "";
+  const normalizeImageSrc = value => {
+    if (typeof value !== 'string') return '';
+    const raw = value.trim();
+    if (!raw) return '';
+
+    // URL absolue (ex: Sanity CDN)
+    if (/^https?:\/\//i.test(raw)) return raw;
+
+    // Normalise les chemins "public"
+    const withoutLeading = raw.replace(/^\/+/, '');
+
+    // Cas: "home/home1.webp" -> "/home/home1.webp"
+    if (withoutLeading.startsWith('home/')) return `/${withoutLeading}`;
+
+    // Cas: "home1.webp" -> "/home/home1.webp"
+    if (/^home\d+\.(?:avif|webp|png|jpe?g)$/i.test(withoutLeading)) {
+      return `/home/${withoutLeading}`;
+    }
+
+    // Déjà un chemin absolu ("/something")
+    if (raw.startsWith('/')) return raw;
+
+    // Fallback: force un chemin absolu pour éviter les résolutions relatives (ex: /fr/...)
+    return `/${withoutLeading}`;
+  };
+
+  const imgSrc = normalizeImageSrc(current);
   // Positionnement horizontal dynamique
-  let justify = "justify-center";
-  let marginClass = "";
+  let justify = 'justify-center';
+  let marginClass = '';
 
   // Sur mobile, toujours centré sans marge. Sur desktop, respecter la position
   if (isMobile) {
-    justify = "justify-center";
-    marginClass = "";
+    justify = 'justify-center';
+    marginClass = '';
   } else {
-    if (imgPosition === "left") {
-      justify = "justify-start";
-      marginClass = "md:pl-[180px]";
+    if (imgPosition === 'left') {
+      justify = 'justify-start';
+      marginClass = 'md:pl-[180px]';
     }
-    if (imgPosition === "center") {
-      marginClass = "md:pl-[2O0px]";
+    if (imgPosition === 'center') {
+      marginClass = 'md:pl-[200px]';
     }
   }
 
@@ -100,7 +122,7 @@ export default function HomeImageRotation({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.8, ease: "easeInOut" }}
+            transition={{ duration: 0.8, ease: 'easeInOut' }}
           >
             <Image
               src={imgSrc}
