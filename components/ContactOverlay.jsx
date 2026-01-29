@@ -93,103 +93,103 @@ function ContactForm({ idSuffix = '', onSubmitSuccess, defaultSubject = '' }) {
         data-netlify-honeypot="bot-field"
         onSubmit={handleSubmit}
       >
-      <input type="hidden" name="form-name" value="contact" />
-      <input type="hidden" name="bot-field" style={{ display: 'none' }} />
+        <input type="hidden" name="form-name" value="contact" />
+        <input type="hidden" name="bot-field" style={{ display: 'none' }} />
 
-      {showSuccess && (
-        <div className="bg-green-600/20 border border-green-500 text-green-300 p-3 md:p-4 rounded mb-4 md:mb-6">
-          <div className="flex items-center gap-3">
-            <span className="text-lg md:text-xl">✅</span>
-            <div>
-              <h3 className="font-semibold text-sm md:text-base">
-                Message envoyé avec succès !
-              </h3>
-              <p className="text-xs md:text-sm opacity-90">
-                Nous vous répondrons sous 24h à l'adresse indiquée.
-              </p>
+        {showSuccess && (
+          <div className="bg-green-600/20 border border-green-500 text-green-300 p-3 md:p-4 rounded mb-4 md:mb-6">
+            <div className="flex items-center gap-3">
+              <span className="text-lg md:text-xl">✅</span>
+              <div>
+                <h3 className="font-semibold text-sm md:text-base">
+                  Message envoyé avec succès !
+                </h3>
+                <p className="text-xs md:text-sm opacity-90">
+                  Nous vous répondrons sous 24h à l'adresse indiquée.
+                </p>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
 
-      <div>
-        <label
-          htmlFor={`fullName${idSuffix}`}
-          className="block text-whiteCustom/90 font-playfair text-sm mb-2"
-        >
-          full name *
-        </label>
-        <input
-          id={`fullName${idSuffix}`}
-          name="fullName"
-          type="text"
-          required
-          minLength={2}
-          className="w-full bg-formBG text-whiteCustom placeholder-whiteCustom/40 border border-whiteCustom/60 focus:border-whiteCustom outline-none px-3 py-2 text-sm md:text-base"
-        />
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
         <div>
           <label
-            htmlFor={`email${idSuffix}`}
+            htmlFor={`fullName${idSuffix}`}
             className="block text-whiteCustom/90 font-playfair text-sm mb-2"
           >
-            email *
+            full name *
           </label>
           <input
-            id={`email${idSuffix}`}
-            name="email"
-            type="email"
-            required
-            className="w-full bg-formBG text-whiteCustom placeholder-whiteCustom/40 border border-whiteCustom/60 focus:border-whiteCustom outline-none px-3 py-2 text-sm md:text-base"
-          />
-        </div>
-        <div>
-          <label
-            htmlFor={`subject${idSuffix}`}
-            className="block text-whiteCustom/90 font-playfair text-sm mb-2"
-          >
-            subject *
-          </label>
-          <input
-            id={`subject${idSuffix}`}
-            name="subject"
+            id={`fullName${idSuffix}`}
+            name="fullName"
             type="text"
             required
-            maxLength={100}
-            defaultValue={defaultSubject}
+            minLength={2}
             className="w-full bg-formBG text-whiteCustom placeholder-whiteCustom/40 border border-whiteCustom/60 focus:border-whiteCustom outline-none px-3 py-2 text-sm md:text-base"
           />
         </div>
-      </div>
 
-      <div>
-        <label
-          htmlFor={`message${idSuffix}`}
-          className="block text-whiteCustom/90 font-playfair text-sm mb-2"
-        >
-          message *
-        </label>
-        <textarea
-          id={`message${idSuffix}`}
-          name="message"
-          rows={5}
-          required
-          minLength={10}
-          className="w-full bg-formBG text-whiteCustom placeholder-whiteCustom/40 border border-whiteCustom/60 focus:border-whiteCustom outline-none px-3 py-2 resize-y text-sm md:text-base"
-        />
-      </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+          <div>
+            <label
+              htmlFor={`email${idSuffix}`}
+              className="block text-whiteCustom/90 font-playfair text-sm mb-2"
+            >
+              email *
+            </label>
+            <input
+              id={`email${idSuffix}`}
+              name="email"
+              type="email"
+              required
+              className="w-full bg-formBG text-whiteCustom placeholder-whiteCustom/40 border border-whiteCustom/60 focus:border-whiteCustom outline-none px-3 py-2 text-sm md:text-base"
+            />
+          </div>
+          <div>
+            <label
+              htmlFor={`subject${idSuffix}`}
+              className="block text-whiteCustom/90 font-playfair text-sm mb-2"
+            >
+              subject *
+            </label>
+            <input
+              id={`subject${idSuffix}`}
+              name="subject"
+              type="text"
+              required
+              maxLength={100}
+              defaultValue={defaultSubject}
+              className="w-full bg-formBG text-whiteCustom placeholder-whiteCustom/40 border border-whiteCustom/60 focus:border-whiteCustom outline-none px-3 py-2 text-sm md:text-base"
+            />
+          </div>
+        </div>
 
-      <div>
-        <button
-          type="submit"
-          className="px-6 py-3 text-lg font-medium font-playfair text-whiteCustom/85 hover:text-whiteCustom hover:opacity-100 transition-all duration-300"
-        >
-          <span className="inline-block mr-2">→</span>
-          <span>send</span>
-        </button>
-      </div>
+        <div>
+          <label
+            htmlFor={`message${idSuffix}`}
+            className="block text-whiteCustom/90 font-playfair text-sm mb-2"
+          >
+            message *
+          </label>
+          <textarea
+            id={`message${idSuffix}`}
+            name="message"
+            rows={5}
+            required
+            minLength={10}
+            className="w-full bg-formBG text-whiteCustom placeholder-whiteCustom/40 border border-whiteCustom/60 focus:border-whiteCustom outline-none px-3 py-2 resize-y text-sm md:text-base"
+          />
+        </div>
+
+        <div>
+          <button
+            type="submit"
+            className="px-6 py-3 text-lg font-medium font-playfair text-whiteCustom/85 hover:text-whiteCustom hover:opacity-100 transition-all duration-300"
+          >
+            <span className="inline-block mr-2">→</span>
+            <span>send</span>
+          </button>
+        </div>
       </form>
     </>
   );
