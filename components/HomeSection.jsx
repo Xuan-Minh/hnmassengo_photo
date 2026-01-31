@@ -3,13 +3,15 @@ import { useTranslations } from 'next-intl';
 import { HomeImageRotation, TextScramble, Logo } from './';
 import { motion } from 'framer-motion';
 import { useRef, useState, useEffect } from 'react';
+import { useParams } from 'next/navigation';
 import client from '../lib/sanity.client';
 
 // Hook utilitaire pour fade-in à la première apparition
-function useFadeInOnScreen() {
+function useFadeInOnScreen(resetKey) {
   const ref = useRef();
   const [visible, setVisible] = useState(false);
   useEffect(() => {
+    setVisible(false);
     const node = ref.current;
     if (!node) return;
     const observer = new window.IntersectionObserver(
@@ -23,7 +25,7 @@ function useFadeInOnScreen() {
     );
     observer.observe(node);
     return () => observer.disconnect();
-  }, []);
+  }, [resetKey]);
   return [ref, visible];
 }
 
@@ -37,6 +39,7 @@ const fallbackImageFiles = [
 
 export default function HomeSection() {
   const t = useTranslations();
+  const { locale } = useParams();
 
   const [homeImages, setHomeImages] = useState(() => {
     // Par défaut: on utilise Sanity. Le fallback local est optionnel.
@@ -45,7 +48,7 @@ export default function HomeSection() {
       : [];
   });
 
-  const [ref, visible] = useFadeInOnScreen();
+  const [ref, visible] = useFadeInOnScreen(locale);
 
   useEffect(() => {
     let cancelled = false;

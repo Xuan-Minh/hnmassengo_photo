@@ -4,6 +4,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Message envoyé - Han-Noah MASSENGO</title>
+    <script>
+      // Masquer la page si JS est actif (on redirige vite)
+      document.documentElement.classList.add('js');
+    </script>
     <style>
       * {
         margin: 0;
@@ -14,7 +18,7 @@
       body {
         background-color: #1a1a1a;
         color: #f4f3f2;
-        font-family: "Playfair Display", serif;
+        font-family: 'Playfair Display', serif;
         min-height: 100vh;
         display: flex;
         align-items: center;
@@ -25,6 +29,11 @@
       .container {
         text-align: center;
         max-width: 600px;
+      }
+
+      /* Si JS est actif, on masque le contenu (redirection rapide) */
+      .js .container {
+        display: none;
       }
 
       .success-icon {
@@ -62,7 +71,7 @@
         color: #1a1a1a;
       }
 
-      @import url("https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;1,400;0,700;1,700&display=swap");
+      @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;1,400;0,700;1,700&display=swap');
     </style>
   </head>
   <body>
@@ -77,11 +86,24 @@
       <a href="/" class="back-link">← Retour à l'accueil</a>
     </div>
 
+    <noscript>
+      <div class="container">
+        <p>
+          JavaScript est désactivé. Cliquez ici pour revenir à l'accueil :
+          <a href="/" class="back-link">← Retour à l'accueil</a>
+        </p>
+      </div>
+    </noscript>
+
     <script>
-      // Redirection automatique après 10 secondes
+      // Redirection automatique après un court délai.
+      // On essaie de conserver la locale via le referrer (/fr, /en, /de).
+      const ref = document.referrer || '';
+      const m = ref.match(/\/((fr|en|de))(\/|$)/);
+      const target = m?.[1] ? `/${m[1]}` : '/';
       setTimeout(() => {
-        window.location.href = "/";
-      }, 10000);
+        window.location.replace(target);
+      }, 1200);
     </script>
   </body>
 </html>

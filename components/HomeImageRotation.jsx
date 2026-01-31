@@ -16,14 +16,16 @@ export default function HomeImageRotation({
   const [imgPosition, setImgPosition] = useState(position);
   const lastPosition = useRef(position);
   const [pendingPosition, setPendingPosition] = useState(null);
-  const [isMobile, setIsMobile] = useState(false);
+  const [isNarrowLayout, setIsNarrowLayout] = useState(false);
   const loadedSrcsRef = useRef(new Set());
   const [isCurrentLoaded, setIsCurrentLoaded] = useState(false);
 
-  // Détection du mobile
+  // Détection du layout (mobile + tablette)
   useEffect(() => {
     const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
+      // En dessous de lg (1024px), on garde une mise en page "stack" sans décalage
+      // pour éviter que l'image empiète visuellement sur le texte.
+      setIsNarrowLayout(window.innerWidth < 1024);
     };
     checkMobile();
     window.addEventListener('resize', checkMobile);
@@ -34,7 +36,7 @@ export default function HomeImageRotation({
     if (!images.length) return;
     const id = setInterval(() => {
       // Sur mobile, toujours center. Sur desktop, alternance left/center
-      if (isMobile) {
+      if (isNarrowLayout) {
         setPendingPosition('center');
       } else {
         const positions = ['left', 'center'];
@@ -49,7 +51,7 @@ export default function HomeImageRotation({
       setIndex(prev => (prev + 1) % images.length);
     }, interval);
     return () => clearInterval(id);
-  }, [images, interval, isMobile]);
+  }, [images, interval, isNarrowLayout]);
 
   // Quand l'image change, on applique la nouvelle position (après le fade)
   useEffect(() => {
@@ -130,23 +132,23 @@ export default function HomeImageRotation({
   let justify = 'justify-center';
   let marginClass = '';
 
-  // Sur mobile, toujours centré sans marge. Sur desktop, respecter la position
-  if (isMobile) {
+  // En-dessous de lg, toujours centré sans marge. Sur desktop, respecter la position.
+  if (isNarrowLayout) {
     justify = 'justify-center';
     marginClass = '';
   } else {
     if (imgPosition === 'left') {
       justify = 'justify-start';
-      marginClass = 'md:pl-[180px]';
+      marginClass = 'lg:pl-[180px]';
     }
     if (imgPosition === 'center') {
-      marginClass = 'md:pl-[200px]';
+      marginClass = 'lg:pl-[200px]';
     }
   }
 
   return (
     <div className={`flex ${justify} w-full ${marginClass}`}>
-      <div className="relative h-[55vh] lg:h-[60vh] aspect-[3/4] overflow-hidden mx-auto lg:mx-0">
+      <div className="relative h-[45vh] md:h-[48vh] lg:h-[60vh] aspect-[3/4] overflow-hidden mx-auto lg:mx-0">
         <AnimatePresence mode="wait">
           <motion.div
             key={imgSrc}
@@ -163,7 +165,7 @@ export default function HomeImageRotation({
               src={imgSrc}
               alt="Han-Noah profile illustration"
               fill
-              sizes="(max-width: 768px) 50vh, 55vh"
+              sizes="(max-width: 1024px) 48vh, 60vh"
               className="object-contain"
               priority
               onLoadingComplete={() => {
