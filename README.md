@@ -80,6 +80,10 @@ NEXT_PUBLIC_SANITY_PROJECT_ID=votre_project_id
 NEXT_PUBLIC_SANITY_DATASET=production
 NEXT_PUBLIC_SANITY_API_VERSION=2025-12-07
 
+# Sanity (serveur) — requis pour écrire dans Sanity (inscrits newsletter + campagnes)
+# Crée un token dans Sanity: Manage → API → Tokens (permissions: "Editor" ou +)
+SANITY_WRITE_TOKEN=votre_token_serveur
+
 # Snipcart (optionnel pour la boutique)
 # Clé publique (elle sera forcément exposée côté navigateur par Snipcart)
 # Sur Netlify, évitez de la définir en NEXT_PUBLIC_* (le secret scanning peut bloquer le build).
@@ -91,7 +95,35 @@ SNIPCART_SECRET_API_KEY=votre_cle_secrete_snipcart
 # Autres variables si nécessaire
 # URL publique du site (utile pour sitemap/crawl/URLs absolues)
 SITE_URL=https://votre-domaine.com
+
+# Newsletter / Resend
+RESEND_API_KEY=votre_api_key_resend
+RESEND_FROM="HN Massengo <newsletter@votre-domaine.com>"
+
+# Sécurité webhook Sanity (HMAC)
+SANITY_WEBHOOK_SECRET=une_cle_secrete_longue
+
+# Sécurité lien de désinscription (HMAC)
+NEWSLETTER_UNSUB_SECRET=une_autre_cle_secrete_longue
 ```
+
+### Newsletter (Sanity → Webhook → Resend)
+
+1. **Créer le webhook dans Sanity**
+   - Sanity Manage → API → Webhooks → New webhook
+   - URL: `https://votre-domaine.com/api/webhooks/sanity-newsletter`
+   - Secret: même valeur que `SANITY_WEBHOOK_SECRET`
+   - Trigger: Publish (sur le type `blogPost`)
+   - Payload recommandé (simple):
+     - Body: `{ "_id": _id, "_type": _type }`
+
+2. **Inscrits newsletter**
+   - Les emails sont stockés dans Sanity (`newsletterSubscriber`).
+   - Les campagnes d’envoi sont enregistrées dans Sanity (`newsletterCampaign`) pour éviter les doubles envois.
+
+3. **Lien direct vers un post depuis l’email**
+   - Le bouton “Lire sur le site” pointe vers `/<locale>?post=<id>#blog`.
+   - Le front ouvre automatiquement l’overlay du post correspondant.
 
 ### 4. Configuration Sanity
 

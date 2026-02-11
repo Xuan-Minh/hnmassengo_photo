@@ -1,5 +1,6 @@
-import { NextResponse } from "next/server";
-import { logger } from "../../../lib/logger";
+import { NextResponse } from 'next/server';
+import { logger } from '../../../lib/logger';
+import { upsertNewsletterSubscriber } from '../../../lib/newsletter/subscribe';
 
 // Simple in-memory rate limiter (reset every 10min)
 const RATE_LIMIT = 5; // max 5 req/10min/ip
@@ -16,49 +17,63 @@ function cleanupOldEntries() {
 export async function POST(request) {
   try {
     cleanupOldEntries();
-    const ip = request.headers.get("x-forwarded-for") || "unknown";
+    const ip = request.headers.get('x-forwarded-for') || 'unknown';
     const now = Date.now();
     const entry = ipHits.get(ip) || { first: now, count: 0 };
     if (now - entry.first < WINDOW_MS && entry.count >= RATE_LIMIT) {
       return NextResponse.json(
-        { success: false, message: "Trop de requêtes, réessayez plus tard." },
+        { success: false, message: 'Trop de requêtes, réessayez plus tard.' },
         { status: 429 }
       );
     }
     entry.count++;
     ipHits.set(ip, entry);
 
-    const { fullName, email, subject, message } = await request.json();
+    const { fullName, email, subject, message, newsletterOptIn, locale } =
+      await request.json();
 
     // Validation côté serveur
     const errors = [];
     if (!fullName || fullName.trim().length < 2) {
-      errors.push("Le nom complet est requis (au moins 2 caractères).");
+      errors.push('Le nom complet est requis (au moins 2 caractères).');
     }
     if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      errors.push("Une adresse email valide est requise.");
+      errors.push('Une adresse email valide est requise.');
     }
     if (!message || message.trim().length < 10) {
-      errors.push("Le message est requis (au moins 10 caractères).");
+      errors.push('Le message est requis (au moins 10 caractères).');
     }
     if (subject && subject.length > 100) {
-      errors.push("Le sujet ne peut pas dépasser 100 caractères.");
+      errors.push('Le sujet ne peut pas dépasser 100 caractères.');
     }
 
     if (errors.length > 0) {
       return NextResponse.json(
-        { success: false, message: "Erreurs de validation", errors },
+        { success: false, message: 'Erreurs de validation', errors },
         { status: 400 }
       );
     }
 
+    // Option newsletter (ne doit jamais bloquer le formulaire de contact)
+    if (newsletterOptIn) {
+      try {
+        await upsertNewsletterSubscriber({
+          email,
+          locale,
+          source: 'contact-form',
+        });
+      } catch (e) {
+        logger.warn('Newsletter opt-in failed:', e);
+      }
+    }
+
     // Ici, la validation est faite, mais l'envoi sera géré par Netlify
     return NextResponse.json(
-      { success: true, message: "Validation réussie, envoi en cours..." },
+      { success: true, message: 'Validation réussie, envoi en cours...' },
       { status: 200 }
     );
   } catch (error) {
-    logger.error("API Contact Error:", error);
+    logger.error('API Contact Error:', error);
     return NextResponse.json(
       { success: false, message: "Erreur lors de l'envoi du message" },
       { status: 500 }

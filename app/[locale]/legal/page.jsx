@@ -56,8 +56,8 @@ export default function LegalPage() {
             </h2>
             <p>
               Toutes les images présentes sur ce site sont la propriété
-              exclusive de Han-Noah MASSENGO. Toute reproduction, distribution
-              ou publication, même partielle, est interdite sans autorisation
+              exclusive de Studio42. Toute reproduction, distribution ou
+              publication, même partielle, est interdite sans autorisation
               écrite préalable.
             </p>
           </section>
@@ -68,8 +68,8 @@ export default function LegalPage() {
             </h2>
             <p>
               Les informations recueillies via le formulaire de contact sont
-              destinées uniquement à Han-Noah MASSENGO pour répondre à vos
-              demandes. Elles ne sont ni vendues, ni cédées à des tiers.
+              destinées uniquement à Studio42 pour répondre à vos demandes.
+              Elles ne sont ni vendues, ni cédées à des tiers.
             </p>
           </section>
 

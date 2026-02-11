@@ -1,15 +1,18 @@
 'use client';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { AnimatePresence, motion } from 'framer-motion';
 import { SITE_CONFIG } from '../lib/constants';
 import { EVENTS, addEventHandler } from '../lib/events';
 import { Link } from '../src/i18n/navigation';
+import { useParams } from 'next/navigation';
+import NewsletterSignup from './NewsletterSignup';
 
 // Composant pour le formulaire de contact réutilisable
 function ContactForm({ idSuffix = '', onSubmitSuccess, defaultSubject = '' }) {
   const [showSuccess, setShowSuccess] = useState(false);
   const formRef = useRef(null);
+  const { locale } = useParams();
 
   const handleSubmit = async e => {
     e.preventDefault();
@@ -22,6 +25,8 @@ function ContactForm({ idSuffix = '', onSubmitSuccess, defaultSubject = '' }) {
       email: formData.get('email'),
       subject: formData.get('subject'),
       message: formData.get('message'),
+      newsletterOptIn: formData.get('newsletterOptIn') === 'on',
+      locale,
     };
 
     try {
@@ -46,8 +51,7 @@ function ContactForm({ idSuffix = '', onSubmitSuccess, defaultSubject = '' }) {
           : '';
         alert((result?.message || 'Erreurs de validation.') + details);
       }
-    } catch (error) {
-      console.error('Erreur:', error);
+    } catch {
       alert('Erreur lors de la validation. Veuillez réessayer.');
     }
   };
@@ -66,6 +70,7 @@ function ContactForm({ idSuffix = '', onSubmitSuccess, defaultSubject = '' }) {
     >
       <input type="hidden" name="form-name" value="contact" />
       <input type="hidden" name="bot-field" style={{ display: 'none' }} />
+      <input type="hidden" name="locale" value={locale || ''} />
 
       {showSuccess && (
         <div className="bg-green-600/20 border border-green-500 text-green-300 p-3 md:p-4 rounded mb-4 md:mb-6">
@@ -152,13 +157,21 @@ function ContactForm({ idSuffix = '', onSubmitSuccess, defaultSubject = '' }) {
         />
       </div>
 
-      <div>
+      <div className="flex items-center justify-between gap-4 w-full">
+        <label className="inline-flex items-center gap-2 text-whiteCustom/80 font-playfair text-sm select-none">
+          <input
+            type="checkbox"
+            name="newsletterOptIn"
+            className="accent-whiteCustom"
+          />
+          <span>Subscribe to Newsletter</span>
+        </label>
+
         <button
           type="submit"
-          className="px-6 py-3 text-lg font-medium font-playfair text-whiteCustom/85 hover:text-whiteCustom hover:opacity-100 transition-all duration-300"
+          className="px-4 py-2 text-sm font-medium font-playfair text-whiteCustom/85 hover:text-whiteCustom transition-all duration-300 border border-whiteCustom/60"
         >
-          <span className="inline-block mr-2">→</span>
-          <span>send</span>
+          <span>Send</span>
         </button>
       </div>
     </form>
@@ -197,6 +210,9 @@ function ContactInfo() {
       <p className="font-playfair text-sm md:text-[16px] leading-relaxed">
         Design & Development by {SITE_CONFIG.developer}
       </p>
+
+      <NewsletterSignup className="pt-2" />
+
       <p className="font-playfair text-sm md:text-[16px] leading-relaxed">
         <Link
           href="/legal"
@@ -213,7 +229,7 @@ function ContactInfo() {
 export function ContactContent({
   idSuffix = '',
   headingId,
-  variant = 'default',
+  variant: _variant = 'default',
   defaultSubject = '',
 }) {
   return (
@@ -236,19 +252,39 @@ export function ContactContent({
 }
 
 // Composant séparé pour le marquee
-export function ContactMarquee() {
+export function ContactMarquee({ mode = 'absolute' } = {}) {
+  const wrapperClassName =
+    mode === 'inline'
+      ? 'flex-shrink-0 border-t border-whiteCustom/60 overflow-hidden pointer-events-none'
+      : 'absolute inset-x-0 bottom-0 border-t border-whiteCustom/60 overflow-hidden pointer-events-none';
+
+  const MarqueeBlock = ({ ariaHidden = false } = {}) => (
+    <div
+      className="flex items-center gap-10 sm:gap-12 md:gap-14 lg:gap-16 pr-10 sm:pr-12 md:pr-14 lg:pr-16"
+      aria-hidden={ariaHidden}
+    >
+      <span className="inline-block">{SITE_CONFIG.copyright}</span>
+      <span className="inline-block">{SITE_CONFIG.copyright}</span>
+      <span className="inline-block">{SITE_CONFIG.copyright}</span>
+      <span className="inline-block">{SITE_CONFIG.copyright}</span>
+    </div>
+  );
+
   return (
-    <div className="absolute inset-x-0 bottom-0 border-t border-whiteCustom/60 overflow-hidden pointer-events-none">
+    <div className={wrapperClassName}>
       <motion.div
-        className="whitespace-nowrap text-whiteCustom/90 font-playfair text-[18px] sm:text-[24px] md:text-[32px] lg:text-[38px] xl:text-[44px] py-1 sm:py-1.5 md:py-2 -tracking-normal"
+        className="flex w-max whitespace-nowrap text-whiteCustom/90 font-playfair text-[18px] sm:text-[24px] md:text-[32px] lg:text-[38px] xl:text-[44px] py-1 sm:py-1.5 md:py-2 -tracking-normal"
         animate={{ x: ['0%', '-50%'] }}
-        transition={{ duration: 30, ease: 'linear', repeat: Infinity }}
+        transition={{
+          duration: 30,
+          ease: 'linear',
+          repeat: Infinity,
+          repeatType: 'loop',
+        }}
         style={{ willChange: 'transform' }}
       >
-        <span className="inline-block">{SITE_CONFIG.copyright}</span>
-        <span className="inline-block">{SITE_CONFIG.copyright}</span>
-        <span className="inline-block">{SITE_CONFIG.copyright}</span>
-        <span className="inline-block">{SITE_CONFIG.copyright}</span>
+        <MarqueeBlock />
+        <MarqueeBlock ariaHidden />
       </motion.div>
     </div>
   );
@@ -259,13 +295,15 @@ export default function ContactOverlay({
   onClose: onCloseProp,
   defaultSubject = '',
 } = {}) {
-  const t = useTranslations();
   const [openState, setOpenState] = useState(false);
   const panelRef = useRef(null);
 
   // Utiliser la prop si fournie, sinon utiliser l'état interne
   const open = openProp !== undefined ? openProp : openState;
-  const handleClose = onCloseProp || (() => setOpenState(false));
+  const handleClose = useCallback(() => {
+    if (typeof onCloseProp === 'function') return onCloseProp();
+    setOpenState(false);
+  }, [onCloseProp]);
 
   // Ouvrir/fermer via les événements globaux (seulement si non contrôlé par les props)
   useEffect(() => {
@@ -407,23 +445,7 @@ export default function ContactOverlay({
               </div>
 
               {/* Marquee en position relative - fait partie du flux */}
-              <div className="flex-shrink-0 border-t border-whiteCustom/60 overflow-hidden pointer-events-none">
-                <motion.div
-                  className="whitespace-nowrap text-whiteCustom/90 font-playfair text-[18px] sm:text-[24px] md:text-[32px] lg:text-[38px] xl:text-[44px] py-1 sm:py-1.5 md:py-2 -tracking-normal"
-                  animate={{ x: ['0%', '-50%'] }}
-                  transition={{
-                    duration: 30,
-                    ease: 'linear',
-                    repeat: Infinity,
-                  }}
-                  style={{ willChange: 'transform' }}
-                >
-                  <span className="inline-block">{SITE_CONFIG.copyright}</span>
-                  <span className="inline-block">{SITE_CONFIG.copyright}</span>
-                  <span className="inline-block">{SITE_CONFIG.copyright}</span>
-                  <span className="inline-block">{SITE_CONFIG.copyright}</span>
-                </motion.div>
-              </div>
+              <ContactMarquee mode="inline" />
             </motion.div>
           </section>
         )}

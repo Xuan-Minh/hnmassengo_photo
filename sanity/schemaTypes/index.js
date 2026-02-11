@@ -3,6 +3,8 @@ import { projectType } from './projectType';
 import shopItem from './shopItem';
 import { loadingImageType } from './loadingImageType';
 import { homeSectionImageType } from './homeSectionImageType';
+import { newsletterSubscriber } from './newsletterSubscriber';
+import { newsletterCampaign } from './newsletterCampaign';
 
 export const schema = {
   types: [
@@ -11,5 +13,7 @@ export const schema = {
     shopItem,
     loadingImageType,
     homeSectionImageType,
+    newsletterSubscriber,
+    newsletterCampaign,
   ],
 };

@@ -1,6 +1,6 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { AnimatePresence } from 'framer-motion';
 import BlogArchives from './BlogArchives';
 import BlogPostItem from './BlogPostItem';
@@ -14,16 +14,46 @@ const BlogPostOverlay = dynamic(() => import('./BlogPostOverlay'), {
 
 export default function Blog() {
   const { locale } = useParams();
+  const router = useRouter();
   const [posts, setPosts] = useState([]);
   const [archiveOpen, setArchiveOpen] = useState(false);
   const [selectedPost, setSelectedPost] = useState(null);
   const [isMobile, setIsMobile] = React.useState(false);
+  const [requestedPostId, setRequestedPostId] = useState(null);
+
+  const readRequestedPostId = () => {
+    try {
+      const sp = new URLSearchParams(window.location.search);
+      return sp.get('post');
+    } catch {
+      return null;
+    }
+  };
+
+  const replacePostParam = postId => {
+    const pathname = `/${locale}`;
+    const sp = new URLSearchParams(window.location.search);
+
+    if (postId) sp.set('post', postId);
+    else sp.delete('post');
+
+    const qs = sp.toString();
+    router.replace(qs ? `${pathname}?${qs}#blog` : `${pathname}#blog`);
+  };
 
   React.useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 1024);
     checkMobile();
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  // Lire ?post=<id> côté client sans useSearchParams (évite l'erreur suspense en build)
+  useEffect(() => {
+    const update = () => setRequestedPostId(readRequestedPostId());
+    update();
+    window.addEventListener('popstate', update);
+    return () => window.removeEventListener('popstate', update);
   }, []);
 
   useEffect(() => {
@@ -61,6 +91,13 @@ export default function Blog() {
     fetchPosts();
   }, [locale]);
 
+  // Ouvrir un post directement via ?post=<id> (utile pour les liens newsletter)
+  useEffect(() => {
+    if (!requestedPostId || posts.length === 0) return;
+    const match = posts.find(p => p.id === requestedPostId);
+    if (match) setSelectedPost(match);
+  }, [requestedPostId, posts]);
+
   const latestPosts = posts.slice(0, isMobile ? 1 : CONTENT.BLOG_PREVIEW_COUNT);
 
   return (
@@ -80,7 +117,10 @@ export default function Blog() {
               <BlogPostItem
                 key={post.id}
                 post={post}
-                onClick={() => setSelectedPost(post)}
+                onClick={() => {
+                  replacePostParam(post.id);
+                  setSelectedPost(post);
+                }}
               />
             ))}
             <div className="w-full xl:justify-end 2xl:justify-center mt-4 shrink-0 hidden lg:flex">
@@ -88,7 +128,7 @@ export default function Blog() {
                 onClick={() => setArchiveOpen(true)}
                 className="text-lg font-playfair italic text-whiteCustom/60 hover:text-whiteCustom transition-colors"
               >
-                + More posts
+                More posts
               </button>
             </div>
           </div>
@@ -111,13 +151,18 @@ export default function Blog() {
         {selectedPost && (
           <BlogPostOverlay
             post={selectedPost}
-            onClose={() => setSelectedPost(null)}
+            onClose={() => {
+              setSelectedPost(null);
+              replacePostParam(null);
+            }}
             onPrevious={() => {
               const currentIndex = posts.findIndex(
                 p => p.id === selectedPost.id
               );
               if (currentIndex > 0) {
-                setSelectedPost(posts[currentIndex - 1]);
+                const prev = posts[currentIndex - 1];
+                replacePostParam(prev.id);
+                setSelectedPost(prev);
               }
             }}
             onNext={() => {
@@ -125,7 +170,9 @@ export default function Blog() {
                 p => p.id === selectedPost.id
               );
               if (currentIndex < posts.length - 1) {
-                setSelectedPost(posts[currentIndex + 1]);
+                const next = posts[currentIndex + 1];
+                replacePostParam(next.id);
+                setSelectedPost(next);
               }
             }}
           />
