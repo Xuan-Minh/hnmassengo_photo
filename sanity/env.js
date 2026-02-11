@@ -1,5 +1,16 @@
-function normalizeProjectId(value) {
+function stripWrappingQuotes(value) {
   const raw = (value || '').trim();
+  if (
+    (raw.startsWith('"') && raw.endsWith('"')) ||
+    (raw.startsWith("'") && raw.endsWith("'"))
+  ) {
+    return raw.slice(1, -1).trim();
+  }
+  return raw;
+}
+
+function normalizeProjectId(value) {
+  const raw = stripWrappingQuotes(value);
   if (!raw) return '';
 
   // Cas fréquent: on colle une URL ou un hostname (ex: https://xxxx.api.sanity.io)
@@ -17,12 +28,14 @@ function normalizeProjectId(value) {
   return raw;
 }
 
-export const apiVersion = (
+export const apiVersion = stripWrappingQuotes(
   process.env.NEXT_PUBLIC_SANITY_API_VERSION || '2025-12-07'
-).trim();
-export const dataset = (
+);
+
+export const dataset = stripWrappingQuotes(
   process.env.NEXT_PUBLIC_SANITY_DATASET || 'production'
-).trim();
+);
+
 export const projectId = normalizeProjectId(
   process.env.NEXT_PUBLIC_SANITY_PROJECT_ID
 );
