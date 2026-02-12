@@ -1,7 +1,6 @@
 'use client';
-import { useEffect, useRef } from 'react';
 import Image from 'next/image';
-import { motion } from 'framer-motion';
+import BaseOverlay from './BaseOverlay';
 
 function localizeField(value, locale) {
   if (!value) return '';
@@ -16,49 +15,13 @@ export default function ShopOverlay({
   locale,
   inCart = false,
 }) {
-  const previouslyFocusedElement = useRef(null);
-
-  // Mémoriser l'élément actif à l'ouverture
-  useEffect(() => {
-    if (product) {
-      previouslyFocusedElement.current = document.activeElement;
-    }
-  }, [product]);
-
-  // Rendre le focus à l'élément déclencheur à la fermeture
-  useEffect(() => {
-    if (!product && previouslyFocusedElement.current) {
-      previouslyFocusedElement.current.focus?.();
-    }
-  }, [product]);
-
   if (!product) return null;
 
   const displayTitle = localizeField(product.title, locale);
   const displayDescription = localizeField(product.description, locale);
 
   return (
-    <motion.div
-      className="fixed inset-0 z-[60] bg-blackCustom text-whiteCustom font-playfair flex flex-col"
-      initial={{ x: '100%' }}
-      animate={{ x: 0 }}
-      exit={{ x: '100%' }}
-      transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="shop-product-title"
-    >
-      {/* Header / Back Button */}
-      <div className="absolute top-8 left-8 md:left-16 z-50">
-        <button
-          onClick={onClose}
-          className="text-lg text-whiteCustom/60 hover:text-whiteCustom transition-colors"
-          aria-label="Close product overlay"
-        >
-          back
-        </button>
-      </div>
-
+    <BaseOverlay onClose={onClose} ariaLabelledBy="shop-product-title">
       {/* Main Content - Responsive */}
       {/* Mobile: vertical 50/50, Desktop: inchangé */}
       <div className="flex-1 w-full h-full flex flex-col md:flex-row p-0 md:p-16">
@@ -98,7 +61,6 @@ export default function ShopOverlay({
                 onClick={() => {
                   if (inCart) return;
                   onAddToCart?.(product);
-                  // On garde ton setTimeout pour l'UX
                   setTimeout(() => {
                     onClose();
                   }, 200);
@@ -160,6 +122,6 @@ export default function ShopOverlay({
           {(displayTitle || '').toLowerCase()} - 20XX
         </span>
       </div>
-    </motion.div>
+    </BaseOverlay>
   );
 }

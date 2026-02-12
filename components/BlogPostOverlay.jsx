@@ -1,31 +1,16 @@
 'use client';
 import Image from 'next/image';
-import { useState, useEffect, useRef } from 'react';
-import { motion } from 'framer-motion';
+import { useState } from 'react';
 import dynamic from 'next/dynamic';
 const AnimatePresence = dynamic(
   () => import('framer-motion').then(mod => mod.AnimatePresence),
   { ssr: false }
 );
 import ContactOverlay from './ContactOverlay';
+import BaseOverlay from './BaseOverlay';
 
 export default function BlogPostOverlay({ post, onClose, onPrevious, onNext }) {
   const [contactOpen, setContactOpen] = useState(false);
-  const previouslyFocusedElement = useRef(null);
-
-  // Mémoriser l'élément actif à l'ouverture
-  useEffect(() => {
-    if (post) {
-      previouslyFocusedElement.current = document.activeElement;
-    }
-  }, [post]);
-
-  // Rendre le focus à l'élément déclencheur à la fermeture
-  useEffect(() => {
-    if (!post && previouslyFocusedElement.current) {
-      previouslyFocusedElement.current.focus?.();
-    }
-  }, [post]);
 
   if (!post) return null;
 
@@ -34,27 +19,7 @@ export default function BlogPostOverlay({ post, onClose, onPrevious, onNext }) {
 
   return (
     <>
-      <motion.div
-        className="fixed inset-0 z-[60] bg-blackCustom text-whiteCustom font-playfair flex flex-col"
-        initial={{ x: '100%' }}
-        animate={{ x: 0 }}
-        exit={{ x: '100%' }}
-        transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="blog-post-title"
-      >
-        {/* Header / Back Button */}
-        <div className="absolute top-8 left-8 md:left-16 z-50">
-          <button
-            onClick={onClose}
-            className="text-lg text-whiteCustom/60 hover:text-whiteCustom transition-colors"
-            aria-label="Close blog post overlay"
-          >
-            back
-          </button>
-        </div>
-
+      <BaseOverlay onClose={onClose} ariaLabelledBy="blog-post-title">
         {/* Contenu principal - Deux mises en page */}
         {hasImage ? (
           // Mise en page AVEC Image (Date/Titre, Image, puis Contenu empilé verticalement)
@@ -168,7 +133,7 @@ export default function BlogPostOverlay({ post, onClose, onPrevious, onNext }) {
             next
           </button>
         </div>
-      </motion.div>
+      </BaseOverlay>
 
       <AnimatePresence>
         {contactOpen && (

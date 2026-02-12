@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import PropTypes from 'prop-types';
 import dynamic from 'next/dynamic';
 import { motion, animate, useMotionValue } from 'framer-motion';
+import BaseOverlay from './BaseOverlay';
 const AnimatePresence = dynamic(
   () => import('framer-motion').then(mod => mod.AnimatePresence),
   { ssr: false }
