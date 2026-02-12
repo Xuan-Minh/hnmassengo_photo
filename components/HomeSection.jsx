@@ -2,76 +2,16 @@
 import { useTranslations } from 'next-intl';
 import { HomeImageRotation, TextScramble, Logo } from './';
 import { motion } from 'framer-motion';
-import { useRef, useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
-import client from '../lib/sanity.client';
-
-// Hook utilitaire pour fade-in à la première apparition
-function useFadeInOnScreen(resetKey) {
-  const ref = useRef();
-  const [visible, setVisible] = useState(false);
-  useEffect(() => {
-    setVisible(false);
-    const node = ref.current;
-    if (!node) return;
-    const observer = new window.IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setVisible(true);
-          observer.disconnect();
-        }
-      },
-      { threshold: 0.6 }
-    );
-    observer.observe(node);
-    return () => observer.disconnect();
-  }, [resetKey]);
-  return [ref, visible];
-}
-
-// Fallback local si Sanity ne retourne rien
-const fallbackImageFiles = [
-  '/home/home1.webp',
-  '/home/home2.webp',
-  '/home/home3.webp',
-  '/home/home4.webp',
-];
+import { useFadeInOnScreen, useSanityImages } from '../lib/hooks';
+import { HOME_FALLBACK_IMAGES } from '../lib/constants';
 
 export default function HomeSection() {
   const t = useTranslations();
   const { locale } = useParams();
 
-  const [homeImages, setHomeImages] = useState(() => {
-    // Par défaut: on utilise Sanity. Le fallback local est optionnel.
-    return process.env.NEXT_PUBLIC_USE_LOCAL_HOME_FALLBACK === 'true'
-      ? fallbackImageFiles
-      : [];
-  });
-
+  const homeImages = useSanityImages('homeSectionImage', HOME_FALLBACK_IMAGES);
   const [ref, visible] = useFadeInOnScreen(locale);
-
-  useEffect(() => {
-    let cancelled = false;
-    const fetchHomeImages = async () => {
-      try {
-        const data = await client.fetch(
-          `*[_type == "homeSectionImage"] | order(order asc) { image{asset->{url}}, order }`
-        );
-
-        const urls = (data || [])
-          .map(d => d?.image?.asset?.url)
-          .filter(Boolean);
-
-        if (!cancelled && urls.length > 0) setHomeImages(urls);
-      } catch {
-        // On conserve l'état actuel (fallback optionnel uniquement)
-      }
-    };
-    fetchHomeImages();
-    return () => {
-      cancelled = true;
-    };
-  }, []);
 
   return (
     <motion.section

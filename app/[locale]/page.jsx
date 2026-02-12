@@ -1,5 +1,5 @@
 'use client';
-import { useTranslations } from 'next-intl';
+import { useParams } from 'next/navigation';
 import {
   Gallery,
   Blog,
@@ -8,43 +8,20 @@ import {
   ContactOverlay,
   ContactContent,
   ContactMarquee,
-  LoadingOverlay,
   HomeSection,
 } from '../../components';
-import { AnimatePresence, motion } from 'framer-motion';
-import { useRef, useState, useEffect } from 'react';
-
-// Hook utilitaire pour fade-in à la première apparition
-function useFadeInOnScreen() {
-  const ref = useRef();
-  const [visible, setVisible] = useState(false);
-  useEffect(() => {
-    const node = ref.current;
-    if (!node) return;
-    const observer = new window.IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setVisible(true);
-          observer.disconnect();
-        }
-      },
-      { threshold: 0.6 }
-    );
-    observer.observe(node);
-    return () => observer.disconnect();
-  }, []);
-  return [ref, visible];
-}
+import { motion } from 'framer-motion';
+import { useFadeInOnScreen } from '../../lib/hooks';
 
 export default function HomePage() {
-  const t = useTranslations();
+  const { locale } = useParams();
 
   // Fading refs pour chaque section
-  const [presRef, presVisible] = useFadeInOnScreen();
-  const [galleryRef, galleryVisible] = useFadeInOnScreen();
-  const [blogRef, blogVisible] = useFadeInOnScreen();
-  const [shopRef, shopVisible] = useFadeInOnScreen();
-  const [contactRef, contactVisible] = useFadeInOnScreen();
+  const [presRef, presVisible] = useFadeInOnScreen(locale);
+  const [galleryRef, galleryVisible] = useFadeInOnScreen(locale);
+  const [blogRef, blogVisible] = useFadeInOnScreen(locale);
+  const [shopRef, shopVisible] = useFadeInOnScreen(locale);
+  const [contactRef, contactVisible] = useFadeInOnScreen(locale);
 
   return (
     <>
