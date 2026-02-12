@@ -1,9 +1,7 @@
 import '../globals.css';
 
-import ConditionalMenu from '../components/ConditionalMenu';
-import ConditionalLanguageSwitcher from '../components/ConditionalLanguageSwitcher';
+import { UIControlBar } from '../components/UIControlBar';
 import { Lexend, Playfair_Display } from 'next/font/google';
-import dynamic from 'next/dynamic';
 import RevealRoot from '../components/RevealRoot';
 import ErrorBoundary from '../components/ErrorBoundary';
 import SnipcartPortal from '../components/SnipcartPortal';
@@ -78,9 +76,6 @@ const playfair = Playfair_Display({
 });
 
 export default function RootLayout({ children }) {
-  // Canonical statique (page d'accueil FR par défaut)
-  const canonicalUrl = 'https://hnmassengo.com/fr';
-
   // Langues disponibles
   const locales = [
     { code: 'fr', url: 'https://hnmassengo.com/fr' },
@@ -111,8 +106,7 @@ export default function RootLayout({ children }) {
         )}
       >
         <ErrorBoundary>
-          <ConditionalMenu />
-          <ConditionalLanguageSwitcher />
+          <UIControlBar />
           <ClientLayout>
             <RevealRoot>{children}</RevealRoot>
           </ClientLayout>
