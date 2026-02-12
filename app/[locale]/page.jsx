@@ -8,7 +8,7 @@ import {
   ContactOverlay,
   ContactContent,
   ContactMarquee,
-  IntroOverlay,
+  LoadingOverlay,
   HomeSection,
 } from '../../components';
 import { AnimatePresence, motion } from 'framer-motion';

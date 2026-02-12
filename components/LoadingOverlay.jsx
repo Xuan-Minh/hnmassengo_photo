@@ -2,10 +2,50 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
-import OverlayActionButton from './OverlayActionButton';
 import { EVENTS, emitEvent, addEventHandler } from '../lib/events';
 
-export default function IntroOverlay() {
+// Button component for loading overlay exit action
+function NextButton({ isExiting, onClick }) {
+  const [hovered, setHovered] = useState(false);
+  const [clickCount, setClickCount] = useState(0);
+
+  const rotateValue = useMemo(() => {
+    const exitRotation = isExiting ? -90 : 0;
+    return exitRotation + clickCount * 360;
+  }, [isExiting, clickCount]);
+
+  const handleClick = e => {
+    setClickCount(c => c + 1);
+    onClick?.(e);
+  };
+
+  return (
+    <button
+      type="button"
+      aria-label="next"
+      onClick={handleClick}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      className="px-6 py-3 text-lg font-medium font-playfair text-[18px] md:text-[18px]"
+      style={{
+        color: hovered ? '#F4F3F2' : '#C8C7C6',
+        opacity: hovered ? 1 : 0.85,
+        transition: 'color .3s, opacity .3s',
+        backdropFilter: hovered ? 'blur(2px)' : 'none',
+      }}
+    >
+      <motion.span
+        className="inline-block mr-2"
+        initial={false}
+        animate={{ rotate: rotateValue }}
+        transition={{ duration: 0.4, ease: 'easeInOut' }}
+      />
+      <span>next</span>
+    </button>
+  );
+}
+
+export default function LoadingOverlay() {
   const previouslyFocusedElement = useRef(null);
   // Fond dégradé élégant au lieu d'un gris uni
   const elegantBackground =
@@ -17,14 +57,12 @@ export default function IntroOverlay() {
   const [visible, setVisible] = useState(false);
   const [isExiting, setIsExiting] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [hovered, setHovered] = useState(false);
   const rotateInterval = useRef(null);
   const [loadedImages, setLoadedImages] = useState([]);
   const [isReTrigger, setIsReTrigger] = useState(false);
   const [touchStart, setTouchStart] = useState(null);
   const overlayRef = useRef(null);
   const [loadingProgress, setLoadingProgress] = useState(0);
-  // Survol limité au bouton uniquement (pas de dépendance au mouvement global)
 
   // Affiche toujours l'intro au chargement (plus de gating sessionStorage)
   useEffect(() => {
@@ -141,7 +179,6 @@ export default function IntroOverlay() {
     const handler = () => {
       if (rotateInterval.current) clearInterval(rotateInterval.current);
       setCurrentIndex(0);
-      setHovered(false);
       setIsExiting(false);
       setIsReTrigger(true);
       setVisible(true);
@@ -265,12 +302,8 @@ export default function IntroOverlay() {
         </div>
 
         <div className="absolute bottom-16 left-1/2 -translate-x-1/2 z-20">
-          <OverlayActionButton
-            label="next"
-            intent="next"
-            animate="exit"
-            isActive={isExiting}
-            activeDeltaDeg={-90}
+          <NextButton
+            isExiting={isExiting}
             onClick={e => {
               e.stopPropagation();
               dismiss();

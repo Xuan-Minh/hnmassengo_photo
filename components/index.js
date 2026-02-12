@@ -6,7 +6,6 @@
 export { default as Logo } from './Logo';
 export { default as Menu } from './Menu';
 export { default as LanguageSwitcher } from './LanguageSwitcher';
-export { default as OverlayActionButton } from './OverlayActionButton';
 
 // Layout & Navigation
 export { default as PageTransition } from './PageTransition';
@@ -39,7 +38,7 @@ export {
   ContactContent,
   ContactMarquee,
 } from './ContactOverlay';
-export { default as IntroOverlay } from './IntroOverlay';
+export { default as LoadingOverlay } from './LoadingOverlay';
 
 // Utils
 export { default as TextReveal } from './TextReveal';

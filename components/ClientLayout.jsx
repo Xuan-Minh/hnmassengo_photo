@@ -2,14 +2,14 @@
 
 import dynamic from 'next/dynamic';
 
-const IntroOverlay = dynamic(() => import('../components/IntroOverlay'), {
+const LoadingOverlay = dynamic(() => import('../components/LoadingOverlay'), {
   ssr: false,
 });
 
 export default function ClientLayout({ children }) {
   return (
     <>
-      <IntroOverlay />
+      <LoadingOverlay />
       {children}
     </>
   );
