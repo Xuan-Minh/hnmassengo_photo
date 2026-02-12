@@ -128,7 +128,7 @@ export default function Blog() {
                 onClick={() => setArchiveOpen(true)}
                 className="text-lg font-playfair italic text-whiteCustom/60 hover:text-whiteCustom transition-colors"
               >
-                More posts
+                more posts
               </button>
             </div>
           </div>

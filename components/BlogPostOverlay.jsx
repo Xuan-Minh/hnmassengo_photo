@@ -165,7 +165,7 @@ export default function BlogPostOverlay({ post, onClose, onPrevious, onNext }) {
             className="text-base text-whiteCustom/60 hover:text-whiteCustom transition-colors flex items-center gap-2"
             disabled={!onNext}
           >
-            next <span>→</span>
+            next
           </button>
         </div>
       </motion.div>
