@@ -5,7 +5,7 @@ import { Lexend, Playfair_Display } from 'next/font/google';
 import RevealRoot from '../components/RevealRoot';
 import ErrorBoundary from '../components/ErrorBoundary';
 import SnipcartPortal from '../components/SnipcartPortal';
-import StructuredData from '../components/StructuredData';
+import StructuredData from '../lib/metadata';
 import React from 'react';
 import ClientLayout from '../components/ClientLayout';
 
