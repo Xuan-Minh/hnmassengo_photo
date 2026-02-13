@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import { EVENTS, emitEvent, addEventHandler } from '../lib/events';
+import { buildSanityImageUrl } from '../lib/imageUtils';
 
 // Button component for loading overlay exit action
 function NextButton({ isExiting, onClick }) {
@@ -80,7 +81,7 @@ export default function LoadingOverlay() {
     }
   }, [visible]);
 
-  // Charge la liste des images depuis Sanity via l'API
+  // Charge la liste des images depuis Sanity via l'API et les optimise
   const fetchedOnceRef = useRef(false);
   useEffect(() => {
     if (fetchedOnceRef.current) return;
@@ -91,7 +92,11 @@ export default function LoadingOverlay() {
       .then(r => r.json())
       .then(data => {
         if (Array.isArray(data.images) && data.images.length > 0) {
-          setImageSources(data.images);
+          // Optimiser les images via Sanity CDN
+          const optimizedImages = data.images.map(src =>
+            buildSanityImageUrl(src, { w: 800, q: 70, auto: 'format' })
+          );
+          setImageSources(optimizedImages);
         }
       })
       .catch(error => {
@@ -99,15 +104,38 @@ export default function LoadingOverlay() {
       });
   }, []);
 
-  // Précharge TOUTES les images avant de commencer l'animation
+  // Précharge: affiche la 1ère image immédiatement, charge les autres en background
+  useEffect(() => {
+    if (imageSources.length === 0) return;
+
+    // Injecter un preload link pour la 1ère image dans le <head>
+    if (typeof window !== 'undefined' && imageSources[0]) {
+      const link = document.createElement('link');
+      link.rel = 'preload';
+      link.as = 'image';
+      link.href = imageSources[0];
+      link.fetchPriority = 'high';
+      document.head.appendChild(link);
+
+      // Cleanup
+      return () => {
+        if (link.parentNode) {
+          link.parentNode.removeChild(link);
+        }
+      };
+    }
+  }, [imageSources]);
+
+  // Précharge: affiche la 1ère image immédiatement, charge les autres en background
   useEffect(() => {
     if (imageSources.length === 0) return;
     let isMounted = true;
     const ok = [];
     let done = 0;
+    let firstImageLoaded = false;
 
-    // Précharger toutes les images simultanément
-    imageSources.forEach(src => {
+    // Précharger toutes les images
+    imageSources.forEach((src, index) => {
       const img = typeof window !== 'undefined' ? new window.Image() : null;
       if (!img) return;
 
@@ -115,12 +143,14 @@ export default function LoadingOverlay() {
         done += 1;
         ok.push(src);
 
-        // Mettre à jour la progression
-        if (isMounted) {
-          setLoadingProgress((done / imageSources.length) * 100);
+        // Dès que la 1ère image charge, afficher et démarrer l'animation
+        if (isMounted && index === 0 && !firstImageLoaded) {
+          firstImageLoaded = true;
+          setLoadedImages([src]);
+          setLoadingProgress(100);
         }
 
-        // Une fois TOUTES les images chargées, démarrer l'animation
+        // Une fois TOUTES les images chargées, mettre à jour la liste complète
         if (isMounted && done === imageSources.length && ok.length > 0) {
           setLoadedImages(ok);
           setLoadingProgress(100);
@@ -130,14 +160,15 @@ export default function LoadingOverlay() {
       img.onerror = () => {
         done += 1;
 
-        // Mettre à jour la progression même en cas d'erreur
-        if (isMounted) {
-          setLoadingProgress((done / imageSources.length) * 100);
+        // Si c'est la 1ère image qui échoue, afficher quand même
+        if (isMounted && index === 0 && !firstImageLoaded) {
+          firstImageLoaded = true;
+          setLoadedImages([imageSources[0]]);
+          setLoadingProgress(100);
         }
 
         // Continuer même en cas d'erreur partielle
         if (isMounted && done === imageSources.length) {
-          // Au minimum, utiliser les images qui ont fonctionné
           setLoadedImages(ok.length > 0 ? ok : [imageSources[0]]);
           setLoadingProgress(100);
         }
@@ -241,7 +272,7 @@ export default function LoadingOverlay() {
             {/* Afficher toutes les images préchargées avec opacité conditionnelle */}
             {loadedImages.map((imageSrc, index) => (
               <Image
-                key={imageSrc} // Clé stable basée sur l'URL
+                key={imageSrc}
                 src={imageSrc}
                 alt=""
                 fill
@@ -256,7 +287,7 @@ export default function LoadingOverlay() {
                   opacity: index === currentIndex ? 1 : 0,
                 }}
                 sizes="100vw"
-                priority={index === 0} // Priorité pour la première image
+                priority={index === 0}
               />
             ))}
             <div className="absolute inset-0 bg-black/35 pointer-events-none z-10" />
