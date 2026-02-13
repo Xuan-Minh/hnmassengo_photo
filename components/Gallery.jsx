@@ -9,7 +9,7 @@ import client from '../lib/sanity.client';
 const FILTERS = GALLERY_FILTERS;
 
 import GalleryGridMore from './GalleryGridMore';
-import ProjetCartel from './ProjetCartel';
+import GalleryProjetCartel from './GalleryProjetCartel';
 import { AnimatePresence } from 'framer-motion';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
@@ -690,7 +690,7 @@ export default function Gallery() {
       </AnimatePresence>
       <AnimatePresence>
         {selectedProject && (
-          <ProjetCartel
+          <GalleryProjetCartel
             project={selectedProject}
             onClose={() => setSelectedProject(null)}
           />

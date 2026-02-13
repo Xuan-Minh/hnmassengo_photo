@@ -451,7 +451,7 @@ function ImageMarquee({ images, onClick }) {
   );
 }
 
-export default function ProjetCartel({ project, onClose }) {
+export default function GalleryProjetCartel({ project, onClose }) {
   const router = useRouter();
   const [lightboxOpen, setLightboxOpen] = useState(false);
 
@@ -614,7 +614,7 @@ Nam dui metus, interdum vitae lobortis vel, viverra consequat neque. Praesent sa
   );
 }
 
-ProjetCartel.propTypes = {
+GalleryProjetCartel.propTypes = {
   project: PropTypes.shape({
     id: PropTypes.number.isRequired,
     name: PropTypes.string.isRequired,
