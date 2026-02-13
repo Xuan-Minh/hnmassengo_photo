@@ -97,15 +97,16 @@ export default function NewsletterSignup({ className = '' } = {}) {
           {copy.cta}
         </button>
       </form>
-      {message ? (
-        <div
-          className={`mt-2 text-xs md:text-sm ${
-            status === 'success' ? 'text-green-300' : 'text-red-300'
-          }`}
-        >
-          {message}
+      {status === 'success' && (
+        <div className="mt-4 bg-green-600/20 border border-green-500/40 text-green-100 px-4 py-3 text-sm rounded">
+          ✅ {message}
         </div>
-      ) : null}
+      )}
+      {status === 'error' && (
+        <div className="mt-4 bg-red-600/20 border border-red-500/40 text-red-100 px-4 py-3 text-sm rounded">
+          ⚠️ {message}
+        </div>
+      )}
     </div>
   );
 }

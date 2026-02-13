@@ -41,10 +41,15 @@ function ContactForm({ idSuffix = '', onSubmitSuccess, defaultSubject = '' }) {
       const result = await response.json();
 
       if (response.ok && result.success) {
-        // Validation réussie, soumettre à Netlify
-        form.submit();
+        // Validation réussie
         setShowSuccess(true);
+        // Réinitialiser le formulaire
+        form.reset();
         if (onSubmitSuccess) onSubmitSuccess();
+        // Redirection après 2 secondes (laisse le temps de voir le message)
+        setTimeout(() => {
+          window.location.href = '/success.html';
+        }, 2000);
       } else {
         const details = Array.isArray(result?.errors)
           ? `\n\n${result.errors.join('\n')}`
@@ -61,8 +66,6 @@ function ContactForm({ idSuffix = '', onSubmitSuccess, defaultSubject = '' }) {
       ref={formRef}
       className="space-y-4 md:space-y-6"
       name="contact"
-      method="POST"
-      action="/success.html"
       aria-label="Contact form"
       data-netlify="true"
       data-netlify-honeypot="bot-field"
