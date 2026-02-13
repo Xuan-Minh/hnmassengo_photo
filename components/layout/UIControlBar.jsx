@@ -2,7 +2,7 @@
 
 import Menu from '../ui/Menu';
 import LanguageSwitcher from '../ui/LanguageSwitcher';
-import { useUIVisibility } from '../../lib/useUIVisibility';
+import { useUIVisibility } from '../../lib/hooks';
 
 export function UIControlBar() {
   const showUI = useUIVisibility(true); // true pour inclure l'exception shop
