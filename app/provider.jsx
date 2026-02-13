@@ -1,11 +1,6 @@
-"use client";
-import { NextIntlProvider } from "next-intl";
-import { ToastProvider } from "../components/GlobalToast";
+'use client';
+import { NextIntlProvider } from 'next-intl';
 
 export default function Providers({ children, messages }) {
-  return (
-    <NextIntlProvider messages={messages}>
-      <ToastProvider>{children}</ToastProvider>
-    </NextIntlProvider>
-  );
+  return <NextIntlProvider messages={messages}>{children}</NextIntlProvider>;
 }

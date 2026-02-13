@@ -1,9 +1,8 @@
-import { NextIntlClientProvider } from "next-intl";
-import { ToastProvider } from "../../../components/GlobalToast";
-import { notFound } from "next/navigation";
-import { setRequestLocale, getMessages } from "next-intl/server";
-import { routing } from "../../../src/i18n/routing";
-import React from "react";
+import { NextIntlClientProvider } from 'next-intl';
+import { notFound } from 'next/navigation';
+import { setRequestLocale, getMessages } from 'next-intl/server';
+import { routing } from '../../../src/i18n/routing';
+import React from 'react';
 
 export default async function LegalLayout({ children, params }) {
   const { locale } = await params;
@@ -15,11 +14,11 @@ export default async function LegalLayout({ children, params }) {
 
   return (
     <NextIntlClientProvider locale={locale} messages={messages}>
-      <ToastProvider>{children}</ToastProvider>
+      {children}
     </NextIntlClientProvider>
   );
 }
 
 export function generateStaticParams() {
-  return routing.locales.map((locale) => ({ locale }));
+  return routing.locales.map(locale => ({ locale }));
 }
