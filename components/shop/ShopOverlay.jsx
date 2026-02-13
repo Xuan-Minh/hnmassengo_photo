@@ -34,7 +34,7 @@ export default function ShopOverlay({
               alt={displayTitle}
               width={600}
               height={600}
-              sizes="100vw"
+              sizes="(max-width: 640px) 90vw, (max-width: 1024px) 70vw, 50vw"
               className="max-h-[30vh] w-auto object-contain mx-auto"
               style={{ objectFit: 'contain', height: 'auto' }}
               priority
