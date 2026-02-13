@@ -7,13 +7,20 @@ const RATE_LIMIT = 5; // max 5 req/10min/ip
 const WINDOW_MS = 10 * 60 * 1000;
 
 function checkRateLimit(request) {
-  const ip = request.headers.get('x-forwarded-for') || request.headers.get('cf-connecting-ip') || 'unknown';
-  
+  const ip =
+    request.headers.get('x-forwarded-for') ||
+    request.headers.get('cf-connecting-ip') ||
+    'unknown';
+
   // In production with Netlify Edge Functions, use request context
   // For now, use X-Rate-Limit headers (set by Netlify Functions)
-  const remaining = parseInt(request.headers.get('x-rate-limit-remaining') || RATE_LIMIT);
-  const resetTime = parseInt(request.headers.get('x-rate-limit-reset') || Date.now() + WINDOW_MS);
-  
+  const remaining = parseInt(
+    request.headers.get('x-rate-limit-remaining') || RATE_LIMIT
+  );
+  const resetTime = parseInt(
+    request.headers.get('x-rate-limit-reset') || Date.now() + WINDOW_MS
+  );
+
   return {
     ip,
     allowed: remaining > 0,
@@ -35,7 +42,10 @@ export async function POST(request) {
       // Add rate limit headers for next requests
       response.headers.set('x-rate-limit-remaining', '0');
       response.headers.set('x-rate-limit-reset', resetTime.toString());
-      response.headers.set('retry-after', Math.ceil((resetTime - Date.now()) / 1000).toString());
+      response.headers.set(
+        'retry-after',
+        Math.ceil((resetTime - Date.now()) / 1000).toString()
+      );
       return response;
     }
 
@@ -82,11 +92,11 @@ export async function POST(request) {
       { success: true, message: 'Validation réussie, envoi en cours...' },
       { status: 200 }
     );
-    
+
     // Add rate limit headers for next requests
     response.headers.set('x-rate-limit-remaining', remaining.toString());
     response.headers.set('x-rate-limit-reset', resetTime.toString());
-    
+
     return response;
   } catch (error) {
     logger.error('API Contact Error:', error);
