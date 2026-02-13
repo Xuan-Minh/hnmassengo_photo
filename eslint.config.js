@@ -50,6 +50,7 @@ export default [
         alert: 'readonly',
         FormData: 'readonly',
         URL: 'readonly',
+        URLSearchParams: 'readonly',
         Response: 'readonly',
         Request: 'readonly',
         Headers: 'readonly',
