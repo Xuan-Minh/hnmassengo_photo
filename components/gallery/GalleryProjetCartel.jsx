@@ -177,7 +177,7 @@ function CustomLightbox({ open, onClose, images, project }) {
                 fetchPriority="high"
                 decoding="async"
                 onError={() => setHasCurrentError(true)}
-                onLoadingComplete={() => setIsCurrentLoaded(true)}
+                onLoad={() => setIsCurrentLoaded(true)}
                 priority
               />
             </motion.div>
@@ -281,7 +281,7 @@ function CustomLightbox({ open, onClose, images, project }) {
                 fetchPriority="high"
                 decoding="async"
                 onError={() => setHasCurrentError(true)}
-                onLoadingComplete={() => setIsCurrentLoaded(true)}
+                onLoad={() => setIsCurrentLoaded(true)}
                 priority
               />
             </div>

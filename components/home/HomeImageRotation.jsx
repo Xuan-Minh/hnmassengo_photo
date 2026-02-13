@@ -168,7 +168,7 @@ export default function HomeImageRotation({
               sizes="(max-width: 1024px) 48vh, 60vh"
               className="object-contain"
               priority
-              onLoadingComplete={() => {
+              onLoad={() => {
                 loadedSrcsRef.current.add(imgSrc);
                 setIsCurrentLoaded(true);
               }}

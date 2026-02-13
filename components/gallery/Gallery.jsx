@@ -326,6 +326,7 @@ export default function Gallery() {
             src="/icons/gridOff.webp"
             alt="Grid View Off"
             fill
+            sizes="24px"
             className={`absolute inset-0 w-full h-full object-contain transition-opacity duration-300 ${
               view === 'grid' ? 'opacity-0' : 'opacity-100'
             }`}
@@ -334,6 +335,7 @@ export default function Gallery() {
             src="/icons/gridOn.webp"
             alt="Grid View On"
             fill
+            sizes="24px"
             className={`absolute inset-0 w-full h-full object-contain transition-opacity duration-300 ${
               view === 'grid' ? 'opacity-100' : 'opacity-0'
             }`}
@@ -350,6 +352,7 @@ export default function Gallery() {
             src="/icons/listOff.webp"
             alt="List View Off"
             fill
+            sizes="24px"
             className={`absolute inset-0 w-full h-full object-contain transition-opacity duration-300 ${
               view === 'list' ? 'opacity-0' : 'opacity-100'
             }`}
@@ -358,6 +361,7 @@ export default function Gallery() {
             src="/icons/listOn.webp"
             alt="List View On"
             fill
+            sizes="24px"
             className={`absolute inset-0 w-full h-full object-contain transition-opacity duration-300 ${
               view === 'list' ? 'opacity-100' : 'opacity-0'
             }`}
