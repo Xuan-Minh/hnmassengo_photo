@@ -1,6 +1,8 @@
 'use client';
 import { useTranslations } from 'next-intl';
-import { HomeImageRotation, TextScramble, Logo } from './';
+import HomeImageRotation from './HomeImageRotation';
+import TextScramble from './TextScramble';
+import Logo from './Logo';
 import { motion } from 'framer-motion';
 import { useParams } from 'next/navigation';
 import { useFadeInOnScreen, useSanityImages } from '../lib/hooks';
