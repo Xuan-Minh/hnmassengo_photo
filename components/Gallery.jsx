@@ -13,28 +13,7 @@ import ProjetCartel from './ProjetCartel';
 import { AnimatePresence } from 'framer-motion';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
-
-function buildSanityImageUrl(url, { w, q, auto } = {}) {
-  if (!url || typeof url !== 'string') return url;
-  // Sanity CDN accepte des query params (w, q, auto=format, etc.)
-  // On conserve d'éventuels paramètres existants.
-  const [base, query = ''] = url.split('?');
-  const SearchParams = globalThis.URLSearchParams;
-  if (!SearchParams) {
-    const parts = [];
-    if (w) parts.push(`w=${encodeURIComponent(String(w))}`);
-    if (q) parts.push(`q=${encodeURIComponent(String(q))}`);
-    if (auto) parts.push(`auto=${encodeURIComponent(String(auto))}`);
-    return parts.length ? `${base}?${parts.join('&')}` : base;
-  }
-
-  const sp = new SearchParams(query);
-  if (w) sp.set('w', String(w));
-  if (q) sp.set('q', String(q));
-  if (auto) sp.set('auto', String(auto));
-  const qs = sp.toString();
-  return qs ? `${base}?${qs}` : base;
-}
+import { buildSanityImageUrl } from '../lib/imageUtils';
 
 function getProjectDateMs(project) {
   const raw = project?.date;

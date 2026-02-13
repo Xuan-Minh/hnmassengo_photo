@@ -12,26 +12,7 @@ const AnimatePresence = dynamic(
 );
 import TextReveal from './TextReveal';
 import { EVENTS, emitEvent } from '../lib/events';
-
-function buildSanityImageUrl(url, { w, q, auto } = {}) {
-  if (!url || typeof url !== 'string') return url;
-  const [base, query = ''] = url.split('?');
-  const SearchParams = globalThis.URLSearchParams;
-  if (!SearchParams) {
-    const parts = [];
-    if (w) parts.push(`w=${encodeURIComponent(String(w))}`);
-    if (q) parts.push(`q=${encodeURIComponent(String(q))}`);
-    if (auto) parts.push(`auto=${encodeURIComponent(String(auto))}`);
-    return parts.length ? `${base}?${parts.join('&')}` : base;
-  }
-
-  const sp = new SearchParams(query);
-  if (w) sp.set('w', String(w));
-  if (q) sp.set('q', String(q));
-  if (auto) sp.set('auto', String(auto));
-  const qs = sp.toString();
-  return qs ? `${base}?${qs}` : base;
-}
+import { buildSanityImageUrl } from '../lib/imageUtils';
 
 // Composant CustomLightbox
 function CustomLightbox({ open, onClose, images, project }) {
@@ -377,7 +358,7 @@ function ImageMarqueeHorizontal({ images, onClick }) {
             className="flex-shrink-0 flex justify-center items-center snap-center"
           >
             <Image
-              src={img}
+              src={buildSanityImageUrl(img, { w: 400, q: 60, auto: 'format' })}
               alt={`Project image ${index + 1}`}
               width={400}
               height={300}
@@ -449,7 +430,11 @@ function ImageMarquee({ images, onClick }) {
               className="w-full pb-16 flex-shrink-0 flex justify-center items-center"
             >
               <Image
-                src={img}
+                src={buildSanityImageUrl(img, {
+                  w: 400,
+                  q: 60,
+                  auto: 'format',
+                })}
                 alt={`Project image ${index + 1}`}
                 width={400}
                 height={300}
