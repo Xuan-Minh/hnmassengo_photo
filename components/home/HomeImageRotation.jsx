@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
-import { TIMING } from '../lib/constants';
+import { TIMING } from '../../lib/constants';
 
 // Composant simple de rotation d'images. Passer un tableau de noms de fichiers relatifs à /public/home.
 // position: "center" | "left" | "right"

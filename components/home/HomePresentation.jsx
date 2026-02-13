@@ -1,6 +1,6 @@
 'use client';
 import { useTranslations } from 'next-intl';
-import TextReveal from './TextReveal';
+import TextReveal from '../ui/TextReveal';
 
 export default function HomePresentation() {
   const t = useTranslations();

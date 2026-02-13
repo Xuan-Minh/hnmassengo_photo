@@ -1,9 +1,9 @@
 "use client";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useParams, usePathname, useRouter } from "next/navigation";
-import { MENU_ITEMS, LANGUAGES, THEME } from "../lib/constants";
-import { computeIsDark } from "../lib/utils";
-import { EVENTS, emitEvent } from "../lib/events";
+import { MENU_ITEMS, LANGUAGES, THEME } from "../../lib/constants";
+import { computeIsDark } from "../../lib/utils";
+import { EVENTS, emitEvent } from "../../lib/events";
 
 // Menu one-page: scroll interne vers des sections dans #scroll-root
 export default function Menu() {

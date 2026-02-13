@@ -2,7 +2,7 @@
 import React from "react";
 import { useEffect, useState } from "react";
 import { useParams, usePathname, useRouter } from "next/navigation";
-import { computeIsDark } from "../lib/utils";
+import { computeIsDark } from "../../lib/utils";
 
 // Sélecteur de langue avec adaptation de couleur + disparition sur la section contact
 export default function LanguageSwitcher() {

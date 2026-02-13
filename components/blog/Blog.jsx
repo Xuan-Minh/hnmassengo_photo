@@ -5,8 +5,8 @@ import { AnimatePresence } from 'framer-motion';
 import BlogArchives from './BlogArchives';
 import BlogPostItem from './BlogPostItem';
 import dynamic from 'next/dynamic';
-import client from '../lib/sanity.client';
-import { CONTENT } from '../lib/constants';
+import client from '../../lib/sanity.client';
+import { CONTENT } from '../../lib/constants';
 
 const BlogPostOverlay = dynamic(() => import('./BlogPostOverlay'), {
   loading: () => <div>Loading…</div>,

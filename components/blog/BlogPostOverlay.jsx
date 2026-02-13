@@ -6,8 +6,8 @@ const AnimatePresence = dynamic(
   () => import('framer-motion').then(mod => mod.AnimatePresence),
   { ssr: false }
 );
-import ContactOverlay from './ContactOverlay';
-import BaseOverlay from './BaseOverlay';
+import ContactOverlay from '../overlays/ContactOverlay';
+import BaseOverlay from '../overlays/BaseOverlay';
 
 export default function BlogPostOverlay({ post, onClose, onPrevious, onNext }) {
   const [contactOpen, setContactOpen] = useState(false);

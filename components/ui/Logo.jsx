@@ -1,6 +1,6 @@
 'use client';
 import { useRouter, usePathname } from 'next/navigation';
-import { EVENTS, emitEvent } from '../lib/events';
+import { EVENTS, emitEvent } from '../../lib/events';
 
 export default function Logo({ visible = true }) {
   const router = useRouter();

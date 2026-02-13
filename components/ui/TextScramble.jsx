@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { EVENTS, addEventHandler } from '../lib/events';
+import { EVENTS, addEventHandler } from '../../lib/events';
 
 export default function TextScramble({ text, className, delay = 0 }) {
   const [displayText, setDisplayText] = useState('');

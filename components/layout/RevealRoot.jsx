@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
-import { EVENTS, addEventHandler } from "../lib/events";
-import { TIMING } from "../lib/constants";
+import { EVENTS, addEventHandler } from "../../lib/events";
+import { TIMING } from "../../lib/constants";
 
 export default function RevealRoot({ children }) {
   const [revealed, setRevealed] = useState(false);

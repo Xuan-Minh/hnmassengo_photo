@@ -1,15 +1,15 @@
 'use client';
 import { useParams } from 'next/navigation';
-import Gallery from '../../components/Gallery';
-import Blog from '../../components/Blog';
-import Shop from '../../components/Shop';
-import HomePresentation from '../../components/HomePresentation';
-import ContactOverlay from '../../components/ContactOverlay';
+import Gallery from '../../components/gallery/Gallery';
+import Blog from '../../components/blog/Blog';
+import Shop from '../../components/shop/Shop';
+import HomePresentation from '../../components/home/HomePresentation';
+import ContactOverlay from '../../components/overlays/ContactOverlay';
 import {
   ContactContent,
   ContactMarquee,
-} from '../../components/ContactOverlay';
-import HomeSection from '../../components/HomeSection';
+} from '../../components/overlays/ContactOverlay';
+import HomeSection from '../../components/home/HomeSection';
 import { motion } from 'framer-motion';
 import { useFadeInOnScreen } from '../../lib/hooks';
 

@@ -5,9 +5,9 @@ import { useParams } from 'next/navigation';
 import { AnimatePresence, motion } from 'framer-motion';
 import ShopItem from './ShopItem';
 import ShopOverlay from './ShopOverlay';
-import { formatPrice } from '../lib/utils';
-import { logger } from '../lib/logger';
-import client from '../lib/sanity.client';
+import { formatPrice } from '../../lib/utils';
+import { logger } from '../../lib/logger';
+import client from '../../lib/sanity.client';
 
 function getSnipcartItemUrl() {
   if (typeof window !== 'undefined')

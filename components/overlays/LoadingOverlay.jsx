@@ -2,8 +2,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
-import { EVENTS, emitEvent, addEventHandler } from '../lib/events';
-import { buildSanityImageUrl } from '../lib/imageUtils';
+import { EVENTS, emitEvent, addEventHandler } from '../../lib/events';
+import { buildSanityImageUrl } from '../../lib/imageUtils';
 
 // Button component for loading overlay exit action
 function NextButton({ isExiting, onClick }) {

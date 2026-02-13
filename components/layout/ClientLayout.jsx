@@ -2,7 +2,7 @@
 
 import dynamic from 'next/dynamic';
 
-const LoadingOverlay = dynamic(() => import('../components/LoadingOverlay'), {
+const LoadingOverlay = dynamic(() => import('../overlays/LoadingOverlay'), {
   ssr: false,
 });
 

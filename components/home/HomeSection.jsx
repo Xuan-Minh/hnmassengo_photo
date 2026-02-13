@@ -1,12 +1,12 @@
 'use client';
 import { useTranslations } from 'next-intl';
 import HomeImageRotation from './HomeImageRotation';
-import TextScramble from './TextScramble';
-import Logo from './Logo';
+import TextScramble from '../ui/TextScramble';
+import Logo from '../ui/Logo';
 import { motion } from 'framer-motion';
 import { useParams } from 'next/navigation';
-import { useFadeInOnScreen, useSanityImages } from '../lib/hooks';
-import { HOME_FALLBACK_IMAGES } from '../lib/constants';
+import { useFadeInOnScreen, useSanityImages } from '../../lib/hooks';
+import { HOME_FALLBACK_IMAGES } from '../../lib/constants';
 
 export default function HomeSection() {
   const t = useTranslations();

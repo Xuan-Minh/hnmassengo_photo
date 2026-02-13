@@ -2,8 +2,8 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { useTranslations } from 'next-intl';
 import { useParams } from 'next/navigation';
-import { GALLERY_FILTERS } from '../lib/constants';
-import client from '../lib/sanity.client';
+import { GALLERY_FILTERS } from '../../lib/constants';
+import client from '../../lib/sanity.client';
 
 // Utiliser les données depuis Sanity
 const FILTERS = GALLERY_FILTERS;
@@ -13,7 +13,7 @@ import GalleryProjetCartel from './GalleryProjetCartel';
 import { AnimatePresence } from 'framer-motion';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
-import { buildSanityImageUrl } from '../lib/imageUtils';
+import { buildSanityImageUrl } from '../../lib/imageUtils';
 
 function getProjectDateMs(project) {
   const raw = project?.date;

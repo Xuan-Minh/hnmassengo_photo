@@ -1,7 +1,7 @@
-"use client";
-import { motion, AnimatePresence } from "framer-motion";
+'use client';
+import { motion, AnimatePresence } from 'framer-motion';
 
-export default function PageTransition({ children }) {
+export default function GalleryProjetCartel({ children }) {
   return (
     <AnimatePresence mode="wait">
       <motion.div

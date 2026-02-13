@@ -2,11 +2,11 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { AnimatePresence, motion } from 'framer-motion';
-import { SITE_CONFIG } from '../lib/constants';
-import { EVENTS, addEventHandler } from '../lib/events';
-import { Link } from '../src/i18n/navigation';
+import { SITE_CONFIG } from '../../lib/constants';
+import { EVENTS, addEventHandler } from '../../lib/events';
+import { Link } from '../../src/i18n/navigation';
 import { useParams } from 'next/navigation';
-import NewsletterSignup from './NewsletterSignup';
+import NewsletterSignup from '../ui/NewsletterSignup';
 
 // Composant pour le formulaire de contact réutilisable
 function ContactForm({ idSuffix = '', onSubmitSuccess, defaultSubject = '' }) {

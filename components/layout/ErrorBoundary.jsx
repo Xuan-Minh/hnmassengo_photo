@@ -1,6 +1,6 @@
 'use client';
 import React from 'react';
-import { logger } from '../lib/logger';
+import { logger } from '../../lib/logger';
 
 /**
  * Error Boundary component to catch and handle React errors gracefully

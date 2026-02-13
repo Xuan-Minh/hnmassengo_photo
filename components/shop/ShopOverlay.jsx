@@ -1,6 +1,6 @@
 'use client';
 import Image from 'next/image';
-import BaseOverlay from './BaseOverlay';
+import BaseOverlay from '../overlays/BaseOverlay';
 
 function localizeField(value, locale) {
   if (!value) return '';

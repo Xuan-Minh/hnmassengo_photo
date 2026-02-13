@@ -5,14 +5,14 @@ import { useRouter } from 'next/navigation';
 import PropTypes from 'prop-types';
 import dynamic from 'next/dynamic';
 import { motion, animate, useMotionValue } from 'framer-motion';
-import BaseOverlay from './BaseOverlay';
+import BaseOverlay from '../overlays/BaseOverlay';
 const AnimatePresence = dynamic(
   () => import('framer-motion').then(mod => mod.AnimatePresence),
   { ssr: false }
 );
-import TextReveal from './TextReveal';
-import { EVENTS, emitEvent } from '../lib/events';
-import { buildSanityImageUrl } from '../lib/imageUtils';
+import TextReveal from '../ui/TextReveal';
+import { EVENTS, emitEvent } from '../../lib/events';
+import { buildSanityImageUrl } from '../../lib/imageUtils';
 
 // Composant CustomLightbox
 function CustomLightbox({ open, onClose, images, project }) {

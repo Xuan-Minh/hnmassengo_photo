@@ -1,13 +1,13 @@
 import '../globals.css';
 
-import { UIControlBar } from '../components/UIControlBar';
+import { UIControlBar } from '../components/layout/UIControlBar';
 import { Lexend, Playfair_Display } from 'next/font/google';
-import RevealRoot from '../components/RevealRoot';
-import ErrorBoundary from '../components/ErrorBoundary';
-import SnipcartPortal from '../components/SnipcartPortal';
+import RevealRoot from '../components/layout/RevealRoot';
+import ErrorBoundary from '../components/layout/ErrorBoundary';
+import SnipcartPortal from '../components/layout/SnipcartPortal';
 import StructuredData from '../lib/metadata';
 import React from 'react';
-import ClientLayout from '../components/ClientLayout';
+import ClientLayout from '../components/layout/ClientLayout';
 
 export const metadata = {
   metadataBase: new URL('https://hnmassengo.com'),
