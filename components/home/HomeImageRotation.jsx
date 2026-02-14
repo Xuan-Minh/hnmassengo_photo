@@ -148,7 +148,7 @@ export default function HomeImageRotation({
 
   return (
     <div className={`flex ${justify} w-full ${marginClass}`}>
-      <div className="relative h-[45vh] md:h-[48vh] lg:h-[60vh] aspect-[3/4] overflow-hidden mx-auto lg:mx-0">
+      <div className="relative h-[40vh] md:h-[42vh] lg:h-[50vh] aspect-[3/4] overflow-hidden mx-auto lg:mx-0">
         <AnimatePresence mode="wait">
           <motion.div
             key={imgSrc}
@@ -165,7 +165,7 @@ export default function HomeImageRotation({
               src={imgSrc}
               alt="Han-Noah profile illustration"
               fill
-              sizes="(max-width: 1024px) 48vh, 60vh"
+              sizes="(max-width: 1024px) 40vh, 55vh"
               className="object-contain"
               priority
               onLoad={() => {
