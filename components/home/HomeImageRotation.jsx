@@ -149,18 +149,19 @@ export default function HomeImageRotation({
   return (
     <div className={`flex ${justify} w-full ${marginClass}`}>
       <div className="relative h-[40vh] md:h-[42vh] lg:h-[50vh] aspect-[3/4] overflow-hidden mx-auto lg:mx-0">
+        {/* Placeholder visible pendant le chargement */}
+        {!isCurrentLoaded && (
+          <div className="absolute inset-0 bg-gradient-to-b from-gray-200 to-gray-300 animate-pulse" />
+        )}
         <AnimatePresence mode="wait">
           <motion.div
             key={imgSrc}
             className="absolute inset-0"
             initial={{ opacity: 0 }}
-            animate={{ opacity: isCurrentLoaded ? 1 : 0 }}
+            animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 1.2, ease: 'easeOut' }}
           >
-            {!isCurrentLoaded && (
-              <div className="absolute inset-0 bg-black/5 animate-pulse" />
-            )}
             <Image
               src={imgSrc}
               alt="Han-Noah profile illustration"
