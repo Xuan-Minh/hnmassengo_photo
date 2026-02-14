@@ -60,7 +60,7 @@ export default function HomeImageRotation({
         setImgPosition(pendingPosition);
         lastPosition.current = pendingPosition;
         setPendingPosition(null);
-      }, 800); // durée du fade (doit matcher AnimatePresence)
+      }, 1200); // durée du fade (doit matcher AnimatePresence)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [index]);
@@ -156,7 +156,7 @@ export default function HomeImageRotation({
             initial={{ opacity: 0 }}
             animate={{ opacity: isCurrentLoaded ? 1 : 0 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.8, ease: 'easeInOut' }}
+            transition={{ duration: 1.2, ease: 'easeOut' }}
           >
             {!isCurrentLoaded && (
               <div className="absolute inset-0 bg-black/5 animate-pulse" />
