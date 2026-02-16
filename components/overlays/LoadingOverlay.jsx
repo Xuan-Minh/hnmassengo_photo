@@ -5,6 +5,23 @@ import Image from 'next/image';
 import { EVENTS, emitEvent, addEventHandler } from '../../lib/events';
 import { buildSanityImageUrl } from '../../lib/imageUtils';
 
+// Hook pour détecter si c'est mobile
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768); // md breakpoint
+    };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  return isMobile;
+}
+
 // Button component for loading overlay exit action
 function NextButton({ isExiting, onClick }) {
   const [hovered, setHovered] = useState(false);
@@ -47,6 +64,7 @@ function NextButton({ isExiting, onClick }) {
 }
 
 export default function LoadingOverlay() {
+  const isMobile = useIsMobile();
   const previouslyFocusedElement = useRef(null);
   // Fond dégradé élégant au lieu d'un gris uni
   const elegantBackground =
@@ -54,6 +72,7 @@ export default function LoadingOverlay() {
 
   // Liste dynamique des images de chargement chargées depuis Sanity via l'API
   const [imageSources, setImageSources] = useState([]);
+  const [imageMetadata, setImageMetadata] = useState([]); // Métadonnées (dimensions, orientation)
 
   const [visible, setVisible] = useState(false);
   const [isExiting, setIsExiting] = useState(false);
@@ -92,17 +111,27 @@ export default function LoadingOverlay() {
       .then(r => r.json())
       .then(data => {
         if (Array.isArray(data.images) && data.images.length > 0) {
-          // Optimiser les images via Sanity CDN
-          const optimizedImages = data.images.map(src =>
-            buildSanityImageUrl(src, { w: 800, q: 70, auto: 'format' })
-          );
-          setImageSources(optimizedImages);
+          // Stocker toutes les métadonnées
+          setImageMetadata(data.images);
         }
       })
       .catch(error => {
         console.error('Erreur chargement images de chargement:', error);
       });
   }, []);
+
+  // Filtrer et optimiser les images selon le breakpoint mobile
+  useEffect(() => {
+    if (imageMetadata.length === 0) return;
+
+    // Filtrer selon le device (exclusif)
+    // - Sur mobile: afficher SEULEMENT les images marquées comme "portraitOnly"
+    // - Sur desktop: afficher SEULEMENT les images qui NE sont PAS "portraitOnly"
+    const filtered = isMobile
+      ? imageMetadata.filter(img => img.portraitOnly) // Mobile: seulement portraitOnly
+      : imageMetadata.filter(img => !img.portraitOnly); // Desktop: seulement non-portraitOnly
+    setImageSources(filtered);
+  }, [isMobile, imageMetadata]);
 
   // Précharge: affiche la 1ère image immédiatement, charge les autres en background
   useEffect(() => {
