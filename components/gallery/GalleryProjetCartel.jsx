@@ -19,6 +19,7 @@ function CustomLightbox({ open, onClose, images, project }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isCurrentLoaded, setIsCurrentLoaded] = useState(false);
   const [hasCurrentError, setHasCurrentError] = useState(false);
+  const [touchStart, setTouchStart] = useState(null);
   const decodedSrcsRef = useRef(new Set());
 
   const getDisplaySrcForIndex = useCallback(
@@ -135,6 +136,40 @@ function CustomLightbox({ open, onClose, images, project }) {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [open, onClose, images.length, currentIndex, goToIndex]);
 
+  // Gestion du swipe sur mobile
+  useEffect(() => {
+    if (!open || typeof window === 'undefined') return;
+
+    const handleTouchStart = e => {
+      setTouchStart(e.touches[0].clientX);
+    };
+
+    const handleTouchEnd = e => {
+      if (touchStart === null) return;
+      const touchEnd = e.changedTouches[0].clientX;
+      const diff = touchStart - touchEnd;
+
+      if (Math.abs(diff) > 50) {
+        // Swipe à gauche: image suivante (diff > 0)
+        // Swipe à droite: image précédente (diff < 0)
+        if (diff > 0) {
+          goToIndex(currentIndex + 1);
+        } else {
+          goToIndex(currentIndex - 1);
+        }
+      }
+      setTouchStart(null);
+    };
+
+    window.addEventListener('touchstart', handleTouchStart, false);
+    window.addEventListener('touchend', handleTouchEnd, false);
+
+    return () => {
+      window.removeEventListener('touchstart', handleTouchStart, false);
+      window.removeEventListener('touchend', handleTouchEnd, false);
+    };
+  }, [open, touchStart, currentIndex, goToIndex]);
+
   if (!open) return null;
 
   return (
@@ -157,22 +192,22 @@ function CustomLightbox({ open, onClose, images, project }) {
 
       {/* Contenu principal (MOBILE) */}
       <div className="flex-1 flex flex-col w-full h-full md:hidden">
-        <div className="flex-1 flex flex-col w-full justify-center">
-          <div className="flex-1 flex flex-col items-center justify-center w-full max-h-[70vh] px-6 relative">
+        <div className="flex-1 flex flex-col w-full justify-center items-center bg-[#1a1a1a]">
+          <div className="flex-1 flex flex-col items-center justify-center w-full h-full px-2 relative">
             <motion.div
               key={currentIndex}
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.3 }}
-              className="w-full flex items-center justify-center flex-nowrap"
+              className="w-full h-full flex items-center justify-center flex-nowrap"
             >
               <Image
                 src={currentDisplaySrc}
                 alt={`${project.name} - Image ${currentIndex + 1} of ${images.length}`}
-                width={900}
-                height={700}
-                className="max-h-[65vh] max-w-full w-auto object-contain shadow-2xl mx-auto"
-                sizes="(max-width : 1200px) 100vw, 900px"
+                width={1200}
+                height={1200}
+                className="max-h-[90vh] max-w-[100vw] w-auto h-auto object-contain shadow-2xl"
+                sizes="100vw"
                 unoptimized
                 fetchPriority="high"
                 decoding="async"
@@ -189,39 +224,79 @@ function CustomLightbox({ open, onClose, images, project }) {
                 image indisponible
               </div>
             )}
-            <div className="text-center w-full z-40 text-lg italic mt-2">
-              {currentIndex + 1} / {images.length}
-            </div>
           </div>
         </div>
-        <div className="flex justify-between w-full px-4 py-4 text-base">
-          <span className="italic">{project.coords}</span>
-          <span>{project.name} - 20XX</span>
+        {/* Infos en bas */}
+        <div className="flex flex-col w-full gap-3 px-4 py-3 text-sm">
+          <div className="text-center italic">
+            {currentIndex + 1} / {images.length}
+          </div>
+          <div className="flex flex-col gap-2">
+            <span className="italic text-xs opacity-80">{project.coords}</span>
+            <span className="text-xs">{project.name}</span>
+          </div>
         </div>
       </div>
       <section className="md:hidden">
         {/* Séparateur */}
-        <div className="w-full border-t border-white/20 my-4" />
+        <div className="w-full border-t border-white/20 my-2" />
+
+        {/* Boutons de navigation */}
+        {images.length > 1 && (
+          <div className="flex items-center justify-between w-full px-4 mb-3">
+            <button
+              onClick={() => goToIndex(currentIndex - 1)}
+              className="opacity-60 hover:opacity-100 transition-opacity duration-300"
+              aria-label="Previous image"
+            >
+              <svg
+                width="28"
+                height="28"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+              >
+                <polyline points="15 18 9 12 15 6"></polyline>
+              </svg>
+            </button>
+            <button
+              onClick={() => goToIndex(currentIndex + 1)}
+              className="opacity-60 hover:opacity-100 transition-opacity duration-300"
+              aria-label="Next image"
+            >
+              <svg
+                width="28"
+                height="28"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+              >
+                <polyline points="9 18 15 12 9 6"></polyline>
+              </svg>
+            </button>
+          </div>
+        )}
+
         {/* Marquee horizontal des miniatures */}
-        <div className="w-full overflow-x-auto pb-4">
-          <div className="flex gap-4 px-4">
+        <div className="w-full overflow-x-auto pb-3">
+          <div className="flex gap-3 px-4">
             {images.map((img, idx) => (
               <button
                 key={img + idx}
                 onClick={() => goToIndex(idx)}
-                className={`border-2 rounded transition-all duration-200 ${
+                className={`border-2 rounded transition-all duration-200 flex-shrink-0 ${
                   idx === currentIndex
                     ? 'border-white/80 scale-105'
-                    : 'border-transparent opacity-60 hover:opacity-100'
+                    : 'border-transparent opacity-50 hover:opacity-80'
                 }`}
-                style={{ minWidth: 80, minHeight: 80 }}
+                style={{ minWidth: 70, minHeight: 70 }}
               >
                 <Image
                   src={img}
                   alt={`Miniature ${idx + 1}`}
-                  width={80}
-                  height={80}
-                  className="object-contain max-h-20 max-w-20"
+                  width={70}
+                  height={70}
+                  className="object-contain w-full h-full"
                   draggable={false}
                 />
               </button>
@@ -315,7 +390,7 @@ function CustomLightbox({ open, onClose, images, project }) {
           onClick={() => goToIndex(currentIndex - 1)}
         >
           <span className="text-xl italic text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-            précédent &larr;
+            précédent
           </span>
         </div>
 
@@ -325,7 +400,7 @@ function CustomLightbox({ open, onClose, images, project }) {
           onClick={() => goToIndex(currentIndex + 1)}
         >
           <span className="text-xl italic text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-            &rarr; suivant
+            suivant
           </span>
         </div>
 
@@ -349,13 +424,13 @@ function ImageMarqueeHorizontal({ images, onClick }) {
       className={`w-full h-full relative bg-whiteCustom flex items-center overflow-x-auto snap-x snap-mandatory touch-pan-x scroll-smooth ${
         onClick ? 'cursor-pointer' : 'cursor-default'
       }`}
-      onClick={onClick}
     >
       <div className="flex items-center gap-12 px-10">
         {images.map((img, index) => (
           <div
             key={img + index}
-            className="flex-shrink-0 flex justify-center items-center snap-center"
+            className="flex-shrink-0 flex justify-center items-center snap-center cursor-pointer hover:opacity-80 transition-opacity duration-200"
+            onClick={onClick}
           >
             <Image
               src={buildSanityImageUrl(img, { w: 400, q: 60, auto: 'format' })}
@@ -521,7 +596,10 @@ Nam dui metus, interdum vitae lobortis vel, viverra consequat neque. Praesent sa
 
           {/* Section supérieure : Marquee horizontal - 50vh */}
           <div className="h-[50vh] flex-shrink-0 flex items-center">
-            <ImageMarqueeHorizontal images={project.images} />
+            <ImageMarqueeHorizontal
+              images={project.images}
+              onClick={() => setLightboxOpen(true)}
+            />
           </div>
 
           {/* Ligne de séparation */}

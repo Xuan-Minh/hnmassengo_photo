@@ -90,7 +90,11 @@ export default function LanguageSwitcher() {
             className={`uppercase font-bold transition-all duration-300 ease-in-out relative ${hoverClass} ${
               locale === lang ? activeClass : inactiveClass
             }`}
-            onClick={() => handleChangeLang(lang)}
+            onPointerDown={e => {
+              e.preventDefault();
+              e.stopPropagation();
+              handleChangeLang(lang);
+            }}
             aria-current={locale === lang ? "true" : undefined}
             style={{ transitionProperty: "color, background-color, transform" }}
           >

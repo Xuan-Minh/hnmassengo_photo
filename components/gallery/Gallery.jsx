@@ -102,6 +102,16 @@ export default function Gallery() {
     setView(newView);
   };
 
+  // Fonction de navigation avec animation fade
+  const navigateToImage = (projectIndex, imageIndex) => {
+    setIsTransitioning(true);
+    setTimeout(() => {
+      setCurrentProjectIndex(projectIndex);
+      setCurrentImageIndex(imageIndex);
+      setIsTransitioning(false);
+    }, 250);
+  };
+
   const projectsChrono = useMemo(() => {
     const arr = [...projects];
     arr.sort((a, b) => {
@@ -258,22 +268,19 @@ export default function Gallery() {
   }, [filteredProjectsGrid]);
 
   // Nombre d'images à afficher selon la taille d'écran
+  // La grille n'est active qu'à partir de md
   const [maxImages, setMaxImages] = useState(24);
 
   useEffect(() => {
     const updateMaxImages = () => {
       if (window.innerWidth >= 1536) {
-        // 2xl: 7 cols x 8 rows = 56 - 1 (filtre) = 55 images
-        setMaxImages(55);
+        setMaxImages(55); // 2xl
       } else if (window.innerWidth >= 1024) {
-        // lg: 6 cols x 8 rows = 48 - 1 (filtre) = 47 images
-        setMaxImages(47);
+        setMaxImages(47); // lg
       } else if (window.innerWidth >= 768) {
-        // md: 5 cols x 5 rows = 25 - 1 (filtre) = 24 images
-        setMaxImages(24);
+        setMaxImages(24); // md
       } else {
-        // mobile: 2 cols x 6 rows = 12 images (compact mais lisible)
-        setMaxImages(12);
+        setMaxImages(null); // Pas de grille sur mobile
       }
     };
     updateMaxImages();
@@ -284,6 +291,7 @@ export default function Gallery() {
   // Pour la grille, on garde toujours le même nombre de slots
   // afin d'avoir des transitions uniformes entre filtres.
   const gridSlots = useMemo(() => {
+    if (!maxImages) return [];
     return Array.from(
       { length: maxImages },
       (_, idx) => allImages[idx] || null
@@ -327,6 +335,43 @@ export default function Gallery() {
     return () => window.removeEventListener('resize', handleResize);
   }, [view]);
 
+  // Navigation au clavier (flèches gauche/droite) en mode list
+  useEffect(() => {
+    if (view !== 'list') return;
+
+    const handleKeyDown = e => {
+      if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        const currentProject = filteredProjectsList[currentProjectIndex];
+        const currentImages = currentProject?.images || [];
+
+        if (currentImageIndex < currentImages.length - 1) {
+          navigateToImage(currentProjectIndex, currentImageIndex + 1);
+        } else {
+          const nextProjectIndex =
+            (currentProjectIndex + 1) % filteredProjectsList.length;
+          navigateToImage(nextProjectIndex, 0);
+        }
+      } else if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        if (currentImageIndex > 0) {
+          navigateToImage(currentProjectIndex, currentImageIndex - 1);
+        } else {
+          const prevProjectIndex =
+            currentProjectIndex === 0
+              ? filteredProjectsList.length - 1
+              : currentProjectIndex - 1;
+          const prevProject = filteredProjectsList[prevProjectIndex];
+          const prevImages = prevProject?.images || [];
+          navigateToImage(prevProjectIndex, Math.max(0, prevImages.length - 1));
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [view, filteredProjectsList, currentProjectIndex, currentImageIndex]);
+
   // Composant Controls (Filtres + Toggle View)
   const Controls = () => (
     <div
@@ -339,7 +384,11 @@ export default function Gallery() {
           className={`relative w-6 h-6 transition-opacity duration-300 ease-in-out ${
             view === 'grid' ? 'opacity-100' : 'opacity-50 hover:opacity-100'
           }`}
-          onClick={() => handleViewChange('grid')}
+          onPointerDown={e => {
+            e.preventDefault();
+            e.stopPropagation();
+            handleViewChange('grid');
+          }}
           aria-label="Grid view"
         >
           <Image
@@ -365,7 +414,11 @@ export default function Gallery() {
           className={`relative w-6 h-6 transition-opacity duration-300 ease-in-out ${
             view === 'list' ? 'opacity-100' : 'opacity-50 hover:opacity-100'
           }`}
-          onClick={() => handleViewChange('list')}
+          onPointerDown={e => {
+            e.preventDefault();
+            e.stopPropagation();
+            handleViewChange('list');
+          }}
           aria-label="List view"
         >
           <Image
@@ -436,7 +489,7 @@ export default function Gallery() {
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: 50 }}
                   transition={{ duration: 0.5, ease: 'easeInOut' }}
-                  className="w-full h-full grid grid-cols-2 md:grid-cols-5 lg:grid-cols-6 2xl:grid-cols-7 grid-rows-6 md:grid-rows-5 lg:grid-rows-8 2xl:grid-rows-8 gap-x-2 gap-y-2 overflow-hidden lg:pt-10"
+                  className="w-full h-full hidden md:grid md:grid-cols-5 lg:grid-cols-6 2xl:grid-cols-7 md:grid-rows-5 lg:grid-rows-8 2xl:grid-rows-8 gap-x-2 gap-y-2 overflow-hidden lg:pt-10"
                 >
                   {/* Case filtres + view */}
                   <div
@@ -528,7 +581,11 @@ export default function Gallery() {
                             ? 'opacity-100'
                             : 'opacity-50 hover:opacity-100'
                         }`}
-                        onClick={() => handleViewChange('grid')}
+                        onPointerDown={e => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          handleViewChange('grid');
+                        }}
                         aria-label="Grid view"
                       >
                         <Image
@@ -554,7 +611,11 @@ export default function Gallery() {
                             ? 'opacity-100'
                             : 'opacity-50 hover:opacity-100'
                         }`}
-                        onClick={() => handleViewChange('list')}
+                        onPointerDown={e => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          handleViewChange('list');
+                        }}
                         aria-label="List view"
                       >
                         <Image
@@ -582,8 +643,7 @@ export default function Gallery() {
                         <button
                           key={p.id}
                           onClick={() => {
-                            setCurrentProjectIndex(idx);
-                            setCurrentImageIndex(0);
+                            navigateToImage(idx, 0);
                           }}
                           className={`text-lg font-playfair transition-all duration-300 ${
                             idx === currentProjectIndex
@@ -606,52 +666,129 @@ export default function Gallery() {
                       const src = currentListDisplaySrc;
                       if (!src) return null;
                       return (
-                        <div
-                          className="relative w-[85%] h-[50vh] lg:w-[70%] lg:h-[70vh] xl:w-[80%] xl:h-[80vh] cursor-pointer"
-                          onClick={() =>
-                            setSelectedProject(
-                              filteredProjectsList[currentProjectIndex]
-                            )
-                          }
-                        >
+                        <div className="relative w-full h-full flex items-center justify-center gap-4 px-4">
+                          {/* Bouton gauche */}
+                          <button
+                            onClick={() => {
+                              if (currentImageIndex > 0) {
+                                navigateToImage(
+                                  currentProjectIndex,
+                                  currentImageIndex - 1
+                                );
+                              } else {
+                                const prevProjectIndex =
+                                  currentProjectIndex === 0
+                                    ? filteredProjectsList.length - 1
+                                    : currentProjectIndex - 1;
+                                const prevProject =
+                                  filteredProjectsList[prevProjectIndex];
+                                const prevImages = prevProject?.images || [];
+                                navigateToImage(
+                                  prevProjectIndex,
+                                  Math.max(0, prevImages.length - 1)
+                                );
+                              }
+                            }}
+                            className="flex-shrink-0 opacity-60 hover:opacity-100 transition-opacity duration-300"
+                            aria-label="Previous image"
+                          >
+                            <svg
+                              width="32"
+                              height="32"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                            >
+                              <polyline points="15 18 9 12 15 6"></polyline>
+                            </svg>
+                          </button>
+
+                          {/* Conteneur image */}
                           <div
-                            className={`absolute inset-0 animate-pulse transition-opacity duration-300 ${
-                              isListImageLoaded || listImageError
-                                ? 'opacity-0'
-                                : 'opacity-100'
-                            }`}
-                          />
-                          {listImageError && (
-                            <div className="absolute inset-0 flex items-center justify-center text-blackCustom/60 font-playfair">
-                              image indisponible
-                            </div>
-                          )}
-                          <Image
-                            key={`${currentProjectIndex}-${currentImageIndex}-${
-                              filteredProjectsList[currentProjectIndex]
-                                ?.images?.[currentImageIndex] || 'empty'
-                            }`}
-                            src={src}
-                            alt={
-                              filteredProjectsList[currentProjectIndex]?.name ||
-                              ''
+                            className="relative w-[85%] h-[50vh] lg:w-[70%] lg:h-[70vh] xl:w-[80%] xl:h-[80vh] cursor-pointer flex-shrink-0"
+                            onClick={() =>
+                              setSelectedProject(
+                                filteredProjectsList[currentProjectIndex]
+                              )
                             }
-                            fill
-                            className={`object-contain transition-opacity duration-300 ${
-                              isTransitioning ||
-                              (!isListImageLoaded && !listImageError)
-                                ? 'opacity-0'
-                                : 'opacity-100'
-                            }`}
-                            // En LIST, on demande volontairement un peu plus petit qu'en GRID
-                            // pour réduire le temps de chargement du premier affichage.
-                            sizes="(max-width: 768px) 90vw, (max-width: 1200px) 60vw, 55vw"
-                            quality={60}
-                            unoptimized
-                            onError={() => setListImageError(true)}
-                            onLoadingComplete={() => setIsListImageLoaded(true)}
-                            priority
-                          />
+                          >
+                            <div
+                              className={`absolute inset-0 animate-pulse transition-opacity duration-300 ${
+                                isListImageLoaded || listImageError
+                                  ? 'opacity-0'
+                                  : 'opacity-100'
+                              }`}
+                            />
+                            {listImageError && (
+                              <div className="absolute inset-0 flex items-center justify-center text-blackCustom/60 font-playfair">
+                                image indisponible
+                              </div>
+                            )}
+                            <Image
+                              key={`${currentProjectIndex}-${currentImageIndex}-${
+                                filteredProjectsList[currentProjectIndex]
+                                  ?.images?.[currentImageIndex] || 'empty'
+                              }`}
+                              src={src}
+                              alt={
+                                filteredProjectsList[currentProjectIndex]
+                                  ?.name || ''
+                              }
+                              fill
+                              className={`object-contain transition-opacity duration-300 ${
+                                isTransitioning ||
+                                (!isListImageLoaded && !listImageError)
+                                  ? 'opacity-0'
+                                  : 'opacity-100'
+                              }`}
+                              // En LIST, on demande volontairement un peu plus petit qu'en GRID
+                              // pour réduire le temps de chargement du premier affichage.
+                              sizes="(max-width: 768px) 90vw, (max-width: 1200px) 60vw, 55vw"
+                              quality={60}
+                              unoptimized
+                              onError={() => setListImageError(true)}
+                              onLoadingComplete={() =>
+                                setIsListImageLoaded(true)
+                              }
+                              priority
+                            />
+                          </div>
+
+                          {/* Bouton droite */}
+                          <button
+                            onClick={() => {
+                              const currentProject =
+                                filteredProjectsList[currentProjectIndex];
+                              const currentImages =
+                                currentProject?.images || [];
+                              if (
+                                currentImageIndex <
+                                currentImages.length - 1
+                              ) {
+                                navigateToImage(
+                                  currentProjectIndex,
+                                  currentImageIndex + 1
+                                );
+                              } else {
+                                const nextProjectIndex =
+                                  (currentProjectIndex + 1) %
+                                  filteredProjectsList.length;
+                                navigateToImage(nextProjectIndex, 0);
+                              }
+                            }}
+                            className="flex-shrink-0 opacity-60 hover:opacity-100 transition-opacity duration-300"
+                            aria-label="Next image"
+                          >
+                            <svg
+                              width="32"
+                              height="32"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                            >
+                              <polyline points="9 18 15 12 9 6"></polyline>
+                            </svg>
+                          </button>
                         </div>
                       );
                     })()}
@@ -663,8 +800,7 @@ export default function Gallery() {
                       <button
                         key={p.id}
                         onClick={() => {
-                          setCurrentProjectIndex(idx);
-                          setCurrentImageIndex(0);
+                          navigateToImage(idx, 0);
                         }}
                         className={`text-lg font-playfair transition-all duration-300 ${
                           idx === currentProjectIndex
