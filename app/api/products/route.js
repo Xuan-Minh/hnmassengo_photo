@@ -22,7 +22,7 @@ export async function GET(request) {
 
     return NextResponse.json(formatted);
   } catch (error) {
-    console.error('Error fetching products:', error);
+    // Erreur lors de la récupération des produits
     return NextResponse.json(
       { error: 'Failed to fetch products' },
       { status: 500 }

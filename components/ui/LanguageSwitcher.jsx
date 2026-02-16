@@ -3,6 +3,7 @@ import React from "react";
 import { useEffect, useState } from "react";
 import { useParams, usePathname, useRouter } from "next/navigation";
 import { computeIsDark } from "../../lib/utils";
+import { EVENTS, emitEvent } from "../../lib/events";
 
 // Sélecteur de langue avec adaptation de couleur + disparition sur la section contact
 export default function LanguageSwitcher() {
@@ -70,6 +71,7 @@ export default function LanguageSwitcher() {
 
   const handleChangeLang = (lang) => {
     if (lang === locale) return;
+    emitEvent(EVENTS.INTRO_SHOW);
     const current = pathname || "/";
     let base = current.replace(/^\/(fr|en|de)(?=\/|$)/, "");
     if (base === "") base = "/";

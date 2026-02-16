@@ -3,7 +3,6 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import { EVENTS, emitEvent, addEventHandler } from '../../lib/events';
-import { buildSanityImageUrl } from '../../lib/imageUtils';
 
 // Hook pour détecter si c'est mobile
 function useIsMobile() {
@@ -115,8 +114,9 @@ export default function LoadingOverlay() {
           setImageMetadata(data.images);
         }
       })
-      .catch(error => {
-        console.error('Erreur chargement images de chargement:', error);
+      // eslint-disable-next-line no-empty
+      .catch(() => {
+        // Erreur lors du chargement des images de chargement
       });
   }, []);
 

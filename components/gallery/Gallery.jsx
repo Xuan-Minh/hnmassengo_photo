@@ -23,7 +23,6 @@ function getProjectDateMs(project) {
 }
 
 export default function Gallery() {
-  const t = useTranslations();
   const { locale } = useParams();
   const [projects, setProjects] = useState([]);
 
@@ -70,6 +69,8 @@ export default function Gallery() {
   const [isListImageLoaded, setIsListImageLoaded] = useState(false);
   const [listImageError, setListImageError] = useState(false);
 
+  // Ref pour tracker la version courante de l'image et éviter les race conditions
+  const currentImageVersionRef = useRef(0);
   const listTimersRef = useRef({ tick: null, swap: null, cancelled: 0 });
 
   // Charger les projets depuis Sanity
@@ -104,6 +105,13 @@ export default function Gallery() {
 
   // Fonction de navigation avec animation fade
   const navigateToImage = (projectIndex, imageIndex) => {
+    // Incrémenter la version pour invalider les anciens callbacks
+    currentImageVersionRef.current += 1;
+    
+    // Réinitialiser immédiatement les états de chargement
+    setIsListImageLoaded(false);
+    setListImageError(false);
+    
     setIsTransitioning(true);
     setTimeout(() => {
       setCurrentProjectIndex(projectIndex);
@@ -665,6 +673,8 @@ export default function Gallery() {
                     {(() => {
                       const src = currentListDisplaySrc;
                       if (!src) return null;
+                      // Capturer la version courante pour éviter les race conditions
+                      const capturedVersion = currentImageVersionRef.current;
                       return (
                         <div className="relative w-full h-full flex items-center justify-center gap-4 px-4">
                           {/* Bouton gauche */}
@@ -725,10 +735,7 @@ export default function Gallery() {
                               </div>
                             )}
                             <Image
-                              key={`${currentProjectIndex}-${currentImageIndex}-${
-                                filteredProjectsList[currentProjectIndex]
-                                  ?.images?.[currentImageIndex] || 'empty'
-                              }`}
+                              key={`${currentProjectIndex}-${currentImageIndex}`}
                               src={src}
                               alt={
                                 filteredProjectsList[currentProjectIndex]
@@ -746,10 +753,18 @@ export default function Gallery() {
                               sizes="(max-width: 768px) 90vw, (max-width: 1200px) 60vw, 55vw"
                               quality={60}
                               unoptimized
-                              onError={() => setListImageError(true)}
-                              onLoadingComplete={() =>
-                                setIsListImageLoaded(true)
-                              }
+                              onError={() => {
+                                // Vérifier que c'est toujours la bonne image
+                                if (currentImageVersionRef.current === capturedVersion) {
+                                  setListImageError(true);
+                                }
+                              }}
+                              onLoadingComplete={() => {
+                                // Vérifier que c'est toujours la bonne image
+                                if (currentImageVersionRef.current === capturedVersion) {
+                                  setIsListImageLoaded(true);
+                                }
+                              }}
                               priority
                             />
                           </div>

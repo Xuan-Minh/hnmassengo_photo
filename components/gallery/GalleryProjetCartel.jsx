@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import PropTypes from 'prop-types';
 import dynamic from 'next/dynamic';
 import { motion, animate, useMotionValue } from 'framer-motion';
-import BaseOverlay from '../overlays/BaseOverlay';
 const AnimatePresence = dynamic(
   () => import('framer-motion').then(mod => mod.AnimatePresence),
   { ssr: false }
@@ -20,6 +19,10 @@ function CustomLightbox({ open, onClose, images, project }) {
   const [isCurrentLoaded, setIsCurrentLoaded] = useState(false);
   const [hasCurrentError, setHasCurrentError] = useState(false);
   const [touchStart, setTouchStart] = useState(null);
+  const [imageDimensions, setImageDimensions] = useState({
+    width: 0,
+    height: 0,
+  });
   const decodedSrcsRef = useRef(new Set());
 
   const getDisplaySrcForIndex = useCallback(
@@ -170,6 +173,12 @@ function CustomLightbox({ open, onClose, images, project }) {
     };
   }, [open, touchStart, currentIndex, goToIndex]);
 
+  // Réinitialiser l'état quand on change d'image
+  useEffect(() => {
+    setImageDimensions({ width: 0, height: 0 });
+    setIsCurrentLoaded(false);
+  }, [currentIndex]);
+
   if (!open) return null;
 
   return (
@@ -212,7 +221,13 @@ function CustomLightbox({ open, onClose, images, project }) {
                 fetchPriority="high"
                 decoding="async"
                 onError={() => setHasCurrentError(true)}
-                onLoad={() => setIsCurrentLoaded(true)}
+                onLoad={(result) => {
+                  setIsCurrentLoaded(true);
+                  setImageDimensions({
+                    width: result.naturalWidth,
+                    height: result.naturalHeight,
+                  });
+                }}
                 priority
               />
             </motion.div>
@@ -224,6 +239,27 @@ function CustomLightbox({ open, onClose, images, project }) {
                 image indisponible
               </div>
             )}
+            
+            {/* Message pour les images paysage */}
+            {isCurrentLoaded && imageDimensions.width > imageDimensions.height && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.5, delay: 0.3 }}
+                className="absolute bottom-16 left-1/2 -translate-x-1/2 bg-white/10 backdrop-blur-sm px-6 py-3 rounded-lg border border-white/20 text-center pointer-events-none"
+              >
+                <motion.div
+                  animate={{ rotate: [0, 5, -5, 0] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                  className="text-2xl mb-2"
+                >
+                  📱
+                </motion.div>
+                <div className="text-sm italic text-white/80">
+                  Tournez votre téléphone
+                </div>
+              </motion.div>
+            )}
           </div>
         </div>
         {/* Infos en bas */}
@@ -231,51 +267,11 @@ function CustomLightbox({ open, onClose, images, project }) {
           <div className="text-center italic">
             {currentIndex + 1} / {images.length}
           </div>
-          <div className="flex flex-col gap-2">
-            <span className="italic text-xs opacity-80">{project.coords}</span>
-            <span className="text-xs">{project.name}</span>
-          </div>
         </div>
       </div>
       <section className="md:hidden">
         {/* Séparateur */}
         <div className="w-full border-t border-white/20 my-2" />
-
-        {/* Boutons de navigation */}
-        {images.length > 1 && (
-          <div className="flex items-center justify-between w-full px-4 mb-3">
-            <button
-              onClick={() => goToIndex(currentIndex - 1)}
-              className="opacity-60 hover:opacity-100 transition-opacity duration-300"
-              aria-label="Previous image"
-            >
-              <svg
-                width="28"
-                height="28"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-              >
-                <polyline points="15 18 9 12 15 6"></polyline>
-              </svg>
-            </button>
-            <button
-              onClick={() => goToIndex(currentIndex + 1)}
-              className="opacity-60 hover:opacity-100 transition-opacity duration-300"
-              aria-label="Next image"
-            >
-              <svg
-                width="28"
-                height="28"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-              >
-                <polyline points="9 18 15 12 9 6"></polyline>
-              </svg>
-            </button>
-          </div>
-        )}
 
         {/* Marquee horizontal des miniatures */}
         <div className="w-full overflow-x-auto pb-3">

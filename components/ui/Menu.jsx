@@ -31,6 +31,7 @@ export default function Menu() {
 
   const handleChangeLang = (lang) => {
     if (lang === locale) return;
+    emitEvent(EVENTS.INTRO_SHOW);
     const current = pathname || "/";
     let base = current.replace(/^\/(fr|en|de)(?=\/|$)/, "");
     if (base === "") base = "/";

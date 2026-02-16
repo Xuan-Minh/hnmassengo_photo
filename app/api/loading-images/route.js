@@ -28,10 +28,7 @@ export async function GET() {
       },
     });
   } catch (error) {
-    console.error(
-      'Erreur lors de la récupération des images de chargement:',
-      error
-    );
+    // Erreur lors de la récupération des images de chargement
     return new Response(JSON.stringify({ error: 'Erreur serveur' }), {
       status: 500,
       headers: {
