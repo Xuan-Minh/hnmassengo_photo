@@ -265,11 +265,15 @@ export default function Gallery() {
       if (window.innerWidth >= 1536) {
         // 2xl: 7 cols x 8 rows = 56 - 1 (filtre) = 55 images
         setMaxImages(55);
-      } else if (window.innerWidth >= 1280) {
+      } else if (window.innerWidth >= 1024) {
         // lg: 6 cols x 8 rows = 48 - 1 (filtre) = 47 images
         setMaxImages(47);
+      } else if (window.innerWidth >= 768) {
+        // md: 5 cols x 5 rows = 25 - 1 (filtre) = 24 images
+        setMaxImages(24);
       } else {
-        setMaxImages(24); // md: 5x5 -1
+        // mobile: 2 cols x 6 rows = 12 images (compact mais lisible)
+        setMaxImages(12);
       }
     };
     updateMaxImages();
@@ -330,7 +334,7 @@ export default function Gallery() {
         view === 'grid' ? 'justify-center' : 'justify-start'
       }`}
     >
-      <div className="hidden lg:flex gap-4 mb-4">
+      <div className="hidden lg:flex gap-4 mb-1">
         <button
           className={`relative w-6 h-6 transition-opacity duration-300 ease-in-out ${
             view === 'grid' ? 'opacity-100' : 'opacity-50 hover:opacity-100'
@@ -432,7 +436,7 @@ export default function Gallery() {
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: 50 }}
                   transition={{ duration: 0.5, ease: 'easeInOut' }}
-                  className="w-full h-full grid grid-cols-1 md:grid-cols-5 lg:grid-cols-6 2xl:grid-cols-7 md:grid-rows-5 lg:grid-rows-8 2xl:grid-rows-8 gap-x-2 gap-y-2 overflow-hidden lg:pt-10"
+                  className="w-full h-full grid grid-cols-2 md:grid-cols-5 lg:grid-cols-6 2xl:grid-cols-7 grid-rows-6 md:grid-rows-5 lg:grid-rows-8 2xl:grid-rows-8 gap-x-2 gap-y-2 overflow-hidden lg:pt-10"
                 >
                   {/* Case filtres + view */}
                   <div
