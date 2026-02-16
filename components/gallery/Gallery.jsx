@@ -326,7 +326,7 @@ export default function Gallery() {
   // Composant Controls (Filtres + Toggle View)
   const Controls = () => (
     <div
-      className={`flex flex-col items-start p-2 font-playfair md:h-full ${
+      className={`flex flex-col items-start p-4 md:p-6 font-playfair md:h-full ${
         view === 'grid' ? 'justify-center' : 'justify-start'
       }`}
     >
@@ -390,7 +390,7 @@ export default function Gallery() {
             <button
               key={f.value}
               type="button"
-              className={`text-lg text-left relative group transition-opacity duration-300 ${
+              className={`text-sm md:text-base text-left relative group transition-opacity duration-300 whitespace-nowrap ${
                 gridFilter === f.value
                   ? 'font-bold opacity-100'
                   : 'opacity-60 hover:opacity-100'
