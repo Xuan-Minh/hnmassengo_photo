@@ -10,12 +10,16 @@ export async function GET() {
             url
           }
         },
-        alt
+        alt,
+        portraitOnly
       }`
     );
 
     // Transformer les données pour le format attendu par le composant
-    const images = data.map(item => item.image.asset.url);
+    const images = data.map(item => ({
+      url: item.image.asset.url,
+      portraitOnly: item.portraitOnly || false,
+    }));
 
     return new Response(JSON.stringify({ images }), {
       status: 200,

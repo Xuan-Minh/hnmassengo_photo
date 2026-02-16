@@ -127,10 +127,18 @@ export default function LoadingOverlay() {
     // Filtrer selon le device (exclusif)
     // - Sur mobile: afficher SEULEMENT les images marquées comme "portraitOnly"
     // - Sur desktop: afficher SEULEMENT les images qui NE sont PAS "portraitOnly"
-    const filtered = isMobile
-      ? imageMetadata.filter(img => img.portraitOnly) // Mobile: seulement portraitOnly
-      : imageMetadata.filter(img => !img.portraitOnly); // Desktop: seulement non-portraitOnly
-    setImageSources(filtered);
+    let filtered = isMobile
+      ? imageMetadata.filter(img => img.portraitOnly)
+      : imageMetadata.filter(img => !img.portraitOnly);
+
+    // Fallback : si aucune image ne correspond, on affiche tout
+    if (filtered.length === 0) {
+      filtered = imageMetadata;
+    }
+
+    // Extraire seulement les URLs (pas les objets complets)
+    const urls = filtered.map(img => img.url);
+    setImageSources(urls);
   }, [isMobile, imageMetadata]);
 
   // Précharge: affiche la 1ère image immédiatement, charge les autres en background
