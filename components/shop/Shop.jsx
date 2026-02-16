@@ -88,6 +88,12 @@ export default function Shop() {
     return () => window.removeEventListener('resize', checkDesktop);
   }, []);
 
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [products, setProducts] = useState([]);
+  const [cartItems, setCartItems] = useState([]);
+  const [cartTotal, setCartTotal] = useState(0);
+  const [cartCount, setCartCount] = useState(0);
+
   // Gérer le scroll quand un overlay produit est ouvert
   useEffect(() => {
     const scrollRoot = document.getElementById('scroll-root');
@@ -103,11 +109,6 @@ export default function Shop() {
       scrollRoot.style.overflow = '';
     };
   }, [selectedProduct]);
-  const [selectedProduct, setSelectedProduct] = useState(null);
-  const [products, setProducts] = useState([]);
-  const [cartItems, setCartItems] = useState([]);
-  const [cartTotal, setCartTotal] = useState(0);
-  const [cartCount, setCartCount] = useState(0);
 
   const cartItemIds = useMemo(() => {
     return new Set((cartItems || []).map(item => item.id));
