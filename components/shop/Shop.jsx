@@ -87,6 +87,22 @@ export default function Shop() {
     window.addEventListener('resize', checkDesktop);
     return () => window.removeEventListener('resize', checkDesktop);
   }, []);
+
+  // Gérer le scroll quand un overlay produit est ouvert
+  useEffect(() => {
+    const scrollRoot = document.getElementById('scroll-root');
+    if (!scrollRoot) return;
+
+    if (selectedProduct) {
+      scrollRoot.style.overflow = 'hidden';
+    } else {
+      scrollRoot.style.overflow = '';
+    }
+
+    return () => {
+      scrollRoot.style.overflow = '';
+    };
+  }, [selectedProduct]);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [products, setProducts] = useState([]);
   const [cartItems, setCartItems] = useState([]);

@@ -48,6 +48,22 @@ export default function Blog() {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
+  // Gérer le scroll quand un archive ou un post overlay est ouvert
+  useEffect(() => {
+    const scrollRoot = document.getElementById('scroll-root');
+    if (!scrollRoot) return;
+
+    if (archiveOpen || selectedPost) {
+      scrollRoot.style.overflow = 'hidden';
+    } else {
+      scrollRoot.style.overflow = '';
+    }
+
+    return () => {
+      scrollRoot.style.overflow = '';
+    };
+  }, [archiveOpen, selectedPost]);
+
   // Lire ?post=<id> côté client sans useSearchParams (évite l'erreur suspense en build)
   useEffect(() => {
     const update = () => setRequestedPostId(readRequestedPostId());

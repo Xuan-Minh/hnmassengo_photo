@@ -47,6 +47,22 @@ export default function Gallery() {
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, []);
 
+  // Gérer le scroll quand un overlay est ouvert
+  useEffect(() => {
+    const scrollRoot = document.getElementById('scroll-root');
+    if (!scrollRoot) return;
+
+    if (overlayOpen || selectedProject) {
+      scrollRoot.style.overflow = 'hidden';
+    } else {
+      scrollRoot.style.overflow = '';
+    }
+
+    return () => {
+      scrollRoot.style.overflow = '';
+    };
+  }, [overlayOpen, selectedProject]);
+
   // --- States pour le mode LIST ---
   const [currentProjectIndex, setCurrentProjectIndex] = useState(0);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
