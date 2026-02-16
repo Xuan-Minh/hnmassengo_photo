@@ -263,11 +263,11 @@ export default function Gallery() {
   useEffect(() => {
     const updateMaxImages = () => {
       if (window.innerWidth >= 1536) {
-        // 2xl
-        setMaxImages(27); // 7x4 -1
+        // 2xl: 7 cols x 8 rows = 56 - 1 (filtre) = 55 images
+        setMaxImages(55);
       } else if (window.innerWidth >= 1280) {
-        // lg
-        setMaxImages(24); // 5x5 -1
+        // lg: 5 cols x 10 rows = 50 - 1 (filtre) = 49 images
+        setMaxImages(49);
       } else {
         setMaxImages(24); // md: 5x5 -1
       }
@@ -432,7 +432,7 @@ export default function Gallery() {
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: 50 }}
                   transition={{ duration: 0.5, ease: 'easeInOut' }}
-                  className="w-full h-full grid grid-cols-1 md:grid-cols-5 lg:grid-cols-5 2xl:grid-cols-7 md:grid-rows-5 lg:grid-rows-5 2xl:grid-rows-4 gap-x-2 gap-y-2 overflow-hidden lg:pt-10"
+                  className="w-full h-full grid grid-cols-1 md:grid-cols-5 lg:grid-cols-5 2xl:grid-cols-7 md:grid-rows-5 lg:grid-rows-10 2xl:grid-rows-8 gap-x-2 gap-y-2 overflow-hidden lg:pt-10"
                 >
                   {/* Case filtres + view */}
                   <div

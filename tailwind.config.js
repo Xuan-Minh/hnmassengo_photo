@@ -20,6 +20,10 @@ module.exports = {
         blackCustom: "#222222",
         formBG: "#323232",
       },
+      gridTemplateRows: {
+        8: "repeat(8, minmax(0, 1fr))",
+        10: "repeat(10, minmax(0, 1fr))",
+      },
     },
   },
   plugins: [require("@tailwindcss/forms"), require("@tailwindcss/typography")],
