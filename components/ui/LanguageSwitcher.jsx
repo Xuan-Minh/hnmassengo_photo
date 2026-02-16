@@ -1,13 +1,13 @@
-"use client";
-import React from "react";
-import { useEffect, useState } from "react";
-import { useParams, usePathname, useRouter } from "next/navigation";
-import { computeIsDark } from "../../lib/utils";
-import { EVENTS, emitEvent } from "../../lib/events";
+'use client';
+import React from 'react';
+import { useEffect, useState } from 'react';
+import { useParams, usePathname, useRouter } from 'next/navigation';
+import { computeIsDark } from '../../lib/utils';
+import { EVENTS, emitEvent } from '../../lib/events';
 
 // Sélecteur de langue avec adaptation de couleur + disparition sur la section contact
 export default function LanguageSwitcher() {
-  const langs = ["fr", "en", "de"];
+  const langs = ['fr', 'en', 'de'];
   const params = useParams();
   const router = useRouter();
   const pathname = usePathname();
@@ -17,21 +17,21 @@ export default function LanguageSwitcher() {
   const [hideSelector, setHideSelector] = useState(false);
 
   useEffect(() => {
-    const root = document.getElementById("scroll-root");
+    const root = document.getElementById('scroll-root');
     if (!root) return;
-    const sections = Array.from(root.querySelectorAll("section[id]"));
+    const sections = Array.from(root.querySelectorAll('section[id]'));
 
     const io = new IntersectionObserver(
-      (entries) => {
+      entries => {
         const visible = entries
-          .filter((e) => e.isIntersecting)
+          .filter(e => e.isIntersecting)
           .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
         if (visible?.target) {
           const sectionId = visible.target.id;
           // blog (Spaces) forcé clair, works/shop forcés noir, sinon calcul auto
-          if (sectionId === "blog") {
+          if (sectionId === 'blog') {
             setAutoDark(true);
-          } else if (["works", "shop"].includes(sectionId)) {
+          } else if (['works', 'shop'].includes(sectionId)) {
             setAutoDark(false);
           } else {
             setAutoDark(computeIsDark(visible.target));
@@ -40,18 +40,18 @@ export default function LanguageSwitcher() {
       },
       { root, threshold: [0.4, 0.6, 0.8] }
     );
-    sections.forEach((sec) => io.observe(sec));
+    sections.forEach(sec => io.observe(sec));
     return () => io.disconnect();
   }, []);
 
   // Masquer le sélecteur de langue quand la section contact du bas (#info) est visible dans le viewport
   useEffect(() => {
-    const root = document.getElementById("scroll-root");
-    const infoEl = document.getElementById("info");
+    const root = document.getElementById('scroll-root');
+    const infoEl = document.getElementById('info');
     if (!root || !infoEl) return;
 
     const io = new IntersectionObserver(
-      (entries) => {
+      entries => {
         const entry = entries[0];
         // Masquer quand au moins ~20% visible
         setHideSelector(entry.isIntersecting && entry.intersectionRatio > 0.2);
@@ -63,30 +63,30 @@ export default function LanguageSwitcher() {
   }, []);
 
   // Utilisation directe de autoDark calculé par l'observer
-  const activeClass = autoDark ? "text-[#F4F3F2]" : "text-blackCustom";
-  const inactiveClass = autoDark ? "text-[#F4F3F2]/60" : "text-accent";
+  const activeClass = autoDark ? 'text-[#F4F3F2]' : 'text-blackCustom';
+  const inactiveClass = autoDark ? 'text-[#F4F3F2]/60' : 'text-accent';
   const hoverClass = autoDark
-    ? "hover:text-[#F4F3F2]"
-    : "hover:text-blackCustom";
+    ? 'hover:text-[#F4F3F2]'
+    : 'hover:text-blackCustom';
 
-  const handleChangeLang = (lang) => {
+  const handleChangeLang = lang => {
     if (lang === locale) return;
     emitEvent(EVENTS.INTRO_SHOW);
-    const current = pathname || "/";
-    let base = current.replace(/^\/(fr|en|de)(?=\/|$)/, "");
-    if (base === "") base = "/";
-    const href = `/${lang}${base === "/" ? "" : base}`;
+    const current = pathname || '/';
+    let base = current.replace(/^\/(fr|en|de)(?=\/|$)/, '');
+    if (base === '') base = '/';
+    const href = `/${lang}${base === '/' ? '' : base}`;
     router.replace(href, { scroll: false });
   };
 
   return (
     <div
       className={`hidden lg:flex fixed text-[20px] bottom-10 right-20 z-50 items-center space-x-2 transition-opacity duration-300 ${
-        hideSelector ? "opacity-0 pointer-events-none" : "opacity-100"
+        hideSelector ? 'opacity-0 pointer-events-none' : 'opacity-100'
       }`}
     >
       {langs.map((lang, i) => (
-        <React.Fragment key={"frag-" + lang}>
+        <React.Fragment key={'frag-' + lang}>
           <button
             key={lang}
             className={`uppercase font-bold transition-all duration-300 ease-in-out relative ${hoverClass} ${
@@ -97,14 +97,14 @@ export default function LanguageSwitcher() {
               e.stopPropagation();
               handleChangeLang(lang);
             }}
-            aria-current={locale === lang ? "true" : undefined}
-            style={{ transitionProperty: "color, background-color, transform" }}
+            aria-current={locale === lang ? 'true' : undefined}
+            style={{ transitionProperty: 'color, background-color, transform' }}
           >
             {lang}
           </button>
           {i < langs.length - 1 && (
             <span
-              key={"sep-" + lang}
+              key={'sep-' + lang}
               className={`mx-1 transition-colors duration-300 ease-in-out ${inactiveClass}`}
             >
               |
