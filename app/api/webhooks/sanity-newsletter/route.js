@@ -89,7 +89,10 @@ export async function POST(request) {
     );
   }
 
+  console.log('Webhook payload:', JSON.stringify(payload, null, 2));
   const postId = pickPostId(payload);
+  console.log('Extracted postId:', postId);
+  
   if (!postId) {
     return NextResponse.json(
       { success: false, message: 'Missing blogPost id in webhook payload' },
