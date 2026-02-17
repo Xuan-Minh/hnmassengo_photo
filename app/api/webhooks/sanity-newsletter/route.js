@@ -123,10 +123,7 @@ export async function POST(request) {
   let post = null;
   for (let i = 0; i < 5; i++) {
     try {
-      post = await client.fetch(
-        '*[_id == $id][0]{_id}',
-        { id: postId }
-      );
+      post = await client.fetch('*[_id == $id][0]{_id}', { id: postId });
       if (post?._id) break;
       console.log(`Post not found yet (attempt ${i + 1}/5), retrying...`);
       await new Promise(resolve => setTimeout(resolve, 500));
