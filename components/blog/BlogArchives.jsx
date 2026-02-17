@@ -20,7 +20,7 @@ export default function BlogArchives({ posts, onClose, onPostClick }) {
         >
           back
         </button>
-        <h2 className="text-4xl font-playfair italic text-whiteCustom/20">
+        <h2 className="text-4xl font-playfair italic text-whiteCustom">
           Archives
         </h2>
       </div>

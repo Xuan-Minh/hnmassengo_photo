@@ -506,15 +506,6 @@ export default function GalleryProjetCartel({ project, onClose }) {
     };
   }, [onClose]);
 
-  const handleLogoClick = () => {
-    onClose(); // Déclenche l'animation de sortie
-
-    // Après un délai pour laisser l'animation se jouer, on navigue et on lance l'intro
-    setTimeout(() => {
-      emitEvent(EVENTS.INTRO_SHOW);
-      router.push('/');
-    }, 800); // Délai légèrement inférieur à la durée de l'animation (1s)
-  };
   if (!project) return null;
 
   // Placeholder pour la description
@@ -595,14 +586,6 @@ Nam dui metus, interdum vitae lobortis vel, viverra consequat neque. Praesent sa
         {/* Version Desktop : Mise en page horizontale */}
         <main className="hidden md:flex w-[55%] h-full border-r border-blackCustom p-16 flex-col justify-between overflow-y-auto">
           <div>
-            <div
-              className="flex items-center gap-2 text-lg text-accent  mb-2 cursor-pointer"
-              onClick={handleLogoClick}
-              title="Retour à l'accueil"
-            >
-              <span className="font-playfair italic">Han-Noah</span>
-              <span className="font-lexend">MASSENGO</span>
-            </div>
             <button
               onClick={onClose}
               className="font-playfair text-lg text-accent hover:text-blackCustom transition-colors"
