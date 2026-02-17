@@ -22,13 +22,13 @@ export async function POST(request) {
 
     // Get all campaigns grouped by post
     const campaigns = await sanity.fetch(
-      `*[_type == "newsletterCampaign"] {
+      `*[_type == "newsletterCampaign"] | order(_createdAt asc) {
         _id,
         _createdAt,
         post {
           _ref
         }
-      } | sort(_createdAt asc)`
+      }`
     );
 
     const campaignsByPost = {};
