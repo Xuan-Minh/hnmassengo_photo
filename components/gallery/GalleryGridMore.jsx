@@ -107,7 +107,7 @@ export default function GalleryGridMore({
 
   return (
     <motion.div
-      className="fixed inset-0 bg-whiteCustom z-[100] flex flex-col"
+      className="fixed inset-0 bg-background z-[100] flex flex-col"
       initial={{ x: '100%' }}
       animate={{ x: 0 }}
       exit={{ x: '100%' }}
@@ -152,7 +152,7 @@ export default function GalleryGridMore({
 
         {/* Grid */}
         <div className="flex-1 overflow-y-auto pl-8">
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8 gap-4 pb-16">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 lg:grid-cols-7 xl:grid-cols-8 2xl:grid-cols-9 gap-2 pb-16">
             {allImages.map((imgData, index) => {
               const isHovered = hoveredId === imgData.projectId;
               return (
