@@ -43,7 +43,7 @@ function NextButton({ isExiting, onClick }) {
       onClick={handleClick}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      className={`px-6 py-3 text-lg font-medium font-playfair text-[18px] md:text-[18px] transition-colors duration-300 ${hovered ? 'text-whiteCustom opacity-100 backdrop-blur-[2px]' : 'text-greyCustom opacity-85'}`}
+      className={`px-6 py-3 text-lg font-whiteCustom font-medium font-playfair text-[18px] md:text-[18px] transition-colors duration-300 ${hovered ? 'text-whiteCustom opacity-100 backdrop-blur-[2px]' : 'text-greyCustom opacity-85'}`}
       style={
         {
           // Plus de color inline, tout passe par les classes custom
@@ -56,7 +56,7 @@ function NextButton({ isExiting, onClick }) {
         animate={{ rotate: rotateValue }}
         transition={{ duration: 0.4, ease: 'easeInOut' }}
       />
-      <span>next</span>
+      <span className={'text-whiteCustom'}>next</span>
     </button>
   );
 }
