@@ -1,9 +1,9 @@
-"use client";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { useParams, usePathname, useRouter } from "next/navigation";
-import { MENU_ITEMS, LANGUAGES, THEME } from "../../lib/constants";
-import { computeIsDark } from "../../lib/utils";
-import { EVENTS, emitEvent } from "../../lib/events";
+'use client';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useParams, usePathname, useRouter } from 'next/navigation';
+import { MENU_ITEMS, LANGUAGES, THEME } from '../../lib/constants';
+import { computeIsDark } from '../../lib/utils';
+import { EVENTS, emitEvent } from '../../lib/events';
 
 // Menu one-page: scroll interne vers des sections dans #scroll-root
 export default function Menu() {
@@ -29,13 +29,13 @@ export default function Menu() {
   const pathname = usePathname();
   const locale = params.locale;
 
-  const handleChangeLang = (lang) => {
+  const handleChangeLang = lang => {
     if (lang === locale) return;
     emitEvent(EVENTS.INTRO_SHOW);
-    const current = pathname || "/";
-    let base = current.replace(/^\/(fr|en|de)(?=\/|$)/, "");
-    if (base === "") base = "/";
-    const href = `/${lang}${base === "/" ? "" : base}`;
+    const current = pathname || '/';
+    let base = current.replace(/^\/(fr|en|de)(?=\/|$)/, '');
+    if (base === '') base = '/';
+    const href = `/${lang}${base === '/' ? '' : base}`;
     router.replace(href, { scroll: false });
     setMobileMenuOpen(false); // Fermer le menu après changement de langue
   };
@@ -51,8 +51,8 @@ export default function Menu() {
     const firstElement = focusableElements[0];
     const lastElement = focusableElements[focusableElements.length - 1];
 
-    const handleTabKey = (e) => {
-      if (e.key !== "Tab") return;
+    const handleTabKey = e => {
+      if (e.key !== 'Tab') return;
 
       if (e.shiftKey) {
         if (document.activeElement === firstElement) {
@@ -67,10 +67,10 @@ export default function Menu() {
       }
     };
 
-    overlay.addEventListener("keydown", handleTabKey);
+    overlay.addEventListener('keydown', handleTabKey);
     firstElement?.focus();
 
-    return () => overlay.removeEventListener("keydown", handleTabKey);
+    return () => overlay.removeEventListener('keydown', handleTabKey);
   }, [mobileMenuOpen]);
 
   // Swipe up pour fermer le menu mobile
@@ -79,11 +79,11 @@ export default function Menu() {
 
     const overlay = mobileOverlayRef.current;
 
-    const handleTouchStart = (e) => {
+    const handleTouchStart = e => {
       setTouchStart(e.touches[0].clientY);
     };
 
-    const handleTouchMove = (e) => {
+    const handleTouchMove = e => {
       if (!touchStart) return;
 
       const touchEnd = e.touches[0].clientY;
@@ -100,67 +100,67 @@ export default function Menu() {
       setTouchStart(null);
     };
 
-    overlay.addEventListener("touchstart", handleTouchStart);
-    overlay.addEventListener("touchmove", handleTouchMove);
-    overlay.addEventListener("touchend", handleTouchEnd);
+    overlay.addEventListener('touchstart', handleTouchStart);
+    overlay.addEventListener('touchmove', handleTouchMove);
+    overlay.addEventListener('touchend', handleTouchEnd);
 
     return () => {
-      overlay.removeEventListener("touchstart", handleTouchStart);
-      overlay.removeEventListener("touchmove", handleTouchMove);
-      overlay.removeEventListener("touchend", handleTouchEnd);
+      overlay.removeEventListener('touchstart', handleTouchStart);
+      overlay.removeEventListener('touchmove', handleTouchMove);
+      overlay.removeEventListener('touchend', handleTouchEnd);
     };
   }, [mobileMenuOpen, touchStart]);
 
   // Initialisation au montage
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      setActive(sessionStorage.getItem("menuActiveSection") || "home");
+    if (typeof window !== 'undefined') {
+      setActive(sessionStorage.getItem('menuActiveSection') || 'home');
       setHydrated(true);
       const handleResize = () => setIsMobile(window.innerWidth < 1024);
       handleResize();
-      window.addEventListener("resize", handleResize);
-      return () => window.removeEventListener("resize", handleResize);
+      window.addEventListener('resize', handleResize);
+      return () => window.removeEventListener('resize', handleResize);
     }
   }, []);
 
-  const scrollToId = useCallback((targetId) => {
-    const root = document.getElementById("scroll-root");
+  const scrollToId = useCallback(targetId => {
+    const root = document.getElementById('scroll-root');
     const el = document.getElementById(targetId);
     if (!root || !el) return;
     const top =
       root.scrollTop +
       (el.getBoundingClientRect().top - root.getBoundingClientRect().top);
-    root.scrollTo({ top, behavior: "smooth" });
+    root.scrollTo({ top, behavior: 'smooth' });
     setMobileMenuOpen(false); // Fermer le menu mobile
   }, []);
 
   useEffect(() => {
-    const root = document.getElementById("scroll-root");
+    const root = document.getElementById('scroll-root');
     if (!root) return;
 
     // Récupère toutes les sections (y compris celles pas dans le menu, ex: blog)
-    const allSections = Array.from(root.querySelectorAll("section[id]"));
+    const allSections = Array.from(root.querySelectorAll('section[id]'));
 
     const io = new IntersectionObserver(
-      (entries) => {
+      entries => {
         const sorted = entries
-          .filter((e) => e.isIntersecting)
+          .filter(e => e.isIntersecting)
           .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
         const top = sorted[0]?.target;
         if (top) {
           // Active uniquement si section présente dans le menu
-          if (desktopItems.some((i) => i.id === top.id)) {
-            setActive((prev) => {
+          if (desktopItems.some(i => i.id === top.id)) {
+            setActive(prev => {
               if (prev !== top.id) {
-                sessionStorage.setItem("menuActiveSection", top.id);
+                sessionStorage.setItem('menuActiveSection', top.id);
               }
               return top.id;
             });
           }
           // blog (Spaces) fond foncé; works & shop fond blanc; autres calcul auto
-          if (top.id === "blog") {
+          if (top.id === 'blog') {
             setIsDarkBg(true);
-          } else if (["works", "shop"].includes(top.id)) {
+          } else if (['works', 'shop'].includes(top.id)) {
             setIsDarkBg(false);
           } else {
             setIsDarkBg(computeIsDark(top));
@@ -170,22 +170,22 @@ export default function Menu() {
       { root, threshold: [0.4, 0.6, 0.8] }
     );
 
-    allSections.forEach((sec) => io.observe(sec));
+    allSections.forEach(sec => io.observe(sec));
     return () => io.disconnect();
   }, [desktopItems]);
 
   // Logique unifiée pour masquer le menu (section #info OU URLs Snipcart)
   useEffect(() => {
-    const root = document.getElementById("scroll-root");
-    const infoEl = document.getElementById("info");
+    const root = document.getElementById('scroll-root');
+    const infoEl = document.getElementById('info');
     if (!root || !infoEl) return;
 
     const updateHideMenu = () => {
       const hash = window.location.hash;
       const isSnipcartUrl =
-        hash.includes("#/cart") ||
-        hash.includes("#/checkout") ||
-        hash.includes("#snipcart");
+        hash.includes('#/cart') ||
+        hash.includes('#/checkout') ||
+        hash.includes('#snipcart');
 
       // Priorité aux URLs Snipcart
       if (isSnipcartUrl) {
@@ -212,7 +212,7 @@ export default function Menu() {
 
     // Observer pour la section #info
     const io = new IntersectionObserver(
-      (entries) => {
+      entries => {
         updateHideMenu(); // Recalculer à chaque changement d'intersection
       },
       { root, threshold: [0, 0.2, 0.4, 0.6, 0.8, 1] }
@@ -223,14 +223,14 @@ export default function Menu() {
     const handleHashChange = () => {
       updateHideMenu();
     };
-    window.addEventListener("hashchange", handleHashChange);
+    window.addEventListener('hashchange', handleHashChange);
 
     // Vérification initiale
     updateHideMenu();
 
     return () => {
       io.disconnect();
-      window.removeEventListener("hashchange", handleHashChange);
+      window.removeEventListener('hashchange', handleHashChange);
     };
   }, []);
 
@@ -244,11 +244,11 @@ export default function Menu() {
         <button
           className={`fixed top-8 right-8 z-50 text-xl font-playfair italic tracking-wider mix-blend-difference text-white transition-opacity duration-300 ${
             hideMenu && !mobileMenuOpen
-              ? "opacity-0 pointer-events-none"
-              : "opacity-100"
+              ? 'opacity-0 pointer-events-none'
+              : 'opacity-100'
           }`}
           onClick={() => setMobileMenuOpen(true)}
-          style={{ color: isDarkBg ? "#F4F3F2" : "#1a1a1a" }} // Couleur de secours si mix-blend ne fonctionne pas bien
+          className={isDarkBg ? 'text-whiteCustom' : 'text-blackCustom'} // Couleur centralisée via classes custom
         >
           menu
         </button>
@@ -256,8 +256,8 @@ export default function Menu() {
         {/* Overlay Mobile */}
         <div
           ref={mobileOverlayRef}
-          className={`fixed inset-0 z-[60] bg-[#333] text-[#F4F3F2] flex flex-col items-center justify-center transition-transform duration-500 ease-in-out ${
-            mobileMenuOpen ? "translate-y-0" : "-translate-y-full"
+          className={`fixed inset-0 z-[60] bg-blackCustom text-whiteCustom flex flex-col items-center justify-center transition-transform duration-500 ease-in-out ${
+            mobileMenuOpen ? 'translate-y-0' : '-translate-y-full'
           }`}
         >
           {/* Close button */}
@@ -280,11 +280,11 @@ export default function Menu() {
 
           {/* Links */}
           <ul className="flex flex-col items-center gap-2 mb-12">
-            {desktopItems.map((it) => (
+            {desktopItems.map(it => (
               <li key={it.id}>
                 <button
                   onClick={() => {
-                    if (it.id === "info") {
+                    if (it.id === 'info') {
                       emitEvent(EVENTS.CONTACT_SHOW);
                       setMobileMenuOpen(false);
                     } else {
@@ -306,13 +306,13 @@ export default function Menu() {
                 <button
                   onClick={() => handleChangeLang(lang)}
                   className={`uppercase font-bold transition-colors ${
-                    locale === lang ? "text-[#F4F3F2]" : "text-[#F4F3F2]/60"
-                  } hover:text-[#F4F3F2]`}
+                    locale === lang ? 'text-whiteCustom' : 'text-whiteCustom/60'
+                  } hover:text-whiteCustom`}
                 >
                   {lang}
                 </button>
                 {i < langs.length - 1 && (
-                  <span className="text-[#F4F3F2]/60">/</span>
+                  <span className="text-whiteCustom/60">/</span>
                 )}
               </React.Fragment>
             ))}
@@ -326,41 +326,45 @@ export default function Menu() {
   return (
     <nav
       className={[
-        "fixed right-8 top-1/2 -translate-y-1/2 z-50 select-none transition-opacity duration-300",
+        'fixed right-8 top-1/2 -translate-y-1/2 z-50 select-none transition-opacity duration-300',
         hideMenu
-          ? "opacity-0 pointer-events-none"
-          : "opacity-100 pointer-events-auto",
-      ].join(" ")}
-      aria-hidden={hideMenu ? "true" : undefined}
+          ? 'opacity-0 pointer-events-none'
+          : 'opacity-100 pointer-events-auto',
+      ].join(' ')}
+      aria-hidden={hideMenu ? 'true' : undefined}
     >
       <ul className="flex flex-col items-end pr-2">
         {desktopItems.map((it, idx) => {
           const isActive = active === it.id;
-          const activeColor = isDarkBg ? "text-[#F4F3F2]" : "text-blackCustom";
-          const inactiveColor = isDarkBg ? "text-[#F4F3F2]/60" : "text-accent";
+          const activeColor = isDarkBg
+            ? 'text-whiteCustom'
+            : 'text-blackCustom';
+          const inactiveColor = isDarkBg
+            ? 'text-whiteCustom/60'
+            : 'text-accent';
           return (
-            <li key={it.id} className={idx > 0 ? "-mt-[8px]" : undefined}>
+            <li key={it.id} className={idx > 0 ? '-mt-[8px]' : undefined}>
               <button
                 type="button"
                 onClick={() => {
-                  if (it.id === "info") {
+                  if (it.id === 'info') {
                     emitEvent(EVENTS.CONTACT_SHOW);
                   } else {
                     scrollToId(it.id);
                   }
                 }}
-                aria-current={isActive ? "page" : undefined}
+                aria-current={isActive ? 'page' : undefined}
                 className={[
-                  "uppercase tracking-wide transition-all duration-200 ease-out",
-                  "text-right origin-right",
+                  'uppercase tracking-wide transition-all duration-200 ease-out',
+                  'text-right origin-right',
                   isActive
                     ? `font-bold ${activeColor} scale-110`
                     : `font-normal ${inactiveColor}`,
                   isDarkBg
-                    ? "hover:scale-110 hover:text-[#F4F3F2]"
-                    : "hover:scale-110 hover:text-blackCustom",
-                  "text-[28px] md:text-[32px] lg:text-[40px] xl:text-[48px] 2xl:text-[56px] leading-none",
-                ].join(" ")}
+                    ? 'hover:scale-110 hover:text-whiteCustom'
+                    : 'hover:scale-110 hover:text-blackCustom',
+                  'text-[28px] md:text-[32px] lg:text-[40px] xl:text-[48px] 2xl:text-[56px] leading-none',
+                ].join(' ')}
               >
                 {it.label}
               </button>

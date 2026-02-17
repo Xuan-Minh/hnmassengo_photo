@@ -63,10 +63,10 @@ export default function LanguageSwitcher() {
   }, []);
 
   // Utilisation directe de autoDark calculé par l'observer
-  const activeClass = autoDark ? 'text-[#F4F3F2]' : 'text-blackCustom';
-  const inactiveClass = autoDark ? 'text-[#F4F3F2]/60' : 'text-accent';
+  const activeClass = autoDark ? 'text-whiteCustom' : 'text-blackCustom';
+  const inactiveClass = autoDark ? 'text-whiteCustom/60' : 'text-accent';
   const hoverClass = autoDark
-    ? 'hover:text-[#F4F3F2]'
+    ? 'hover:text-whiteCustom'
     : 'hover:text-blackCustom';
 
   const handleChangeLang = lang => {

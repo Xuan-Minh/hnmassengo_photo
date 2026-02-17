@@ -43,13 +43,12 @@ function NextButton({ isExiting, onClick }) {
       onClick={handleClick}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      className="px-6 py-3 text-lg font-medium font-playfair text-[18px] md:text-[18px]"
-      style={{
-        color: hovered ? '#F4F3F2' : '#C8C7C6',
-        opacity: hovered ? 1 : 0.85,
-        transition: 'color .3s, opacity .3s',
-        backdropFilter: hovered ? 'blur(2px)' : 'none',
-      }}
+      className={`px-6 py-3 text-lg font-medium font-playfair text-[18px] md:text-[18px] transition-colors duration-300 ${hovered ? 'text-whiteCustom opacity-100 backdrop-blur-[2px]' : 'text-greyCustom opacity-85'}`}
+      style={
+        {
+          // Plus de color inline, tout passe par les classes custom
+        }
+      }
     >
       <motion.span
         className="inline-block mr-2"
@@ -360,10 +359,7 @@ export default function LoadingOverlay() {
         )}
 
         <div className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none select-none">
-          <h2
-            className="text-whiteCustom flex items-end justify-center gap-4 text-3xl md:text-5xl lg:text-6xl xl:text-7xl 2xl:text-7xl mb-0"
-            style={{ textShadow: '0 2px 12px rgba(0,0,0,0.45)' }}
-          >
+          <h2 className="text-whiteCustom flex items-end justify-center gap-4 text-3xl md:text-5xl lg:text-6xl xl:text-7xl 2xl:text-7xl mb-0 drop-shadow-title">
             <div className="font-playfair italic leading-none">Han-Noah</div>
             <div className="font-lexend font-bold leading-none">MASSENGO</div>
           </h2>

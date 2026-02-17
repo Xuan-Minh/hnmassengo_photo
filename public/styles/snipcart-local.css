@@ -171,7 +171,7 @@
   padding: 0;
   top: 0;
   left: 0;
-  background-color: #000;
+  background-color: #222222;
   opacity: 0.5;
 }
 .snipcart-modal__close {
@@ -2301,7 +2301,7 @@
   padding: 0;
 }
 .snipcart-checkbox + label:before {
-  content: "";
+  content: '';
   margin-right: 10px;
   display: inline-block;
   vertical-align: text-top;
@@ -2321,7 +2321,7 @@
   box-shadow: 0 2px 3px rgba(80, 130, 228, 0.3);
 }
 .snipcart-checkbox:checked + label:after {
-  content: "";
+  content: '';
   position: absolute;
   left: 5px;
   top: 9px;
@@ -2552,7 +2552,7 @@
   white-space: normal;
 }
 .snipcart-form-radio + label:before {
-  content: "";
+  content: '';
   margin-right: 10px;
   display: inline-block;
   border-radius: 99px;

@@ -107,11 +107,11 @@ export default function Gallery() {
   const navigateToImage = (projectIndex, imageIndex) => {
     // Incrémenter la version pour invalider les anciens callbacks
     currentImageVersionRef.current += 1;
-    
+
     // Réinitialiser immédiatement les états de chargement
     setIsListImageLoaded(false);
     setListImageError(false);
-    
+
     setIsTransitioning(true);
     setTimeout(() => {
       setCurrentProjectIndex(projectIndex);
@@ -485,7 +485,7 @@ export default function Gallery() {
     <>
       <section id="works" className="relative w-full h-screen overflow-hidden">
         <div
-          className={`w-full h-full flex flex-col justify-center items-center`}
+          className={`w-full h-full flex flex-col bg-whiteCustom justify-center items-center`}
         >
           <div className="relative flex flex-col justify-center items-start h-[75vh] lg:h-[90vh] w-[min(1000px,90vw)] 2xl:w-[min(1300px,90vw)]">
             <AnimatePresence mode="wait">
@@ -755,13 +755,19 @@ export default function Gallery() {
                               unoptimized
                               onError={() => {
                                 // Vérifier que c'est toujours la bonne image
-                                if (currentImageVersionRef.current === capturedVersion) {
+                                if (
+                                  currentImageVersionRef.current ===
+                                  capturedVersion
+                                ) {
                                   setListImageError(true);
                                 }
                               }}
                               onLoadingComplete={() => {
                                 // Vérifier que c'est toujours la bonne image
-                                if (currentImageVersionRef.current === capturedVersion) {
+                                if (
+                                  currentImageVersionRef.current ===
+                                  capturedVersion
+                                ) {
                                   setIsListImageLoaded(true);
                                 }
                               }}
