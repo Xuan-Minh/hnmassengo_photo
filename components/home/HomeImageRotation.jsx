@@ -139,10 +139,10 @@ export default function HomeImageRotation({
   } else {
     if (imgPosition === 'left') {
       justify = 'justify-start';
-      marginClass = 'lg:pl-[180px]';
+      marginClass = 'lg:pl-[280px]';
     }
     if (imgPosition === 'center') {
-      marginClass = 'lg:pl-[200px]';
+      marginClass = 'lg:pl-[150px]';
     }
   }
 

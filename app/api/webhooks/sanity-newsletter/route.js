@@ -119,6 +119,30 @@ export async function POST(request) {
 
   const sanityWrite = getSanityWriteClient();
 
+  // Wait for the post to be indexed in Sanity (sometimes there's a slight delay)
+  let post = null;
+  for (let i = 0; i < 5; i++) {
+    try {
+      post = await client.fetch(
+        '*[_id == $id][0]{_id}',
+        { id: postId }
+      );
+      if (post?._id) break;
+      console.log(`Post not found yet (attempt ${i + 1}/5), retrying...`);
+      await new Promise(resolve => setTimeout(resolve, 500));
+    } catch (e) {
+      console.log('Error fetching post:', e);
+    }
+  }
+
+  if (!post?._id) {
+    console.error('Post could not be found after retries:', postId);
+    return NextResponse.json(
+      { success: false, message: 'Post not found after indexing wait' },
+      { status: 404 }
+    );
+  }
+
   // Anti-duplication: une campagne par post
   const existingCampaign = await sanityWrite.fetch(
     '*[_type == "newsletterCampaign" && post._ref == $postId][0]{_id,status}',
