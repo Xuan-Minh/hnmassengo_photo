@@ -19,7 +19,7 @@ export default function HomeSection() {
     <motion.section
       ref={ref}
       id="home"
-      className="relative h-screen snap-start bg-whiteCustom overflow-hidden flex flex-col lg:block justify-around"
+      className="relative h-screen snap-start bg-background overflow-hidden flex flex-col lg:block justify-around"
       aria-label="Hero"
       initial={{ opacity: 0 }}
       animate={visible ? { opacity: 1 } : {}}

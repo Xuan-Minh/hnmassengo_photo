@@ -47,7 +47,7 @@ class ErrorBoundary extends React.Component {
             </p>
 
             {process.env.NODE_ENV === 'development' && this.state.error && (
-              <details className="text-left bg-whiteCustom/10 p-6 rounded mb-8">
+              <details className="text-left bg-background/10 p-6 rounded mb-8">
                 <summary className="cursor-pointer font-semibold mb-4 hover:text-accent transition-colors">
                   Error Details (Development Only)
                 </summary>
@@ -61,13 +61,13 @@ class ErrorBoundary extends React.Component {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <button
                 onClick={this.handleReset}
-                className="px-8 py-3 border border-whiteCustom hover:bg-whiteCustom hover:text-blackCustom transition-colors"
+                className="px-8 py-3 border border-whiteCustom hover:bg-background hover:text-blackCustom transition-colors"
               >
                 Try Again
               </button>
               <a
                 href="/"
-                className="px-8 py-3 border border-whiteCustom hover:bg-whiteCustom hover:text-blackCustom transition-colors inline-block"
+                className="px-8 py-3 border border-whiteCustom hover:bg-background hover:text-blackCustom transition-colors inline-block"
               >
                 Return Home
               </a>

@@ -173,12 +173,6 @@ function CustomLightbox({ open, onClose, images, project }) {
     };
   }, [open, touchStart, currentIndex, goToIndex]);
 
-  // Réinitialiser l'état quand on change d'image
-  useEffect(() => {
-    setImageDimensions({ width: 0, height: 0 });
-    setIsCurrentLoaded(false);
-  }, [currentIndex]);
-
   if (!open) return null;
 
   return (
@@ -221,13 +215,7 @@ function CustomLightbox({ open, onClose, images, project }) {
                 fetchPriority="high"
                 decoding="async"
                 onError={() => setHasCurrentError(true)}
-                onLoad={(result) => {
-                  setIsCurrentLoaded(true);
-                  setImageDimensions({
-                    width: result.naturalWidth,
-                    height: result.naturalHeight,
-                  });
-                }}
+                onLoad={() => setIsCurrentLoaded(true)}
                 priority
               />
             </motion.div>
@@ -238,27 +226,6 @@ function CustomLightbox({ open, onClose, images, project }) {
               <div className="absolute inset-0 flex items-center justify-center text-white/70">
                 image indisponible
               </div>
-            )}
-            
-            {/* Message pour les images paysage */}
-            {isCurrentLoaded && imageDimensions.width > imageDimensions.height && (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.5, delay: 0.3 }}
-                className="absolute bottom-16 left-1/2 -translate-x-1/2 bg-white/10 backdrop-blur-sm px-6 py-3 rounded-lg border border-white/20 text-center pointer-events-none"
-              >
-                <motion.div
-                  animate={{ rotate: [0, 5, -5, 0] }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                  className="text-2xl mb-2"
-                >
-                  📱
-                </motion.div>
-                <div className="text-sm italic text-white/80">
-                  Tournez votre téléphone
-                </div>
-              </motion.div>
             )}
           </div>
         </div>
@@ -417,7 +384,7 @@ function CustomLightbox({ open, onClose, images, project }) {
 function ImageMarqueeHorizontal({ images, onClick }) {
   return (
     <div
-      className={`w-full h-full relative bg-whiteCustom flex items-center overflow-x-auto snap-x snap-mandatory touch-pan-x scroll-smooth ${
+      className={`w-full h-full relative bg-background flex items-center overflow-x-auto snap-x snap-mandatory touch-pan-x scroll-smooth ${
         onClick ? 'cursor-pointer' : 'cursor-default'
       }`}
     >
@@ -490,7 +457,7 @@ function ImageMarquee({ images, onClick }) {
 
   return (
     <aside
-      className="hidden md:flex flex-col w-[45%] h-full relative bg-whiteCustom cursor-pointer"
+      className="hidden md:flex flex-col w-[45%] h-full relative bg-background cursor-pointer"
       onClick={onClick}
     >
       <div className="w-full h-full overflow-hidden relative">
@@ -562,7 +529,7 @@ Nam dui metus, interdum vitae lobortis vel, viverra consequat neque. Praesent sa
   return (
     <>
       <motion.div
-        className="fixed inset-0 bg-whiteCustom/80 backdrop-blur-sm z-40"
+        className="fixed inset-0 bg-background/80 backdrop-blur-sm z-40"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
@@ -570,7 +537,7 @@ Nam dui metus, interdum vitae lobortis vel, viverra consequat neque. Praesent sa
         aria-hidden="true"
       ></motion.div>
       <motion.section
-        className="fixed top-0 right-0 w-screen h-screen bg-whiteCustom z-50 flex flex-col md:flex-row shadow-2xl"
+        className="fixed top-0 right-0 w-screen h-screen bg-background z-50 flex flex-col md:flex-row shadow-2xl"
         initial={{ x: '100%' }}
         animate={{ x: 0 }}
         exit={{ x: '100%' }}

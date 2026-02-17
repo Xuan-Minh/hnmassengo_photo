@@ -7,7 +7,7 @@ export default function HomePresentation() {
   return (
     <>
       <section
-        className="h-[40vh] flex flex-col items-center justify-center bg-whiteCustom px-6 lg:px-8"
+        className="h-[40vh] flex flex-col items-center justify-center bg-background px-6 lg:px-8"
         aria-label="Section de présentation"
       >
         <TextReveal

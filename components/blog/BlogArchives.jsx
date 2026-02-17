@@ -1,15 +1,15 @@
-"use client";
-import React from "react";
-import { motion } from "framer-motion";
-import BlogPostItem from "./BlogPostItem";
+'use client';
+import React from 'react';
+import { motion } from 'framer-motion';
+import BlogPostItem from './BlogPostItem';
 
 export default function BlogArchives({ posts, onClose, onPostClick }) {
   return (
     <motion.div
       className="fixed inset-0 bg-blackCustom z-[60] flex flex-col"
-      initial={{ x: "100%" }}
+      initial={{ x: '100%' }}
       animate={{ x: 0 }}
-      exit={{ x: "100%" }}
+      exit={{ x: '100%' }}
       transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
     >
       {/* Header */}
@@ -31,7 +31,7 @@ export default function BlogArchives({ posts, onClose, onPostClick }) {
           {posts.map((post, index) => (
             <React.Fragment key={post.id}>
               {index === 0 && (
-                <div className="w-full h-[1px] bg-whiteCustom/20" />
+                <div className="w-full h-[1px] bg-background/20" />
               )}
               <BlogPostItem
                 post={post}

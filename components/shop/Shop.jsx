@@ -334,13 +334,13 @@ export default function Shop() {
   return (
     <section
       id="shop"
-      className="flex h-screen bg-whiteCustom font-playfair snap-start relative"
+      className="flex h-screen bg-background font-playfair snap-start relative"
     >
       {/* Produits - Layout vertical mobile, colonne centrale desktop */}
       <main className="flex-1 h-full flex flex-col md:flex-row items-stretch overflow-hidden">
         {/* Panier mobile (en haut, hauteur auto), desktop (gauche, 320px) */}
         <aside
-          className={`w-full md:w-[320px] h-auto md:h-full ${cartOpen ? 'border-b' : ''} md:border-b-0 md:border-r border-black/30 p-0 md:p-10 flex flex-col z-10 bg-whiteCustom order-1 md:order-1`}
+          className={`w-full md:w-[320px] h-auto md:h-full ${cartOpen ? 'border-b' : ''} md:border-b-0 md:border-r border-black/30 p-0 md:p-10 flex flex-col z-10 bg-background order-1 md:order-1`}
         >
           {/* Header du cart, clickable sur mobile */}
           <div className="flex justify-between items-center mb-0 md:mb-8 px-6 py-4 md:px-0 md:py-0">
@@ -401,7 +401,7 @@ export default function Shop() {
           </AnimatePresence>
         </aside>
         {/* Liste produits (mobile: prend le reste, desktop: colonne centrale) */}
-        <div className="w-full md:flex-1 flex-1 md:h-full flex items-center justify-center bg-whiteCustom order-2 md:order-2">
+        <div className="w-full md:flex-1 flex-1 md:h-full flex items-center justify-center bg-background order-2 md:order-2">
           <div className="w-full max-w-3xl xl:max-w-3xl 2xl:max-w-4xl p-4 md:p-16">
             <div className="grid grid-cols-2 md:grid-cols-2 gap-4 md:gap-12 w-full pt-2 md:pt-10">
               {products.map(product => (
