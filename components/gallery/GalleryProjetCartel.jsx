@@ -551,7 +551,7 @@ Nam dui metus, interdum vitae lobortis vel, viverra consequat neque. Praesent sa
           {/* Bouton retour en position absolue */}
           <button
             onClick={onClose}
-            className="absolute top-6 left-6 z-10 font-playfair text-lg text-blackCustom/60 hover:text-blackCustom transition-colors"
+            className="absolute top-6 left-6 z-10 font-playfair text-lg text-accent hover:text-blackCustom transition-colors"
             aria-label="Fermer l'overlay du projet"
           >
             back
@@ -596,7 +596,7 @@ Nam dui metus, interdum vitae lobortis vel, viverra consequat neque. Praesent sa
         <main className="hidden md:flex w-[55%] h-full border-r border-blackCustom p-16 flex-col justify-between overflow-y-auto">
           <div>
             <div
-              className="flex items-center gap-2 text-lg text-accent mb-2 cursor-pointer"
+              className="flex items-center gap-2 text-lg text-accent  mb-2 cursor-pointer"
               onClick={handleLogoClick}
               title="Retour à l'accueil"
             >
@@ -605,7 +605,7 @@ Nam dui metus, interdum vitae lobortis vel, viverra consequat neque. Praesent sa
             </div>
             <button
               onClick={onClose}
-              className="font-playfair text-lg text-blackCustom/60 hover:text-blackCustom transition-colors"
+              className="font-playfair text-lg text-accent hover:text-blackCustom transition-colors"
               aria-label="Fermer l'overlay du projet"
             >
               back

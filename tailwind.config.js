@@ -14,8 +14,8 @@ module.exports = {
       },
       colors: {
         whiteCustom: '#F4F3F2',
-        background: '#F4F3F2',
-        accent: '#C8C7C6',
+        background: '#e0e0e0',
+        accent: 'rgba(34, 34, 34, 0.6)',
         accentHover: '#D9D9D9',
         blackCustom: '#222222',
         formBG: '#323232',

@@ -48,7 +48,7 @@ class ErrorBoundary extends React.Component {
 
             {process.env.NODE_ENV === 'development' && this.state.error && (
               <details className="text-left bg-background/10 p-6 rounded mb-8">
-                <summary className="cursor-pointer font-semibold mb-4 hover:text-accent transition-colors">
+                <summary className="cursor-pointer font-semibold mb-4 hover:text-accent  transition-colors">
                   Error Details (Development Only)
                 </summary>
                 <pre className="text-sm overflow-auto max-h-64 text-red-300">
@@ -77,7 +77,7 @@ class ErrorBoundary extends React.Component {
               If the problem persists, please contact{' '}
               <a
                 href="mailto:contact@hnmassengo.com"
-                className="underline hover:text-accent transition-colors"
+                className="underline hover:text-accent  transition-colors"
               >
                 contact@hnmassengo.com
               </a>

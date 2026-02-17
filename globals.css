@@ -9,12 +9,70 @@ a:focus-visible,
     outline 0.2s,
     box-shadow 0.2s;
 }
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-body {
-  background-color: #f4f3f2;
+/* Variables CSS personnalisées correspondant aux couleurs Tailwind */
+@layer base {
+  :root {
+    --color-background: #e0e0e0;
+    --color-white-custom: #f4f3f2;
+    --color-black-custom: #222222;
+    --color-accent: rgba(34, 34, 34, 0.6);
+    --color-accent-hover: #d9d9d9;
+    --color-form-bg: #323232;
+  }
+
+  body {
+    background-color: var(--color-background);
+  }
+
+  /* Scrollbar styling */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: rgba(34, 34, 34, 0.1);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color: var(--color-accent);
+    border-radius: 4px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: var(--color-black-custom);
+    background-clip: content-box;
+  }
+
+  /* Firefox scrollbar */
+  * {
+    scrollbar-color: var(--color-accent) rgba(34, 34, 34, 0.1);
+    scrollbar-width: thin;
+  }
+
+  /* Scrollbar adaptatif pour sections sombres */
+  .dark-bg ::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.15);
+  }
+
+  .dark-bg ::-webkit-scrollbar-thumb {
+    background-color: var(--color-white-custom);
+  }
+
+  .dark-bg ::-webkit-scrollbar-thumb:hover {
+    background-color: #ffffff;
+    background-clip: content-box;
+  }
+
+  .dark-bg * {
+    scrollbar-color: var(--color-white-custom) rgba(255, 255, 255, 0.15);
+  }
 }
 
 /* Default tighter letter-spacing for Playfair Display */
@@ -24,30 +82,30 @@ body {
   }
 }
 @font-face {
-  font-family: "Playfair Display";
+  font-family: 'Playfair Display';
   src:
-    url("/fonts/PlayfairDisplay-Regular.woff2") format("woff2"),
-    url("/fonts/PlayfairDisplay-Regular.woff") format("woff");
+    url('/fonts/PlayfairDisplay-Regular.woff2') format('woff2'),
+    url('/fonts/PlayfairDisplay-Regular.woff') format('woff');
   font-weight: normal;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
-  font-family: "Lexend";
+  font-family: 'Lexend';
   src:
-    url("/fonts/Lexend-Regular.woff2") format("woff2"),
-    url("/fonts/Lexend-Regular.woff") format("woff");
+    url('/fonts/Lexend-Regular.woff2') format('woff2'),
+    url('/fonts/Lexend-Regular.woff') format('woff');
   font-weight: normal;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
-  font-family: "Playfair Display";
+  font-family: 'Playfair Display';
   src:
-    url("/fonts/PlayfairDisplay-Italic.woff2") format("woff2"),
-    url("/fonts/PlayfairDisplay-Italic.woff") format("woff");
+    url('/fonts/PlayfairDisplay-Italic.woff2') format('woff2'),
+    url('/fonts/PlayfairDisplay-Italic.woff') format('woff');
   font-weight: normal;
   font-style: italic;
   font-display: swap;

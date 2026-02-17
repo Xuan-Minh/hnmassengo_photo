@@ -117,7 +117,7 @@ export default function GalleryGridMore({
       <div className="relative w-full h-24 flex items-center justify-center px-8 md:px-16 shrink-0">
         <button
           onClick={onClose}
-          className="absolute left-8 md:left-16 text-lg font-playfair text-blackCustom/60 hover:text-blackCustom transition-colors"
+          className="absolute left-8 md:left-16 text-lg font-playfair text-accent hover:text-blackCustom transition-colors"
         >
           back
         </button>
@@ -141,7 +141,7 @@ export default function GalleryGridMore({
               className={`text-lg text-left font-playfair transition-colors duration-300 ${
                 filter === f.value
                   ? 'font-bold text-blackCustom'
-                  : 'text-blackCustom/60 hover:text-blackCustom'
+                  : 'text-accent hover:text-blackCustom'
               }`}
               onClick={() => setFilter(f.value)}
             >

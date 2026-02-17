@@ -242,13 +242,12 @@ export default function Menu() {
       <>
         {/* Bouton MENU fixe */}
         <button
-          className={`fixed top-8 right-8 z-50 text-xl font-playfair italic tracking-wider mix-blend-difference text-white transition-opacity duration-300 ${
+          className={`fixed top-8 right-8 z-50 text-xl font-playfair italic tracking-wider transition-opacity duration-300 ${
             hideMenu && !mobileMenuOpen
               ? 'opacity-0 pointer-events-none'
               : 'opacity-100'
-          }`}
+          } ${isDarkBg ? 'text-whiteCustom' : 'text-blackCustom'}`}
           onClick={() => setMobileMenuOpen(true)}
-          className={isDarkBg ? 'text-whiteCustom' : 'text-blackCustom'} // Couleur centralisée via classes custom
         >
           menu
         </button>
@@ -270,10 +269,10 @@ export default function Menu() {
 
           {/* Logo - centré avec les sections du menu */}
           <div className="flex items-center justify-center gap-2 mb-8">
-            <span className="text-accent font-playfair italic text-[32px]">
+            <span className="text-accent  font-playfair italic text-[32px]">
               Han-Noah
             </span>
-            <span className="text-accent font-lexend text-[32px]">
+            <span className="text-accent  font-lexend text-[32px]">
               MASSENGO
             </span>
           </div>

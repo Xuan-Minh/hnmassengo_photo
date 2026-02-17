@@ -28,7 +28,7 @@ export default function BlogPostOverlay({ post, onClose, onPrevious, onNext }) {
               {/* Date + Title - Left aligned */}
               <div className="mb-8 flex flex-col items-start">
                 {/* Date on 2 lines */}
-                <div className="text-4xl md:text-5xl lg:text-6xl font-norma text-accent leading-[0.85]">
+                <div className="text-4xl md:text-5xl lg:text-6xl font-norma text-accent  leading-[0.85]">
                   {post.date}
                 </div>
                 {/* Title separate */}

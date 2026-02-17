@@ -30,7 +30,7 @@ export default function Logo({ visible = true }) {
       </span>
       <span
         onClick={handleLogoClick}
-        className="text-accent font-normal font-lexend pointer-events-auto cursor-pointer"
+        className="text-accent  font-normal font-lexend pointer-events-auto cursor-pointer"
         title="Retour à l'accueil"
       >
         MASSENGO

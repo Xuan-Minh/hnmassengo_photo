@@ -730,7 +730,7 @@ export default function Gallery() {
                               }`}
                             />
                             {listImageError && (
-                              <div className="absolute inset-0 flex items-center justify-center text-blackCustom/60 font-playfair">
+                              <div className="absolute inset-0 flex items-center justify-center text-accent font-playfair">
                                 image indisponible
                               </div>
                             )}
@@ -850,7 +850,7 @@ export default function Gallery() {
             </div>
             {view === 'grid' && (
               <button
-                className="justify-self-center text-xl font-playfair italic text-blackCustom hover:text-accentHover transition-all duration-300 px-4 py-2 rounded opacity-100 animate-in fade-in"
+                className="justify-self-center text-xl font-playfair italic text-blackCustom hover:text-accent Hover transition-all duration-300 px-4 py-2 rounded opacity-100 animate-in fade-in"
                 onClick={() => setOverlayOpen(true)}
               >
                 see more
