@@ -5,7 +5,9 @@ export const runtime = 'nodejs';
 
 export async function POST(request) {
   // Simple token auth (add to .env: ADMIN_TOKEN=your-secret-token)
-  const adminToken = request.headers.get('authorization')?.replace('Bearer ', '');
+  const adminToken = request.headers
+    .get('authorization')
+    ?.replace('Bearer ', '');
   const expectedToken = process.env.ADMIN_TOKEN;
 
   if (!expectedToken || adminToken !== expectedToken) {
@@ -59,12 +61,10 @@ export async function POST(request) {
       });
     }
 
-    // Delete duplicates
-    const mutations = toDelete.map(id => ({
-      delete: { _id: id },
-    }));
-
-    await sanity.transaction().patch(...mutations);
+    // Delete duplicates one by one
+    for (const id of toDelete) {
+      await sanity.delete(id);
+    }
 
     return NextResponse.json({
       success: true,
