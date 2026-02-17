@@ -263,7 +263,7 @@ export function ContactMarquee({ mode = 'absolute' } = {}) {
 
   const MarqueeBlock = ({ ariaHidden = false } = {}) => (
     <div
-      className="flex items-center gap-10 sm:gap-12 md:gap-14 lg:gap-16 pr-10 sm:pr-12 md:pr-14 lg:pr-16"
+      className="flex items-center gap-6 sm:gap-6 md:gap-6 lg:gap-6 pr-10 sm:pr-12 md:pr-14 lg:pr-16"
       aria-hidden={ariaHidden}
     >
       <span className="inline-block">{SITE_CONFIG.copyright}</span>
