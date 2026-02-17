@@ -64,9 +64,7 @@ export default function LanguageSwitcher() {
 
   // Utilisation directe de autoDark calculé par l'observer
   const activeClass = autoDark ? 'text-whiteCustom' : 'text-blackCustom';
-  const inactiveClass = autoDark
-    ? 'text-whiteCustom/60'
-    : 'text-accent ';
+  const inactiveClass = autoDark ? 'text-whiteCustom/60' : 'text-accent ';
   const hoverClass = autoDark
     ? 'hover:text-whiteCustom'
     : 'hover:text-blackCustom';
