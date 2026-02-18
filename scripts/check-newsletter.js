@@ -8,20 +8,24 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const envPath = path.resolve(__dirname, '..', '.env.local');
 
 if (fs.existsSync(envPath)) {
-  fs.readFileSync(envPath, 'utf-8').split('\n').forEach(line => {
-    const trimmed = line.trim();
-    if (!trimmed || trimmed.startsWith('#')) return;
-    const match = trimmed.match(/^([^=]+)=(.*)$/);
-    if (match) {
-      const key = match[1].trim();
-      let value = match[2].trim();
-      if ((value.startsWith('"') && value.endsWith('"')) || 
-          (value.startsWith("'") && value.endsWith("'"))) {
-        value = value.slice(1, -1);
+  fs.readFileSync(envPath, 'utf-8')
+    .split('\n')
+    .forEach(line => {
+      const trimmed = line.trim();
+      if (!trimmed || trimmed.startsWith('#')) return;
+      const match = trimmed.match(/^([^=]+)=(.*)$/);
+      if (match) {
+        const key = match[1].trim();
+        let value = match[2].trim();
+        if (
+          (value.startsWith('"') && value.endsWith('"')) ||
+          (value.startsWith("'") && value.endsWith("'"))
+        ) {
+          value = value.slice(1, -1);
+        }
+        process.env[key] = value;
       }
-      process.env[key] = value;
-    }
-  });
+    });
 }
 
 const { getSanityWriteClient } = await import('../lib/sanity.server.js');
@@ -70,7 +74,7 @@ async function diagnoseNewsletter() {
 
   console.log(`\n👥 Abonnés (${subscribers.length}):`);
   const activeCount = subscribers.filter(s => s.status === 'active').length;
-  
+
   subscribers.forEach(s => {
     const statusColor = s.status === 'active' ? '✅' : '❌';
     console.log(`  ${statusColor} ${s.email} (${s.status}, ${s.locale})`);
@@ -78,8 +82,12 @@ async function diagnoseNewsletter() {
 
   console.log(`\n📊 Résumé:`);
   console.log(`  Abonnés actifs: ${activeCount}/${subscribers.length}`);
-  console.log(`  Campagnes envoyées: ${campaigns.filter(c => c.status === 'sent').length}`);
-  console.log(`  Campagnes en erreur: ${campaigns.filter(c => c.status === 'error').length}`);
+  console.log(
+    `  Campagnes envoyées: ${campaigns.filter(c => c.status === 'sent').length}`
+  );
+  console.log(
+    `  Campagnes en erreur: ${campaigns.filter(c => c.status === 'error').length}`
+  );
 }
 
 diagnoseNewsletter().catch(err => {
