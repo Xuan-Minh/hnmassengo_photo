@@ -3,7 +3,7 @@
 /**
  * Cleanup script: Removes duplicate newsletter campaigns
  * Keeps only the oldest campaign per post, deletes all others
- * 
+ *
  * Usage: node scripts/cleanup-duplicate-campaigns.js
  */
 
