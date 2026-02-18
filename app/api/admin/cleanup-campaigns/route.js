@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getSanityWriteClient } from '../../../../lib/sanity.server';
+import { getSanityWriteClient } from '../../../../lib/sanity.server.js';
 
 export const runtime = 'nodejs';
 
