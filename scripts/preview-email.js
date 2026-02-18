@@ -30,7 +30,8 @@ if (fs.existsSync(envPath)) {
 
 // Now import after env is loaded
 const client = await import('../lib/sanity.client.js').then(m => m.default);
-const { buildNewsletterEmail } = await import('../lib/newsletter/emailTemplate.js');
+const { buildNewsletterEmail } =
+  await import('../lib/newsletter/emailTemplate.js');
 
 async function previewEmail() {
   console.log('📧 Fetching latest blog post for preview...\n');
