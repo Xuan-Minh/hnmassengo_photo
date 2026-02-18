@@ -90,6 +90,20 @@ export async function POST(request) {
   }
 
   console.log('Webhook payload:', JSON.stringify(payload, null, 2));
+
+  // CRITICAL: Only process blogPost documents, never process newsletterCampaign
+  // This prevents infinite loops when the webhook triggers on campaign creation
+  const documentType = payload?._type || payload?.type;
+  if (documentType !== 'blogPost') {
+    console.log(
+      `Ignoring non-blogPost document type: ${documentType}. Newsletter campaigns should never trigger this webhook.`
+    );
+    return NextResponse.json({
+      success: true,
+      message: 'Webhook ignored (not a blogPost)',
+    });
+  }
+
   const postId = pickPostId(payload);
   console.log('Extracted postId:', postId);
 
@@ -140,28 +154,33 @@ export async function POST(request) {
     );
   }
 
-  // Anti-duplication: une campagne par post
+  // Anti-duplication: one campaign per post, only create if none exists
   const existingCampaign = await sanityWrite.fetch(
-    '*[_type == "newsletterCampaign" && post._ref == $postId][0]{_id,status}',
+    '*[_type == "newsletterCampaign" && post._ref == $postId]{_id,status}',
     { postId }
   );
-  if (existingCampaign?.status === 'sent') {
+
+  if (existingCampaign && existingCampaign.length > 0) {
+    // Campaign already exists for this post
+    const campaign = existingCampaign[0];
+    console.log(
+      `Campaign already exists for post ${postId} (status: ${campaign.status}). Skipping.`
+    );
     return NextResponse.json({
       success: true,
-      message: 'Already sent (skipped)',
+      message: 'Campaign already exists (skipped)',
+      campaignId: campaign._id,
     });
   }
 
-  const campaignId = existingCampaign?._id;
-  const campaignDocId =
-    campaignId ||
-    (
-      await sanityWrite.create({
-        _type: 'newsletterCampaign',
-        post: { _type: 'reference', _ref: postId },
-        status: 'sending',
-      })
-    )._id;
+  // Create new campaign only if none exists
+  const campaignDocId = (
+    await sanityWrite.create({
+      _type: 'newsletterCampaign',
+      post: { _type: 'reference', _ref: postId },
+      status: 'sending',
+    })
+  )._id;
 
   try {
     const post = await client.fetch(
