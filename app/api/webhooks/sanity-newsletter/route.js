@@ -216,7 +216,7 @@ export async function POST(request) {
 
       try {
         const { subject, html } = buildNewsletterEmail({
-          locale: sub?.locale || 'fr',
+          locale: sub?.locale || 'en',
           post,
           siteUrl,
           subscriberEmail: to,

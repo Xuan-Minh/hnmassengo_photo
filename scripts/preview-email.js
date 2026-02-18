@@ -28,8 +28,9 @@ if (fs.existsSync(envPath)) {
     });
 }
 
-import client from '../lib/sanity.client.js';
-import { buildNewsletterEmail } from '../lib/newsletter/emailTemplate.js';
+// Now import after env is loaded
+const client = await import('../lib/sanity.client.js').then(m => m.default);
+const { buildNewsletterEmail } = await import('../lib/newsletter/emailTemplate.js');
 
 async function previewEmail() {
   console.log('📧 Fetching latest blog post for preview...\n');
@@ -58,7 +59,7 @@ async function previewEmail() {
 
   // Generate email
   const { subject, html } = buildNewsletterEmail({
-    locale: 'fr',
+    locale: 'en',
     post,
     siteUrl: 'https://hannoahmassengo.com',
     subscriberEmail: 'preview@example.com',
