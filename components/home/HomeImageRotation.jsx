@@ -170,7 +170,7 @@ export default function HomeImageRotation({
               className="object-contain"
               priority
               fetchPriority="high"
-              quality={50}
+              quality={38}
               onLoad={() => {
                 loadedSrcsRef.current.add(imgSrc);
                 setIsCurrentLoaded(true);

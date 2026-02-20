@@ -98,6 +98,12 @@ export default function RootLayout({ children }) {
           href="https://cdn.sanity.io"
           crossOrigin="anonymous"
         />
+        {/* Preconnect API Sanity - recommandé par Lighthouse (110ms savings) */}
+        <link
+          rel="preconnect"
+          href="https://qrww7x39.api.sanity.io"
+          crossOrigin="anonymous"
+        />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
         <link
@@ -105,7 +111,21 @@ export default function RootLayout({ children }) {
           href="https://fonts.gstatic.com"
           crossOrigin="anonymous"
         />
-        <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
+        {/* Preload primary fonts for faster text rendering */}
+        <link
+          rel="preload"
+          href="https://fonts.gstatic.com/s/playfairdisplay/v36/nuFvD-vYSZosuDxHz0KEVMUb_TKBZqrKOlLcUGR8V6o.woff2"
+          as="font"
+          type="font/woff2"
+          crossOrigin="anonymous"
+        />
+        <link
+          rel="preload"
+          href="https://fonts.gstatic.com/s/lexend/v25/wlpxgwHDx_UV-XDjBsJVFVIcLM0CQ9u5Tx84tG5Dxe0.woff2"
+          as="font"
+          type="font/woff2"
+          crossOrigin="anonymous"
+        />
         <StructuredData />
         {locales.map(locale => (
           <link
