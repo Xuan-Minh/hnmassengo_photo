@@ -86,9 +86,9 @@ export default function RootLayout({ children }) {
   return (
     <html lang="fr">
       <head>
-        <link rel="stylesheet" href="/styles/snipcart-local.css" />
-        <link rel="stylesheet" href="/styles/snipcart-custom.css" />
         <meta name="theme-color" content="#222222" />
+        <link rel="stylesheet" href="/styles/snipcart-local.css" media="print" onload="this.media='all'" />
+        <link rel="stylesheet" href="/styles/snipcart-custom.css" media="print" onload="this.media='all'" />
         <StructuredData />
         {locales.map(locale => (
           <link

@@ -1,6 +1,5 @@
 'use client';
 import { useState, useEffect, useMemo, useRef } from 'react';
-import { useTranslations } from 'next-intl';
 import { useParams } from 'next/navigation';
 import { GALLERY_FILTERS } from '../../lib/constants';
 import client from '../../lib/sanity.client';

@@ -7,6 +7,7 @@ import ShopItem from './ShopItem';
 import ShopOverlay from './ShopOverlay';
 import { formatPrice } from '../../lib/utils';
 import { logger } from '../../lib/logger';
+import { buildSanityImageUrl } from '../../lib/imageUtils';
 import client from '../../lib/sanity.client';
 
 function getSnipcartItemUrl() {
@@ -128,8 +129,8 @@ export default function Shop() {
         logger.debug('Fetched products:', data);
         const formatted = data.map(p => ({
           id: p._id,
-          imgDefault: p.image?.asset?.url,
-          imgHover: p.imgHover?.asset?.url,
+          imgDefault: p.image?.asset?.url ? buildSanityImageUrl(p.image.asset.url, { w: 500, q: 75, auto: 'format' }) : null,
+          imgHover: p.imgHover?.asset?.url ? buildSanityImageUrl(p.imgHover.asset.url, { w: 500, q: 75, auto: 'format' }) : null,
           title: p.title,
           price: p.price,
           description: p.description,
@@ -356,11 +357,11 @@ export default function Shop() {
           <AnimatePresence>
             {(cartOpen || isDesktop) && (
               <motion.div
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: 'auto', opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
                 transition={{ duration: 0.3 }}
-                className="overflow-hidden px-6 pb-6 md:px-0 md:pb-0"
+                className="overflow-hidden px-6 pb-6 md:px-0 md:pb-0 max-h-[60vh] md:max-h-none"
               >
                 <div className="flex-1 flex flex-col">
                   <div className="flex-1 mb-6 md:mb-8">

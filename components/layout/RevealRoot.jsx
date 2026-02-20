@@ -1,32 +1,20 @@
 "use client";
 import { useEffect, useState } from "react";
 import { EVENTS, addEventHandler } from "../../lib/events";
-import { TIMING } from "../../lib/constants";
 
 export default function RevealRoot({ children }) {
-  const [revealed, setRevealed] = useState(false);
+  const [revealed, setRevealed] = useState(true); // Visible par défaut
 
   useEffect(() => {
     const handler = () => setRevealed(true);
     const cleanup = addEventHandler(EVENTS.INTRO_DISMISSED, handler);
-    // Si jamais l'intro est déjà partie (refresh sans overlay), on révèle immédiatement après un tick
-    const timeout = setTimeout(() => {
-      if (!revealed) setRevealed(true);
-    }, TIMING.REVEAL_TIMEOUT);
-    return () => {
-      cleanup();
-      clearTimeout(timeout);
-    };
-  }, [revealed]);
+    return () => cleanup();
+  }, []);
 
   return (
     <div
       id="scroll-root"
-      className="h-screen overflow-y-scroll scroll-smooth transition-opacity duration-700"
-      style={{
-        opacity: revealed ? 1 : 0,
-        pointerEvents: revealed ? "auto" : "none",
-      }}
+      className="h-screen overflow-y-scroll scroll-smooth"
     >
       {children}
     </div>
