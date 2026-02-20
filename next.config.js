@@ -1,8 +1,15 @@
 const createNextIntlPlugin = require('next-intl/plugin');
 const withNextIntl = createNextIntlPlugin();
-const withBundleAnalyzer = require('@next/bundle-analyzer')({
-  enabled: process.env.ANALYZE === 'true',
-});
+
+// Bundle analyzer optionnel - peut ne pas être disponible en production
+let withBundleAnalyzer = (config) => config;
+try {
+  withBundleAnalyzer = require('@next/bundle-analyzer')({
+    enabled: process.env.ANALYZE === 'true',
+  });
+} catch (e) {
+  // module non trouvé - on continue sans
+}
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
