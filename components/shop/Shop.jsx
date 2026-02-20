@@ -132,14 +132,14 @@ export default function Shop() {
           imgDefault: p.image?.asset?.url
             ? buildSanityImageUrl(p.image.asset.url, {
                 w: 500,
-                q: 75,
+                q: 55,
                 auto: 'format',
               })
             : null,
           imgHover: p.imgHover?.asset?.url
             ? buildSanityImageUrl(p.imgHover.asset.url, {
                 w: 500,
-                q: 75,
+                q: 55,
                 auto: 'format',
               })
             : null,

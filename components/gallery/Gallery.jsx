@@ -83,7 +83,13 @@ export default function Gallery() {
         name:
           p.name?.[locale] || p.name?.fr || p[`name_${locale}`] || p.name_fr,
         type: p.type,
-        images: (p.images || []).map(img => img?.asset?.url).filter(Boolean),
+        // Optimiser les images avec paramètres Sanity
+        images: (p.images || [])
+          .map(img => img?.asset?.url)
+          .filter(Boolean)
+          .map(url =>
+            buildSanityImageUrl(url, { w: 2000, q: 55, auto: 'format' })
+          ),
         coords: p.coords,
         date: p.date,
         description:
@@ -160,7 +166,7 @@ export default function Gallery() {
   const currentListDisplaySrc = useMemo(() => {
     return buildSanityImageUrl(currentListSrc, {
       w: 1600,
-      q: 70,
+      q: 55,
       auto: 'format',
     });
   }, [currentListSrc]);
@@ -234,7 +240,7 @@ export default function Gallery() {
         ];
       const nextSrc = buildSanityImageUrl(nextRaw, {
         w: 1600,
-        q: 70,
+        q: 55,
         auto: 'format',
       });
 

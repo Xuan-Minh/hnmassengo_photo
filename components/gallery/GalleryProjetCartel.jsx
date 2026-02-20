@@ -28,7 +28,7 @@ function CustomLightbox({ open, onClose, images, project }) {
   const getDisplaySrcForIndex = useCallback(
     idx => {
       const raw = images?.[idx];
-      return buildSanityImageUrl(raw, { w: 2200, q: 75, auto: 'format' });
+      return buildSanityImageUrl(raw, { w: 2200, q: 60, auto: 'format' });
     },
     [images]
   );
@@ -51,7 +51,7 @@ function CustomLightbox({ open, onClose, images, project }) {
 
   const currentDisplaySrc = useMemo(() => {
     const raw = images?.[currentIndex];
-    return buildSanityImageUrl(raw, { w: 2200, q: 75, auto: 'format' });
+    return buildSanityImageUrl(raw, { w: 2200, q: 60, auto: 'format' });
   }, [images, currentIndex]);
 
   useEffect(() => {
@@ -111,12 +111,12 @@ function CustomLightbox({ open, onClose, images, project }) {
 
       const nextSrc = buildSanityImageUrl(images[nextIndex], {
         w: 2200,
-        q: 75,
+        q: 60,
         auto: 'format',
       });
       const prevSrc = buildSanityImageUrl(images[prevIndex], {
         w: 2200,
-        q: 75,
+        q: 60,
         auto: 'format',
       });
       preload(nextSrc);
@@ -275,7 +275,7 @@ function CustomLightbox({ open, onClose, images, project }) {
           <Image
             src={buildSanityImageUrl(
               images[(currentIndex - 1 + images.length) % images.length],
-              { w: 600, q: 60, auto: 'format' }
+              { w: 600, q: 55, auto: 'format' }
             )}
             alt={`${project.name} - Image précédente`}
             width={300}
@@ -333,7 +333,7 @@ function CustomLightbox({ open, onClose, images, project }) {
               images[(currentIndex + 1) % images.length],
               {
                 w: 600,
-                q: 60,
+                q: 55,
                 auto: 'format',
               }
             )}
@@ -396,7 +396,7 @@ function ImageMarqueeHorizontal({ images, onClick }) {
             onClick={onClick}
           >
             <Image
-              src={buildSanityImageUrl(img, { w: 400, q: 60, auto: 'format' })}
+              src={buildSanityImageUrl(img, { w: 400, q: 55, auto: 'format' })}
               alt={`Project image ${index + 1}`}
               width={400}
               height={300}
@@ -470,7 +470,7 @@ function ImageMarquee({ images, onClick }) {
               <Image
                 src={buildSanityImageUrl(img, {
                   w: 400,
-                  q: 60,
+                  q: 55,
                   auto: 'format',
                 })}
                 alt={`Project image ${index + 1}`}

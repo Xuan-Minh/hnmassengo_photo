@@ -103,7 +103,7 @@ export default function Blog() {
         image: p.image?.asset?.url
           ? buildSanityImageUrl(p.image.asset.url, {
               w: 600,
-              q: 75,
+              q: 65,
               auto: 'format',
             })
           : null,

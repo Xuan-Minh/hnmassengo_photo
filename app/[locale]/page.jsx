@@ -17,13 +17,11 @@ const Gallery = dynamic(() => import('../../components/gallery/Gallery'), {
 });
 
 const Blog = dynamic(() => import('../../components/blog/Blog'), {
-  ssr: false,
-  loading: () => <div className="h-screen bg-blackCustom" />,
+  ssr: true,
 });
 
 const Shop = dynamic(() => import('../../components/shop/Shop'), {
-  ssr: false,
-  loading: () => <div className="h-screen bg-blackCustom" />,
+  ssr: true,
 });
 
 export default function HomePage() {

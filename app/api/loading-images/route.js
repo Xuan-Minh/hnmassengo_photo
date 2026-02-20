@@ -1,4 +1,5 @@
 import client from '../../../lib/sanity.client';
+import { buildSanityImageUrl } from '../../../lib/imageUtils';
 
 export async function GET() {
   try {
@@ -17,7 +18,12 @@ export async function GET() {
 
     // Transformer les données pour le format attendu par le composant
     const images = data.map(item => ({
-      url: item.image.asset.url,
+      // Optimiser les images pour les performances : width jusqu'à 1200px (full-screen), qualité réduite
+      url: buildSanityImageUrl(item.image.asset.url, {
+        w: 1200,
+        q: 50,
+        auto: 'format',
+      }),
       portraitOnly: item.portraitOnly || false,
     }));
 
@@ -25,6 +31,8 @@ export async function GET() {
       status: 200,
       headers: {
         'Content-Type': 'application/json',
+        'Cache-Control': 'public, max-age=3600, stale-while-revalidate=86400',
+        'CDN-Cache-Control': 'max-age=86400',
       },
     });
   } catch (error) {
@@ -33,6 +41,7 @@ export async function GET() {
       status: 500,
       headers: {
         'Content-Type': 'application/json',
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
       },
     });
   }

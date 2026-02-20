@@ -12,7 +12,10 @@ export default function HomeSection() {
   const t = useTranslations();
   const { locale } = useParams();
 
-  const homeImages = useSanityImages('homeSectionImage', HOME_FALLBACK_IMAGES);
+  const homeImages = useSanityImages('homeSectionImage', HOME_FALLBACK_IMAGES, {
+    width: 800,
+    quality: 50
+  });
   const [ref, visible] = useFadeInOnScreen(locale);
 
   return (

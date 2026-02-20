@@ -87,17 +87,22 @@ export default function RootLayout({ children }) {
     <html lang="fr">
       <head>
         <meta name="theme-color" content="#222222" />
+        {/* Preconnect hints pour Third-Party Resources */}
         <link
-          rel="stylesheet"
-          href="/styles/snipcart-local.css"
-          media="print"
-          onload="this.media='all'"
+          rel="preconnect"
+          href="https://cdn.snipcart.com"
+          crossOrigin="anonymous"
         />
         <link
-          rel="stylesheet"
-          href="/styles/snipcart-custom.css"
-          media="print"
-          onload="this.media='all'"
+          rel="preconnect"
+          href="https://cdn.sanity.io"
+          crossOrigin="anonymous"
+        />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link
+          rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossOrigin="anonymous"
         />
         <StructuredData />
         {locales.map(locale => (
@@ -108,12 +113,42 @@ export default function RootLayout({ children }) {
             key={'hreflang-' + locale.code}
           />
         ))}
-        {/* Script Snipcart async retiré, inclus via SnipcartPortal */}
+        {/* Charger Snipcart CSS de manière non-bloquante */}
+        <link rel="preload" href="/styles/snipcart-local.css" as="style" />
+        <link rel="preload" href="/styles/snipcart-custom.css" as="style" />
+        <noscript>
+          <link rel="stylesheet" href="/styles/snipcart-local.css" />
+          <link rel="stylesheet" href="/styles/snipcart-custom.css" />
+        </noscript>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', function() {
+                  ['snipcart-local.css', 'snipcart-custom.css'].forEach((file) => {
+                    const link = document.createElement('link');
+                    link.rel = 'stylesheet';
+                    link.href = '/styles/' + file;
+                    document.head.appendChild(link);
+                  });
+                });
+              } else {
+                ['snipcart-local.css', 'snipcart-custom.css'].forEach((file) => {
+                  const link = document.createElement('link');
+                  link.rel = 'stylesheet';
+                  link.href = '/styles/' + file;
+                  document.head.appendChild(link);
+                });
+              }
+            `,
+          }}
+        />
       </head>
       <body
         className={[lexend.className, lexend.variable, playfair.variable].join(
           ' '
         )}
+        suppressHydrationWarning
       >
         <ErrorBoundary>
           <UIControlBar />

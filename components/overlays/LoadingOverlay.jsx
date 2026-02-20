@@ -1,24 +1,28 @@
 'use client';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState, useLayoutEffect } from 'react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import { EVENTS, emitEvent, addEventHandler } from '../../lib/events';
 
-// Hook pour détecter si c'est mobile
+// Hook pour détecter si c'est mobile (évite hydration mismatch)
 function useIsMobile() {
   const [isMobile, setIsMobile] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768); // md breakpoint
     };
 
+    // Sync avec le client immédiatement sans SSR
     checkMobile();
+    setMounted(true);
+
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  return isMobile;
+  return mounted ? isMobile : false;
 }
 
 // Button component for loading overlay exit action
@@ -67,7 +71,8 @@ export default function LoadingOverlay() {
   const [imageSources, setImageSources] = useState([]);
   const [imageMetadata, setImageMetadata] = useState([]); // Métadonnées (dimensions, orientation)
 
-  const [visible, setVisible] = useState(false);
+  // Visible au SSR pour éviter flash, invisible au client jusqu'au premier render
+  const [visible, setVisible] = useState(true);
   const [isExiting, setIsExiting] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
   const rotateInterval = useRef(null);
@@ -280,6 +285,7 @@ export default function LoadingOverlay() {
     <motion.div
       ref={overlayRef}
       className="fixed inset-0 z-[100]"
+      suppressHydrationWarning
       style={{ background: elegantBackground, overflow: 'hidden' }}
       initial={isReTrigger ? { y: '-100%', opacity: 1 } : { y: 0, opacity: 1 }}
       animate={isExiting ? { y: '-100%', opacity: 0 } : { y: 0, opacity: 1 }}
@@ -309,6 +315,7 @@ export default function LoadingOverlay() {
                 fill
                 className="absolute inset-0 w-full h-full object-cover z-0"
                 draggable={false}
+                fetchPriority={index === 0 ? 'high' : 'auto'}
                 style={{
                   pointerEvents: 'none',
                   userSelect: 'none',
