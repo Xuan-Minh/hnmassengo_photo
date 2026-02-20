@@ -1,6 +1,6 @@
-"use client";
-import { useEffect, useState } from "react";
-import { EVENTS, addEventHandler } from "../../lib/events";
+'use client';
+import { useEffect, useState } from 'react';
+import { EVENTS, addEventHandler } from '../../lib/events';
 
 export default function RevealRoot({ children }) {
   const [revealed, setRevealed] = useState(true); // Visible par défaut
@@ -12,10 +12,7 @@ export default function RevealRoot({ children }) {
   }, []);
 
   return (
-    <div
-      id="scroll-root"
-      className="h-screen overflow-y-scroll scroll-smooth"
-    >
+    <div id="scroll-root" className="h-screen overflow-y-scroll scroll-smooth">
       {children}
     </div>
   );

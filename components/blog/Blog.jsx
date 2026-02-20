@@ -100,7 +100,13 @@ export default function Blog() {
           p.content?.[locale] ||
           p.content?.fr ||
           '',
-        image: p.image?.asset?.url ? buildSanityImageUrl(p.image.asset.url, { w: 600, q: 75, auto: 'format' }) : null,
+        image: p.image?.asset?.url
+          ? buildSanityImageUrl(p.image.asset.url, {
+              w: 600,
+              q: 75,
+              auto: 'format',
+            })
+          : null,
         layout: p.layout,
       }));
       setPosts(mapped);

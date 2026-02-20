@@ -129,8 +129,20 @@ export default function Shop() {
         logger.debug('Fetched products:', data);
         const formatted = data.map(p => ({
           id: p._id,
-          imgDefault: p.image?.asset?.url ? buildSanityImageUrl(p.image.asset.url, { w: 500, q: 75, auto: 'format' }) : null,
-          imgHover: p.imgHover?.asset?.url ? buildSanityImageUrl(p.imgHover.asset.url, { w: 500, q: 75, auto: 'format' }) : null,
+          imgDefault: p.image?.asset?.url
+            ? buildSanityImageUrl(p.image.asset.url, {
+                w: 500,
+                q: 75,
+                auto: 'format',
+              })
+            : null,
+          imgHover: p.imgHover?.asset?.url
+            ? buildSanityImageUrl(p.imgHover.asset.url, {
+                w: 500,
+                q: 75,
+                auto: 'format',
+              })
+            : null,
           title: p.title,
           price: p.price,
           description: p.description,
