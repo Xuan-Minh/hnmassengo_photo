@@ -29,7 +29,10 @@ function CustomLightbox({ open, onClose, images, project }) {
   const getDisplaySrcForIndex = useCallback(
     idx => {
       const raw = images?.[idx];
-      return buildSanityImageUrl(raw, { ...getOptimizedImageParams('gallery'), auto: 'format' });
+      return buildSanityImageUrl(raw, {
+        ...getOptimizedImageParams('gallery'),
+        auto: 'format',
+      });
     },
     [images]
   );
@@ -52,7 +55,10 @@ function CustomLightbox({ open, onClose, images, project }) {
 
   const currentDisplaySrc = useMemo(() => {
     const raw = images?.[currentIndex];
-    return buildSanityImageUrl(raw, { ...getOptimizedImageParams('gallery'), auto: 'format' });
+    return buildSanityImageUrl(raw, {
+      ...getOptimizedImageParams('gallery'),
+      auto: 'format',
+    });
   }, [images, currentIndex]);
 
   useEffect(() => {
