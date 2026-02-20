@@ -2,7 +2,6 @@
 import dynamic from 'next/dynamic';
 import { useParams } from 'next/navigation';
 import HomePresentation from '../../components/home/HomePresentation';
-import ContactOverlay from '../../components/overlays/ContactOverlay';
 import {
   ContactContent,
   ContactMarquee,
@@ -10,6 +9,15 @@ import {
 import HomeSection from '../../components/home/HomeSection';
 import { motion } from 'framer-motion';
 import { useFadeInOnScreen } from '../../lib/hooks';
+
+// Lazy-load ContactOverlay (modal, non-critique pour LCP)
+const ContactOverlay = dynamic(
+  () => import('../../components/overlays/ContactOverlay'),
+  {
+    ssr: false,
+    loading: () => null, // Pas de fallback visible
+  }
+);
 
 const Gallery = dynamic(() => import('../../components/gallery/Gallery'), {
   ssr: false,
@@ -40,33 +48,37 @@ export default function HomePage() {
 
       <motion.div
         ref={presRef}
-        initial={{ opacity: 0 }}
-        animate={presVisible ? { opacity: 1 } : {}}
+        initial={false}
+        animate={presVisible ? { opacity: 1 } : { opacity: 0 }}
         transition={{ duration: 0.8 }}
+        suppressHydrationWarning
       >
         <HomePresentation />
       </motion.div>
       <motion.div
         ref={galleryRef}
-        initial={{ opacity: 0 }}
-        animate={galleryVisible ? { opacity: 1 } : {}}
+        initial={false}
+        animate={galleryVisible ? { opacity: 1 } : { opacity: 0 }}
         transition={{ duration: 0.8 }}
+        suppressHydrationWarning
       >
         <Gallery />
       </motion.div>
       <motion.div
         ref={blogRef}
-        initial={{ opacity: 0 }}
-        animate={blogVisible ? { opacity: 1 } : {}}
+        initial={false}
+        animate={blogVisible ? { opacity: 1 } : { opacity: 0 }}
         transition={{ duration: 0.8 }}
+        suppressHydrationWarning
       >
         <Blog />
       </motion.div>
       <motion.div
         ref={shopRef}
-        initial={{ opacity: 0 }}
-        animate={shopVisible ? { opacity: 1 } : {}}
+        initial={false}
+        animate={shopVisible ? { opacity: 1 } : { opacity: 0 }}
         transition={{ duration: 0.8 }}
+        suppressHydrationWarning
       >
         <Shop />
       </motion.div>

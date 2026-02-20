@@ -12,12 +12,12 @@ export default function HomeSection() {
   const t = useTranslations();
   const { locale } = useParams();
 
-  // En production (Netlify), utiliser une qualité optimisée (38) et width réduit (450)
-  // pour améliorer LCP sans trop sacrifier la qualité visuelle
+  // En production (Netlify), utiliser une qualité optimisée (35) et width très réduit (380)
+  // pour améliorer LCP au maximum sans trop sacrifier la qualité
   const isProduction = process.env.NODE_ENV === 'production';
   const homeImages = useSanityImages('homeSectionImage', HOME_FALLBACK_IMAGES, {
-    width: isProduction ? 450 : 800,
-    quality: isProduction ? 38 : 50,
+    width: isProduction ? 380 : 800,
+    quality: isProduction ? 35 : 50,
     dpr: 1, // Désactiver les versions haute-DPI pour réduire taille
   });
   const [ref, visible] = useFadeInOnScreen(locale);
@@ -28,9 +28,10 @@ export default function HomeSection() {
       id="home"
       className="relative h-screen snap-start bg-background overflow-hidden flex flex-col lg:block justify-around"
       aria-label="Hero"
-      initial={{ opacity: 0 }}
-      animate={visible ? { opacity: 1 } : {}}
+      initial={false}
+      animate={visible ? { opacity: 1 } : { opacity: 0 }}
       transition={{ duration: 0.8 }}
+      suppressHydrationWarning
     >
       <Logo />
       {/* Bloc rotation image - centré et plus grand sur mobile, positionnable sur desktop */}
