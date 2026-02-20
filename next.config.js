@@ -34,7 +34,7 @@ const nextConfig = {
             vendors: false,
             // Vendor chunk séparé pour meilleur caching
             vendor: {
-              filename: 'chunks/vendor.js',
+              filename: 'static/chunks/vendor.js',
               test: /node_modules/,
               name: 'vendor',
               priority: 10,
@@ -46,7 +46,7 @@ const nextConfig = {
               minChunks: 2,
               priority: 5,
               reuseExistingChunk: true,
-              filename: 'chunks/common.js',
+              filename: 'static/chunks/common.js',
             },
             framer: {
               test: /[\\/]node_modules[\\/](framer-motion)/,
