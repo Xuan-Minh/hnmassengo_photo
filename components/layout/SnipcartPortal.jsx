@@ -17,14 +17,6 @@ export default function SnipcartPortal({ apiKey }) {
         src="https://cdn.snipcart.com/themes/v3.0.31/default/snipcart.js"
         strategy="lazyOnload"
         suppressHydrationWarning
-        onLoad={() => {
-          // Snipcart est prêt
-          if (typeof window !== 'undefined' && window.Snipcart) {
-            window.Snipcart.ready(() => {
-              // Re-initialize if needed
-            });
-          }
-        }}
       />
     </>
   );

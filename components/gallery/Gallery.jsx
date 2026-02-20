@@ -3,6 +3,7 @@ import { useState, useEffect, useMemo, useRef } from 'react';
 import { useParams } from 'next/navigation';
 import { GALLERY_FILTERS } from '../../lib/constants';
 import client from '../../lib/sanity.client';
+import { getOptimizedImageParams } from '../../lib/hooks';
 
 // Utiliser les données depuis Sanity
 const FILTERS = GALLERY_FILTERS;
@@ -88,7 +89,10 @@ export default function Gallery() {
           .map(img => img?.asset?.url)
           .filter(Boolean)
           .map(url =>
-            buildSanityImageUrl(url, { w: 2000, q: 55, auto: 'format' })
+            buildSanityImageUrl(url, {
+              ...getOptimizedImageParams('gallery'),
+              auto: 'format',
+            })
           ),
         coords: p.coords,
         date: p.date,
@@ -165,8 +169,7 @@ export default function Gallery() {
 
   const currentListDisplaySrc = useMemo(() => {
     return buildSanityImageUrl(currentListSrc, {
-      w: 1600,
-      q: 55,
+      ...getOptimizedImageParams('gallery'),
       auto: 'format',
     });
   }, [currentListSrc]);
@@ -239,8 +242,7 @@ export default function Gallery() {
           next.nextImageIndex
         ];
       const nextSrc = buildSanityImageUrl(nextRaw, {
-        w: 1600,
-        q: 55,
+        ...getOptimizedImageParams('gallery'),
         auto: 'format',
       });
 

@@ -50,9 +50,8 @@ a:focus-visible,
     background-clip: content-box;
   }
 
-  /* Firefox scrollbar */
+  /* Firefox scrollbar - scrollbar-width only (scrollbar-color not reliable) */
   * {
-    scrollbar-color: var(--color-accent) rgba(34, 34, 34, 0.1);
     scrollbar-width: thin;
   }
 
@@ -71,7 +70,7 @@ a:focus-visible,
   }
 
   .dark-bg * {
-    scrollbar-color: var(--color-white-custom) rgba(255, 255, 255, 0.15);
+    scrollbar-width: thin;
   }
 }
 

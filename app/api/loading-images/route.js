@@ -18,10 +18,10 @@ export async function GET() {
 
     // Transformer les données pour le format attendu par le composant
     const images = data.map(item => ({
-      // Optimiser les images pour les performances : width jusqu'à 1200px (full-screen), qualité réduite
+      // Optimiser les images pour les performances : width jusqu'à 1200px (full-screen), qualité réduite (40 en production, 50 en local)
       url: buildSanityImageUrl(item.image.asset.url, {
         w: 1200,
-        q: 50,
+        q: process.env.NODE_ENV === 'production' ? 40 : 50,
         auto: 'format',
       }),
       portraitOnly: item.portraitOnly || false,

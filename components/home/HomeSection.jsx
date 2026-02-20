@@ -12,9 +12,13 @@ export default function HomeSection() {
   const t = useTranslations();
   const { locale } = useParams();
 
+  // En production (Netlify), utiliser une qualité plus agressif (40) et width réduit (600)
+  // pour compenser le render delay de 4s observé sur Netlify
+  const isProduction = process.env.NODE_ENV === 'production';
   const homeImages = useSanityImages('homeSectionImage', HOME_FALLBACK_IMAGES, {
-    width: 800,
-    quality: 50
+    width: isProduction ? 600 : 800,
+    quality: isProduction ? 40 : 50,
+    dpr: 1, // Désactiver les versions haute-DPI pour réduire taille
   });
   const [ref, visible] = useFadeInOnScreen(locale);
 

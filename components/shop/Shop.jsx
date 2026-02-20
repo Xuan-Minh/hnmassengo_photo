@@ -8,6 +8,7 @@ import ShopOverlay from './ShopOverlay';
 import { formatPrice } from '../../lib/utils';
 import { logger } from '../../lib/logger';
 import { buildSanityImageUrl } from '../../lib/imageUtils';
+import { getOptimizedImageParams } from '../../lib/hooks';
 import client from '../../lib/sanity.client';
 
 function getSnipcartItemUrl() {
@@ -131,15 +132,13 @@ export default function Shop() {
           id: p._id,
           imgDefault: p.image?.asset?.url
             ? buildSanityImageUrl(p.image.asset.url, {
-                w: 500,
-                q: 55,
+                ...getOptimizedImageParams('shop'),
                 auto: 'format',
               })
             : null,
           imgHover: p.imgHover?.asset?.url
             ? buildSanityImageUrl(p.imgHover.asset.url, {
-                w: 500,
-                q: 55,
+                ...getOptimizedImageParams('shop'),
                 auto: 'format',
               })
             : null,

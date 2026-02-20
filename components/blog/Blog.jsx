@@ -8,6 +8,7 @@ import dynamic from 'next/dynamic';
 import client from '../../lib/sanity.client';
 import { buildSanityImageUrl } from '../../lib/imageUtils';
 import { CONTENT } from '../../lib/constants';
+import { getOptimizedImageParams } from '../../lib/hooks';
 
 const BlogPostOverlay = dynamic(() => import('./BlogPostOverlay'), {
   loading: () => <div>Loading…</div>,
@@ -102,8 +103,7 @@ export default function Blog() {
           '',
         image: p.image?.asset?.url
           ? buildSanityImageUrl(p.image.asset.url, {
-              w: 600,
-              q: 65,
+              ...getOptimizedImageParams('secondary'),
               auto: 'format',
             })
           : null,
