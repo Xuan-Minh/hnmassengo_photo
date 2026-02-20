@@ -4,6 +4,7 @@
   
 [build.environment]
   NODE_VERSION = "20"
+  NODE_ENV = "production"
   NPM_FLAGS = "--force"
   SECRETS_SCAN_OMIT_KEYS = "NEXT_PUBLIC_SANITY_PROJECT_ID,NEXT_PUBLIC_SANITY_DATASET"
 
