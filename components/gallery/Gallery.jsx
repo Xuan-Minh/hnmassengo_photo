@@ -490,7 +490,7 @@ export default function Gallery() {
 
   return (
     <>
-      <section id="works" className="relative w-full h-screen overflow-hidden">
+      <section className="relative w-full h-screen overflow-hidden">
         <div
           className={`w-full h-full flex flex-col bg-background justify-center items-center`}
         >

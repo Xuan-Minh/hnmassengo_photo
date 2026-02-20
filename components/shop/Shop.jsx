@@ -345,7 +345,6 @@ export default function Shop() {
 
   return (
     <section
-      id="shop"
       className="flex h-screen bg-background font-playfair snap-start relative"
     >
       {/* Produits - Layout vertical mobile, colonne centrale desktop */}

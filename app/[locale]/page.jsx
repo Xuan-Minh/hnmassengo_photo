@@ -46,42 +46,46 @@ export default function HomePage() {
       <ContactOverlay />
       <HomeSection />
 
-      <motion.div
+      <motion.section
         ref={presRef}
+        id="presentation"
         initial={false}
         animate={presVisible ? { opacity: 1 } : { opacity: 0 }}
         transition={{ duration: 0.8 }}
         suppressHydrationWarning
       >
         <HomePresentation />
-      </motion.div>
-      <motion.div
+      </motion.section>
+      <motion.section
         ref={galleryRef}
+        id="works"
         initial={false}
         animate={galleryVisible ? { opacity: 1 } : { opacity: 0 }}
         transition={{ duration: 0.8 }}
         suppressHydrationWarning
       >
         <Gallery />
-      </motion.div>
-      <motion.div
+      </motion.section>
+      <motion.section
         ref={blogRef}
+        id="blog"
         initial={false}
         animate={blogVisible ? { opacity: 1 } : { opacity: 0 }}
         transition={{ duration: 0.8 }}
         suppressHydrationWarning
       >
         <Blog />
-      </motion.div>
-      <motion.div
+      </motion.section>
+      <motion.section
         ref={shopRef}
+        id="shop"
         initial={false}
         animate={shopVisible ? { opacity: 1 } : { opacity: 0 }}
         transition={{ duration: 0.8 }}
         suppressHydrationWarning
       >
         <Shop />
-      </motion.div>
+      </motion.section>
       {/* Section Contact - Pas de fade in, toujours visible */}
       <section
         id="info"
