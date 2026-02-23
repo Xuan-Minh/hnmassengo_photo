@@ -554,15 +554,15 @@ export default function Gallery() {
                               <Image
                                 src={imgData.img}
                                 alt={imgData.name}
-                                width={600}
-                                height={400}
+                                width={200}
+                                height={300}
                                 className={`max-w-full max-h-full object-contain shadow transition-opacity duration-300 ${
                                   isHovered ? 'opacity-100' : 'opacity-40'
                                 }`}
                                 style={{ objectFit: 'contain' }}
                                 draggable={false}
-                                sizes="(max-width: 768px) 45vw, (max-width: 1200px) 20vw, 18vw"
-                                priority={slotIdx < 5}
+                                sizes="(max-width: 768px) 45vw, 128px"
+                                loading={slotIdx < 5 ? 'eager' : 'lazy'}
                               />
                             </motion.div>
                           ) : (

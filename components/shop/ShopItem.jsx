@@ -26,14 +26,13 @@ export default function ShopItem({
         onMouseEnter={() => !inCart && setHovered(true)}
         onMouseLeave={() => !inCart && setHovered(false)}
       >
-        {/* Image par défaut, optimisée et chargée en priorité */}
+        {/* Image par défaut, optimisée */}
         {imgDefault && (
           <Image
             src={imgDefault}
             alt=""
             fill
-            sizes="100vw"
-            priority
+            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
             className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${hovered ? 'opacity-0' : 'opacity-100'}`}
             draggable={false}
           />
@@ -44,7 +43,8 @@ export default function ShopItem({
             src={imgHover}
             alt=""
             fill
-            sizes="100vw"
+            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+            loading="lazy"
             className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${hovered ? 'opacity-100' : 'opacity-0'}`}
             draggable={false}
           />

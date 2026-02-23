@@ -157,17 +157,11 @@ export default function Menu() {
               return top.id;
             });
           }
-          // blog (Spaces) fond foncé; works & shop fond blanc; autres calcul auto
-          if (top.id === 'blog') {
-            setIsDarkBg(true);
-          } else if (['works', 'shop'].includes(top.id)) {
-            setIsDarkBg(false);
-          } else {
-            setIsDarkBg(computeIsDark(top));
-          }
+          // Menu blanc sur blog uniquement, noir partout ailleurs
+          setIsDarkBg(top.id === 'blog');
         }
       },
-      { root, threshold: [0.4, 0.6, 0.8] }
+      { root, threshold: [0.1, 0.9, 0.95] }
     );
 
     allSections.forEach(sec => io.observe(sec));

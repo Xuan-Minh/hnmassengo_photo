@@ -161,10 +161,10 @@ export default function HomeImageRotation({
           <motion.div
             key={imgSrc}
             className="absolute inset-0"
-            initial={{ opacity: 0 }}
+            initial={index === 0 ? { opacity: 1 } : { opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 1.2, ease: 'easeOut' }}
+            transition={{ duration: index === 0 ? 0 : 1.2, ease: 'easeOut' }}
           >
             <Image
               src={imgSrc}

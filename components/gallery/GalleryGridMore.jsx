@@ -172,15 +172,15 @@ export default function GalleryGridMore({
                   <Image
                     src={getSanityImageBase(imgData.src)}
                     alt={imgData.name}
-                    width={400}
+                    width={200}
                     height={300}
                     className={`max-w-[90%] max-h-[90%] 2xl:max-w-[98%] 2xl:max-h-[98%] object-contain shadow transition-opacity duration-300 ${
                       isHovered ? 'opacity-100' : 'opacity-40'
                     }`}
                     style={{ objectFit: 'contain' }}
                     draggable={false}
-                    sizes="(max-width: 768px) 45vw, (max-width: 1200px) 20vw, 18vw"
-                    priority={index < 8}
+                    sizes="(max-width: 768px) 45vw, 128px"
+                    loading={index < 8 ? 'eager' : 'lazy'}
                   />
                 </motion.div>
               );
