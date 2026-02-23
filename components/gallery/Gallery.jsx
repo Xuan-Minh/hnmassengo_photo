@@ -54,10 +54,10 @@ export default function Gallery() {
     if (overlayOpen || selectedProject) {
       scrollRoot.style.overflow = 'hidden';
     } else {
-      // Délai pour attendre la fin de l'animation de fermeture (1s)
+      // Petit délai pour attendre la fin de l'animation de fermeture
       const timer = setTimeout(() => {
         scrollRoot.style.overflow = '';
-      }, 1000);
+      }, 50); // Délai très court pour éviter les conflits
       return () => clearTimeout(timer);
     }
 
