@@ -1,5 +1,6 @@
 'use client';
 import Image from 'next/image';
+import { useTranslations } from 'next-intl';
 import BaseOverlay from '../overlays/BaseOverlay';
 
 function localizeField(value, locale) {
@@ -15,10 +16,13 @@ export default function ShopOverlay({
   locale,
   inCart = false,
 }) {
+  const t = useTranslations('shop.overlay');
   if (!product) return null;
 
   const displayTitle = localizeField(product.title, locale);
   const displayDescription = localizeField(product.description, locale);
+
+  const defaultDescription = t('defaultDescription');
 
   return (
     <BaseOverlay onClose={onClose} ariaLabelledBy="shop-product-title">
@@ -46,8 +50,7 @@ export default function ShopOverlay({
           <div className="w-full h-[50vh] flex flex-col items-start text-left p-8 overflow-y-auto bg-blackCustom">
             <h2 className="text-4xl italic mb-6">{displayTitle}</h2>
             <p className="text-base leading-relaxed text-whiteCustom/80 mb-8 max-w-md">
-              {displayDescription ||
-                'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur posuere tincidunt lacus sit amet porttitor. Aliquam pharetra ante vel nibh accumsan, a bibendum lorem egestas. Sed ac accumsan metus, vitae finibus urna.'}
+              {displayDescription || defaultDescription}
             </p>
             <div className="mt-auto">
               <div className="text-2xl font-bold mb-2">{product.price}€</div>
@@ -66,7 +69,7 @@ export default function ShopOverlay({
                   }, 200);
                 }}
               >
-                {inCart ? 'in cart' : 'add to cart'}
+                {inCart ? t('inCart') : t('addToCart')}
               </button>
             </div>
           </div>
@@ -89,8 +92,7 @@ export default function ShopOverlay({
           <div className="w-1/3 flex flex-col items-start text-left">
             <h2 className="text-6xl italic mb-8">{displayTitle}</h2>
             <p className="text-xl leading-relaxed text-whiteCustom/80 mb-12 max-w-md">
-              {displayDescription ||
-                'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur posuere tincidunt lacus sit amet porttitor. Aliquam pharetra ante vel nibh accumsan, a bibendum lorem egestas. Sed ac accumsan metus, vitae finibus urna.'}
+              {displayDescription || defaultDescription}
             </p>
             <div className="mt-auto">
               <div className="text-3xl font-bold mb-2">{product.price}€</div>
@@ -109,7 +111,7 @@ export default function ShopOverlay({
                   }, 200);
                 }}
               >
-                {inCart ? 'in cart' : 'add to cart'}
+                {inCart ? t('inCart') : t('addToCart')}
               </button>
             </div>
           </div>

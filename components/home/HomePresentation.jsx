@@ -8,7 +8,7 @@ export default function HomePresentation() {
     <>
       <section
         className="h-[40vh] flex flex-col items-center justify-center bg-background px-6 lg:px-8"
-        aria-label="Section de présentation"
+        aria-label={t('presentation.ariaLabel')}
       >
         <TextReveal
           text={t('presentation.line1')}

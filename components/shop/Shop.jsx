@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { useMemo, useState, useEffect, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -24,7 +25,7 @@ function localizeField(value, locale) {
 }
 
 // Composant CartItem - Affichage simple des articles Snipcart
-const CartItem = ({ item, productsById, locale, onRemove }) => {
+const CartItem = ({ item, productsById, locale, onRemove, t }) => {
   const matchingProduct = productsById.get(item.id);
   const displayName = matchingProduct
     ? localizeField(matchingProduct.title, locale)
@@ -37,7 +38,7 @@ const CartItem = ({ item, productsById, locale, onRemove }) => {
           <button
             type="button"
             className="text-left text-sm text-gray-800 hover:text-red-600 hover:underline underline-offset-4 transition-colors"
-            title="Remove from cart"
+            title={t('cart.removeItem')}
             onClick={() => onRemove?.(item)}
           >
             {displayName}
@@ -59,6 +60,7 @@ const CartItem = ({ item, productsById, locale, onRemove }) => {
 };
 
 export default function Shop() {
+  const t = useTranslations('shop');
   const { locale } = useParams();
   const [cartOpen, setCartOpen] = useState(false);
   const [isDesktop, setIsDesktop] = useState(false);
@@ -357,7 +359,7 @@ export default function Shop() {
               className="text-2xl md:text-3xl cursor-pointer select-none"
               onClick={() => setCartOpen(open => !open)}
             >
-              cart
+              {t('cart.title')}
             </h2>
             <span className="text-xs text-black/40">({cartCount})</span>
           </div>
@@ -374,7 +376,9 @@ export default function Shop() {
                 <div className="flex-1 flex flex-col">
                   <div className="flex-1 mb-6 md:mb-8">
                     {cartItems.length === 0 ? (
-                      <div className="text-black/40 italic">empty</div>
+                      <div className="text-black/40 italic">
+                        {t('cart.empty')}
+                      </div>
                     ) : (
                       <ul className="space-y-2 overflow-y-auto max-h-[30vh] md:max-h-[60vh]">
                         {cartItems.map(item => (
@@ -384,13 +388,14 @@ export default function Shop() {
                             productsById={productsById}
                             locale={locale}
                             onRemove={removeFromCart}
+                            t={t}
                           />
                         ))}
                       </ul>
                     )}
                   </div>
                   <div className="border-t border-black/30 pt-4 flex justify-between text-lg mb-4">
-                    <span>total</span>
+                    <span>{t('cart.total')}</span>
                     <span>{formatPrice(cartTotal)}</span>
                   </div>
                   {/* Bouton checkout Snipcart */}
@@ -402,7 +407,7 @@ export default function Shop() {
                     }`}
                     disabled={cartItems.length === 0}
                   >
-                    → checkout
+                    {t('cart.checkout')}
                   </button>
                 </div>
               </motion.div>
@@ -414,10 +419,10 @@ export default function Shop() {
           {products.length === 0 ? (
             <div className="w-full flex flex-col items-center justify-center px-4 md:px-16 text-center italic">
               <h2 className="text-xl md:text-3xl font-playfair mb-4">
-                Shop is empty for now.
+                {t('emptyState.title')}
               </h2>
               <p className="text-base md:text-lg text-black/60">
-                Come again later
+                {t('emptyState.message')}
               </p>
             </div>
           ) : (

@@ -1,13 +1,8 @@
 import '../globals.css';
-
-import { UIControlBar } from '../components/layout/UIControlBar';
 import { Lexend, Playfair_Display } from 'next/font/google';
-import RevealRoot from '../components/layout/RevealRoot';
-import ErrorBoundary from '../components/layout/ErrorBoundary';
-import SnipcartPortal from '../components/layout/SnipcartPortal';
+import GlobalErrorBoundary from '../components/layout/GlobalErrorBoundary';
 import StructuredData from '../lib/metadata';
 import React from 'react';
-import ClientLayout from '../components/layout/ClientLayout';
 
 export const metadata = {
   metadataBase: new URL('https://hnmassengo.com'),
@@ -124,13 +119,7 @@ export default function RootLayout({ children }) {
         )}
         suppressHydrationWarning
       >
-        <ErrorBoundary>
-          <UIControlBar />
-          <ClientLayout>
-            <RevealRoot>{children}</RevealRoot>
-          </ClientLayout>
-        </ErrorBoundary>
-        <SnipcartPortal apiKey={process.env.SNIPCART_PUBLIC_API_KEY || ''} />
+        <GlobalErrorBoundary>{children}</GlobalErrorBoundary>
       </body>
     </html>
   );

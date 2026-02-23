@@ -8,14 +8,16 @@ const AnimatePresence = dynamic(
 );
 import ContactOverlay from '../overlays/ContactOverlay';
 import BaseOverlay from '../overlays/BaseOverlay';
+import { useTranslations } from 'next-intl';
 
 export default function BlogPostOverlay({ post, onClose, onPrevious, onNext }) {
   const [contactOpen, setContactOpen] = useState(false);
+  const t = useTranslations('blog.post');
 
   if (!post) return null;
 
   const hasImage = post.image && post.image.trim() !== '';
-  const contactSubject = `${post.title || post.date} - Reply`;
+  const contactSubject = `${post.title || post.date} - ${t('reply')}`;
 
   return (
     <>
@@ -68,7 +70,7 @@ export default function BlogPostOverlay({ post, onClose, onPrevious, onNext }) {
                   onClick={() => setContactOpen(true)}
                   className="text-sm text-whiteCustom/60 hover:text-whiteCustom transition-colors italic"
                 >
-                  contact↗
+                  {t('contact')}
                 </button>
               </div>
             </div>
@@ -108,7 +110,7 @@ export default function BlogPostOverlay({ post, onClose, onPrevious, onNext }) {
                   onClick={() => setContactOpen(true)}
                   className="text-sm text-whiteCustom/60 hover:text-whiteCustom transition-colors italic"
                 >
-                  contact↗
+                  {t('contact')}
                 </button>
               </div>
             </div>

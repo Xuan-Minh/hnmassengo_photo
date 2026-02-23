@@ -10,6 +10,7 @@ import NewsletterSignup from '../ui/NewsletterSignup';
 
 // Composant pour le formulaire de contact réutilisable
 function ContactForm({ idSuffix = '', onSubmitSuccess, defaultSubject = '' }) {
+  const t = useTranslations('contact');
   const [showSuccess, setShowSuccess] = useState(false);
   const formRef = useRef(null);
   const { locale } = useParams();
@@ -54,10 +55,10 @@ function ContactForm({ idSuffix = '', onSubmitSuccess, defaultSubject = '' }) {
         const details = Array.isArray(result?.errors)
           ? `\n\n${result.errors.join('\n')}`
           : '';
-        alert((result?.message || 'Erreurs de validation.') + details);
+        alert((result?.message || t('form.validationError')) + details);
       }
     } catch {
-      alert('Erreur lors de la validation. Veuillez réessayer.');
+      alert(t('form.submissionError'));
     }
   };
 
@@ -81,10 +82,10 @@ function ContactForm({ idSuffix = '', onSubmitSuccess, defaultSubject = '' }) {
             <span className="text-lg md:text-xl">✅</span>
             <div>
               <h3 className="font-semibold text-sm md:text-base">
-                Message envoyé avec succès !
+                {t('form.success.title')}
               </h3>
               <p className="text-xs md:text-sm opacity-90">
-                Nous vous répondrons sous 24h à l'adresse indiquée.
+                {t('form.success.message')}
               </p>
             </div>
           </div>
@@ -96,7 +97,7 @@ function ContactForm({ idSuffix = '', onSubmitSuccess, defaultSubject = '' }) {
           htmlFor={`fullName${idSuffix}`}
           className="block text-whiteCustom/90 font-playfair text-sm mb-2"
         >
-          full name *
+          {t('form.fullName')} *
         </label>
         <input
           id={`fullName${idSuffix}`}
@@ -114,7 +115,7 @@ function ContactForm({ idSuffix = '', onSubmitSuccess, defaultSubject = '' }) {
             htmlFor={`email${idSuffix}`}
             className="block text-whiteCustom/90 font-playfair text-sm mb-2"
           >
-            email *
+            {t('form.email')} *
           </label>
           <input
             id={`email${idSuffix}`}
@@ -129,7 +130,7 @@ function ContactForm({ idSuffix = '', onSubmitSuccess, defaultSubject = '' }) {
             htmlFor={`subject${idSuffix}`}
             className="block text-whiteCustom/90 font-playfair text-sm mb-2"
           >
-            subject *
+            {t('form.subject')} *
           </label>
           <input
             id={`subject${idSuffix}`}
@@ -148,7 +149,7 @@ function ContactForm({ idSuffix = '', onSubmitSuccess, defaultSubject = '' }) {
           htmlFor={`message${idSuffix}`}
           className="block text-whiteCustom/90 font-playfair text-sm mb-2"
         >
-          message *
+          {t('form.message')} *
         </label>
         <textarea
           id={`message${idSuffix}`}
@@ -167,14 +168,14 @@ function ContactForm({ idSuffix = '', onSubmitSuccess, defaultSubject = '' }) {
             name="newsletterOptIn"
             className="accent-whiteCustom"
           />
-          <span>Subscribe to Newsletter</span>
+          <span>{t('form.newsletterOptIn')}</span>
         </label>
 
         <button
           type="submit"
           className="px-4 py-2 text-sm font-medium font-playfair text-whiteCustom/85 hover:text-whiteCustom transition-all duration-300 border border-whiteCustom/60"
         >
-          <span>Send</span>
+          <span>{t('form.send')}</span>
         </button>
       </div>
     </form>
@@ -184,6 +185,7 @@ function ContactForm({ idSuffix = '', onSubmitSuccess, defaultSubject = '' }) {
 // Composant pour les informations de contact
 function ContactInfo() {
   const t = useTranslations();
+  const contactT = useTranslations('contact');
 
   return (
     <div className="text-whiteCustom/90 space-y-4 md:space-y-6">
@@ -205,13 +207,10 @@ function ContactInfo() {
         </a>
       </h3>
       <p className="font-playfair text-sm md:text-[16px] leading-relaxed">
-        All images on this website are the property of {SITE_CONFIG.author} and
-        are protected by copyright. It is illegal to reproduce, distribute, or
-        publish them, in whole or in part, without first obtaining his written
-        permission.
+        {contactT('info.copyright', { author: SITE_CONFIG.author })}
       </p>
       <p className="font-playfair text-sm md:text-[16px] leading-relaxed">
-        Design & Development by {SITE_CONFIG.developer}
+        {contactT('info.credits', { developer: SITE_CONFIG.developer })}
       </p>
 
       <NewsletterSignup className="pt-2" />
@@ -235,6 +234,7 @@ export function ContactContent({
   variant: _variant = 'default',
   defaultSubject = '',
 }) {
+  const t = useTranslations('contact');
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-8 lg:gap-10 xl:gap-14">
       <div className="lg:col-span-7">
@@ -242,7 +242,7 @@ export function ContactContent({
           id={headingId}
           className="text-whiteCustom font-playfair italic text-[32px] sm:text-[36px] md:text-[42px] lg:text-[46px] xl:text-[48px] leading-none mb-6 md:mb-8"
         >
-          Contact
+          {t('title')}
         </h2>
         <ContactForm idSuffix={idSuffix} defaultSubject={defaultSubject} />
       </div>
@@ -300,6 +300,7 @@ export default function ContactOverlay({
 } = {}) {
   const [openState, setOpenState] = useState(false);
   const panelRef = useRef(null);
+  const t = useTranslations('contact');
 
   // Utiliser la prop si fournie, sinon utiliser l'état interne
   const open = openProp !== undefined ? openProp : openState;
@@ -411,11 +412,11 @@ export default function ContactOverlay({
           <section
             id="info-overlay"
             className="fixed inset-0 z-[200]"
-            aria-label="Contact Overlay"
+            aria-label={t('overlay.ariaLabel')}
           >
             <motion.button
               type="button"
-              aria-label="Close contact overlay"
+              aria-label={t('overlay.closeAriaLabel')}
               className="absolute inset-0 bg-black/60"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}

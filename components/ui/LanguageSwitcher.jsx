@@ -1,15 +1,14 @@
 'use client';
 import React from 'react';
 import { useEffect, useState } from 'react';
-import { useParams, usePathname, useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
+import { usePathname } from '../../src/i18n/navigation';
 import { computeIsDark } from '../../lib/utils';
-import { EVENTS, emitEvent } from '../../lib/events';
 
 // Sélecteur de langue avec adaptation de couleur + disparition sur la section contact
 export default function LanguageSwitcher() {
   const langs = ['fr', 'en', 'de'];
   const params = useParams();
-  const router = useRouter();
   const pathname = usePathname();
   const locale = params.locale;
   const [autoDark, setAutoDark] = useState(false);
@@ -71,12 +70,9 @@ export default function LanguageSwitcher() {
 
   const handleChangeLang = lang => {
     if (lang === locale) return;
-    emitEvent(EVENTS.INTRO_SHOW);
-    const current = pathname || '/';
-    let base = current.replace(/^\/(fr|en|de)(?=\/|$)/, '');
-    if (base === '') base = '/';
-    const href = `/${lang}${base === '/' ? '' : base}`;
-    router.replace(href, { scroll: false });
+    // Full page navigation: avoids React/framer-motion race conditions
+    // LoadingOverlay shows naturally on page load (visible starts true)
+    window.location.href = `/${lang}${pathname}`;
   };
 
   return (

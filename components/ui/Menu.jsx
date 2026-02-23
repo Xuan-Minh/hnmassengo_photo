@@ -1,6 +1,7 @@
 'use client';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { useParams, usePathname, useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
+import { usePathname } from '../../src/i18n/navigation';
 import { MENU_ITEMS, LANGUAGES, THEME } from '../../lib/constants';
 import { computeIsDark } from '../../lib/utils';
 import { EVENTS, emitEvent } from '../../lib/events';
@@ -25,19 +26,14 @@ export default function Menu() {
   // Logique du sélecteur de langue
   const langs = LANGUAGES;
   const params = useParams();
-  const router = useRouter();
   const pathname = usePathname();
   const locale = params.locale;
 
   const handleChangeLang = lang => {
     if (lang === locale) return;
-    emitEvent(EVENTS.INTRO_SHOW);
-    const current = pathname || '/';
-    let base = current.replace(/^\/(fr|en|de)(?=\/|$)/, '');
-    if (base === '') base = '/';
-    const href = `/${lang}${base === '/' ? '' : base}`;
-    router.replace(href, { scroll: false });
-    setMobileMenuOpen(false); // Fermer le menu après changement de langue
+    // Full page navigation: avoids React/framer-motion race conditions
+    // LoadingOverlay shows naturally on page load (visible starts true)
+    window.location.href = `/${lang}${pathname}`;
   };
 
   // Trap focus dans le menu mobile

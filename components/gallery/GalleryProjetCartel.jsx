@@ -1,10 +1,10 @@
 'use client';
 import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
 import PropTypes from 'prop-types';
 import dynamic from 'next/dynamic';
 import { motion, animate, useMotionValue } from 'framer-motion';
+import { useTranslations } from 'next-intl';
 const AnimatePresence = dynamic(
   () => import('framer-motion').then(mod => mod.AnimatePresence),
   { ssr: false }
@@ -16,6 +16,7 @@ import { getOptimizedImageParams } from '../../lib/hooks';
 
 // Composant CustomLightbox
 function CustomLightbox({ open, onClose, images, project }) {
+  const t = useTranslations('gallery');
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isCurrentLoaded, setIsCurrentLoaded] = useState(false);
   const [hasCurrentError, setHasCurrentError] = useState(false);
@@ -229,7 +230,7 @@ function CustomLightbox({ open, onClose, images, project }) {
             )}
             {hasCurrentError && (
               <div className="absolute inset-0 flex items-center justify-center text-white/70">
-                image indisponible
+                image unavailable
               </div>
             )}
           </div>
@@ -306,7 +307,7 @@ function CustomLightbox({ open, onClose, images, project }) {
               )}
               {hasCurrentError && (
                 <div className="absolute inset-0 flex items-center justify-center text-white/70">
-                  image indisponible
+                  image unavailable
                 </div>
               )}
               <Image
@@ -358,7 +359,7 @@ function CustomLightbox({ open, onClose, images, project }) {
           onClick={() => goToIndex(currentIndex - 1)}
         >
           <span className="text-xl italic text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-            précédent
+            previous
           </span>
         </div>
 
@@ -368,7 +369,7 @@ function CustomLightbox({ open, onClose, images, project }) {
           onClick={() => goToIndex(currentIndex + 1)}
         >
           <span className="text-xl italic text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-            suivant
+            next
           </span>
         </div>
 
@@ -495,7 +496,7 @@ function ImageMarquee({ images, onClick }) {
 }
 
 export default function GalleryProjetCartel({ project, onClose }) {
-  const router = useRouter();
+  const t = useTranslations('gallery');
   const [lightboxOpen, setLightboxOpen] = useState(false);
 
   // Fermeture avec la touche Echap
@@ -514,11 +515,7 @@ export default function GalleryProjetCartel({ project, onClose }) {
   if (!project) return null;
 
   // Placeholder pour la description
-  const description =
-    project.description ||
-    `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur posuere tincidunt lacus sit amet porttitor. Aliquam pharetra ante vel nibh accumsan, a bibendum lorem egestas. Sed ac accumsan metus, vitae finibus urna. Phasellus vel rhoncus nisl. Vestibulum congue lacinia mi volutpat bibendum. Proin vitae odio est. Vivamus tempus pretium commodo. Nulla facilisi.
-
-Nam dui metus, interdum vitae lobortis vel, viverra consequat neque. Praesent sagittis aliquet posuere. Aenean suscipit, mi quis viverra pulvinar, purus nulla placerat mi, quis mollis lectus ipsum vitae velit. Sed vehicula est in lobortis tincidunt.`;
+  const description = project.description || t('project.defaultDescription');
 
   const paragraphs = description.split('\n\n');
 
@@ -548,7 +545,7 @@ Nam dui metus, interdum vitae lobortis vel, viverra consequat neque. Praesent sa
           <button
             onClick={onClose}
             className="absolute top-6 left-6 z-10 font-playfair text-lg text-accent hover:text-blackCustom transition-colors"
-            aria-label="Fermer l'overlay du projet"
+            aria-label={t('project.closeOverlayLabel')}
           >
             back
           </button>
@@ -594,7 +591,7 @@ Nam dui metus, interdum vitae lobortis vel, viverra consequat neque. Praesent sa
             <button
               onClick={onClose}
               className="font-playfair text-lg text-accent hover:text-blackCustom transition-colors"
-              aria-label="Fermer l'overlay du projet"
+              aria-label={t('project.closeOverlayLabel')}
             >
               back
             </button>

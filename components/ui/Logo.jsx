@@ -1,8 +1,10 @@
 'use client';
-import { useRouter, usePathname } from 'next/navigation';
+import { useRouter, usePathname } from '../../src/i18n/navigation';
+import { useTranslations } from 'next-intl';
 import { EVENTS, emitEvent } from '../../lib/events';
 
 export default function Logo({ visible = true }) {
+  const t = useTranslations('logo');
   const router = useRouter();
   const pathname = usePathname();
 
@@ -24,14 +26,14 @@ export default function Logo({ visible = true }) {
       <span
         onClick={handleLogoClick}
         className="text-accent font-normal font-playfair italic pointer-events-auto cursor-pointer"
-        title="Retour à l'accueil"
+        title={t('title')}
       >
         Han-Noah
       </span>
       <span
         onClick={handleLogoClick}
         className="text-accent  font-normal font-lexend pointer-events-auto cursor-pointer"
-        title="Retour à l'accueil"
+        title={t('title')}
       >
         MASSENGO
       </span>

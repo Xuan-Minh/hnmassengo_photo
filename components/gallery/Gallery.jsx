@@ -1,4 +1,5 @@
 'use client';
+import { useTranslations } from 'next-intl';
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { useParams } from 'next/navigation';
 import { GALLERY_FILTERS } from '../../lib/constants';
@@ -23,6 +24,7 @@ function getProjectDateMs(project) {
 }
 
 export default function Gallery() {
+  const t = useTranslations('gallery');
   const { locale } = useParams();
   const [projects, setProjects] = useState([]);
 
@@ -478,7 +480,7 @@ export default function Gallery() {
                 setGridFilter(f.value);
               }}
             >
-              {f.label}
+              {t(`filters.${f.value}`)}
               <span
                 className={`absolute left-0 bottom-0 h-[1px] bg-current transition-all duration-300 ease-in-out ${
                   gridFilter === f.value ? 'w-full' : 'w-0 group-hover:w-full'
@@ -864,7 +866,7 @@ export default function Gallery() {
                 className="justify-self-center text-xl font-playfair italic text-blackCustom hover:text-accent Hover transition-all duration-300 px-4 py-2 rounded opacity-100 animate-in fade-in"
                 onClick={() => setOverlayOpen(true)}
               >
-                see more
+                {t('seeMore')}
               </button>
             )}
             <div></div>

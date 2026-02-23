@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
 import Image from 'next/image';
+import { useTranslations } from 'next-intl';
 
 export default function ShopItem({
   imgDefault,
@@ -11,6 +12,7 @@ export default function ShopItem({
   onClick,
   inCart = false,
 }) {
+  const t = useTranslations('shop');
   const [hovered, setHovered] = useState(false);
   return (
     <div
@@ -56,7 +58,7 @@ export default function ShopItem({
       </div>
       {inCart && (
         <div className="mt-1 text-xs uppercase tracking-wide text-black/60">
-          in cart
+          {t('inCart')}
         </div>
       )}
     </div>

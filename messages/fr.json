@@ -19,47 +19,160 @@
   },
   "blog": {
     "title": "Blog",
-    "description": "Retrouvez ici les articles et actualités du photographe."
+    "description": "Retrouvez ici les articles et actualités du photographe.",
+    "morePosts": "plus d'articles",
+    "ariaLabel": "Section blog",
+    "archives": {
+      "title": "Archives"
+    },
+    "post": {
+      "contact": "contact↗",
+      "reply": "Réponse"
+    }
   },
   "gallery": {
     "title": "Galerie",
-    "description": "Découvrez les projets photo et la galerie d’images."
+    "description": "Découvrez les projets photo et la galerie d’images.",
+    "project": {
+      "defaultDescription": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur posuere tincidunt lacus sit amet porttitor. Aliquam pharetra ante vel nibh accumsan, a bibendum lorem egestas. Sed ac accumsan metus, vitae finibus urna. Phasellus vel rhoncus nisl. Vestibulum congue lacinia mi volutpat bibendum. Proin vitae odio est. Vivamus tempus pretium commodo. Nulla facilisi.\n\nNam dui metus, interdum vitae lobortis vel, viverra consequat neque. Praesent sagittis aliquet posuere. Aenean suscipit, mi quis viverra pulvinar, purus nulla placerat mi, quis mollis lectus ipsum vitae velit. Sed vehicula est in lobortis tincidunt.",
+      "closeOverlayLabel": "Fermer la superposition du projet"
+    },
+    "seeMore": "voir plus",
+    "filters": {
+      "all": "tous",
+      "artwork": "œuvres",
+      "commission": "commandes"
+    },
+    "back": "retour"
   },
   "contact": {
     "title": "Contact",
-    "description": "Pour toute demande, utilisez le formulaire de contact."
+    "form": {
+      "fullName": "nom complet",
+      "email": "Email",
+      "subject": "sujet",
+      "message": "Message",
+      "name": "Nom",
+      "newsletterOptIn": "S'inscrire à la newsletter",
+      "send": "Envoyer",
+      "success": {
+        "title": "Message envoyé avec succès !",
+        "message": "Merci ! Votre message a bien été envoyé."
+      },
+      "error": "Une erreur est survenue. Veuillez réessayer.",
+      "validationError": "Erreurs de validation.",
+      "submissionError": "Erreur lors de la validation. Veuillez réessayer.",
+      "error_fullName": "Nom requis",
+      "error_email": "Email requis",
+      "error_email_invalid": "Email invalide",
+      "error_subject": "Sujet requis",
+      "error_message": "Message requis",
+      "label_fullName": "Nom et prénom *",
+      "label_email": "Email *",
+      "label_subject": "Sujet *",
+      "label_message": "Message *",
+      "label_send": "Envoyer"
+    },
+    "info": {
+      "copyright": "Toutes les images de ce site sont la propriété de {author} et sont protégées par le droit d'auteur. Il est illégal de les reproduire, de les distribuer ou de les publier, en tout ou en partie, sans avoir obtenu au préalable son autorisation écrite.",
+      "credits": "Design & Développement par {developer}"
+    },
+    "overlay": {
+      "ariaLabel": "Superposition de contact",
+      "closeAriaLabel": "Fermer la superposition de contact"
+    }
   },
-  "legal": {
-    "title": "Mentions légales",
-    "description": "Informations sur les mentions légales et la politique de confidentialité."
+  "newsletter": {
+    "title": "Newsletter",
+    "placeholder": "Votre email",
+    "cta": "S'inscrire",
+    "success": "Merci ! Vous êtes inscrit.",
+    "error": "Veuillez entrer une adresse email valide."
   },
-  "menu": {
-    "about": "À propos",
-    "works": "Travaux",
-    "spaces": "Espaces",
-    "shop": "Boutique",
-    "info": "Infos"
+  "shop": {
+    "inCart": "dans le panier",
+    "cart": {
+      "title": "panier",
+      "removeItem": "Retirer du panier",
+      "empty": "vide",
+      "total": "total",
+      "checkout": "→ paiement"
+    },
+    "emptyState": {
+      "title": "La boutique est vide pour le moment.",
+      "message": "Revenez plus tard"
+    },
+    "overlay": {
+      "defaultDescription": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur posuere tincidunt lacus sit amet porttitor. Aliquam pharetra ante vel nibh accumsan, a bibendum lorem egestas. Sed ac accumsan metus, vitae finibus urna.",
+      "inCart": "au panier",
+      "addToCart": "ajouter au panier"
+    }
   },
-  "form": {
-    "error_fullName": "Nom requis",
-    "error_email": "Email requis",
-    "error_email_invalid": "Email invalide",
-    "error_subject": "Sujet requis",
-    "error_message": "Message requis",
-    "success": "Message envoyé avec succès ! Nous vous répondrons sous 24h à l'adresse indiquée.",
-    "label_fullName": "Nom et prénom *",
-    "label_email": "Email *",
-    "label_subject": "Sujet *",
-    "label_message": "Message *",
-    "label_send": "Envoyer"
+  "error": {
+    "title": "Oups, quelque chose s'est mal passé",
+    "description": "Nous sommes désolés pour ce désagrément. Une erreur inattendue est survenue.",
+    "retry": "Réessayer",
+    "home": "Retour à l'accueil",
+    "contact": "Si le problème persiste, veuillez contacter"
+  },
+  "logo": {
+    "firstName": "Han-Noah",
+    "lastName": "MASSENGO",
+    "title": "Retour à l'accueil"
   },
   "presentation": {
     "line1": "Je développe mon sens artistique à travers mes clubs et où je vis.",
     "line2": "Je suis passionné par la capture de moments qui racontent une histoire,",
-    "line3": "évoquent des émotions et mettent en valeur la beauté de notre monde."
+    "line3": "évoquent des émotions et mettent en valeur la beauté de notre monde.",
+    "ariaLabel": "Section de présentation"
   },
   "legal": {
     "title": "Mentions légales",
-    "link": "Mentions légales"
+    "link": "Mentions légales",
+    "description": "Informations sur les mentions légales et la politique de confidentialité."
+  },
+  "menu": {
+    "home": "Accueil",
+    "gallery": "Galerie",
+    "blog": "Blog",
+    "shop": "Boutique",
+    "info": "Infos"
+  },
+  "legalPage": {
+    "editor": {
+      "title": "Éditeur du site",
+      "name": "Han-Noah MASSENGO",
+      "profession": "Photographe professionnel",
+      "email": "Email : contact@hnmassengo.com",
+      "website": "Site web : hnmassengo.com"
+    },
+    "hosting": {
+      "title": "Hébergement",
+      "line1": "Ce site est hébergé par Netlify Inc.",
+      "line2": "610 22nd Street, Suite 315",
+      "line3": "San Francisco, CA 94107",
+      "line4": "États-Unis"
+    },
+    "ip": {
+      "title": "Propriété intellectuelle",
+      "text": "Toutes les images présentes sur ce site sont la propriété exclusive de Studio42. Toute reproduction, distribution ou publication, même partielle, est interdite sans autorisation écrite préalable."
+    },
+    "data": {
+      "title": "Données personnelles",
+      "text": "Les informations recueillies via le formulaire de contact sont destinées uniquement à Studio42 pour répondre à vos demandes. Elles ne sont ni vendues, ni cédées à des tiers."
+    },
+    "cookies": {
+      "title": "Cookies",
+      "text": "Ce site n'utilise pas de cookies de suivi. Seuls les cookies techniques nécessaires au fonctionnement du site et du panier d'achat sont utilisés."
+    },
+    "law": {
+      "title": "Droit applicable",
+      "text": "Le présent site est soumis au droit français. En cas de litige, les tribunaux français seront seuls compétents."
+    }
+  },
+  "notFound": {
+    "title": "404 - Page non trouvée",
+    "message": "La page que vous recherchez n'existe pas ou a été déplacée.",
+    "homeLink": "Retour à l'accueil"
   }
 }

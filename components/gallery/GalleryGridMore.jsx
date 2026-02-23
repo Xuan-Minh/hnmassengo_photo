@@ -23,7 +23,7 @@ export default function GalleryGridMore({
   onProjectClick,
   projects = [],
 }) {
-  const t = useTranslations();
+  const t = useTranslations('gallery');
   const [filter, setFilter] = useState('all');
   const [hoveredId, setHoveredId] = useState(null);
 
@@ -120,10 +120,10 @@ export default function GalleryGridMore({
           onClick={onClose}
           className="absolute left-8 md:left-16 text-lg font-playfair text-accent hover:text-blackCustom transition-colors"
         >
-          back
+          {t('back')}
         </button>
         <h2 className="text-4xl font-playfair italic text-blackCustom/20">
-          Gallery
+          {t('title')}
         </h2>
       </div>
 
@@ -146,7 +146,7 @@ export default function GalleryGridMore({
               }`}
               onClick={() => setFilter(f.value)}
             >
-              {f.label}
+              {t(`filters.${f.value}`)}
             </motion.button>
           ))}
         </div>

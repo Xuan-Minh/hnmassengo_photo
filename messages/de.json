@@ -19,47 +19,160 @@
   },
   "blog": {
     "title": "Blog",
-    "description": "Hier finden Sie Artikel und Neuigkeiten des Fotografen."
+    "description": "Hier finden Sie Artikel und Neuigkeiten des Fotografen.",
+    "morePosts": "weitere Beiträge",
+    "ariaLabel": "Blog-Bereich",
+    "archives": {
+      "title": "Archiv"
+    },
+    "post": {
+      "contact": "kontakt↗",
+      "reply": "Antwort"
+    }
   },
   "gallery": {
     "title": "Galerie",
-    "description": "Entdecken Sie Fotoprojekte und die Bildergalerie."
+    "description": "Entdecken Sie Fotoprojekte und die Bildergalerie.",
+    "project": {
+      "defaultDescription": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur posuere tincidunt lacus sit amet porttitor. Aliquam pharetra ante vel nibh accumsan, a bibendum lorem egestas. Sed ac accumsan metus, vitae finibus urna. Phasellus vel rhoncus nisl. Vestibulum congue lacinia mi volutpat bibendum. Proin vitae odio est. Vivamus tempus pretium commodo. Nulla facilisi.\n\nNam dui metus, interdum vitae lobortis vel, viverra consequat neque. Praesent sagittis aliquet posuere. Aenean suscipit, mi quis viverra pulvinar, purus nulla placerat mi, quis mollis lectus ipsum vitae velit. Sed vehicula est in lobortis tincidunt.",
+      "closeOverlayLabel": "Projekt-Overlay schließen"
+    },
+    "seeMore": "mehr sehen",
+    "filters": {
+      "all": "alle",
+      "artwork": "kunstwerke",
+      "commission": "auftragsarbeiten"
+    },
+    "back": "zurück"
   },
   "contact": {
     "title": "Kontakt",
-    "description": "Für Anfragen nutzen Sie bitte das Kontaktformular."
+    "form": {
+      "fullName": "vollständiger Name",
+      "email": "E-Mail",
+      "subject": "Betreff",
+      "message": "Nachricht",
+      "name": "Name",
+      "newsletterOptIn": "Newsletter abonnieren",
+      "send": "Senden",
+      "success": {
+        "title": "Nachricht erfolgreich gesendet!",
+        "message": "Danke! Ihre Nachricht wurde gesendet."
+      },
+      "error": "Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut.",
+      "validationError": "Validierungsfehler.",
+      "submissionError": "Fehler bei der Validierung. Bitte versuchen Sie es erneut.",
+      "error_fullName": "Name erforderlich",
+      "error_email": "E-Mail erforderlich",
+      "error_email_invalid": "Ungültige E-Mail",
+      "error_subject": "Betreff erforderlich",
+      "error_message": "Nachricht erforderlich",
+      "label_fullName": "Vollständiger Name *",
+      "label_email": "E-Mail *",
+      "label_subject": "Betreff *",
+      "label_message": "Nachricht *",
+      "label_send": "Senden"
+    },
+    "info": {
+      "copyright": "Alle Bilder auf dieser Website sind Eigentum von {author} und urheberrechtlich geschützt. Es ist illegal, sie ganz oder teilweise zu reproduzieren, zu verbreiten oder zu veröffentlichen, ohne zuvor seine schriftliche Genehmigung eingeholt zu haben.",
+      "credits": "Design & Entwicklung von {developer}"
+    },
+    "overlay": {
+      "ariaLabel": "Kontakt-Overlay",
+      "closeAriaLabel": "Kontakt-Overlay schließen"
+    }
   },
-  "legal": {
-    "title": "Rechtliche Hinweise",
-    "description": "Informationen zu rechtlichen Hinweisen und Datenschutz."
-  },
-  "menu": {
-    "about": "Über mich",
-    "works": "Arbeiten",
-    "spaces": "Räume",
-    "shop": "Shop",
-    "info": "Infos"
-  },
-  "form": {
-    "error_fullName": "Name erforderlich",
-    "error_email": "E-Mail erforderlich",
-    "error_email_invalid": "Ungültige E-Mail",
-    "error_subject": "Betreff erforderlich",
-    "error_message": "Nachricht erforderlich",
-    "success": "Nachricht erfolgreich gesendet! Wir antworten innerhalb von 24 Stunden an die angegebene Adresse.",
-    "label_fullName": "Vollständiger Name *",
-    "label_email": "E-Mail *",
-    "label_subject": "Betreff *",
-    "label_message": "Nachricht *",
-    "label_send": "Senden"
+  "newsletter": {
+    "title": "Newsletter",
+    "placeholder": "Deine E-Mail",
+    "cta": "Abonnieren",
+    "success": "Danke! Du bist angemeldet.",
+    "error": "Bitte eine gültige E-Mail eingeben."
   },
   "presentation": {
     "line1": "Ich entwickle meinen künstlerischen Sinn durch meine Clubs und wo ich lebe.",
     "line2": "Ich bin leidenschaftlich beim Einfangen von Momenten, die eine Geschichte erzählen,",
-    "line3": "Emotionen wecken und die Schönheit unserer Welt zeigen."
+    "line3": "Emotionen wecken und die Schönheit unserer Welt zeigen.",
+    "ariaLabel": "Präsentationsbereich"
   },
   "legal": {
-    "title": "Impressum",
-    "link": "Impressum"
+    "title": "Rechtliche Hinweise",
+    "link": "Rechtliche Hinweise",
+    "description": "Informationen zu rechtlichen Hinweisen und Datenschutz."
+  },
+  "menu": {
+    "home": "Startseite",
+    "gallery": "Galerie",
+    "blog": "Blog",
+    "shop": "Shop",
+    "info": "Infos"
+  },
+  "logo": {
+    "firstName": "Han-Noah",
+    "lastName": "MASSENGO",
+    "title": "Zurück zur Startseite"
+  },
+  "shop": {
+    "inCart": "im warenkorb",
+    "cart": {
+      "title": "warenkorb",
+      "removeItem": "Aus dem Warenkorb entfernen",
+      "empty": "leer",
+      "total": "gesamt",
+      "checkout": "→ zur Kasse"
+    },
+    "emptyState": {
+      "title": "Der Shop ist im Moment leer.",
+      "message": "Kommen Sie später wieder"
+    },
+    "overlay": {
+      "defaultDescription": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur posuere tincidunt lacus sit amet porttitor. Aliquam pharetra ante vel nibh accumsan, a bibendum lorem egestas. Sed ac accumsan metus, vitae finibus urna.",
+      "inCart": "im warenkorb",
+      "addToCart": "in den warenkorb"
+    }
+  },
+  "error": {
+    "title": "Hoppla, etwas ist schief gelaufen",
+    "description": "Wir entschuldigen uns für die Unannehmlichkeiten. Ein unerwarteter Fehler ist aufgetreten.",
+    "retry": "Erneut versuchen",
+    "home": "Zurück zur Startseite",
+    "contact": "Wenn das Problem weiterhin besteht, kontaktieren Sie bitte"
+  },
+  "legalPage": {
+    "editor": {
+      "title": "Seiten-Editor",
+      "name": "Han-Noah MASSENGO",
+      "profession": "Professioneller Fotograf",
+      "email": "E-Mail: contact@hnmassengo.com",
+      "website": "Webseite: hnmassengo.com"
+    },
+    "hosting": {
+      "title": "Hosting",
+      "line1": "Diese Seite wird von Netlify Inc. gehostet.",
+      "line2": "610 22nd Street, Suite 315",
+      "line3": "San Francisco, CA 94107",
+      "line4": "Vereinigte Staaten"
+    },
+    "ip": {
+      "title": "Geistiges Eigentum",
+      "text": "Alle Bilder auf dieser Website sind das alleinige Eigentum von Studio42. Jede Vervielfältigung, Verbreitung oder Veröffentlichung, auch auszugsweise, ist ohne vorherige schriftliche Genehmigung untersagt."
+    },
+    "data": {
+      "title": "Persönliche Daten",
+      "text": "Die über das Kontaktformular gesammelten Informationen sind ausschließlich für Studio42 bestimmt, um auf Ihre Anfragen zu antworten. Sie werden weder verkauft noch an Dritte weitergegeben."
+    },
+    "cookies": {
+      "title": "Cookies",
+      "text": "Diese Website verwendet keine Tracking-Cookies. Es werden nur technische Cookies verwendet, die für den Betrieb der Website und des Warenkorbs erforderlich sind."
+    },
+    "law": {
+      "title": "Anwendbares Recht",
+      "text": "Diese Website unterliegt französischem Recht. Im Streitfall sind ausschließlich die französischen Gerichte zuständig."
+    }
+  },
+  "notFound": {
+    "title": "404 - Seite nicht gefunden",
+    "message": "Die von Ihnen gesuchte Seite existiert nicht oder wurde verschoben.",
+    "homeLink": "Zurück zur Startseite"
   }
 }

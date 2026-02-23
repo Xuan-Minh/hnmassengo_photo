@@ -1,7 +1,9 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
+import { useRouter } from '../../src/i18n/navigation';
 import { AnimatePresence } from 'framer-motion';
+import { useTranslations } from 'next-intl';
 import BlogArchives from './BlogArchives';
 import BlogPostItem from './BlogPostItem';
 import dynamic from 'next/dynamic';
@@ -15,6 +17,7 @@ const BlogPostOverlay = dynamic(() => import('./BlogPostOverlay'), {
 });
 
 export default function Blog() {
+  const t = useTranslations('blog');
   const { locale } = useParams();
   const router = useRouter();
   const [posts, setPosts] = useState([]);
@@ -33,14 +36,14 @@ export default function Blog() {
   };
 
   const replacePostParam = postId => {
-    const pathname = `/${locale}`;
     const sp = new URLSearchParams(window.location.search);
 
     if (postId) sp.set('post', postId);
     else sp.delete('post');
 
     const qs = sp.toString();
-    router.replace(qs ? `${pathname}?${qs}#blog` : `${pathname}#blog`);
+    // next-intl router adds locale prefix automatically
+    router.replace(qs ? `/?${qs}#blog` : `/#blog`);
   };
 
   React.useEffect(() => {
@@ -127,7 +130,7 @@ export default function Blog() {
     <>
       <section
         className="h-screen snap-start flex items-center justify-center lg:justify-start  2xl:items-center 2xl:justify-center bg-blackCustom relative py-10 px-6 sm:px-10 lg:pl-20 lg:pr-16"
-        aria-label="Section blog"
+        aria-label={t('ariaLabel')}
       >
         <div
           style={{ width: 'min(1000px, 85vw)' }}
@@ -150,7 +153,7 @@ export default function Blog() {
                 onClick={() => setArchiveOpen(true)}
                 className="text-lg font-playfair italic text-whiteCustom/60 hover:text-whiteCustom transition-colors"
               >
-                more posts
+                {t('morePosts')}
               </button>
             </div>
           </div>

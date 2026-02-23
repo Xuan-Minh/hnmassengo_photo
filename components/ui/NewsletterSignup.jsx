@@ -1,41 +1,10 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
-
-function getCopy(locale) {
-  const l = ['fr', 'en', 'de'].includes(locale) ? locale : 'fr';
-  if (l === 'en') {
-    return {
-      title: 'Newsletter',
-      placeholder: 'Your email',
-      cta: 'Subscribe',
-      success: 'Thanks! You are subscribed.',
-      error: 'Please enter a valid email.',
-    };
-  }
-  if (l === 'de') {
-    return {
-      title: 'Newsletter',
-      placeholder: 'Deine E-Mail',
-      cta: 'Abonnieren',
-      success: 'Danke! Du bist angemeldet.',
-      error: 'Bitte eine gültige E-Mail eingeben.',
-    };
-  }
-  return {
-    title: 'Newsletter',
-    placeholder: 'Votre email',
-    cta: "S'inscrire",
-    success: 'Merci ! Vous êtes inscrit.',
-    error: 'Veuillez entrer une adresse email valide.',
-  };
-}
+import { useTranslations } from 'next-intl';
 
 export default function NewsletterSignup({ className = '' } = {}) {
-  const { locale } = useParams();
-  const copy = getCopy(locale);
-
+  const t = useTranslations('newsletter');
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState('idle'); // idle | loading | success | error
   const [message, setMessage] = useState('');
@@ -56,36 +25,36 @@ export default function NewsletterSignup({ className = '' } = {}) {
       const res = await fetch('/api/newsletter/subscribe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, locale, source: 'standalone' }),
+        body: JSON.stringify({ email, source: 'standalone' }),
       });
       const json = await res.json().catch(() => ({}));
 
       if (!res.ok || !json?.success) {
         setStatus('error');
-        setMessage(json?.message || copy.error);
+        setMessage(json?.message || t('error'));
         return;
       }
 
       setStatus('success');
-      setMessage(copy.success);
+      setMessage(t('success'));
       setEmail('');
     } catch {
       setStatus('error');
-      setMessage(copy.error);
+      setMessage(t('error'));
     }
   };
 
   return (
     <div className={className}>
       <div className="font-playfair italic text-base md:text-lg text-whiteCustom/90 mb-2">
-        {copy.title}
+        {t('title')}
       </div>
       <form onSubmit={onSubmit} className="flex gap-2">
         <input
           type="email"
           value={email}
           onChange={e => setEmail(e.target.value)}
-          placeholder={copy.placeholder}
+          placeholder={t('placeholder')}
           required
           className="flex-1 bg-formBG text-whiteCustom placeholder-whiteCustom/40 border border-whiteCustom/60 focus:border-whiteCustom outline-none px-3 py-2 text-sm"
         />
@@ -94,7 +63,7 @@ export default function NewsletterSignup({ className = '' } = {}) {
           disabled={status === 'loading'}
           className="px-4 py-2 text-sm font-medium font-playfair text-whiteCustom/85 hover:text-whiteCustom transition-all duration-300 border border-whiteCustom/60"
         >
-          {copy.cta}
+          {t('cta')}
         </button>
       </form>
       {status === 'success' && (

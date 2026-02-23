@@ -1,6 +1,6 @@
 'use client';
 import { useTranslations } from 'next-intl';
-import Link from 'next/link';
+import { Link } from '../../../src/i18n/navigation';
 
 export default function LegalPage() {
   const t = useTranslations();
@@ -22,76 +22,60 @@ export default function LegalPage() {
         <div className="space-y-8 font-playfair text-lg leading-relaxed">
           <section>
             <h2 className="text-2xl md:text-3xl font-playfair italic mb-4">
-              Éditeur du site
+              {t('legalPage.editor.title')}
             </h2>
             <p>
-              Han-Noah MASSENGO
+              {t('legalPage.editor.name')}
               <br />
-              Photographe professionnel
+              {t('legalPage.editor.profession')}
               <br />
-              Email : contact@hnmassengo.com
+              {t('legalPage.editor.email')}
               <br />
-              Site web : hnmassengo.com
+              {t('legalPage.editor.website')}
             </p>
           </section>
 
           <section>
             <h2 className="text-2xl md:text-3xl font-playfair italic mb-4">
-              Hébergement
+              {t('legalPage.hosting.title')}
             </h2>
             <p>
-              Ce site est hébergé par Netlify Inc.
+              {t('legalPage.hosting.line1')}
               <br />
-              610 22nd Street, Suite 315
+              {t('legalPage.hosting.line2')}
               <br />
-              San Francisco, CA 94107
+              {t('legalPage.hosting.line3')}
               <br />
-              États-Unis
+              {t('legalPage.hosting.line4')}
             </p>
           </section>
 
           <section>
             <h2 className="text-2xl md:text-3xl font-playfair italic mb-4">
-              Propriété intellectuelle
+              {t('legalPage.ip.title')}
             </h2>
-            <p>
-              Toutes les images présentes sur ce site sont la propriété
-              exclusive de Studio42. Toute reproduction, distribution ou
-              publication, même partielle, est interdite sans autorisation
-              écrite préalable.
-            </p>
+            <p>{t('legalPage.ip.text')}</p>
           </section>
 
           <section>
             <h2 className="text-2xl md:text-3xl font-playfair italic mb-4">
-              Données personnelles
+              {t('legalPage.data.title')}
             </h2>
-            <p>
-              Les informations recueillies via le formulaire de contact sont
-              destinées uniquement à Studio42 pour répondre à vos demandes.
-              Elles ne sont ni vendues, ni cédées à des tiers.
-            </p>
+            <p>{t('legalPage.data.text')}</p>
           </section>
 
           <section>
             <h2 className="text-2xl md:text-3xl font-playfair italic mb-4">
-              Cookies
+              {t('legalPage.cookies.title')}
             </h2>
-            <p>
-              Ce site n'utilise pas de cookies de suivi. Seuls les cookies
-              techniques nécessaires au fonctionnement du site et du panier
-              d'achat sont utilisés.
-            </p>
+            <p>{t('legalPage.cookies.text')}</p>
           </section>
 
           <section>
             <h2 className="text-2xl md:text-3xl font-playfair italic mb-4">
-              Droit applicable
+              {t('legalPage.law.title')}
             </h2>
-            <p>
-              Le présent site est soumis au droit français. En cas de litige,
-              les tribunaux français seront seuls compétents.
-            </p>
+            <p>{t('legalPage.law.text')}</p>
           </section>
         </div>
       </div>

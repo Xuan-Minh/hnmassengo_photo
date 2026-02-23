@@ -1,9 +1,11 @@
 'use client';
 import React from 'react';
 import { motion } from 'framer-motion';
+import { useTranslations } from 'next-intl';
 import BlogPostItem from './BlogPostItem';
 
 export default function BlogArchives({ posts, onClose, onPostClick }) {
+  const t = useTranslations('blog');
   return (
     <motion.div
       className="fixed inset-0 bg-blackCustom z-[60] flex flex-col"
@@ -21,7 +23,7 @@ export default function BlogArchives({ posts, onClose, onPostClick }) {
           back
         </button>
         <h2 className="text-4xl font-playfair italic text-whiteCustom">
-          Archives
+          {t('archives.title')}
         </h2>
       </div>
 

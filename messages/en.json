@@ -19,47 +19,160 @@
   },
   "blog": {
     "title": "Blog",
-    "description": "Find here articles and news from the photographer."
+    "description": "Find here articles and news from the photographer.",
+    "morePosts": "more posts",
+    "ariaLabel": "Blog section",
+    "archives": {
+      "title": "Archives"
+    },
+    "post": {
+      "contact": "contact↗",
+      "reply": "Reply"
+    }
   },
   "gallery": {
     "title": "Gallery",
-    "description": "Discover photo projects and the image gallery."
+    "description": "Discover photo projects and the image gallery.",
+    "project": {
+      "defaultDescription": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur posuere tincidunt lacus sit amet porttitor. Aliquam pharetra ante vel nibh accumsan, a bibendum lorem egestas. Sed ac accumsan metus, vitae finibus urna. Phasellus vel rhoncus nisl. Vestibulum congue lacinia mi volutpat bibendum. Proin vitae odio est. Vivamus tempus pretium commodo. Nulla facilisi.\n\nNam dui metus, interdum vitae lobortis vel, viverra consequat neque. Praesent sagittis aliquet posuere. Aenean suscipit, mi quis viverra pulvinar, purus nulla placerat mi, quis mollis lectus ipsum vitae velit. Sed vehicula est in lobortis tincidunt.",
+      "closeOverlayLabel": "Close project overlay"
+    },
+    "seeMore": "see more",
+    "filters": {
+      "all": "all",
+      "artwork": "artworks",
+      "commission": "commissions"
+    },
+    "back": "back"
   },
   "contact": {
-    "title": "Info",
-    "description": "For any request, use the contact form."
+    "title": "Contact",
+    "form": {
+      "fullName": "full name",
+      "email": "email",
+      "subject": "subject",
+      "message": "message",
+      "name": "Name",
+      "newsletterOptIn": "Subscribe to Newsletter",
+      "send": "Send",
+      "success": {
+        "title": "Message sent successfully!",
+        "message": "Thank you! Your message has been sent."
+      },
+      "error": "An error occurred. Please try again.",
+      "validationError": "Validation errors.",
+      "submissionError": "Error during validation. Please try again.",
+      "error_fullName": "Name required",
+      "error_email": "Email required",
+      "error_email_invalid": "Invalid email",
+      "error_subject": "Subject required",
+      "error_message": "Message required",
+      "label_fullName": "Full name *",
+      "label_email": "Email *",
+      "label_subject": "Subject *",
+      "label_message": "Message *",
+      "label_send": "Send"
+    },
+    "info": {
+      "copyright": "All images on this website are the property of {author} and are protected by copyright. It is illegal to reproduce, distribute, or publish them, in whole or in part, without first obtaining his written permission.",
+      "credits": "Design & Development by {developer}"
+    },
+    "overlay": {
+      "ariaLabel": "Contact Overlay",
+      "closeAriaLabel": "Close contact overlay"
+    }
   },
-  "legal": {
-    "title": "Legal Notice",
-    "description": "Information on legal notices and privacy policy."
-  },
-  "menu": {
-    "about": "About",
-    "works": "Works",
-    "spaces": "Spaces",
-    "shop": "Shop",
-    "info": "Info"
-  },
-  "form": {
-    "error_fullName": "Name required",
-    "error_email": "Email required",
-    "error_email_invalid": "Invalid email",
-    "error_subject": "Subject required",
-    "error_message": "Message required",
-    "success": "Message sent successfully! We will reply within 24h to the provided address.",
-    "label_fullName": "Full name *",
-    "label_email": "Email *",
-    "label_subject": "Subject *",
-    "label_message": "Message *",
-    "label_send": "Send"
+  "newsletter": {
+    "title": "Newsletter",
+    "placeholder": "Your email",
+    "cta": "Subscribe",
+    "success": "Thanks! You are subscribed.",
+    "error": "Please enter a valid email."
   },
   "presentation": {
     "line1": "I develop my artistic sense through my clubs and where I live.",
     "line2": "I am passionate about capturing moments that tell a story,",
-    "line3": "evoke emotions, and showcase the beauty of our world."
+    "line3": "evoke emotions, and showcase the beauty of our world.",
+    "ariaLabel": "Presentation section"
   },
   "legal": {
     "title": "Legal Notice",
-    "link": "Legal Notice"
+    "link": "Legal Notice",
+    "description": "Information on legal notices and privacy policy."
+  },
+  "menu": {
+    "home": "Home",
+    "gallery": "Gallery",
+    "blog": "Blog",
+    "shop": "Shop",
+    "info": "Info"
+  },
+  "logo": {
+    "firstName": "Han-Noah",
+    "lastName": "MASSENGO",
+    "title": "Return to home"
+  },
+  "shop": {
+    "inCart": "in cart",
+    "cart": {
+      "title": "cart",
+      "removeItem": "Remove from cart",
+      "empty": "empty",
+      "total": "total",
+      "checkout": "→ checkout"
+    },
+    "emptyState": {
+      "title": "Shop is empty for now.",
+      "message": "Come again later"
+    },
+    "overlay": {
+      "defaultDescription": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur posuere tincidunt lacus sit amet porttitor. Aliquam pharetra ante vel nibh accumsan, a bibendum lorem egestas. Sed ac accumsan metus, vitae finibus urna.",
+      "inCart": "in cart",
+      "addToCart": "add to cart"
+    }
+  },
+  "error": {
+    "title": "Oops, something went wrong",
+    "description": "We're sorry for the inconvenience. An unexpected error occurred.",
+    "retry": "Try Again",
+    "home": "Return Home",
+    "contact": "If the problem persists, please contact"
+  },
+  "legalPage": {
+    "editor": {
+      "title": "Site Editor",
+      "name": "Han-Noah MASSENGO",
+      "profession": "Professional Photographer",
+      "email": "Email: contact@hnmassengo.com",
+      "website": "Website: hnmassengo.com"
+    },
+    "hosting": {
+      "title": "Hosting",
+      "line1": "This site is hosted by Netlify Inc.",
+      "line2": "610 22nd Street, Suite 315",
+      "line3": "San Francisco, CA 94107",
+      "line4": "United States"
+    },
+    "ip": {
+      "title": "Intellectual Property",
+      "text": "All images on this site are the exclusive property of Studio42. Any reproduction, distribution, or publication, even partial, is prohibited without prior written permission."
+    },
+    "data": {
+      "title": "Personal Data",
+      "text": "The information collected via the contact form is intended solely for Studio42 to respond to your requests. It is neither sold nor transferred to third parties."
+    },
+    "cookies": {
+      "title": "Cookies",
+      "text": "This site does not use tracking cookies. Only technical cookies necessary for the operation of the site and the shopping cart are used."
+    },
+    "law": {
+      "title": "Applicable Law",
+      "text": "This site is subject to French law. In the event of a dispute, the French courts will have sole jurisdiction."
+    }
+  },
+  "notFound": {
+    "title": "404 - Page Not Found",
+    "message": "The page you are looking for does not exist or has been moved.",
+    "homeLink": "Back to home"
   }
 }
