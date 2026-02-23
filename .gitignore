@@ -16,6 +16,11 @@ yarn-error.log*
 # OS
 Thumbs.db
 
+# Generated files
+newsletter-preview.html
+public/robots.txt
+public/sitemap*.xml
+
 # Misc
 *.swp
 *.swo
