@@ -344,9 +344,7 @@ export default function Shop() {
   );
 
   return (
-    <section
-      className="flex h-screen bg-background font-playfair snap-start relative"
-    >
+    <section className="flex h-screen bg-background font-playfair snap-start relative">
       {/* Produits - Layout vertical mobile, colonne centrale desktop */}
       <main className="flex-1 h-full flex flex-col md:flex-row items-stretch overflow-hidden">
         {/* Panier mobile (en haut, hauteur auto), desktop (gauche, 320px) */}
@@ -413,26 +411,37 @@ export default function Shop() {
         </aside>
         {/* Liste produits (mobile: prend le reste, desktop: colonne centrale) */}
         <div className="w-full md:flex-1 flex-1 md:h-full flex items-center justify-center bg-background order-2 md:order-2">
-          <div className="w-full max-w-3xl xl:max-w-3xl 2xl:max-w-4xl p-4 md:p-16">
-            <div className="grid grid-cols-2 md:grid-cols-2 gap-4 md:gap-12 w-full pt-2 md:pt-10">
-              {products.map(product => (
-                <ShopItem
-                  key={product.id}
-                  imgDefault={product.imgDefault}
-                  imgHover={product.imgHover}
-                  title={localizeField(product.title, locale)}
-                  price={product.price + '€'}
-                  onClick={
-                    cartItemIds.has(product.id)
-                      ? undefined
-                      : () => setSelectedProduct(product)
-                  }
-                  inCart={cartItemIds.has(product.id)}
-                  className="!h-36 md:!h-64" // hauteur réduite sur mobile
-                />
-              ))}
+          {products.length === 0 ? (
+            <div className="w-full flex flex-col items-center justify-center px-4 md:px-16 text-center italic">
+              <h2 className="text-xl md:text-3xl font-playfair mb-4">
+                Shop is empty for now.
+              </h2>
+              <p className="text-base md:text-lg text-black/60">
+                Come again later
+              </p>
             </div>
-          </div>
+          ) : (
+            <div className="w-full max-w-3xl xl:max-w-3xl 2xl:max-w-4xl p-4 md:p-16">
+              <div className="grid grid-cols-2 md:grid-cols-2 gap-4 md:gap-12 w-full pt-2 md:pt-10">
+                {products.map(product => (
+                  <ShopItem
+                    key={product.id}
+                    imgDefault={product.imgDefault}
+                    imgHover={product.imgHover}
+                    title={localizeField(product.title, locale)}
+                    price={product.price + '€'}
+                    onClick={
+                      cartItemIds.has(product.id)
+                        ? undefined
+                        : () => setSelectedProduct(product)
+                    }
+                    inCart={cartItemIds.has(product.id)}
+                    className="!h-36 md:!h-64" // hauteur réduite sur mobile
+                  />
+                ))}
+              </div>
+            </div>
+          )}
         </div>
         {/* Spacer desktop pour décaler le contenu vers la gauche */}
         <div className="hidden lg:block w-[200px] shrink-0 order-3" />
