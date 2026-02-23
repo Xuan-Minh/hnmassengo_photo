@@ -105,30 +105,24 @@ export default function LoadingOverlay() {
     const body = document.body;
 
     if (visible) {
-      // Bloquer le scroll partout
+      // Bloquer le scroll partout (sans position:fixed qui casse les éléments fixed enfants)
       html.style.overflow = 'hidden';
       body.style.overflow = 'hidden';
-      html.style.position = 'fixed';
-      html.style.width = '100%';
-      html.style.height = '100%';
-      body.style.position = 'fixed';
-      body.style.width = '100%';
-      body.style.height = '100%';
+      body.style.touchAction = 'none';
+      body.style.overscrollBehavior = 'none';
       if (scrollRoot) {
         scrollRoot.style.overflow = 'hidden';
+        scrollRoot.style.touchAction = 'none';
       }
     } else {
       // Restaurer le scroll
       html.style.overflow = '';
-      html.style.position = '';
-      html.style.width = '';
-      html.style.height = '';
       body.style.overflow = '';
-      body.style.position = '';
-      body.style.width = '';
-      body.style.height = '';
+      body.style.touchAction = '';
+      body.style.overscrollBehavior = '';
       if (scrollRoot) {
         scrollRoot.style.overflow = '';
+        scrollRoot.style.touchAction = '';
         // Remettre le scroll en haut après le chargement
         scrollRoot.scrollTo(0, 0);
       }
@@ -137,15 +131,12 @@ export default function LoadingOverlay() {
 
     return () => {
       html.style.overflow = '';
-      html.style.position = '';
-      html.style.width = '';
-      html.style.height = '';
       body.style.overflow = '';
-      body.style.position = '';
-      body.style.width = '';
-      body.style.height = '';
+      body.style.touchAction = '';
+      body.style.overscrollBehavior = '';
       if (scrollRoot) {
         scrollRoot.style.overflow = '';
+        scrollRoot.style.touchAction = '';
       }
     };
   }, [visible]);

@@ -36,9 +36,9 @@ const nextConfig = {
     ],
     // Optimisation automatique des images
     formats: ['image/avif', 'image/webp'], // AVIF d'abord (meilleure compression)
-    deviceSizes: [640, 750, 828, 1080, 1200, 1920], // Tailles d'écran courantes (retiré 2048/3840 inutiles)
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840], // Tailles d'écran courantes
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384], // Tailles d'images pour les composants
-    qualities: [25, 32, 38, 50, 60, 75], // Qualités optimisées
+    qualities: [25, 32, 38, 50, 60, 75, 90], // Support qualités Sanity + optimisation
     minimumCacheTTL: 31536000, // Cache 1 an (images Sanity sont immutables)
     dangerouslyAllowSVG: true, // Permettre les SVG
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;", // Sécurité
