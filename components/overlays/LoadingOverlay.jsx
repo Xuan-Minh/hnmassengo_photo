@@ -98,6 +98,58 @@ export default function LoadingOverlay() {
     }
   }, [visible]);
 
+  // Bloquer le scroll sur body + html + scroll-root quand le loading est visible
+  useEffect(() => {
+    const scrollRoot = document.getElementById('scroll-root');
+    const html = document.documentElement;
+    const body = document.body;
+
+    if (visible) {
+      // Bloquer le scroll partout
+      html.style.overflow = 'hidden';
+      body.style.overflow = 'hidden';
+      html.style.position = 'fixed';
+      html.style.width = '100%';
+      html.style.height = '100%';
+      body.style.position = 'fixed';
+      body.style.width = '100%';
+      body.style.height = '100%';
+      if (scrollRoot) {
+        scrollRoot.style.overflow = 'hidden';
+      }
+    } else {
+      // Restaurer le scroll
+      html.style.overflow = '';
+      html.style.position = '';
+      html.style.width = '';
+      html.style.height = '';
+      body.style.overflow = '';
+      body.style.position = '';
+      body.style.width = '';
+      body.style.height = '';
+      if (scrollRoot) {
+        scrollRoot.style.overflow = '';
+        // Remettre le scroll en haut après le chargement
+        scrollRoot.scrollTo(0, 0);
+      }
+      window.scrollTo(0, 0);
+    }
+
+    return () => {
+      html.style.overflow = '';
+      html.style.position = '';
+      html.style.width = '';
+      html.style.height = '';
+      body.style.overflow = '';
+      body.style.position = '';
+      body.style.width = '';
+      body.style.height = '';
+      if (scrollRoot) {
+        scrollRoot.style.overflow = '';
+      }
+    };
+  }, [visible]);
+
   // Charge la liste des images depuis Sanity via l'API et les optimise
   const fetchedOnceRef = useRef(false);
   useEffect(() => {
@@ -292,9 +344,14 @@ export default function LoadingOverlay() {
       transition={{ duration: 0.8, ease: 'easeInOut' }}
       onAnimationComplete={() => {
         if (isExiting) {
+          // Remettre le scroll en haut AVANT de rendre le contenu visible
+          const scrollRoot = document.getElementById('scroll-root');
+          if (scrollRoot) scrollRoot.scrollTo(0, 0);
+          window.scrollTo(0, 0);
+
           setVisible(false);
           setIsExiting(false);
-          setIsReTrigger(false); // Réinitialiser pour la prochaine fois
+          setIsReTrigger(false);
           emitEvent(EVENTS.INTRO_DISMISSED);
         }
       }}
