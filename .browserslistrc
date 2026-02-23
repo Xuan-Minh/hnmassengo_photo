@@ -1,0 +1,11 @@
+# Cible les navigateurs modernes (2020+)
+# Réduit les polyfills Babel de ~49 KiB
+# Support: Chrome 85+, Firefox 78+, Safari 13.1+, Edge 85+
+
+last 2 versions
+not dead
+not < 0.2%
+
+# Exclure les navigateurs anciens (IE 11, etc.)
+not IE 11
+not IE_Mob 11

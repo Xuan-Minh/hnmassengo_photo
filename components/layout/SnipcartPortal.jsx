@@ -6,17 +6,46 @@ export default function SnipcartPortal({ apiKey }) {
   const [loadScript, setLoadScript] = useState(false);
 
   useEffect(() => {
-    // Charger Snipcart en background avec requestIdleCallback
-    // pour ne pas bloquer les interactions utilisateur critiques
+    // Déclencher le chargement de Snipcart seulement si:
+    // 1. L'user accède à la page /shop
+    // 2. L'user clique sur un élément avec data-snipcart-item
+    // 3. 20s timeouts pour les users sur d'autres pages (fallback)
+
+    const currentPath = window.location.pathname;
+    
+    // Si on est sur la page shop, charger immédiatement
+    if (currentPath.includes('/shop') || currentPath.includes('snipcart-products')) {
+      setLoadScript(true);
+      return;
+    }
+
+    // Sinon charger avec timeout plus long + event listeners
+    let timeoutId;
+    
+    // Charger si l'user clique sur un élément Snipcart
+    const handleSnipcartClick = (e) => {
+      if (e.target.closest('[data-snipcart-item], [data-snipcart-btn]')) {
+        setLoadScript(true);
+      }
+    };
+    
+    document.addEventListener('click', handleSnipcartClick);
+    
+    // Fallback: charger après 20s (lazy mais sûr)
     if ('requestIdleCallback' in window) {
       const idleId = requestIdleCallback(() => setLoadScript(true), {
-        timeout: 5000,
+        timeout: 20000, // Augmenté de 5s à 20s
       });
-      return () => cancelIdleCallback(idleId);
+      return () => {
+        cancelIdleCallback(idleId);
+        document.removeEventListener('click', handleSnipcartClick);
+      };
     } else {
-      // Fallback pour les navigateurs sans requestIdleCallback
-      const timeoutId = setTimeout(() => setLoadScript(true), 3000);
-      return () => clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => setLoadScript(true), 20000);
+      return () => {
+        clearTimeout(timeoutId);
+        document.removeEventListener('click', handleSnipcartClick);
+      };
     }
   }, []);
 
