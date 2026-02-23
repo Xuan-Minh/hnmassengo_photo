@@ -53,14 +53,16 @@ export default function HomeImageRotation({
     return () => clearInterval(id);
   }, [images, interval, isNarrowLayout]);
 
-  // Quand l'image change, on applique la nouvelle position (après le fade)
+  // Appliquer la position APRÈS que l'image ait disparu (fade out) mais AVANT qu'elle réapparaisse
   useEffect(() => {
     if (pendingPosition) {
-      setTimeout(() => {
+      // Délai = durée du fade out (0.8s)
+      const timer = setTimeout(() => {
         setImgPosition(pendingPosition);
         lastPosition.current = pendingPosition;
         setPendingPosition(null);
-      }, 1200); // durée du fade (doit matcher AnimatePresence)
+      }, 800);
+      return () => clearTimeout(timer);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [index]);
@@ -164,7 +166,7 @@ export default function HomeImageRotation({
             initial={index === 0 ? { opacity: 1 } : { opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: index === 0 ? 0 : 1.2, ease: 'easeOut' }}
+            transition={{ duration: index === 0 ? 0 : 0.8, ease: 'easeInOut' }}
           >
             <Image
               src={imgSrc}
