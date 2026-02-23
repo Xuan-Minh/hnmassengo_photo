@@ -3,6 +3,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { useTranslations } from 'next-intl';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
+import { getSanityImageBase } from '../../lib/imageUtils';
 
 function getProjectDateMs(project) {
   const raw = project?.date;
@@ -169,7 +170,7 @@ export default function GalleryGridMore({
                   onClick={() => handleImageClick(imgData.project)}
                 >
                   <Image
-                    src={imgData.src}
+                    src={getSanityImageBase(imgData.src)}
                     alt={imgData.name}
                     width={400}
                     height={300}

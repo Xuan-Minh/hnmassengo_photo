@@ -21,49 +21,10 @@ const nextConfig = {
   productionBrowserSourceMaps: false, // Désactiver les source maps en production pour réduire taille
   poweredByHeader: false, // Retirer header X-Powered-By
 
-  // Optimisation du bundling
+  // Optimisation du bundling - configuration simplifiée
   webpack: (config, { isServer }) => {
-    if (!isServer) {
-      config.optimization = {
-        ...config.optimization,
-        runtimeChunk: 'single',
-        splitChunks: {
-          chunks: 'all',
-          cacheGroups: {
-            default: false,
-            vendors: false,
-            // Vendor chunk séparé pour meilleur caching
-            vendor: {
-              filename: 'static/chunks/vendor.js',
-              test: /node_modules/,
-              name: 'vendor',
-              priority: 10,
-              reuseExistingChunk: true,
-              enforce: true,
-            },
-            // Librairies communes
-            common: {
-              minChunks: 2,
-              priority: 5,
-              reuseExistingChunk: true,
-              filename: 'static/chunks/common.js',
-            },
-            framer: {
-              test: /[\\/]node_modules[\\/](framer-motion)/,
-              name: 'framer-motion',
-              priority: 15,
-              reuseExistingChunk: true,
-            },
-            react: {
-              test: /[\\/]node_modules[\\/](react|react-dom)/,
-              name: 'react',
-              priority: 20,
-              reuseExistingChunk: true,
-            },
-          },
-        },
-      };
-    }
+    // Utiliser la configuration par défaut de Next.js sans cache groups personnalisés
+    // qui peuvent causer des chunks manquants
     return config;
   },
   images: {
@@ -77,12 +38,14 @@ const nextConfig = {
     formats: ['image/avif', 'image/webp'], // AVIF d'abord (meilleure compression)
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840], // Tailles d'écran courantes
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384], // Tailles d'images pour les composants
+    qualities: [25, 32, 38, 50, 60, 75, 90], // Support qualités Sanity + optimisation
     minimumCacheTTL: 31536000, // Cache 1 an (images Sanity sont immutables)
     dangerouslyAllowSVG: true, // Permettre les SVG
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;", // Sécurité
   },
   experimental: {
-    optimizePackageImports: ['framer-motion', '@portabletext/react'],
+    // Désactiver optimizePackageImports qui peut causer des chunks manquants
+    // optimizePackageImports: ['framer-motion', '@portabletext/react'],
   },
   async headers() {
     return [

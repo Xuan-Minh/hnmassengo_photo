@@ -71,7 +71,11 @@ export default function HomeImageRotation({
     if (!raw) return '';
 
     // URL absolue (ex: Sanity CDN)
-    if (/^https?:\/\//i.test(raw)) return raw;
+    if (/^https?:\/\//i.test(raw)) {
+      // Nettoie les paramètres Sanity (w, q, auto=format) pour éviter les conflits avec Next.js Image
+      // Next.js ajoutera ses propres paramètres via quality={38} et sizes
+      return raw.split('?')[0]; // Garder simplement l'URL de base
+    }
 
     // Normalise les chemins "public"
     const withoutLeading = raw.replace(/^\/+/, '');

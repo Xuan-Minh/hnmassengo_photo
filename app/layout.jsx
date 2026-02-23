@@ -115,35 +115,8 @@ export default function RootLayout({ children }) {
           />
         ))}
         {/* Charger Snipcart CSS de manière non-bloquante */}
-        <link rel="preload" href="/styles/snipcart-local.css" as="style" />
-        <link rel="preload" href="/styles/snipcart-custom.css" as="style" />
-        <noscript>
-          <link rel="stylesheet" href="/styles/snipcart-local.css" />
-          <link rel="stylesheet" href="/styles/snipcart-custom.css" />
-        </noscript>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              if (document.readyState === 'loading') {
-                document.addEventListener('DOMContentLoaded', function() {
-                  ['snipcart-local.css', 'snipcart-custom.css'].forEach((file) => {
-                    const link = document.createElement('link');
-                    link.rel = 'stylesheet';
-                    link.href = '/styles/' + file;
-                    document.head.appendChild(link);
-                  });
-                });
-              } else {
-                ['snipcart-local.css', 'snipcart-custom.css'].forEach((file) => {
-                  const link = document.createElement('link');
-                  link.rel = 'stylesheet';
-                  link.href = '/styles/' + file;
-                  document.head.appendChild(link);
-                });
-              }
-            `,
-          }}
-        />
+        <link rel="stylesheet" href="/styles/snipcart-local.css" />
+        <link rel="stylesheet" href="/styles/snipcart-custom.css" />
       </head>
       <body
         className={[lexend.className, lexend.variable, playfair.variable].join(

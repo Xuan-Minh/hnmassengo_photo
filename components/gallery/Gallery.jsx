@@ -54,7 +54,11 @@ export default function Gallery() {
     if (overlayOpen || selectedProject) {
       scrollRoot.style.overflow = 'hidden';
     } else {
-      scrollRoot.style.overflow = '';
+      // Délai pour attendre la fin de l'animation de fermeture (1s)
+      const timer = setTimeout(() => {
+        scrollRoot.style.overflow = '';
+      }, 1000);
+      return () => clearTimeout(timer);
     }
 
     return () => {
@@ -769,7 +773,7 @@ export default function Gallery() {
                                   setListImageError(true);
                                 }
                               }}
-                              onLoadingComplete={() => {
+                              onLoad={() => {
                                 // Vérifier que c'est toujours la bonne image
                                 if (
                                   currentImageVersionRef.current ===
