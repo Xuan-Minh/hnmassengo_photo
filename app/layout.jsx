@@ -1,7 +1,6 @@
 import '../globals.css';
-
 import { Lexend, Playfair_Display } from 'next/font/google';
-import ErrorBoundaryBase from '../components/layout/ErrorBoundaryBase';
+import GlobalErrorBoundary from '../components/layout/GlobalErrorBoundary';
 import StructuredData from '../lib/metadata';
 import React from 'react';
 
@@ -120,9 +119,7 @@ export default function RootLayout({ children }) {
         )}
         suppressHydrationWarning
       >
-        <ErrorBoundaryBase>
-          {children}
-        </ErrorBoundaryBase>
+        <GlobalErrorBoundary>{children}</GlobalErrorBoundary>
       </body>
     </html>
   );
