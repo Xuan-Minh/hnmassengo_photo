@@ -2,7 +2,7 @@
 import dynamic from 'next/dynamic';
 import { useParams } from 'next/navigation';
 import HomePresentation from '../../components/home/HomePresentation';
-import {
+import ContactOverlay, {
   ContactContent,
   ContactMarquee,
 } from '../../components/overlays/ContactOverlay';
@@ -10,17 +10,7 @@ import HomeSection from '../../components/home/HomeSection';
 import { motion } from 'framer-motion';
 import { useFadeInOnScreen } from '../../lib/hooks';
 
-// Lazy-load ContactOverlay (modal, non-critique pour LCP)
-const ContactOverlay = dynamic(
-  () => import('../../components/overlays/ContactOverlay'),
-  {
-    ssr: false,
-    loading: () => null, // Pas de fallback visible
-  }
-);
-
 import Gallery from '../../components/gallery/Gallery';
-
 const Blog = dynamic(() => import('../../components/blog/Blog'), {
   ssr: true,
 });

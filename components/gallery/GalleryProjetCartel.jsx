@@ -498,7 +498,6 @@ export default function GalleryProjetCartel({ project, onClose }) {
         aria-hidden="true"
       ></motion.div>
       <motion.section
-        // MODIFICATION : Utilisation de h-[100dvh] et w-full ici aussi pour stabiliser l'UI
         className="fixed inset-0 h-[100dvh] w-full bg-background z-50 flex flex-col md:flex-row shadow-2xl"
         initial={{ x: '100%' }}
         animate={{ x: 0 }}
