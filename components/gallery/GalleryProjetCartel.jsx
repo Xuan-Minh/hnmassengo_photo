@@ -167,7 +167,7 @@ function CustomLightbox({ open, onClose, images, project }) {
   return (
     <motion.div
       // MODIFICATION : Utilisation de h-[100dvh] pour garantir que le footer reste visible
-      className="fixed inset-0 h-[100dvh] w-full z-[60] bg-[#1a1a1a] text-[#e5e5e5] font-playfair flex flex-col overflow-hidden"
+      className="fixed inset-0 h-[100dvh] w-full z-[60] bg-blackCustom text-[#e5e5e5] font-playfair flex flex-col overflow-hidden"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
@@ -184,7 +184,7 @@ function CustomLightbox({ open, onClose, images, project }) {
       </div>
 
       {/* Contenu principal (MOBILE) */}
-      <div className="flex-1 flex flex-col w-full relative bg-[#1a1a1a] md:hidden min-h-0">
+      <div className="flex-1 flex flex-col w-full relative bg-blackCustom md:hidden min-h-0">
         <div
           className="absolute left-0 top-14 bottom-12 w-[20%] z-30"
           onClick={() => goToIndex(currentIndex - 1)}
@@ -353,7 +353,7 @@ function CustomLightbox({ open, onClose, images, project }) {
       </div>
 
       {/* Pied de page */}
-      <footer className="w-full flex-shrink-0 border-t border-whiteCustom/20 px-8 md:px-16 py-6 flex items-center justify-between mt-auto">
+      <footer className="hidden md:flex w-full flex-shrink-0 border-t border-whiteCustom/20 px-8 md:px-16 py-6 items-center justify-between mt-auto">
         <div className="text-xl italic">{project.coords}</div>
         <div className="text-xl">{project.name}</div>
       </footer>

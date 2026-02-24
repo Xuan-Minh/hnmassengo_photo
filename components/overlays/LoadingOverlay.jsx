@@ -3,6 +3,8 @@ import { useEffect, useMemo, useRef, useState, useLayoutEffect } from 'react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import { EVENTS, emitEvent, addEventHandler } from '../../lib/events';
+import { buildSanityImageUrl } from '../../lib/imageUtils';
+import { getOptimizedImageParams } from '../../lib/hooks';
 
 // Hook pour détecter si c'est mobile (évite hydration mismatch)
 function useIsMobile() {
@@ -179,7 +181,12 @@ export default function LoadingOverlay() {
     }
 
     // Extraire seulement les URLs (pas les objets complets)
-    const urls = filtered.map(img => img.url);
+    const urls = filtered.map(img =>
+      buildSanityImageUrl(img.url, {
+        ...getOptimizedImageParams('loading'),
+        auto: 'format',
+      })
+    );
     setImageSources(urls);
   }, [isMobile, imageMetadata]);
 
