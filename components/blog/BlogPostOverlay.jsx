@@ -30,7 +30,7 @@ export default function BlogPostOverlay({ post, onClose, onPrevious, onNext }) {
               {/* Date + Title - Left aligned */}
               <div className="mb-8 flex flex-col items-start">
                 {/* Date on 2 lines */}
-                <div className="text-4xl md:text-5xl lg:text-6xl font-norma text-accent  leading-[0.85]">
+                <div className="text-4xl md:text-5xl lg:text-6xl font-normal text-whiteCustom/60 leading-[0.85]">
                   {post.date}
                 </div>
                 {/* Title separate */}
@@ -38,7 +38,7 @@ export default function BlogPostOverlay({ post, onClose, onPrevious, onNext }) {
                   className="text-3xl md:text-4xl lg:text-5xl italic font-normal leading-[0.85] mt-2"
                   id="blog-post-title"
                 >
-                  {post.title}
+                  "{post.title}"
                 </h1>
               </div>
 
@@ -76,22 +76,21 @@ export default function BlogPostOverlay({ post, onClose, onPrevious, onNext }) {
             </div>
           </div>
         ) : (
-          // Mise en page SANS Image (Contenu centré)
-          <div className="flex-1 flex items-center justify-center w-full h-full px-16 md:px-24 py-20 overflow-hidden">
-            <div className="max-w-3xl w-full">
+          // Mise en page SANS Image (même structure que avec image, contenu centré)
+          <div className="flex-1 flex items-start justify-center w-full h-full px-16 md:px-24 py-20 overflow-y-auto">
+            <div className="max-w-5xl w-full">
               {/* Date + Title - Left aligned */}
-              <div className="mb-12">
-                {/* Date on 2 lines */}
-                <div className="text-7xl md:text-8xl lg:text-9xl font-normal leading-[0.85]">
-                  {post.date?.split(' ')[0] || '12'}{' '}
-                  {post.date?.split(' ')[1] || 'oct.'}
-                </div>
-                <div className="text-7xl md:text-8xl lg:text-9xl font-normal leading-[0.85]">
-                  {post.date?.split(' ')[2] || '2025'}
+              <div className="mb-8 flex flex-col items-start">
+                {/* Date */}
+                <div className="text-4xl md:text-5xl lg:text-6xl font-normal text-whiteCustom/60 leading-[0.85]">
+                  {post.date}
                 </div>
                 {/* Title separate */}
-                <h1 className="text-7xl md:text-8xl lg:text-9xl italic font-normal leading-[0.85] mt-0">
-                  {post.title}
+                <h1
+                  className="text-3xl md:text-4xl lg:text-5xl italic font-normal leading-[0.85] mt-2"
+                  id="blog-post-title"
+                >
+                  &ldquo;{post.title}&rdquo;
                 </h1>
               </div>
 
@@ -124,7 +123,7 @@ export default function BlogPostOverlay({ post, onClose, onPrevious, onNext }) {
             className="text-base text-whiteCustom/60 hover:text-whiteCustom transition-colors flex items-center gap-2"
             disabled={!onPrevious}
           >
-            <span>←</span> previous
+            previous
           </button>
 
           <button

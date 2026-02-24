@@ -114,14 +114,18 @@ export default function GalleryGridMore({
       exit={{ x: '100%' }}
       transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
     >
-      {/* Header */}
-      <div className="relative w-full h-24 flex items-center justify-center px-8 md:px-16 shrink-0">
+      {/* Bouton Back */}
+      <div className="absolute top-8 left-8 md:top-16 md:left-16 z-50">
         <button
           onClick={onClose}
-          className="absolute left-8 md:left-16 text-lg font-playfair text-accent hover:text-blackCustom transition-colors"
+          className="text-lg font-playfair text-accent hover:text-blackCustom transition-colors"
         >
-          {t('back')}
+          back
         </button>
+      </div>
+
+      {/* Header */}
+      <div className="relative w-full h-24 flex items-center justify-center px-8 md:px-16 shrink-0">
         <h2 className="text-4xl font-playfair italic text-blackCustom/20">
           {t('title')}
         </h2>

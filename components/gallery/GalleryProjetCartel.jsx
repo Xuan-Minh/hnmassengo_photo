@@ -183,8 +183,8 @@ function CustomLightbox({ open, onClose, images, project }) {
       exit={{ opacity: 0 }}
       transition={{ duration: 0.3 }}
     >
-      {/* En-tête */}
-      <div className="absolute top-8 landscape:top-2 left-8 md:left-16 z-40">
+      {/* En-tête (mobile uniquement — desktop a son propre bouton dans la zone contenu) */}
+      <div className="absolute top-8 landscape:top-2 left-8 z-40 md:hidden">
         <button
           onClick={onClose}
           className="text-lg hover:text-white transition-colors"
@@ -257,6 +257,15 @@ function CustomLightbox({ open, onClose, images, project }) {
       </div>
       {/* Main Content (DESKTOP) : version d'origine */}
       <div className="hidden md:flex flex-1 relative items-center justify-center overflow-hidden w-full h-full">
+        {/* Bouton back — positionné avec p-16 identique au cartel */}
+        <div className="absolute top-0 left-0 p-16 z-40">
+          <button
+            onClick={onClose}
+            className="font-playfair text-lg hover:text-white transition-colors"
+          >
+            back
+          </button>
+        </div>
         {/* Image précédente */}
         <div className="absolute left-8 top-1/2 -translate-y-1/2 h-[50%] w-[15%] opacity-40 blur-[2px] pointer-events-none">
           <Image

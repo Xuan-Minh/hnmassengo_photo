@@ -45,7 +45,7 @@ export default function BaseOverlay({
       aria-labelledby={ariaLabelledBy}
     >
       {/* Bouton Back */}
-      <div className="absolute top-8 left-8 md:left-16 z-50">
+      <div className="absolute top-8 left-8 md:top-16 md:left-16 z-50">
         <button
           onClick={onClose}
           className="text-lg text-whiteCustom/60 hover:text-whiteCustom transition-colors"

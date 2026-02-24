@@ -21,13 +21,14 @@ export default function BlogPostItem({ post, onClick }) {
             />
           </div>
           <div className="flex-1 text-whiteCustom flex flex-col justify-start">
-            <h3 className="text-4xl lg:text-3xl font-playfair italic mb-2">
-              {post.title}
+            <h3 className="text-3xl lg:text-3xl font-playfair italic mb-2">
+              "{post.title}"
             </h3>
-            <div className="text-xl lg:text-xl font-playfair mb-4">
-              {post.date}
+            <div className="text-lg lg:text-xl font-playfair mb-4">
+              - {post.date}
             </div>
-            <p className="sm:text-xl lg:text-base font-playfair text-whiteCustom/80 leading-loose overflow-hidden text-ellipsis [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:4] lg:[-webkit-line-clamp:3]">
+
+            <p className="sm:text-lg lg:text-base font-playfair text-whiteCustom/80 leading-loose overflow-hidden text-ellipsis [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:4] lg:[-webkit-line-clamp:3]">
               {post.text}
             </p>
           </div>
@@ -37,13 +38,13 @@ export default function BlogPostItem({ post, onClick }) {
       {post.layout === 'image-right' && post.image && (
         <div className="flex flex-col lg:flex-row gap-4 items-start">
           <div className="flex-1 text-whiteCustom order-2 lg:order-1 flex flex-col justify-start">
-            <h3 className="text-2xl lg:text-3xl font-playfair italic mb-2">
-              {post.title}
+            <h3 className="text-3xl lg:text-3xl font-playfair italic mb-2">
+              "{post.title}"
             </h3>
             <div className="text-lg lg:text-xl font-playfair mb-4">
-              {post.date}
+              - {post.date}
             </div>
-            <p className="text-xl lg:text-base font-playfair text-whiteCustom/80 leading-loose overflow-hidden text-ellipsis [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:4] lg:[-webkit-line-clamp:3]">
+            <p className="text-lg lg:text-base font-playfair text-whiteCustom/80 leading-loose overflow-hidden text-ellipsis [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:4] lg:[-webkit-line-clamp:3]">
               {post.text}
             </p>
           </div>
@@ -64,14 +65,14 @@ export default function BlogPostItem({ post, onClick }) {
       {(post.layout === 'text-only' || !post.image) && (
         <div className="text-whiteCustom">
           <div className="flex flex-wrap items-baseline gap-4 mb-4">
-            <h3 className="text-2xl lg:text-3xl font-playfair italic">
-              {post.title}
+            <h3 className="text-3xl lg:text-3xl font-playfair italic">
+              "{post.title}"
             </h3>
             <span className="text-lg lg:text-xl font-playfair">
-              {post.date}
+              - {post.date}
             </span>
           </div>
-          <p className="text-xl lg:text-base font-playfair text-whiteCustom/80 leading-loose max-w-3xl">
+          <p className="text-lg lg:text-base font-playfair text-whiteCustom/80 leading-loose max-w-3xl">
             {post.text}
           </p>
         </div>
