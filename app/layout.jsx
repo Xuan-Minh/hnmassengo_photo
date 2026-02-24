@@ -83,7 +83,7 @@ export default function RootLayout({ children }) {
   ];
 
   return (
-    <html lang="fr">
+    <html lang="fr" translate="no" suppressHydrationWarning>
       <head>
         <meta name="theme-color" content="#222222" />
         {/* Preconnect + DNS Prefetch para Third-Party Resources */}

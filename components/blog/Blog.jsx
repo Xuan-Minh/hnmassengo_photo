@@ -165,6 +165,7 @@ export default function Blog() {
       <AnimatePresence>
         {archiveOpen && (
           <BlogArchives
+            key="blog-archives-modal" // <--- AJOUT ICI
             posts={posts}
             onClose={() => setArchiveOpen(false)}
             onPostClick={post => setSelectedPost(post)}
@@ -175,6 +176,7 @@ export default function Blog() {
       <AnimatePresence>
         {selectedPost && (
           <BlogPostOverlay
+            key={`blog-post-${selectedPost.id}`} // <--- AJOUT ICI
             post={selectedPost}
             onClose={() => {
               setSelectedPost(null);

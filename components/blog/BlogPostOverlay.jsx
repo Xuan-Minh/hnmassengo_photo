@@ -1,7 +1,7 @@
 'use client';
 import Image from 'next/image';
 import { useState } from 'react';
-import { AnimatePresence } from 'framer-motion';
+// <-- L'import de AnimatePresence a été supprimé ici car il ne sert plus
 import ContactOverlay from '../overlays/ContactOverlay';
 import BaseOverlay from '../overlays/BaseOverlay';
 import { useTranslations } from 'next-intl';
@@ -132,15 +132,12 @@ export default function BlogPostOverlay({ post, onClose, onPrevious, onNext }) {
         </div>
       </BaseOverlay>
 
-      <AnimatePresence>
-        {contactOpen && (
-          <ContactOverlay
-            open={contactOpen}
-            onClose={() => setContactOpen(false)}
-            defaultSubject={contactSubject}
-          />
-        )}
-      </AnimatePresence>
+      {/* CORRECTION : On retire l'AnimatePresence ici car ContactOverlay gère déjà sa propre animation */}
+      <ContactOverlay
+        open={contactOpen}
+        onClose={() => setContactOpen(false)}
+        defaultSubject={contactSubject}
+      />
     </>
   );
 }
