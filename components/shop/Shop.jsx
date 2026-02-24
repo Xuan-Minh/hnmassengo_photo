@@ -367,6 +367,7 @@ export default function Shop() {
           <AnimatePresence>
             {(cartOpen || isDesktop) && (
               <motion.div
+                key="snipcart-dropdown"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
@@ -456,6 +457,7 @@ export default function Shop() {
       <AnimatePresence>
         {selectedProduct && (
           <ShopOverlay
+            key={`shop-overlay-${selectedProduct.id}`}
             isOpen={!!selectedProduct}
             product={selectedProduct}
             locale={locale}

@@ -407,10 +407,12 @@ export default function ContactOverlay({
   return (
     <AnimatePresence>
       {open && (
-        <section
+        <motion.section
+          key="contact-overlay-modal"
           id="info-overlay"
           className="fixed inset-0 z-[200]"
           aria-label={t('overlay.ariaLabel')}
+          exit={{ opacity: 0, transition: { delay: 0.5, duration: 0.1 } }}
         >
           <motion.button
             type="button"
@@ -449,7 +451,7 @@ export default function ContactOverlay({
             {/* Marquee en position relative - fait partie du flux */}
             <ContactMarquee mode="inline" />
           </motion.div>
-        </section>
+        </motion.section>
       )}
     </AnimatePresence>
   );
