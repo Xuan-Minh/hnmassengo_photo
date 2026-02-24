@@ -1,5 +1,4 @@
 'use client';
-import dynamic from 'next/dynamic';
 import { useParams } from 'next/navigation';
 import HomePresentation from '../../components/home/HomePresentation';
 import ContactOverlay, {
@@ -11,13 +10,8 @@ import { motion } from 'framer-motion';
 import { useFadeInOnScreen } from '../../lib/hooks';
 
 import Gallery from '../../components/gallery/Gallery';
-const Blog = dynamic(() => import('../../components/blog/Blog'), {
-  ssr: true,
-});
-
-const Shop = dynamic(() => import('../../components/shop/Shop'), {
-  ssr: true,
-});
+import Blog from '../../components/blog/Blog';
+import Shop from '../../components/shop/Shop';
 
 export default function HomePage() {
   const { locale } = useParams();
