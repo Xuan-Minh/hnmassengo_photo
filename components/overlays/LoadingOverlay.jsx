@@ -368,6 +368,7 @@ export default function LoadingOverlay() {
                 src={imageSrc}
                 alt=""
                 fill
+                unoptimized
                 className="absolute inset-0 w-full h-full object-cover z-0"
                 draggable={false}
                 fetchPriority={index === 0 ? 'high' : 'auto'}
