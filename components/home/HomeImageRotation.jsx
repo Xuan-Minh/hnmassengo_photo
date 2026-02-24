@@ -151,17 +151,14 @@ export default function HomeImageRotation({
               src={imgSrc}
               alt="Han-Noah profile illustration"
               fill
-              sizes="(max-width: 1024px) 40vh, 55vh"
+              // On utilise 'vw' (viewport width) qui est l'unité standard pour l'optimisation
+              sizes="(max-width: 1024px) 80vw, 40vw"
               className="object-contain"
               priority
               fetchPriority="high"
-              quality={38}
-              onLoad={() => {
-                setIsCurrentLoaded(true);
-              }}
+              quality={50} // On peut monter un peu la qualité ici car c'est l'image principale
+              onLoad={() => setIsCurrentLoaded(true)}
               onError={() => {
-                // En cas d'échec de chargement, on avance quand même
-                // pour ne pas bloquer le carrousel indéfiniment.
                 setIsCurrentLoaded(true);
               }}
             />

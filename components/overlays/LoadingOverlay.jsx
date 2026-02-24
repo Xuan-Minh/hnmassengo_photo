@@ -222,6 +222,8 @@ export default function LoadingOverlay() {
 
     // Précharger toutes les images
     imageSources.forEach((src, index) => {
+      if (index > 2) return;
+
       const img = typeof window !== 'undefined' ? new window.Image() : null;
       if (!img) return;
 
