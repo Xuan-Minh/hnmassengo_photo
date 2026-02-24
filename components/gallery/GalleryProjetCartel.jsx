@@ -2,13 +2,15 @@
 import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import Image from 'next/image';
 import PropTypes from 'prop-types';
-import dynamic from 'next/dynamic';
-import { motion, animate, useMotionValue } from 'framer-motion';
+// IMPORT MODIFIÉ : On importe AnimatePresence normalement pour activer le SSR
+import {
+  motion,
+  animate,
+  useMotionValue,
+  AnimatePresence,
+} from 'framer-motion';
 import { useTranslations } from 'next-intl';
-const AnimatePresence = dynamic(
-  () => import('framer-motion').then(mod => mod.AnimatePresence),
-  { ssr: false }
-);
+
 import TextReveal from '../ui/TextReveal';
 import { buildSanityImageUrl } from '../../lib/imageUtils';
 import { getOptimizedImageParams } from '../../lib/hooks';
@@ -39,8 +41,6 @@ function CustomLightbox({ open, onClose, images, project }) {
         ((nextIndex % images.length) + images.length) % images.length;
       const nextSrc = getDisplaySrcForIndex(safeIndex);
 
-      // Important: on met à jour l'état de chargement AVANT le render suivant
-      // pour éviter un frame d'opacité à 0 quand l'image est déjà décodée/cachée.
       setHasCurrentError(false);
       setIsCurrentLoaded(decodedSrcsRef.current.has(nextSrc));
       setCurrentIndex(safeIndex);
@@ -65,14 +65,9 @@ function CustomLightbox({ open, onClose, images, project }) {
   useEffect(() => {
     if (!open) return;
     setHasCurrentError(false);
-
-    // Évite un flash/blank si l'image est déjà en cache (et décodée).
     setIsCurrentLoaded(decodedSrcsRef.current.has(currentDisplaySrc));
   }, [open, currentIndex, currentDisplaySrc]);
 
-  // Précharger réellement la version "centre" (haute résolution) et les voisins.
-  // Les images sur les côtés sont souvent de plus petite taille / URL différente,
-  // donc elles ne garantissent pas que la version centrale soit déjà en cache.
   useEffect(() => {
     if (!open) return;
     if (typeof window === 'undefined') return;
@@ -92,14 +87,11 @@ function CustomLightbox({ open, onClose, images, project }) {
         }
       };
 
-      // decode() réduit le micro délai "image visible mais pas encore rendue".
       if (typeof img.decode === 'function') {
         img
           .decode()
           .then(markReady)
-          .catch(() => {
-            // Certaines images peuvent ne pas supporter decode() selon navigateur/format.
-          });
+          .catch(() => {});
       } else {
         img.onload = markReady;
       }
@@ -139,7 +131,6 @@ function CustomLightbox({ open, onClose, images, project }) {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [open, onClose, images.length, currentIndex, goToIndex]);
 
-  // Gestion du swipe sur mobile
   useEffect(() => {
     if (!open || typeof window === 'undefined') return;
 
@@ -153,8 +144,6 @@ function CustomLightbox({ open, onClose, images, project }) {
       const diff = touchStart - touchEnd;
 
       if (Math.abs(diff) > 50) {
-        // Swipe à gauche: image suivante (diff > 0)
-        // Swipe à droite: image précédente (diff < 0)
         if (diff > 0) {
           goToIndex(currentIndex + 1);
         } else {
@@ -177,13 +166,14 @@ function CustomLightbox({ open, onClose, images, project }) {
 
   return (
     <motion.div
-      className="fixed inset-0 z-[60] bg-[#1a1a1a] text-[#e5e5e5] font-playfair flex flex-col"
+      // MODIFICATION : Utilisation de h-[100dvh] pour garantir que le footer reste visible
+      className="fixed inset-0 h-[100dvh] w-full z-[60] bg-[#1a1a1a] text-[#e5e5e5] font-playfair flex flex-col overflow-hidden"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.3 }}
     >
-      {/* En-tête (mobile uniquement — desktop a son propre bouton dans la zone contenu) */}
+      {/* En-tête (mobile uniquement) */}
       <div className="absolute top-8 landscape:top-2 left-8 z-40 md:hidden">
         <button
           onClick={onClose}
@@ -192,9 +182,9 @@ function CustomLightbox({ open, onClose, images, project }) {
           back
         </button>
       </div>
-      {/* Contenu principal (MOBILE) — layout optimisé pour maximiser l'image */}
-      <div className="flex-1 flex flex-col w-full relative bg-[#1a1a1a] md:hidden">
-        {/* Zones de tap navigation — gauche / droite */}
+
+      {/* Contenu principal (MOBILE) */}
+      <div className="flex-1 flex flex-col w-full relative bg-[#1a1a1a] md:hidden min-h-0">
         <div
           className="absolute left-0 top-14 bottom-12 w-[20%] z-30"
           onClick={() => goToIndex(currentIndex - 1)}
@@ -204,7 +194,6 @@ function CustomLightbox({ open, onClose, images, project }) {
           onClick={() => goToIndex(currentIndex + 1)}
         />
 
-        {/* Image container — occupe tout l'espace disponible */}
         <div
           className="flex-1 min-h-0 flex items-center justify-center px-4 pt-14 landscape:pt-2 landscape:pb-1"
           style={{
@@ -217,7 +206,7 @@ function CustomLightbox({ open, onClose, images, project }) {
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.3 }}
-            className="w-full max-h-full flex items-center justify-center"
+            className="w-full h-full flex items-center justify-center"
           >
             <Image
               src={currentDisplaySrc}
@@ -236,7 +225,6 @@ function CustomLightbox({ open, onClose, images, project }) {
           </motion.div>
         </div>
 
-        {/* Index image — remonté pour ne pas être caché par la barre de navigation mobile */}
         <div
           className="flex-shrink-0 text-center italic text-sm py-3 landscape:py-1"
           style={{
@@ -255,9 +243,9 @@ function CustomLightbox({ open, onClose, images, project }) {
           </div>
         )}
       </div>
-      {/* Main Content (DESKTOP) — structure identique au cartel (flex-col + p-16) */}
+
+      {/* Main Content (DESKTOP) */}
       <div className="hidden md:flex flex-col flex-1 min-h-0 w-full pt-16 pr-16 pl-16">
-        {/* Bouton back — en flux, exactement comme dans le cartel */}
         <div>
           <button
             onClick={onClose}
@@ -266,7 +254,6 @@ function CustomLightbox({ open, onClose, images, project }) {
             back
           </button>
         </div>
-        {/* Zone images — centrée dans l'espace restant */}
         <div className="flex-1 relative flex items-center justify-center overflow-hidden">
           {/* Image précédente */}
           <div className="absolute left-0 top-1/2 -translate-y-1/2 h-[50%] w-[15%] opacity-40 blur-[2px] pointer-events-none">
@@ -345,7 +332,6 @@ function CustomLightbox({ open, onClose, images, project }) {
             />
           </div>
 
-          {/* Contrôles de navigation - Zone gauche */}
           <div
             className="absolute left-0 top-0 h-full w-[20%] z-30 flex items-center justify-start pl-8 md:pl-0 group cursor-pointer"
             onClick={() => goToIndex(currentIndex - 1)}
@@ -355,7 +341,6 @@ function CustomLightbox({ open, onClose, images, project }) {
             </span>
           </div>
 
-          {/* Contrôles de navigation - Zone droite */}
           <div
             className="absolute right-0 top-0 h-full w-[20%] z-30 flex items-center justify-end pr-8 md:pr-0 group cursor-pointer"
             onClick={() => goToIndex(currentIndex + 1)}
@@ -366,8 +351,9 @@ function CustomLightbox({ open, onClose, images, project }) {
           </div>
         </div>
       </div>
+
       {/* Pied de page */}
-      <footer className="w-full border-t border-whiteCustom/20 px-8 md:px-16 py-6 flex items-center justify-between mt-auto">
+      <footer className="w-full flex-shrink-0 border-t border-whiteCustom/20 px-8 md:px-16 py-6 flex items-center justify-between mt-auto">
         <div className="text-xl italic">{project.coords}</div>
         <div className="text-xl">{project.name}</div>
       </footer>
@@ -409,9 +395,7 @@ function ImageMarqueeHorizontal({ images, onClick }) {
 
 // Composant pour le carrousel d'images vertical (desktop)
 function ImageMarquee({ images, onClick }) {
-  // On duplique les images pour créer une boucle parfaite
   const allImages = [...images, ...images];
-
   const trackRef = useRef(null);
   const y = useMotionValue(0);
 
@@ -425,7 +409,6 @@ function ImageMarquee({ images, onClick }) {
     const start = () => {
       if (!trackRef.current) return;
 
-      // La hauteur totale = 2x, on boucle sur la moitié
       const halfHeight = trackRef.current.scrollHeight / 2;
       if (!Number.isFinite(halfHeight) || halfHeight <= 0) return;
 
@@ -439,7 +422,6 @@ function ImageMarquee({ images, onClick }) {
       });
     };
 
-    // Attendre le layout (images) avant de mesurer
     rafId = window.requestAnimationFrame(start);
     window.addEventListener('resize', start);
 
@@ -488,7 +470,6 @@ export default function GalleryProjetCartel({ project, onClose }) {
   const t = useTranslations('gallery');
   const [lightboxOpen, setLightboxOpen] = useState(false);
 
-  // Fermeture avec la touche Echap
   useEffect(() => {
     const handleKeyDown = event => {
       if (event.key === 'Escape') {
@@ -503,9 +484,7 @@ export default function GalleryProjetCartel({ project, onClose }) {
 
   if (!project) return null;
 
-  // Placeholder pour la description
   const description = project.description || t('project.defaultDescription');
-
   const paragraphs = description.split('\n\n');
 
   return (
@@ -519,7 +498,8 @@ export default function GalleryProjetCartel({ project, onClose }) {
         aria-hidden="true"
       ></motion.div>
       <motion.section
-        className="fixed top-0 right-0 w-screen h-screen bg-background z-50 flex flex-col md:flex-row shadow-2xl"
+        // MODIFICATION : Utilisation de h-[100dvh] et w-full ici aussi pour stabiliser l'UI
+        className="fixed inset-0 h-[100dvh] w-full bg-background z-50 flex flex-col md:flex-row shadow-2xl"
         initial={{ x: '100%' }}
         animate={{ x: 0 }}
         exit={{ x: '100%' }}
@@ -528,9 +508,8 @@ export default function GalleryProjetCartel({ project, onClose }) {
         role="dialog"
         aria-labelledby="project-title"
       >
-        {/* Version Mobile : Mise en page verticale */}
+        {/* Version Mobile */}
         <div className="md:hidden w-full h-full flex flex-col relative">
-          {/* Bouton retour en position absolue */}
           <button
             onClick={onClose}
             className="absolute top-6 left-6 z-10 font-playfair text-lg text-accent hover:text-blackCustom transition-colors"
@@ -539,7 +518,6 @@ export default function GalleryProjetCartel({ project, onClose }) {
             back
           </button>
 
-          {/* Section supérieure : Marquee horizontal - 50vh */}
           <div className="h-[50vh] flex-shrink-0 flex items-center">
             <ImageMarqueeHorizontal
               images={project.images}
@@ -547,10 +525,8 @@ export default function GalleryProjetCartel({ project, onClose }) {
             />
           </div>
 
-          {/* Ligne de séparation */}
-          <div className="border-t border-blackCustom/20"></div>
+          <div className="border-t border-blackCustom/20 flex-shrink-0"></div>
 
-          {/* Section inférieure : Cartel - reste de l'espace */}
           <div className="flex-1 overflow-y-auto p-6">
             <div className="font-playfair text-lg italic text-blackCustom mb-4">
               <TextReveal text={project.coords} />
@@ -571,7 +547,7 @@ export default function GalleryProjetCartel({ project, onClose }) {
           </div>
         </div>
 
-        {/* Version Desktop : Mise en page horizontale */}
+        {/* Version Desktop */}
         <main className="hidden md:flex w-[55%] h-full border-r border-blackCustom p-16 flex-col justify-between overflow-y-auto">
           <div>
             <button
@@ -599,19 +575,19 @@ export default function GalleryProjetCartel({ project, onClose }) {
             </div>
           </section>
 
-          <div className="font-playfair text-xl italic text-blackCustom">
+          <div className="font-playfair text-xl italic text-blackCustom flex-shrink-0">
             <TextReveal text={project.coords} delay={0.5} />
           </div>
         </main>
 
-        {/* Colonne de droite : Carrousel d'images vertical (desktop uniquement) */}
+        {/* Colonne de droite : Carrousel (desktop uniquement) */}
         <ImageMarquee
           images={project.images}
           onClick={() => setLightboxOpen(true)}
         />
       </motion.section>
 
-      {/* Lightbox pour afficher toutes les images */}
+      {/* Lightbox */}
       <AnimatePresence>
         {lightboxOpen && (
           <CustomLightbox

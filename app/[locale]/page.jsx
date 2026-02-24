@@ -19,10 +19,7 @@ const ContactOverlay = dynamic(
   }
 );
 
-const Gallery = dynamic(() => import('../../components/gallery/Gallery'), {
-  ssr: false,
-  loading: () => <div className="h-screen bg-blackCustom" />,
-});
+import Gallery from '../../components/gallery/Gallery';
 
 const Blog = dynamic(() => import('../../components/blog/Blog'), {
   ssr: true,

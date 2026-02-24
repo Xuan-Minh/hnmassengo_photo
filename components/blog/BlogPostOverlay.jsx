@@ -1,11 +1,7 @@
 'use client';
 import Image from 'next/image';
 import { useState } from 'react';
-import dynamic from 'next/dynamic';
-const AnimatePresence = dynamic(
-  () => import('framer-motion').then(mod => mod.AnimatePresence),
-  { ssr: false }
-);
+import { AnimatePresence } from 'framer-motion';
 import ContactOverlay from '../overlays/ContactOverlay';
 import BaseOverlay from '../overlays/BaseOverlay';
 import { useTranslations } from 'next-intl';
