@@ -15,7 +15,7 @@ export default function HomeImageRotation({
   const [index, setIndex] = useState(0);
   const [imgPosition, setImgPosition] = useState(position);
   const lastPosition = useRef(position);
-  const [pendingPosition, setPendingPosition] = useState(null);
+  const pendingPosition = useRef(null);
   const [isNarrowLayout, setIsNarrowLayout] = useState(false);
   const loadedSrcsRef = useRef(new Set());
   const [isCurrentLoaded, setIsCurrentLoaded] = useState(false);
@@ -35,9 +35,11 @@ export default function HomeImageRotation({
   useEffect(() => {
     if (!images.length) return;
     const id = setInterval(() => {
-      // Sur mobile, toujours center. Sur desktop, alternance left/center
+      // Calcule la prochaine position mais ne l'applique pas encore.
+      // Elle sera appliquée dans onExitComplete, entre le fade-out et le fade-in.
       if (isNarrowLayout) {
-        setPendingPosition('center');
+        pendingPosition.current = 'center';
+        lastPosition.current = 'center';
       } else {
         const positions = ['left', 'center'];
         let nextPos = lastPosition.current;
@@ -46,26 +48,13 @@ export default function HomeImageRotation({
           nextPos = positions[Math.floor(Math.random() * positions.length)];
           tries++;
         }
-        setPendingPosition(nextPos);
+        pendingPosition.current = nextPos;
+        lastPosition.current = nextPos;
       }
       setIndex(prev => (prev + 1) % images.length);
     }, interval);
     return () => clearInterval(id);
   }, [images, interval, isNarrowLayout]);
-
-  // Appliquer la position APRÈS que l'image ait disparu (fade out) mais AVANT qu'elle réapparaisse
-  useEffect(() => {
-    if (pendingPosition) {
-      // Délai = durée du fade out (0.8s)
-      const timer = setTimeout(() => {
-        setImgPosition(pendingPosition);
-        lastPosition.current = pendingPosition;
-        setPendingPosition(null);
-      }, 800);
-      return () => clearTimeout(timer);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [index]);
 
   const normalizeImageSrc = value => {
     if (typeof value !== 'string') return '';
@@ -134,11 +123,10 @@ export default function HomeImageRotation({
   if (!imgSrc) {
     return null;
   }
-  // Positionnement horizontal dynamique
+  // Positionnement horizontal dynamique (changement instantané, sans slide)
   let justify = 'justify-center';
   let marginClass = '';
 
-  // En-dessous de lg, toujours centré sans marge. Sur desktop, respecter la position.
   if (isNarrowLayout) {
     justify = 'justify-center';
     marginClass = '';
@@ -159,7 +147,16 @@ export default function HomeImageRotation({
         {!isCurrentLoaded && (
           <div className="absolute inset-0 bg-gradient-to-b from-gray-200 to-gray-300 animate-pulse" />
         )}
-        <AnimatePresence mode="wait">
+        <AnimatePresence
+          mode="wait"
+          onExitComplete={() => {
+            // Applique le changement de position entre le fade-out et le fade-in
+            if (pendingPosition.current !== null) {
+              setImgPosition(pendingPosition.current);
+              pendingPosition.current = null;
+            }
+          }}
+        >
           <motion.div
             key={imgSrc}
             className="absolute inset-0"
