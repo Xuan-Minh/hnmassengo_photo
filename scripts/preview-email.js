@@ -62,7 +62,7 @@ async function previewEmail() {
   const { subject, html } = buildNewsletterEmail({
     locale: 'en',
     post,
-    siteUrl: 'https://hannoahmassengo.com',
+    siteUrl: 'https://hnmassengo.com',
     subscriberEmail: 'preview@example.com',
   });
 
