@@ -446,8 +446,8 @@ function ImageMarquee({ images, onClick }) {
             >
               <Image
                 src={buildSanityImageUrl(img, {
-                  w: 400,
-                  q: 40,
+                  w: 800,
+                  q: 60,
                   auto: 'format',
                 })}
                 alt={`Project image ${index + 1}`}
