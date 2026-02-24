@@ -109,9 +109,7 @@ export default function RootLayout({ children }) {
             key={'hreflang-' + locale.code}
           />
         ))}
-        {/* Charger Snipcart CSS de manière non-bloquante */}
-        <link rel="stylesheet" href="/styles/snipcart-local.css" />
-        <link rel="stylesheet" href="/styles/snipcart-custom.css" />
+        {/* Snipcart CSS chargé dynamiquement par SnipcartPortal pour ne pas bloquer le rendu */}
       </head>
       <body
         className={[lexend.className, lexend.variable, playfair.variable].join(

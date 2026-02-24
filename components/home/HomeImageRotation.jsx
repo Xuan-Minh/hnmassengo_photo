@@ -17,7 +17,6 @@ export default function HomeImageRotation({
   const lastPosition = useRef(position);
   const pendingPosition = useRef(null);
   const [isNarrowLayout, setIsNarrowLayout] = useState(false);
-  const loadedSrcsRef = useRef(new Set());
   const [isCurrentLoaded, setIsCurrentLoaded] = useState(false);
 
   // Détection du layout (mobile + tablette)
@@ -34,7 +33,11 @@ export default function HomeImageRotation({
 
   useEffect(() => {
     if (!images.length) return;
-    const id = setInterval(() => {
+    // Ne lance le timer que lorsque l'image courante est effectivement chargée.
+    // Cela évite de passer à l'image suivante alors que la courante n'est pas encore visible.
+    if (!isCurrentLoaded) return;
+
+    const id = setTimeout(() => {
       // Calcule la prochaine position mais ne l'applique pas encore.
       // Elle sera appliquée dans onExitComplete, entre le fade-out et le fade-in.
       if (isNarrowLayout) {
@@ -53,8 +56,8 @@ export default function HomeImageRotation({
       }
       setIndex(prev => (prev + 1) % images.length);
     }, interval);
-    return () => clearInterval(id);
-  }, [images, interval, isNarrowLayout]);
+    return () => clearTimeout(id);
+  }, [images, interval, isNarrowLayout, isCurrentLoaded]);
 
   const normalizeImageSrc = value => {
     if (typeof value !== 'string') return '';
@@ -90,35 +93,16 @@ export default function HomeImageRotation({
 
   const imgSrc = normalizeImageSrc(current);
 
-  // Au premier affichage (et à chaque changement), on évite un "pop" en faisant
-  // dépendre l'opacité du vrai état de chargement de l'image.
+  // Au premier affichage (et à chaque changement), on remet le flag à false.
+  // Le fade-in ne se déclenchera que lorsque le composant Image appellera onLoad.
   useEffect(() => {
     if (!imgSrc) return;
-    setIsCurrentLoaded(loadedSrcsRef.current.has(imgSrc));
+    setIsCurrentLoaded(false);
   }, [imgSrc]);
 
-  // Précharge l'image suivante pour que la transition soit déjà chaude.
-  useEffect(() => {
-    if (!images.length) return;
-    if (typeof window === 'undefined') return;
-    if (!imgSrc) return;
-
-    const next = normalizeImageSrc(images[(index + 1) % images.length]);
-    if (!next || loadedSrcsRef.current.has(next)) return;
-
-    const img = new window.Image();
-    img.src = next;
-    if (typeof img.decode === 'function') {
-      img
-        .decode()
-        .then(() => loadedSrcsRef.current.add(next))
-        .catch(() => {
-          // ignore
-        });
-    } else {
-      img.onload = () => loadedSrcsRef.current.add(next);
-    }
-  }, [images, index, imgSrc]);
+  // Note: pas de préchargement via new Image() — ça téléchargeait l'image brute
+  // Sanity (multi-MB) sans profiter au cache de next/Image (qui utilise /_next/image).
+  // Le timer attend onLoad, donc chaque transition est fluide sans préchargement.
 
   if (!imgSrc) {
     return null;
@@ -160,10 +144,10 @@ export default function HomeImageRotation({
           <motion.div
             key={imgSrc}
             className="absolute inset-0"
-            initial={index === 0 ? { opacity: 1 } : { opacity: 0 }}
-            animate={{ opacity: 1 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: isCurrentLoaded ? 1 : 0 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: index === 0 ? 0 : 0.8, ease: 'easeInOut' }}
+            transition={{ duration: 0.8, ease: 'easeInOut' }}
           >
             <Image
               src={imgSrc}
@@ -175,7 +159,11 @@ export default function HomeImageRotation({
               fetchPriority="high"
               quality={38}
               onLoad={() => {
-                loadedSrcsRef.current.add(imgSrc);
+                setIsCurrentLoaded(true);
+              }}
+              onError={() => {
+                // En cas d'échec de chargement, on avance quand même
+                // pour ne pas bloquer le carrousel indéfiniment.
                 setIsCurrentLoaded(true);
               }}
             />
