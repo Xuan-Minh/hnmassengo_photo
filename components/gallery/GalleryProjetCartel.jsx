@@ -255,10 +255,10 @@ function CustomLightbox({ open, onClose, images, project }) {
           </div>
         )}
       </div>
-      {/* Main Content (DESKTOP) : version d'origine */}
-      <div className="hidden md:flex flex-1 relative items-center justify-center overflow-hidden w-full h-full">
-        {/* Bouton back — positionné avec p-16 identique au cartel */}
-        <div className="absolute top-0 left-0 p-16 z-40">
+      {/* Main Content (DESKTOP) — structure identique au cartel (flex-col + p-16) */}
+      <div className="hidden md:flex flex-col flex-1 overflow-hidden w-full h-full p-16">
+        {/* Bouton back — en flux, exactement comme dans le cartel */}
+        <div className="z-40">
           <button
             onClick={onClose}
             className="font-playfair text-lg hover:text-white transition-colors"
@@ -266,110 +266,112 @@ function CustomLightbox({ open, onClose, images, project }) {
             back
           </button>
         </div>
-        {/* Image précédente */}
-        <div className="absolute left-8 top-1/2 -translate-y-1/2 h-[50%] w-[15%] opacity-40 blur-[2px] pointer-events-none">
-          <Image
-            src={buildSanityImageUrl(
-              images[(currentIndex - 1 + images.length) % images.length],
-              { w: 600, q: 40, auto: 'format' }
-            )}
-            alt={`${project.name} - Image précédente`}
-            width={300}
-            height={200}
-            className="w-full h-full object-contain"
-            sizes="(max-width: 768px) 100vw, 300px"
-            priority={false}
-            unoptimized
-          />
-        </div>
 
-        {/* Image principale */}
-        <div className="relative z-10 h-[60%] w-full max-w-[60%] flex items-center justify-center">
-          <motion.div
-            key={currentIndex}
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.3 }}
+        {/* Zone images — centrée dans l'espace restant */}
+        <div className="flex-1 relative flex items-center justify-center overflow-hidden">
+          {/* Image précédente */}
+          <div className="absolute left-0 top-1/2 -translate-y-1/2 h-[50%] w-[15%] opacity-40 blur-[2px] pointer-events-none">
+            <Image
+              src={buildSanityImageUrl(
+                images[(currentIndex - 1 + images.length) % images.length],
+                { w: 600, q: 40, auto: 'format' }
+              )}
+              alt={`${project.name} - Image précédente`}
+              width={300}
+              height={200}
+              className="w-full h-full object-contain"
+              sizes="(max-width: 768px) 100vw, 300px"
+              priority={false}
+              unoptimized
+            />
+          </div>
+
+          {/* Image principale */}
+          <div className="relative z-10 h-[60%] w-full max-w-[60%] flex items-center justify-center">
+            <motion.div
+              key={currentIndex}
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.3 }}
+            >
+              <div className="relative">
+                {!isCurrentLoaded && !hasCurrentError && (
+                  <div className="absolute inset-0 bg-white/5 animate-pulse" />
+                )}
+                {hasCurrentError && (
+                  <div className="absolute inset-0 flex items-center justify-center text-white/70">
+                    image unavailable
+                  </div>
+                )}
+                <Image
+                  src={currentDisplaySrc}
+                  alt={`${project.name} - Image ${currentIndex + 1} sur ${images.length}`}
+                  width={1100}
+                  height={800}
+                  className={`max-h-[75vh] max-w-[60vw] object-contain transition-opacity duration-300 ${
+                    isCurrentLoaded && !hasCurrentError
+                      ? 'opacity-100'
+                      : 'opacity-0'
+                  }`}
+                  sizes="(max-width: 1200px) 70vw, 1100px"
+                  unoptimized
+                  fetchPriority="high"
+                  decoding="async"
+                  onError={() => setHasCurrentError(true)}
+                  onLoad={() => setIsCurrentLoaded(true)}
+                  priority
+                />
+              </div>
+            </motion.div>
+          </div>
+
+          {/* Image suivante */}
+          <div className="absolute right-0 top-1/2 -translate-y-1/2 h-[50%] w-[15%] opacity-40 blur-[2px] pointer-events-none">
+            <Image
+              src={buildSanityImageUrl(
+                images[(currentIndex + 1) % images.length],
+                {
+                  w: 600,
+                  q: 40,
+                  auto: 'format',
+                }
+              )}
+              alt="suivante"
+              width={300}
+              height={200}
+              className="w-full h-full object-contain"
+              sizes="(max-width: 768px) 100vw, 300px"
+              priority={false}
+              unoptimized
+            />
+          </div>
+
+          {/* Contrôles de navigation - Zone gauche */}
+          <div
+            className="absolute left-0 top-0 h-full w-[20%] z-30 flex items-center justify-start pl-8 md:pl-0 group cursor-pointer"
+            onClick={() => goToIndex(currentIndex - 1)}
           >
-            <div className="relative">
-              {!isCurrentLoaded && !hasCurrentError && (
-                <div className="absolute inset-0 bg-white/5 animate-pulse" />
-              )}
-              {hasCurrentError && (
-                <div className="absolute inset-0 flex items-center justify-center text-white/70">
-                  image unavailable
-                </div>
-              )}
-              <Image
-                src={currentDisplaySrc}
-                alt={`${project.name} - Image ${currentIndex + 1} sur ${images.length}`}
-                width={1100}
-                height={800}
-                className={`max-h-[75vh] max-w-[60vw] object-contain transition-opacity duration-300 ${
-                  isCurrentLoaded && !hasCurrentError
-                    ? 'opacity-100'
-                    : 'opacity-0'
-                }`}
-                sizes="(max-width: 1200px) 70vw, 1100px"
-                unoptimized
-                fetchPriority="high"
-                decoding="async"
-                onError={() => setHasCurrentError(true)}
-                onLoad={() => setIsCurrentLoaded(true)}
-                priority
-              />
-            </div>
-          </motion.div>
-        </div>
+            <span className="text-xl italic text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+              previous
+            </span>
+          </div>
 
-        {/* Image suivante */}
-        <div className="absolute right-8 top-1/2 -translate-y-1/2 h-[50%] w-[15%] opacity-40 blur-[2px] pointer-events-none">
-          <Image
-            src={buildSanityImageUrl(
-              images[(currentIndex + 1) % images.length],
-              {
-                w: 600,
-                q: 40,
-                auto: 'format',
-              }
-            )}
-            alt="suivante"
-            width={300}
-            height={200}
-            className="w-full h-full object-contain"
-            sizes="(max-width: 768px) 100vw, 300px"
-            priority={false}
-            unoptimized
-          />
-        </div>
-
-        {/* Contrôles de navigation - Zone gauche */}
-        <div
-          className="absolute left-0 top-0 h-full w-[20%] z-30 flex items-center justify-start pl-8 md:pl-16 group cursor-pointer"
-          onClick={() => goToIndex(currentIndex - 1)}
-        >
-          <span className="text-xl italic text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-            previous
-          </span>
-        </div>
-
-        {/* Contrôles de navigation - Zone droite */}
-        <div
-          className="absolute right-0 top-0 h-full w-[20%] z-30 flex items-center justify-end pr-8 md:pr-16 group cursor-pointer"
-          onClick={() => goToIndex(currentIndex + 1)}
-        >
-          <span className="text-xl italic text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-            next
-          </span>
+          {/* Contrôles de navigation - Zone droite */}
+          <div
+            className="absolute right-0 top-0 h-full w-[20%] z-30 flex items-center justify-end pr-8 md:pr-0 group cursor-pointer"
+            onClick={() => goToIndex(currentIndex + 1)}
+          >
+            <span className="text-xl italic text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+              next
+            </span>
+          </div>
         </div>
 
         {/* Pied de page */}
-        <div className="absolute bottom-20 left-0 w-full h-[1px] bg-white/20 z-20" />
-        <div className="absolute bottom-8 left-8 md:left-16 text-xl italic z-40">
-          {project.coords}
-        </div>
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 text-xl z-40">
-          {project.name} - 2024
+        <div className="w-full h-[1px] bg-white/20 mb-4" />
+        <div className="flex justify-between items-end">
+          <div className="text-xl italic">{project.coords}</div>
+          <div className="text-xl">{project.name} - 2024</div>
         </div>
       </div>
     </motion.div>
