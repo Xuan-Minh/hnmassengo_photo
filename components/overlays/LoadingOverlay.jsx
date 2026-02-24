@@ -183,7 +183,7 @@ export default function LoadingOverlay() {
     // Extraire seulement les URLs (pas les objets complets)
     const urls = filtered.map(img =>
       buildSanityImageUrl(img.url, {
-        ...getOptimizedImageParams('loading'),
+        ...getOptimizedImageParams('loading', isMobile),
         auto: 'format',
       })
     );
