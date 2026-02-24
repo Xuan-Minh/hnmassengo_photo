@@ -256,9 +256,9 @@ function CustomLightbox({ open, onClose, images, project }) {
         )}
       </div>
       {/* Main Content (DESKTOP) — structure identique au cartel (flex-col + p-16) */}
-      <div className="hidden md:flex flex-col flex-1 overflow-hidden w-full h-full p-16">
+      <div className="hidden md:flex flex-col flex-1 min-h-0 w-full pt-16 pr-16 pl-16">
         {/* Bouton back — en flux, exactement comme dans le cartel */}
-        <div className="z-40">
+        <div>
           <button
             onClick={onClose}
             className="font-playfair text-lg hover:text-white transition-colors"
@@ -266,7 +266,6 @@ function CustomLightbox({ open, onClose, images, project }) {
             back
           </button>
         </div>
-
         {/* Zone images — centrée dans l'espace restant */}
         <div className="flex-1 relative flex items-center justify-center overflow-hidden">
           {/* Image précédente */}
@@ -366,14 +365,12 @@ function CustomLightbox({ open, onClose, images, project }) {
             </span>
           </div>
         </div>
-
-        {/* Pied de page */}
-        <div className="w-full h-[1px] bg-white/20 mb-4" />
-        <div className="flex justify-between items-end">
-          <div className="text-xl italic">{project.coords}</div>
-          <div className="text-xl">{project.name} - 2024</div>
-        </div>
       </div>
+      {/* Pied de page */}
+      <footer className="w-full border-t border-whiteCustom/20 px-8 md:px-16 py-6 flex items-center justify-between mt-auto">
+        <div className="text-xl italic">{project.coords}</div>
+        <div className="text-xl">{project.name}</div>
+      </footer>
     </motion.div>
   );
 }
