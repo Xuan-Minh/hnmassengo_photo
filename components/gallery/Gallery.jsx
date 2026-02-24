@@ -99,7 +99,7 @@ export default function Gallery() {
           .filter(Boolean)
           .map(url =>
             buildSanityImageUrl(url, {
-              ...getOptimizedImageParams('gallery'),
+              ...getOptimizedImageParams('gallery-grid', isMobile),
               auto: 'format',
             })
           ),
