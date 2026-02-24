@@ -48,9 +48,9 @@
   "contact": {
     "title": "Contact",
     "form": {
-      "fullName": "nom complet",
+      "fullName": "Nom complet",
       "email": "Email",
-      "subject": "sujet",
+      "subject": "Sujet",
       "message": "Message",
       "name": "Nom",
       "newsletterOptIn": "S'inscrire à la newsletter",

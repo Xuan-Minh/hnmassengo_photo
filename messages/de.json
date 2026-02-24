@@ -48,7 +48,7 @@
   "contact": {
     "title": "Kontakt",
     "form": {
-      "fullName": "vollständiger Name",
+      "fullName": "Vollständiger Name",
       "email": "E-Mail",
       "subject": "Betreff",
       "message": "Nachricht",

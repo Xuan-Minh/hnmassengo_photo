@@ -48,10 +48,10 @@
   "contact": {
     "title": "Contact",
     "form": {
-      "fullName": "full name",
-      "email": "email",
-      "subject": "subject",
-      "message": "message",
+      "fullName": "Full name",
+      "email": "Email",
+      "subject": "Subject",
+      "message": "Message",
       "name": "Name",
       "newsletterOptIn": "Subscribe to Newsletter",
       "send": "Send",
