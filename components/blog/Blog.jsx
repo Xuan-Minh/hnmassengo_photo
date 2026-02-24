@@ -6,15 +6,11 @@ import { AnimatePresence } from 'framer-motion';
 import { useTranslations } from 'next-intl';
 import BlogArchives from './BlogArchives';
 import BlogPostItem from './BlogPostItem';
-import dynamic from 'next/dynamic';
+import BlogPostOverlay from './BlogPostOverlay';
 import client from '../../lib/sanity.client';
 import { buildSanityImageUrl } from '../../lib/imageUtils';
 import { CONTENT } from '../../lib/constants';
 import { getOptimizedImageParams } from '../../lib/hooks';
-
-const BlogPostOverlay = dynamic(() => import('./BlogPostOverlay'), {
-  loading: () => <div>Loading…</div>,
-});
 
 export default function Blog() {
   const t = useTranslations('blog');
