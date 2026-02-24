@@ -21,11 +21,6 @@ function CustomLightbox({ open, onClose, images, project }) {
   const [touchStart, setTouchStart] = useState(null);
   const decodedSrcsRef = useRef(new Set());
 
-  // Détection orientation image pour hint rotation mobile
-  const [showRotateHint, setShowRotateHint] = useState(false);
-  const rotateHintTimerRef = useRef(null);
-  const rotateHintShownRef = useRef(false);
-
   const getDisplaySrcForIndex = useCallback(
     idx => {
       const raw = images?.[idx];
@@ -61,37 +56,9 @@ function CustomLightbox({ open, onClose, images, project }) {
     });
   }, [images, currentIndex]);
 
-  // Gestion du chargement image mobile : détecte l'orientation paysage
-  const handleMobileImageLoad = useCallback(e => {
-    setIsCurrentLoaded(true);
-    const img = e.target;
-    const landscape = img.naturalWidth > img.naturalHeight * 1.2;
-
-    // Affiche le hint rotation une seule fois par session lightbox
-    if (landscape && !rotateHintShownRef.current) {
-      rotateHintShownRef.current = true;
-      setShowRotateHint(true);
-      if (rotateHintTimerRef.current) clearTimeout(rotateHintTimerRef.current);
-      rotateHintTimerRef.current = setTimeout(
-        () => setShowRotateHint(false),
-        3500
-      );
-    } else if (!landscape) {
-      setShowRotateHint(false);
-    }
-  }, []);
-
-  // Cleanup timer hint rotation
-  useEffect(() => {
-    return () => {
-      if (rotateHintTimerRef.current) clearTimeout(rotateHintTimerRef.current);
-    };
-  }, []);
-
   useEffect(() => {
     if (open) {
       goToIndex(0);
-      rotateHintShownRef.current = false;
     }
   }, [open, goToIndex]);
 
@@ -217,7 +184,7 @@ function CustomLightbox({ open, onClose, images, project }) {
       transition={{ duration: 0.3 }}
     >
       {/* En-tête */}
-      <div className="absolute top-8 left-8 md:left-16 z-40">
+      <div className="absolute top-8 landscape:top-2 left-8 md:left-16 z-40">
         <button
           onClick={onClose}
           className="text-lg hover:text-white transition-colors"
@@ -238,13 +205,19 @@ function CustomLightbox({ open, onClose, images, project }) {
         />
 
         {/* Image container — occupe tout l'espace disponible */}
-        <div className="flex-1 min-h-0 flex items-center justify-center px-2 pt-14">
+        <div
+          className="flex-1 min-h-0 flex items-center justify-center px-4 pt-14 landscape:pt-2 landscape:pb-1"
+          style={{
+            paddingLeft: 'max(1rem, env(safe-area-inset-left, 0px))',
+            paddingRight: 'max(1rem, env(safe-area-inset-right, 0px))',
+          }}
+        >
           <motion.div
             key={currentIndex}
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.3 }}
-            className="w-full h-full flex items-center justify-center"
+            className="w-full max-h-full flex items-center justify-center"
           >
             <Image
               src={currentDisplaySrc}
@@ -257,7 +230,7 @@ function CustomLightbox({ open, onClose, images, project }) {
               fetchPriority="high"
               decoding="async"
               onError={() => setHasCurrentError(true)}
-              onLoad={handleMobileImageLoad}
+              onLoad={() => setIsCurrentLoaded(true)}
               priority
             />
           </motion.div>
@@ -265,66 +238,13 @@ function CustomLightbox({ open, onClose, images, project }) {
 
         {/* Index image — remonté pour ne pas être caché par la barre de navigation mobile */}
         <div
-          className="flex-shrink-0 text-center italic text-sm py-3"
+          className="flex-shrink-0 text-center italic text-sm py-3 landscape:py-1"
           style={{
             paddingBottom: 'calc(env(safe-area-inset-bottom, 12px) + 14px)',
           }}
         >
           {currentIndex + 1} / {images.length}
         </div>
-
-        {/* Hint rotation pour images paysage */}
-        <AnimatePresence>
-          {showRotateHint && (
-            <motion.div
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 8 }}
-              transition={{ duration: 0.5 }}
-              className="absolute left-1/2 -translate-x-1/2 flex items-center gap-2 text-white/40 text-xs pointer-events-none"
-              style={{
-                bottom: 'calc(env(safe-area-inset-bottom, 12px) + 48px)',
-              }}
-            >
-              <svg
-                className="w-5 h-5"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <rect x="4" y="2" width="16" height="20" rx="2" />
-                <path d="M12 18h.01" />
-              </svg>
-              <svg
-                className="w-3 h-3 text-white/30"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M17 1l4 4-4 4" />
-                <path d="M3 11V9a4 4 0 0 1 4-4h14" />
-              </svg>
-              <svg
-                className="w-5 h-5 -rotate-90"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <rect x="4" y="2" width="16" height="20" rx="2" />
-                <path d="M12 18h.01" />
-              </svg>
-            </motion.div>
-          )}
-        </AnimatePresence>
 
         {!isCurrentLoaded && !hasCurrentError && (
           <div className="absolute inset-0 bg-white/5 animate-pulse" />
