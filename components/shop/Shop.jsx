@@ -373,8 +373,8 @@ export default function Shop() {
                 transition={{ duration: 0.3 }}
                 className="overflow-hidden px-6 pb-6 md:px-0 md:pb-0 max-h-[60vh] md:max-h-none"
               >
-                <div className="flex-1 flex flex-col">
-                  <div className="flex-1 mb-6 md:mb-8">
+                <div className="flex flex-col">
+                  <div className="mb-6 md:mb-8">
                     {cartItems.length === 0 ? (
                       <div className="text-black/40 italic">
                         {t('cart.empty')}

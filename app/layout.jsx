@@ -56,6 +56,10 @@ export const metadata = {
   },
 };
 
+export const viewport = {
+  viewportFit: 'cover',
+};
+
 const lexend = Lexend({
   subsets: ['latin'],
   weight: ['400', '700'],

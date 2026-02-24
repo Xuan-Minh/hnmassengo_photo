@@ -1,6 +1,6 @@
 'use client';
 import { useTranslations } from 'next-intl';
-import { useState, useEffect, useMemo, useRef } from 'react';
+import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import { GALLERY_FILTERS } from '../../lib/constants';
 import client from '../../lib/sanity.client';
@@ -79,6 +79,9 @@ export default function Gallery() {
   const currentImageVersionRef = useRef(0);
   const listTimersRef = useRef({ tick: null, swap: null, cancelled: 0 });
 
+  // Swipe tactile pour le mode list (cohérent avec le lightbox)
+  const [listTouchStart, setListTouchStart] = useState(null);
+
   // Charger les projets depuis Sanity
   useEffect(() => {
     const fetchProjects = async () => {
@@ -119,7 +122,7 @@ export default function Gallery() {
   };
 
   // Fonction de navigation avec animation fade
-  const navigateToImage = (projectIndex, imageIndex) => {
+  const navigateToImage = useCallback((projectIndex, imageIndex) => {
     // Incrémenter la version pour invalider les anciens callbacks
     currentImageVersionRef.current += 1;
 
@@ -133,7 +136,7 @@ export default function Gallery() {
       setCurrentImageIndex(imageIndex);
       setIsTransitioning(false);
     }, 250);
-  };
+  }, []);
 
   const projectsChrono = useMemo(() => {
     const arr = [...projects];
@@ -356,6 +359,74 @@ export default function Gallery() {
     return () => window.removeEventListener('resize', handleResize);
   }, [view]);
 
+  // Navigation par swipe tactile en mode list
+  const navigateListPrev = useCallback(() => {
+    if (currentImageIndex > 0) {
+      navigateToImage(currentProjectIndex, currentImageIndex - 1);
+    } else {
+      const prevProjectIndex =
+        currentProjectIndex === 0
+          ? filteredProjectsList.length - 1
+          : currentProjectIndex - 1;
+      const prevProject = filteredProjectsList[prevProjectIndex];
+      const prevImages = prevProject?.images || [];
+      navigateToImage(prevProjectIndex, Math.max(0, prevImages.length - 1));
+    }
+  }, [
+    currentProjectIndex,
+    currentImageIndex,
+    filteredProjectsList,
+    navigateToImage,
+  ]);
+
+  const navigateListNext = useCallback(() => {
+    const currentProject = filteredProjectsList[currentProjectIndex];
+    const currentImages = currentProject?.images || [];
+    if (currentImageIndex < currentImages.length - 1) {
+      navigateToImage(currentProjectIndex, currentImageIndex + 1);
+    } else {
+      const nextProjectIndex =
+        (currentProjectIndex + 1) % filteredProjectsList.length;
+      navigateToImage(nextProjectIndex, 0);
+    }
+  }, [
+    currentProjectIndex,
+    currentImageIndex,
+    filteredProjectsList,
+    navigateToImage,
+  ]);
+
+  useEffect(() => {
+    if (view !== 'list' || typeof window === 'undefined') return;
+
+    const handleTouchStart = e => {
+      setListTouchStart(e.touches[0].clientX);
+    };
+
+    const handleTouchEnd = e => {
+      if (listTouchStart === null) return;
+      const touchEnd = e.changedTouches[0].clientX;
+      const diff = listTouchStart - touchEnd;
+
+      if (Math.abs(diff) > 50) {
+        if (diff > 0) {
+          navigateListNext();
+        } else {
+          navigateListPrev();
+        }
+      }
+      setListTouchStart(null);
+    };
+
+    window.addEventListener('touchstart', handleTouchStart, false);
+    window.addEventListener('touchend', handleTouchEnd, false);
+
+    return () => {
+      window.removeEventListener('touchstart', handleTouchStart, false);
+      window.removeEventListener('touchend', handleTouchEnd, false);
+    };
+  }, [view, listTouchStart, navigateListNext, navigateListPrev]);
+
   // Navigation au clavier (flèches gauche/droite) en mode list
   useEffect(() => {
     if (view !== 'list') return;
@@ -363,35 +434,16 @@ export default function Gallery() {
     const handleKeyDown = e => {
       if (e.key === 'ArrowRight') {
         e.preventDefault();
-        const currentProject = filteredProjectsList[currentProjectIndex];
-        const currentImages = currentProject?.images || [];
-
-        if (currentImageIndex < currentImages.length - 1) {
-          navigateToImage(currentProjectIndex, currentImageIndex + 1);
-        } else {
-          const nextProjectIndex =
-            (currentProjectIndex + 1) % filteredProjectsList.length;
-          navigateToImage(nextProjectIndex, 0);
-        }
+        navigateListNext();
       } else if (e.key === 'ArrowLeft') {
         e.preventDefault();
-        if (currentImageIndex > 0) {
-          navigateToImage(currentProjectIndex, currentImageIndex - 1);
-        } else {
-          const prevProjectIndex =
-            currentProjectIndex === 0
-              ? filteredProjectsList.length - 1
-              : currentProjectIndex - 1;
-          const prevProject = filteredProjectsList[prevProjectIndex];
-          const prevImages = prevProject?.images || [];
-          navigateToImage(prevProjectIndex, Math.max(0, prevImages.length - 1));
-        }
+        navigateListPrev();
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [view, filteredProjectsList, currentProjectIndex, currentImageIndex]);
+  }, [view, navigateListNext, navigateListPrev]);
 
   // Composant Controls (Filtres + Toggle View)
   const Controls = () => (
@@ -497,9 +549,7 @@ export default function Gallery() {
   return (
     <>
       <section className="relative w-full h-screen overflow-hidden">
-        <div
-          className={`w-full h-full flex flex-col bg-background justify-center items-center`}
-        >
+        <div className="w-full h-full flex flex-col bg-background justify-center items-center">
           <div className="relative flex flex-col justify-center items-start h-[75vh] lg:h-[90vh] w-[min(1000px,90vw)] 2xl:w-[min(1300px,90vw)]">
             <AnimatePresence mode="wait">
               {view === 'grid' ? (
@@ -692,26 +742,7 @@ export default function Gallery() {
                         <div className="relative w-full h-full flex items-center justify-center gap-4 px-4">
                           {/* Bouton gauche */}
                           <button
-                            onClick={() => {
-                              if (currentImageIndex > 0) {
-                                navigateToImage(
-                                  currentProjectIndex,
-                                  currentImageIndex - 1
-                                );
-                              } else {
-                                const prevProjectIndex =
-                                  currentProjectIndex === 0
-                                    ? filteredProjectsList.length - 1
-                                    : currentProjectIndex - 1;
-                                const prevProject =
-                                  filteredProjectsList[prevProjectIndex];
-                                const prevImages = prevProject?.images || [];
-                                navigateToImage(
-                                  prevProjectIndex,
-                                  Math.max(0, prevImages.length - 1)
-                                );
-                              }
-                            }}
+                            onClick={navigateListPrev}
                             className="flex-shrink-0 opacity-60 hover:opacity-100 transition-opacity duration-300"
                             aria-label="Previous image"
                           >
@@ -790,26 +821,7 @@ export default function Gallery() {
 
                           {/* Bouton droite */}
                           <button
-                            onClick={() => {
-                              const currentProject =
-                                filteredProjectsList[currentProjectIndex];
-                              const currentImages =
-                                currentProject?.images || [];
-                              if (
-                                currentImageIndex <
-                                currentImages.length - 1
-                              ) {
-                                navigateToImage(
-                                  currentProjectIndex,
-                                  currentImageIndex + 1
-                                );
-                              } else {
-                                const nextProjectIndex =
-                                  (currentProjectIndex + 1) %
-                                  filteredProjectsList.length;
-                                navigateToImage(nextProjectIndex, 0);
-                              }
-                            }}
+                            onClick={navigateListNext}
                             className="flex-shrink-0 opacity-60 hover:opacity-100 transition-opacity duration-300"
                             aria-label="Next image"
                           >

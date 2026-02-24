@@ -10,22 +10,21 @@ const AnimatePresence = dynamic(
   { ssr: false }
 );
 import TextReveal from '../ui/TextReveal';
-import { EVENTS, emitEvent } from '../../lib/events';
 import { buildSanityImageUrl } from '../../lib/imageUtils';
 import { getOptimizedImageParams } from '../../lib/hooks';
 
 // Composant CustomLightbox
 function CustomLightbox({ open, onClose, images, project }) {
-  const t = useTranslations('gallery');
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isCurrentLoaded, setIsCurrentLoaded] = useState(false);
   const [hasCurrentError, setHasCurrentError] = useState(false);
   const [touchStart, setTouchStart] = useState(null);
-  const [imageDimensions, setImageDimensions] = useState({
-    width: 0,
-    height: 0,
-  });
   const decodedSrcsRef = useRef(new Set());
+
+  // Détection orientation image pour hint rotation mobile
+  const [showRotateHint, setShowRotateHint] = useState(false);
+  const rotateHintTimerRef = useRef(null);
+  const rotateHintShownRef = useRef(false);
 
   const getDisplaySrcForIndex = useCallback(
     idx => {
@@ -62,9 +61,37 @@ function CustomLightbox({ open, onClose, images, project }) {
     });
   }, [images, currentIndex]);
 
+  // Gestion du chargement image mobile : détecte l'orientation paysage
+  const handleMobileImageLoad = useCallback(e => {
+    setIsCurrentLoaded(true);
+    const img = e.target;
+    const landscape = img.naturalWidth > img.naturalHeight * 1.2;
+
+    // Affiche le hint rotation une seule fois par session lightbox
+    if (landscape && !rotateHintShownRef.current) {
+      rotateHintShownRef.current = true;
+      setShowRotateHint(true);
+      if (rotateHintTimerRef.current) clearTimeout(rotateHintTimerRef.current);
+      rotateHintTimerRef.current = setTimeout(
+        () => setShowRotateHint(false),
+        3500
+      );
+    } else if (!landscape) {
+      setShowRotateHint(false);
+    }
+  }, []);
+
+  // Cleanup timer hint rotation
+  useEffect(() => {
+    return () => {
+      if (rotateHintTimerRef.current) clearTimeout(rotateHintTimerRef.current);
+    };
+  }, []);
+
   useEffect(() => {
     if (open) {
       goToIndex(0);
+      rotateHintShownRef.current = false;
     }
   }, [open, goToIndex]);
 
@@ -198,82 +225,116 @@ function CustomLightbox({ open, onClose, images, project }) {
           back
         </button>
       </div>
+      {/* Contenu principal (MOBILE) — layout optimisé pour maximiser l'image */}
+      <div className="flex-1 flex flex-col w-full relative bg-[#1a1a1a] md:hidden">
+        {/* Zones de tap navigation — gauche / droite */}
+        <div
+          className="absolute left-0 top-14 bottom-12 w-[20%] z-30"
+          onClick={() => goToIndex(currentIndex - 1)}
+        />
+        <div
+          className="absolute right-0 top-14 bottom-12 w-[20%] z-30"
+          onClick={() => goToIndex(currentIndex + 1)}
+        />
 
-      {/* Contenu principal (MOBILE) */}
-      <div className="flex-1 flex flex-col w-full h-full md:hidden">
-        <div className="flex-1 flex flex-col w-full justify-center items-center bg-[#1a1a1a]">
-          <div className="flex-1 flex flex-col items-center justify-center w-full h-full px-2 relative">
+        {/* Image container — occupe tout l'espace disponible */}
+        <div className="flex-1 min-h-0 flex items-center justify-center px-2 pt-14">
+          <motion.div
+            key={currentIndex}
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.3 }}
+            className="w-full h-full flex items-center justify-center"
+          >
+            <Image
+              src={currentDisplaySrc}
+              alt={`${project.name} - Image ${currentIndex + 1} of ${images.length}`}
+              width={1200}
+              height={1200}
+              className="max-w-full max-h-full w-auto h-auto object-contain"
+              sizes="100vw"
+              unoptimized
+              fetchPriority="high"
+              decoding="async"
+              onError={() => setHasCurrentError(true)}
+              onLoad={handleMobileImageLoad}
+              priority
+            />
+          </motion.div>
+        </div>
+
+        {/* Index image — remonté pour ne pas être caché par la barre de navigation mobile */}
+        <div
+          className="flex-shrink-0 text-center italic text-sm py-3"
+          style={{
+            paddingBottom: 'calc(env(safe-area-inset-bottom, 12px) + 14px)',
+          }}
+        >
+          {currentIndex + 1} / {images.length}
+        </div>
+
+        {/* Hint rotation pour images paysage */}
+        <AnimatePresence>
+          {showRotateHint && (
             <motion.div
-              key={currentIndex}
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.3 }}
-              className="w-full h-full flex items-center justify-center flex-nowrap"
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 8 }}
+              transition={{ duration: 0.5 }}
+              className="absolute left-1/2 -translate-x-1/2 flex items-center gap-2 text-white/40 text-xs pointer-events-none"
+              style={{
+                bottom: 'calc(env(safe-area-inset-bottom, 12px) + 48px)',
+              }}
             >
-              <Image
-                src={currentDisplaySrc}
-                alt={`${project.name} - Image ${currentIndex + 1} of ${images.length}`}
-                width={1200}
-                height={1200}
-                className="max-h-[90vh] max-w-[100vw] w-auto h-auto object-contain shadow-2xl"
-                sizes="100vw"
-                unoptimized
-                fetchPriority="high"
-                decoding="async"
-                onError={() => setHasCurrentError(true)}
-                onLoad={() => setIsCurrentLoaded(true)}
-                priority
-              />
-            </motion.div>
-            {!isCurrentLoaded && !hasCurrentError && (
-              <div className="absolute inset-0 bg-white/5 animate-pulse" />
-            )}
-            {hasCurrentError && (
-              <div className="absolute inset-0 flex items-center justify-center text-white/70">
-                image unavailable
-              </div>
-            )}
-          </div>
-        </div>
-        {/* Infos en bas */}
-        <div className="flex flex-col w-full gap-3 px-4 py-3 text-sm">
-          <div className="text-center italic">
-            {currentIndex + 1} / {images.length}
-          </div>
-        </div>
-      </div>
-      <section className="md:hidden">
-        {/* Séparateur */}
-        <div className="w-full border-t border-white/20 my-2" />
-
-        {/* Marquee horizontal des miniatures */}
-        <div className="w-full overflow-x-auto pb-3">
-          <div className="flex gap-3 px-4">
-            {images.map((img, idx) => (
-              <button
-                key={img + idx}
-                onClick={() => goToIndex(idx)}
-                className={`border-2 rounded transition-all duration-200 flex-shrink-0 ${
-                  idx === currentIndex
-                    ? 'border-white/80 scale-105'
-                    : 'border-transparent opacity-50 hover:opacity-80'
-                }`}
-                style={{ minWidth: 70, minHeight: 70 }}
+              <svg
+                className="w-5 h-5"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
               >
-                <Image
-                  src={img}
-                  alt={`Miniature ${idx + 1}`}
-                  width={70}
-                  height={70}
-                  className="object-contain w-full h-full"
-                  draggable={false}
-                />
-              </button>
-            ))}
-          </div>
-        </div>
-      </section>
+                <rect x="4" y="2" width="16" height="20" rx="2" />
+                <path d="M12 18h.01" />
+              </svg>
+              <svg
+                className="w-3 h-3 text-white/30"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M17 1l4 4-4 4" />
+                <path d="M3 11V9a4 4 0 0 1 4-4h14" />
+              </svg>
+              <svg
+                className="w-5 h-5 -rotate-90"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <rect x="4" y="2" width="16" height="20" rx="2" />
+                <path d="M12 18h.01" />
+              </svg>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
+        {!isCurrentLoaded && !hasCurrentError && (
+          <div className="absolute inset-0 bg-white/5 animate-pulse" />
+        )}
+        {hasCurrentError && (
+          <div className="absolute inset-0 flex items-center justify-center text-white/70">
+            image unavailable
+          </div>
+        )}
+      </div>
       {/* Main Content (DESKTOP) : version d'origine */}
       <div className="hidden md:flex flex-1 relative items-center justify-center overflow-hidden w-full h-full">
         {/* Image précédente */}
@@ -562,25 +623,22 @@ export default function GalleryProjetCartel({ project, onClose }) {
           <div className="border-t border-blackCustom/20"></div>
 
           {/* Section inférieure : Cartel - reste de l'espace */}
-          <div className="flex-1 flex flex-col overflow-y-auto">
-            {/* Contenu texte */}
-            <div className="p-6 flex-1">
-              <div className="font-playfair text-lg italic text-blackCustom mb-4">
-                <TextReveal text={project.coords} />
-              </div>
-              <h2 id="project-title" className="mb-6">
-                <TextReveal
-                  text={project.name}
-                  className="text-3xl font-playfair italic"
-                />
-              </h2>
-              <div className="font-playfair text-base leading-relaxed space-y-4">
-                {paragraphs.map((p, i) => (
-                  <div key={i} className="relative">
-                    <TextReveal text={p} delay={0.2 + i * 0.1} />
-                  </div>
-                ))}
-              </div>
+          <div className="flex-1 overflow-y-auto p-6">
+            <div className="font-playfair text-lg italic text-blackCustom mb-4">
+              <TextReveal text={project.coords} />
+            </div>
+            <h2 id="project-title" className="mb-6">
+              <TextReveal
+                text={project.name}
+                className="text-3xl font-playfair italic"
+              />
+            </h2>
+            <div className="font-playfair text-base leading-relaxed space-y-4">
+              {paragraphs.map((p, i) => (
+                <div key={i} className="relative">
+                  <TextReveal text={p} delay={0.2 + i * 0.1} />
+                </div>
+              ))}
             </div>
           </div>
         </div>

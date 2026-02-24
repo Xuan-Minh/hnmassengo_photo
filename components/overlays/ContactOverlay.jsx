@@ -405,55 +405,52 @@ export default function ContactOverlay({
   }, [open]);
 
   return (
-    <>
-      {/* Contact Overlay Modal */}
-      <AnimatePresence>
-        {open && (
-          <section
-            id="info-overlay"
-            className="fixed inset-0 z-[200]"
-            aria-label={t('overlay.ariaLabel')}
+    <AnimatePresence>
+      {open && (
+        <section
+          id="info-overlay"
+          className="fixed inset-0 z-[200]"
+          aria-label={t('overlay.ariaLabel')}
+        >
+          <motion.button
+            type="button"
+            aria-label={t('overlay.closeAriaLabel')}
+            className="absolute inset-0 bg-black/60"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={handleClose}
+          />
+
+          <motion.div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="contact-title-overlay"
+            className="absolute inset-x-0 bottom-0 bg-blackCustom border-t-2 border-whiteCustom max-h-[85vh] flex flex-col"
+            initial={{ y: '100%' }}
+            animate={{ y: 0 }}
+            exit={{ y: '100%' }}
+            transition={{ duration: 0.5, ease: 'easeInOut' }}
+            onClick={e => e.stopPropagation()}
+            ref={panelRef}
           >
-            <motion.button
-              type="button"
-              aria-label={t('overlay.closeAriaLabel')}
-              className="absolute inset-0 bg-black/60"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={handleClose}
-            />
-
-            <motion.div
-              role="dialog"
-              aria-modal="true"
-              aria-labelledby="contact-title-overlay"
-              className="absolute inset-x-0 bottom-0 bg-blackCustom border-t-2 border-whiteCustom max-h-[85vh] flex flex-col"
-              initial={{ y: '100%' }}
-              animate={{ y: 0 }}
-              exit={{ y: '100%' }}
-              transition={{ duration: 0.5, ease: 'easeInOut' }}
-              onClick={e => e.stopPropagation()}
-              ref={panelRef}
-            >
-              {/* Contenu principal - prend l'espace disponible */}
-              <div className="flex-1 overflow-y-auto min-h-0">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12 pt-6 sm:pt-8 md:pt-10 lg:pt-12 pb-6 sm:pb-8 md:pb-10 lg:pb-12">
-                  <ContactContent
-                    idSuffix="-overlay"
-                    headingId="contact-title-overlay"
-                    variant="overlay"
-                    defaultSubject={defaultSubject}
-                  />
-                </div>
+            {/* Contenu principal - prend l'espace disponible */}
+            <div className="flex-1 overflow-y-auto min-h-0">
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12 pt-6 sm:pt-8 md:pt-10 lg:pt-12 pb-6 sm:pb-8 md:pb-10 lg:pb-12">
+                <ContactContent
+                  idSuffix="-overlay"
+                  headingId="contact-title-overlay"
+                  variant="overlay"
+                  defaultSubject={defaultSubject}
+                />
               </div>
+            </div>
 
-              {/* Marquee en position relative - fait partie du flux */}
-              <ContactMarquee mode="inline" />
-            </motion.div>
-          </section>
-        )}
-      </AnimatePresence>
-    </>
+            {/* Marquee en position relative - fait partie du flux */}
+            <ContactMarquee mode="inline" />
+          </motion.div>
+        </section>
+      )}
+    </AnimatePresence>
   );
 }
