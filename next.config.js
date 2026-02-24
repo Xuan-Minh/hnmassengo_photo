@@ -47,7 +47,7 @@ const nextConfig = {
     // Désactiver optimizePackageImports qui peut causer des chunks manquants
     // optimizePackageImports: ['framer-motion', '@portabletext/react'],
   },
-  async headers() {
+  /* async headers() {
     return [
       {
         source: '/:path*',
@@ -136,7 +136,7 @@ const nextConfig = {
         ],
       },
     ];
-  },
+  },*/
 };
 
 module.exports = withBundleAnalyzer(withNextIntl(nextConfig));
