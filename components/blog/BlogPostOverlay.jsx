@@ -1,7 +1,7 @@
 'use client';
 import Image from 'next/image';
 import { useState } from 'react';
-// <-- L'import de AnimatePresence a été supprimé ici car il ne sert plus
+import { motion } from 'framer-motion';
 import ContactOverlay from '../overlays/ContactOverlay';
 import BaseOverlay from '../overlays/BaseOverlay';
 import { useTranslations } from 'next-intl';
@@ -16,7 +16,10 @@ export default function BlogPostOverlay({ post, onClose, onPrevious, onNext }) {
   const contactSubject = `${post.title || post.date} - ${t('reply')}`;
 
   return (
-    <>
+    <motion.div
+      key="blog-post-overlay-wrapper"
+      exit={{ opacity: 0, transition: { duration: 0.2 } }}
+    >
       <BaseOverlay onClose={onClose} ariaLabelledBy="blog-post-title">
         {/* Contenu principal - Deux mises en page */}
         {hasImage ? (
@@ -138,6 +141,6 @@ export default function BlogPostOverlay({ post, onClose, onPrevious, onNext }) {
         onClose={() => setContactOpen(false)}
         defaultSubject={contactSubject}
       />
-    </>
+    </motion.div>
   );
 }

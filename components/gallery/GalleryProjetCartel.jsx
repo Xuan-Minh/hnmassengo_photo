@@ -488,7 +488,10 @@ export default function GalleryProjetCartel({ project, onClose }) {
   const paragraphs = description.split('\n\n');
 
   return (
-    <>
+    <motion.div
+      key="gallery-cartel-wrapper"
+      exit={{ opacity: 0, transition: { duration: 0.2 } }}
+    >
       <motion.div
         className="fixed inset-0 bg-background/80 backdrop-blur-sm z-40"
         initial={{ opacity: 0 }}
@@ -597,7 +600,7 @@ export default function GalleryProjetCartel({ project, onClose }) {
           />
         )}
       </AnimatePresence>
-    </>
+    </motion.div>
   );
 }
 
