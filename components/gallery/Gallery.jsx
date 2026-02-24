@@ -83,8 +83,13 @@ export default function Gallery() {
   const [listTouchStart, setListTouchStart] = useState(null);
 
   // Charger les projets depuis Sanity
+  // Charger les projets depuis Sanity
   useEffect(() => {
     const fetchProjects = async () => {
+      // 1. ON DÉFINIT SI ON EST SUR MOBILE JUSTE ICI
+      const isMobileDevice =
+        typeof window !== 'undefined' ? window.innerWidth < 768 : false;
+
       const data = await client.fetch(
         '*[_type == "project"] { ..., images[]{ asset->{ url } } }'
       );
@@ -99,7 +104,8 @@ export default function Gallery() {
           .filter(Boolean)
           .map(url =>
             buildSanityImageUrl(url, {
-              ...getOptimizedImageParams('gallery-grid', isMobile),
+              // 2. ON UTILISE isMobileDevice ICI
+              ...getOptimizedImageParams('gallery-grid', isMobileDevice),
               auto: 'format',
             })
           ),
