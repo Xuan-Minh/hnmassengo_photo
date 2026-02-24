@@ -128,9 +128,7 @@ export default function HomeImageRotation({
     <div className={`flex ${justify} w-full ${marginClass}`}>
       <div className="relative h-[40vh] md:h-[42vh] lg:h-[50vh] aspect-[3/4] overflow-hidden mx-auto lg:mx-0">
         {/* Placeholder visible pendant le chargement */}
-        {!isCurrentLoaded && (
-          <div className="absolute inset-0 bg-gradient-to-b from-gray-200 to-gray-300 animate-pulse" />
-        )}
+        {!isCurrentLoaded && <div className="absolute inset-0 animate-pulse" />}
         <AnimatePresence
           mode="wait"
           onExitComplete={() => {
