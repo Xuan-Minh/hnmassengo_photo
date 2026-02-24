@@ -1,32 +1,24 @@
 const createNextIntlPlugin = require('next-intl/plugin');
 const withNextIntl = createNextIntlPlugin();
 
-// Bundle analyzer optionnel - peut ne pas être disponible en production
 let withBundleAnalyzer = config => config;
 try {
   withBundleAnalyzer = require('@next/bundle-analyzer')({
     enabled: process.env.ANALYZE === 'true',
   });
-} catch (e) {
-  // module non trouvé - on continue sans
-}
+} catch (e) {}
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  turbopack: {
-    root: __dirname,
-  },
-  // Compression et optimisation
+  // Turbopack retiré
   compress: true,
-  productionBrowserSourceMaps: false, // Désactiver les source maps en production pour réduire taille
-  poweredByHeader: false, // Retirer header X-Powered-By
+  productionBrowserSourceMaps: false,
+  poweredByHeader: false,
 
-  // Optimisation du bundling - configuration simplifiée
   webpack: (config, { isServer }) => {
-    // Utiliser la configuration par défaut de Next.js sans cache groups personnalisés
-    // qui peuvent causer des chunks manquants
     return config;
   },
+
   images: {
     remotePatterns: [
       {
@@ -34,14 +26,13 @@ const nextConfig = {
         hostname: 'cdn.sanity.io',
       },
     ],
-    // Optimisation automatique des images
-    formats: ['image/avif', 'image/webp'], // AVIF d'abord (meilleure compression)
-    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840], // Tailles d'écran courantes
-    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384], // Tailles d'images pour les composants
-    qualities: [25, 32, 38, 50, 60, 75, 90], // Support qualités Sanity + optimisation
-    minimumCacheTTL: 31536000, // Cache 1 an (images Sanity sont immutables)
-    dangerouslyAllowSVG: true, // Permettre les SVG
-    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;", // Sécurité
+    formats: ['image/avif', 'image/webp'],
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+    // Ligne qualities retirée
+    minimumCacheTTL: 31536000,
+    dangerouslyAllowSVG: true,
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
   experimental: {
     // Désactiver optimizePackageImports qui peut causer des chunks manquants
