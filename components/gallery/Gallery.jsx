@@ -461,10 +461,8 @@ export default function Gallery() {
     >
       <div className="hidden lg:flex gap-4 mb-1">
         <button
-          className={`relative w-6 h-6 transition-all duration-300 ease-in-out ${
-            view === 'grid'
-              ? 'text-blackCustom opacity-100'
-              : 'text-greyCustom opacity-60 hover:opacity-100 hover:text-blackCustom'
+          className={`relative w-6 h-6 transition-opacity duration-300 ease-in-out text-blackCustom ${
+            view === 'grid' ? 'opacity-100' : 'opacity-50 hover:opacity-100'
           }`}
           onPointerDown={e => {
             e.preventDefault();
@@ -477,10 +475,8 @@ export default function Gallery() {
         </button>
 
         <button
-          className={`relative w-6 h-6 transition-all duration-300 ease-in-out ${
-            view === 'list'
-              ? 'text-blackCustom opacity-100'
-              : 'text-greyCustom opacity-60 hover:opacity-100 hover:text-blackCustom'
+          className={`relative w-6 h-6 transition-opacity duration-300 ease-in-out text-blackCustom ${
+            view === 'list' ? 'opacity-100' : 'opacity-50 hover:opacity-100'
           }`}
           onPointerDown={e => {
             e.preventDefault();
@@ -625,10 +621,10 @@ export default function Gallery() {
                     {/* Boutons de vue à gauche */}
                     <div className="flex gap-4 flex-shrink-0">
                       <button
-                        className={`relative w-6 h-6 transition-all duration-300 ease-in-out ${
+                        className={`relative w-6 h-6 transition-opacity duration-300 ease-in-out transform-gpu text-blackCustom ${
                           view === 'grid'
-                            ? 'text-blackCustom opacity-100'
-                            : 'text-greyCustom opacity-60 hover:opacity-100 hover:text-blackCustom'
+                            ? 'opacity-100'
+                            : 'opacity-50 hover:opacity-100'
                         }`}
                         onPointerDown={e => {
                           e.preventDefault();
@@ -637,14 +633,15 @@ export default function Gallery() {
                         }}
                         aria-label="Grid view"
                       >
-                        <GridIcon className="w-full h-full" />
+                        {/* Ajout de pointer-events-none ici */}
+                        <GridIcon className="w-full h-full pointer-events-none" />
                       </button>
 
                       <button
-                        className={`relative w-6 h-6 transition-all duration-300 ease-in-out ${
+                        className={`relative w-6 h-6 transition-opacity duration-300 ease-in-out transform-gpu text-blackCustom ${
                           view === 'list'
-                            ? 'text-blackCustom opacity-100'
-                            : 'text-greyCustom opacity-60 hover:opacity-100 hover:text-blackCustom'
+                            ? 'opacity-100'
+                            : 'opacity-50 hover:opacity-100'
                         }`}
                         onPointerDown={e => {
                           e.preventDefault();
@@ -653,7 +650,8 @@ export default function Gallery() {
                         }}
                         aria-label="List view"
                       >
-                        <ListIcon className="w-full h-full" />
+                        {/* Ajout de pointer-events-none ici */}
+                        <ListIcon className="w-full h-full pointer-events-none" />
                       </button>
                     </div>
 

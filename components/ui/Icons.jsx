@@ -11,16 +11,9 @@ export function ListIcon({ className = '', ...props }) {
       className={className}
       {...props}
     >
-      <path
-        d="M28 2.5L-5.35722e-08 2.5"
-        stroke="currentColor"
-        strokeWidth="5"
-      />
-      <path
-        d="M28 13.5L-5.35722e-08 13.5"
-        stroke="currentColor"
-        strokeWidth="5"
-      />
+      {/* On a remplacé les -5.35722e-08 par un simple 0 parfait */}
+      <path d="M28 2.5L0 2.5" stroke="currentColor" strokeWidth="5" />
+      <path d="M28 13.5L0 13.5" stroke="currentColor" strokeWidth="5" />
       <path d="M28 24.5L0 24.5" stroke="currentColor" strokeWidth="5" />
     </svg>
   );
