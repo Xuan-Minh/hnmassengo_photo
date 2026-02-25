@@ -64,8 +64,8 @@ export default function BlogPostItem({ post, onClick }) {
 
       {(post.layout === 'text-only' || !post.image) && (
         <div className="text-whiteCustom">
-          <div className="flex flex-wrap items-baseline gap-4 mb-4">
-            <h3 className="text-3xl lg:text-3xl font-playfair italic">
+          <div className="flex flex-col mb-4">
+            <h3 className="text-3xl lg:text-3xl font-playfair italic mb-2">
               "{post.title}"
             </h3>
             <span className="text-lg lg:text-xl font-playfair">

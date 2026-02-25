@@ -42,7 +42,7 @@ export default function BlogPostOverlay({ post, onClose, onPrevious, onNext }) {
               </div>
 
               {/* Image */}
-              <div className="relative w-full mb-10 max-w-xl lg:max-w-2xl mx-auto">
+              <div className="relative w-full mb-10 max-w-xl lg:max-w-lg mx-auto">
                 <Image
                   src={post.image}
                   alt={post.title}
@@ -116,7 +116,7 @@ export default function BlogPostOverlay({ post, onClose, onPrevious, onNext }) {
         )}
 
         {/* Navigation Footer */}
-        <div className="w-full border-t border-whiteCustom/20 px-8 md:px-16 py-6 hidden flex items-center justify-center gap-16 shrink-0">
+        <div className="w-full border-t border-whiteCustom/20 px-8 md:px-16 py-6 hidden md:flex items-center justify-center gap-16 shrink-0">
           <button
             onClick={onPrevious}
             className="text-base text-whiteCustom/60 hover:text-whiteCustom transition-colors flex items-center gap-2"
