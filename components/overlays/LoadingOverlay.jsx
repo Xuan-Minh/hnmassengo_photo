@@ -69,13 +69,18 @@ export default function LoadingOverlay({ initialImages = [] }) {
   const [isExiting, setIsExiting] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [allLoaded, setAllLoaded] = useState(false);
-  const rotateInterval = useRef(null);
 
+  // --- NOUVEAU : État pour le délai minimal ---
+  const [minDurationMet, setMinDurationMet] = useState(false);
+  const MIN_DURATION_MS = 2500; // 2.5 secondes. Tu peux ajuster ici (ex: 3000 pour 3s)
+  // --------------------------------------------
+
+  const rotateInterval = useRef(null);
   const [isReTrigger, setIsReTrigger] = useState(false);
   const [touchStart, setTouchStart] = useState(null);
   const overlayRef = useRef(null);
 
-  // Détection Mobile (Seulement après hydratation pour le flipbook JS)
+  // Détection Mobile
   const [isMobileDevice, setIsMobileDevice] = useState(false);
   useLayoutEffect(() => {
     setIsMobileDevice(window.innerWidth < 768);
@@ -92,6 +97,15 @@ export default function LoadingOverlay({ initialImages = [] }) {
       if (rotateInterval.current) clearInterval(rotateInterval.current);
     };
   }, []);
+
+  // --- NOUVEAU : Timer de durée minimale ---
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setMinDurationMet(true);
+    }, MIN_DURATION_MS);
+    return () => clearTimeout(timer);
+  }, []);
+  // -----------------------------------------
 
   useEffect(() => {
     if (!visible && previouslyFocusedElement.current) {
@@ -179,6 +193,9 @@ export default function LoadingOverlay({ initialImages = [] }) {
       setIsExiting(false);
       setIsReTrigger(true);
       setVisible(true);
+      // Réinitialise le timer minimal si on re-déclenche l'intro
+      setMinDurationMet(false);
+      setTimeout(() => setMinDurationMet(true), MIN_DURATION_MS);
     };
     return addEventHandler(EVENTS.INTRO_SHOW, handler);
   }, []);
@@ -190,6 +207,11 @@ export default function LoadingOverlay({ initialImages = [] }) {
     transform: 'scale(1.04)',
     transition: 'opacity 0.1s ease-in-out',
   };
+
+  // --- MODIFICATION DE LA LOGIQUE D'AFFICHAGE DU BOUTON "NEXT" ---
+  // On ne montre le bouton Next que si tout est chargé ET que le temps minimum est écoulé
+  const canDismiss = allLoaded && minDurationMet;
+  // ---------------------------------------------------------------
 
   return (
     <motion.div
@@ -211,10 +233,17 @@ export default function LoadingOverlay({ initialImages = [] }) {
           emitEvent(EVENTS.INTRO_DISMISSED);
         }
       }}
-      onClick={dismiss}
+      // On bloque le clic (et le swipe) tant que canDismiss n'est pas true
+      onClick={() => {
+        if (canDismiss) dismiss();
+      }}
       onTouchStart={e => setTouchStart(e.touches[0].clientY)}
       onTouchMove={e => {
-        if (touchStart && touchStart - e.touches[0].clientY > 50) {
+        if (
+          canDismiss &&
+          touchStart &&
+          touchStart - e.touches[0].clientY > 50
+        ) {
           dismiss();
           setTouchStart(null);
         }
@@ -222,8 +251,6 @@ export default function LoadingOverlay({ initialImages = [] }) {
       onTouchEnd={() => setTouchStart(null)}
     >
       <div className="relative w-full h-full">
-        {/* MAGIE DE PERFORMANCE : Ces deux images sont poussées par le serveur. */}
-        {/* Le navigateur télécharge la bonne version (Desktop ou Mobile) sans attendre que Javascript s'exécute grâce au priority=true */}
         {desktopSrcs[0] && (
           <Image
             src={desktopSrcs[0]}
@@ -249,7 +276,6 @@ export default function LoadingOverlay({ initialImages = [] }) {
           />
         )}
 
-        {/* FLIPBOOK ANIMÉ : Remplace les frames suivantes */}
         {currentIndex > 0 && activeSrcs[currentIndex] && (
           <Image
             key={activeSrcs[currentIndex]}
@@ -265,12 +291,13 @@ export default function LoadingOverlay({ initialImages = [] }) {
 
         <div className="absolute inset-0 bg-black/35 pointer-events-none z-10" />
 
-        {/* Petit pulse en attendant que les frames suivantes du carrousel soient chargées */}
-        {!allLoaded && (desktopSrcs.length > 1 || mobileSrcs.length > 1) && (
-          <div className="absolute top-8 right-8 z-20 pointer-events-none">
-            <div className="w-2 h-2 bg-white/30 rounded-full animate-pulse" />
-          </div>
-        )}
+        {/* L'indicateur de chargement reste s'il manque des images OU si le délai mini n'est pas passé */}
+        {(!allLoaded || !minDurationMet) &&
+          (desktopSrcs.length > 1 || mobileSrcs.length > 1) && (
+            <div className="absolute top-8 right-8 z-20 pointer-events-none">
+              <div className="w-2 h-2 bg-white/30 rounded-full animate-pulse" />
+            </div>
+          )}
 
         <div className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none select-none">
           <h2 className="text-whiteCustom flex items-end justify-center gap-4 text-3xl md:text-5xl lg:text-6xl xl:text-7xl 2xl:text-7xl mb-0 drop-shadow-title">
@@ -279,12 +306,15 @@ export default function LoadingOverlay({ initialImages = [] }) {
           </h2>
         </div>
 
-        <div className="absolute bottom-16 left-1/2 -translate-x-1/2 z-20">
+        {/* On masque le bouton Next tant que le chargement OU le délai n'est pas bon */}
+        <div
+          className={`absolute bottom-16 left-1/2 -translate-x-1/2 z-20 transition-opacity duration-500 ${canDismiss ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+        >
           <NextButton
             isExiting={isExiting}
             onClick={e => {
               e.stopPropagation();
-              dismiss();
+              if (canDismiss) dismiss();
             }}
           />
         </div>

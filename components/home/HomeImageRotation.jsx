@@ -17,7 +17,9 @@ export default function HomeImageRotation({
   const lastPosition = useRef(position);
   const pendingPosition = useRef(null);
   const [isNarrowLayout, setIsNarrowLayout] = useState(false);
-  const [isCurrentLoaded, setIsCurrentLoaded] = useState(false);
+
+  // CORRECTION : Un dictionnaire pour mémoriser définitivement les images chargées
+  const [loadedImages, setLoadedImages] = useState({});
 
   // Détection du layout (mobile + tablette)
   useEffect(() => {
@@ -31,15 +33,39 @@ export default function HomeImageRotation({
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
+  const normalizeImageSrc = value => {
+    if (typeof value !== 'string') return '';
+    const raw = value.trim();
+    if (!raw) return '';
+
+    // URL absolue (ex: Sanity CDN)
+    if (/^https?:\/\//i.test(raw)) {
+      // Nettoie les paramètres Sanity pour éviter les conflits avec Next.js Image
+      return raw.split('?')[0];
+    }
+
+    // Normalise les chemins "public"
+    const withoutLeading = raw.replace(/^\/+/, '');
+    if (withoutLeading.startsWith('home/')) return `/${withoutLeading}`;
+    if (/^home\d+\.(?:avif|webp|png|jpe?g)$/i.test(withoutLeading)) {
+      return `/home/${withoutLeading}`;
+    }
+    if (raw.startsWith('/')) return raw;
+
+    return `/${withoutLeading}`;
+  };
+
+  const current = images[index];
+  const imgSrc = normalizeImageSrc(current);
+
+  // L'image courante est considérée comme chargée si elle est dans notre dictionnaire
+  const isCurrentLoaded = loadedImages[imgSrc] || false;
+
   useEffect(() => {
     if (!images.length) return;
-    // Ne lance le timer que lorsque l'image courante est effectivement chargée.
-    // Cela évite de passer à l'image suivante alors que la courante n'est pas encore visible.
     if (!isCurrentLoaded) return;
 
     const id = setTimeout(() => {
-      // Calcule la prochaine position mais ne l'applique pas encore.
-      // Elle sera appliquée dans onExitComplete, entre le fade-out et le fade-in.
       if (isNarrowLayout) {
         pendingPosition.current = 'center';
         lastPosition.current = 'center';
@@ -59,54 +85,10 @@ export default function HomeImageRotation({
     return () => clearTimeout(id);
   }, [images, interval, isNarrowLayout, isCurrentLoaded]);
 
-  const normalizeImageSrc = value => {
-    if (typeof value !== 'string') return '';
-    const raw = value.trim();
-    if (!raw) return '';
-
-    // URL absolue (ex: Sanity CDN)
-    if (/^https?:\/\//i.test(raw)) {
-      // Nettoie les paramètres Sanity (w, q, auto=format) pour éviter les conflits avec Next.js Image
-      // Next.js ajoutera ses propres paramètres via quality={38} et sizes
-      return raw.split('?')[0]; // Garder simplement l'URL de base
-    }
-
-    // Normalise les chemins "public"
-    const withoutLeading = raw.replace(/^\/+/, '');
-
-    // Cas: "home/home1.webp" -> "/home/home1.webp"
-    if (withoutLeading.startsWith('home/')) return `/${withoutLeading}`;
-
-    // Cas: "home1.webp" -> "/home/home1.webp"
-    if (/^home\d+\.(?:avif|webp|png|jpe?g)$/i.test(withoutLeading)) {
-      return `/home/${withoutLeading}`;
-    }
-
-    // Déjà un chemin absolu ("/something")
-    if (raw.startsWith('/')) return raw;
-
-    // Fallback: force un chemin absolu pour éviter les résolutions relatives (ex: /fr/...)
-    return `/${withoutLeading}`;
-  };
-
-  const current = images[index];
-
-  const imgSrc = normalizeImageSrc(current);
-
-  // Au premier affichage (et à chaque changement), on remet le flag à false.
-  // Le fade-in ne se déclenchera que lorsque le composant Image appellera onLoad.
-  useEffect(() => {
-    if (!imgSrc) return;
-    setIsCurrentLoaded(false);
-  }, [imgSrc]);
-
-  // Note: pas de préchargement via new Image() — ça téléchargeait l'image brute
-  // Sanity (multi-MB) sans profiter au cache de next/Image (qui utilise /_next/image).
-  // Le timer attend onLoad, donc chaque transition est fluide sans préchargement.
-
   if (!imgSrc) {
     return null;
   }
+
   // Positionnement horizontal dynamique (changement instantané, sans slide)
   let justify = 'justify-center';
   let marginClass = '';
@@ -151,15 +133,18 @@ export default function HomeImageRotation({
               src={imgSrc}
               alt="Han-Noah profile illustration"
               fill
-              // On utilise 'vw' (viewport width) qui est l'unité standard pour l'optimisation
               sizes="(max-width: 1024px) 80vw, 40vw"
               className="object-contain"
               priority
               fetchPriority="high"
-              quality={50} // On peut monter un peu la qualité ici car c'est l'image principale
-              onLoad={() => setIsCurrentLoaded(true)}
+              quality={50}
+              onLoad={() => {
+                // On ajoute l'image au dictionnaire sans écraser les précédentes
+                setLoadedImages(prev => ({ ...prev, [imgSrc]: true }));
+              }}
               onError={() => {
-                setIsCurrentLoaded(true);
+                // En cas d'erreur, on la marque comme chargée pour ne pas bloquer la rotation
+                setLoadedImages(prev => ({ ...prev, [imgSrc]: true }));
               }}
             />
           </motion.div>
