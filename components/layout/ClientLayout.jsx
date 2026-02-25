@@ -1,17 +1,14 @@
 'use client';
 
-import dynamic from 'next/dynamic';
+import LoadingOverlay from '../overlays/LoadingOverlay';
 import ScrollbarTheme from './ScrollbarTheme';
 
-const LoadingOverlay = dynamic(() => import('../overlays/LoadingOverlay'), {
-  ssr: false,
-});
-
-export default function ClientLayout({ children }) {
+export default function ClientLayout({ children, loadingImages }) {
   return (
     <>
       <ScrollbarTheme />
-      <LoadingOverlay />
+      {/* On lui passe les images prêtes à l'emploi */}
+      <LoadingOverlay initialImages={loadingImages} />
       {children}
     </>
   );

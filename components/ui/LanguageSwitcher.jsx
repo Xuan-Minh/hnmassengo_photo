@@ -11,7 +11,7 @@ export default function LanguageSwitcher() {
   const params = useParams();
   const pathname = usePathname();
   const locale = params.locale;
-  const [autoDark, setAutoDark] = useState(false);
+  const [isDarkBg, setIsDarkBg] = useState(false);
   // activeSection n'est plus nécessaire (uniquement adaptation colorimétrique)
   const [hideSelector, setHideSelector] = useState(false);
 
@@ -27,14 +27,8 @@ export default function LanguageSwitcher() {
           .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
         if (visible?.target) {
           const sectionId = visible.target.id;
-          // blog (Spaces) forcé clair, works/shop forcés noir, sinon calcul auto
-          if (sectionId === 'blog') {
-            setAutoDark(true);
-          } else if (['works', 'shop'].includes(sectionId)) {
-            setAutoDark(false);
-          } else {
-            setAutoDark(computeIsDark(visible.target));
-          }
+          // Synchronisation stricte avec Menu : blanc uniquement sur blog
+          setIsDarkBg(sectionId === 'blog');
         }
       },
       { root, threshold: [0.4, 0.6, 0.8] }
@@ -62,9 +56,9 @@ export default function LanguageSwitcher() {
   }, []);
 
   // Utilisation directe de autoDark calculé par l'observer
-  const activeClass = autoDark ? 'text-whiteCustom' : 'text-blackCustom';
-  const inactiveClass = autoDark ? 'text-whiteCustom/60' : 'text-accent ';
-  const hoverClass = autoDark
+  const activeClass = isDarkBg ? 'text-whiteCustom' : 'text-blackCustom';
+  const inactiveClass = isDarkBg ? 'text-whiteCustom/60' : 'text-accent ';
+  const hoverClass = isDarkBg
     ? 'hover:text-whiteCustom'
     : 'hover:text-blackCustom';
 

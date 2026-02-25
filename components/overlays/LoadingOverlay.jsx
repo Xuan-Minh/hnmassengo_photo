@@ -4,30 +4,7 @@ import { motion } from 'framer-motion';
 import Image from 'next/image';
 import { EVENTS, emitEvent, addEventHandler } from '../../lib/events';
 import { buildSanityImageUrl } from '../../lib/imageUtils';
-import { getOptimizedImageParams } from '../../lib/hooks';
 
-// Hook pour détecter si c'est mobile (évite hydration mismatch)
-function useIsMobile() {
-  const [isMobile, setIsMobile] = useState(false);
-  const [mounted, setMounted] = useState(false);
-
-  useLayoutEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768); // md breakpoint
-    };
-
-    // Sync avec le client immédiatement sans SSR
-    checkMobile();
-    setMounted(true);
-
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
-
-  return mounted ? isMobile : false;
-}
-
-// Button component for loading overlay exit action
 function NextButton({ isExiting, onClick }) {
   const [hovered, setHovered] = useState(false);
   const [clickCount, setClickCount] = useState(0);
@@ -37,19 +14,17 @@ function NextButton({ isExiting, onClick }) {
     return exitRotation + clickCount * 360;
   }, [isExiting, clickCount]);
 
-  const handleClick = e => {
-    setClickCount(c => c + 1);
-    onClick?.(e);
-  };
-
   return (
     <button
       type="button"
       aria-label="next"
-      onClick={handleClick}
+      onClick={e => {
+        setClickCount(c => c + 1);
+        onClick?.(e);
+      }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      className={`px-6 py-3 text-lg font-whiteCustom font-medium font-playfair text-[18px] md:text-[18px] transition-colors duration-300 ${hovered ? 'text-whiteCustom opacity-100 backdrop-blur-[2px]' : 'text-greyCustom opacity-85'}`}
+      className={`px-6 py-3 text-lg font-whiteCustom font-medium font-playfair transition-colors duration-300 ${hovered ? 'text-whiteCustom opacity-100 backdrop-blur-[2px]' : 'text-greyCustom opacity-85'}`}
     >
       <motion.span
         className="inline-block mr-2"
@@ -57,57 +32,80 @@ function NextButton({ isExiting, onClick }) {
         animate={{ rotate: rotateValue }}
         transition={{ duration: 0.4, ease: 'easeInOut' }}
       />
-      <span className={'text-whiteCustom'}>next</span>
+      <span className="text-whiteCustom">next</span>
     </button>
   );
 }
 
-export default function LoadingOverlay() {
-  const isMobile = useIsMobile();
+export default function LoadingOverlay({ initialImages = [] }) {
   const previouslyFocusedElement = useRef(null);
-  // Fond dégradé élégant au lieu d'un gris uni
   const elegantBackground =
     'linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 50%, #1a1a1a 100%)';
 
-  // Liste dynamique des images de chargement chargées depuis Sanity via l'API
-  const [imageSources, setImageSources] = useState([]);
-  const [imageMetadata, setImageMetadata] = useState([]); // Métadonnées (dimensions, orientation)
+  // 1. Préparation des URLs ultra-optimisées côté serveur
+  const desktopData = initialImages.filter(img => !img.portraitOnly);
+  const mobileData = initialImages.filter(img => img.portraitOnly);
 
-  // Visible au SSR pour éviter flash, invisible au client jusqu'au premier render
+  const safeDesktopData = desktopData.length > 0 ? desktopData : initialImages;
+  const safeMobileData = mobileData.length > 0 ? mobileData : initialImages;
+
+  const desktopSrcs = safeDesktopData
+    .map(img =>
+      img?.url
+        ? buildSanityImageUrl(img.url, { w: 1920, q: 60, auto: 'format' })
+        : null
+    )
+    .filter(Boolean);
+
+  const mobileSrcs = safeMobileData
+    .map(img =>
+      img?.url
+        ? buildSanityImageUrl(img.url, { w: 1080, q: 60, auto: 'format' })
+        : null
+    )
+    .filter(Boolean);
+
   const [visible, setVisible] = useState(true);
   const [isExiting, setIsExiting] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [allLoaded, setAllLoaded] = useState(false);
   const rotateInterval = useRef(null);
-  const [loadedImages, setLoadedImages] = useState([]);
+
   const [isReTrigger, setIsReTrigger] = useState(false);
   const [touchStart, setTouchStart] = useState(null);
   const overlayRef = useRef(null);
-  const [loadingProgress, setLoadingProgress] = useState(0);
 
-  // Affiche toujours l'intro au chargement (plus de gating sessionStorage)
+  // Détection Mobile (Seulement après hydratation pour le flipbook JS)
+  const [isMobileDevice, setIsMobileDevice] = useState(false);
+  useLayoutEffect(() => {
+    setIsMobileDevice(window.innerWidth < 768);
+    const checkMobile = () => setIsMobileDevice(window.innerWidth < 768);
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  const activeSrcs = isMobileDevice ? mobileSrcs : desktopSrcs;
+
   useEffect(() => {
-    setVisible(true);
     previouslyFocusedElement.current = document.activeElement;
     return () => {
       if (rotateInterval.current) clearInterval(rotateInterval.current);
     };
   }, []);
 
-  // Rendre le focus à l'élément déclencheur à la fermeture
   useEffect(() => {
     if (!visible && previouslyFocusedElement.current) {
       previouslyFocusedElement.current.focus?.();
     }
   }, [visible]);
 
-  // Bloquer le scroll sur body + html + scroll-root quand le loading est visible
+  // Blocage du scroll
   useEffect(() => {
     const scrollRoot = document.getElementById('scroll-root');
     const html = document.documentElement;
     const body = document.body;
 
     if (visible) {
-      // Bloquer le scroll partout (sans position:fixed qui casse les éléments fixed enfants)
       html.style.overflow = 'hidden';
       body.style.overflow = 'hidden';
       body.style.touchAction = 'none';
@@ -117,7 +115,6 @@ export default function LoadingOverlay() {
         scrollRoot.style.touchAction = 'none';
       }
     } else {
-      // Restaurer le scroll
       html.style.overflow = '';
       body.style.overflow = '';
       body.style.touchAction = '';
@@ -125,12 +122,10 @@ export default function LoadingOverlay() {
       if (scrollRoot) {
         scrollRoot.style.overflow = '';
         scrollRoot.style.touchAction = '';
-        // Remettre le scroll en haut après le chargement
         scrollRoot.scrollTo(0, 0);
       }
       window.scrollTo(0, 0);
     }
-
     return () => {
       html.style.overflow = '';
       body.style.overflow = '';
@@ -143,155 +138,40 @@ export default function LoadingOverlay() {
     };
   }, [visible]);
 
-  // Charge la liste des images depuis Sanity via l'API et les optimise
-  const fetchedOnceRef = useRef(false);
+  // 2. Préchargement furtif en arrière-plan des autres frames du flipbook
   useEffect(() => {
-    if (fetchedOnceRef.current) return;
-    fetchedOnceRef.current = true;
-
-    // Charger directement depuis l'API Sanity
-    fetch('/api/loading-images')
-      .then(r => r.json())
-      .then(data => {
-        if (Array.isArray(data.images) && data.images.length > 0) {
-          // Stocker toutes les métadonnées
-          setImageMetadata(data.images);
-        }
-      })
-      // eslint-disable-next-line no-empty
-      .catch(() => {
-        // Erreur lors du chargement des images de chargement
-      });
-  }, []);
-
-  // Filtrer et optimiser les images selon le breakpoint mobile
-  useEffect(() => {
-    if (imageMetadata.length === 0) return;
-
-    // Filtrer selon le device (exclusif)
-    // - Sur mobile: afficher SEULEMENT les images marquées comme "portraitOnly"
-    // - Sur desktop: afficher SEULEMENT les images qui NE sont PAS "portraitOnly"
-    let filtered = isMobile
-      ? imageMetadata.filter(img => img.portraitOnly)
-      : imageMetadata.filter(img => !img.portraitOnly);
-
-    // Fallback : si aucune image ne correspond, on affiche tout
-    if (filtered.length === 0) {
-      filtered = imageMetadata;
+    if (activeSrcs.length <= 1) {
+      setAllLoaded(true);
+      return;
     }
-
-    // Extraire seulement les URLs (pas les objets complets)
-    const urls = filtered.map(img =>
-      buildSanityImageUrl(img.url, {
-        ...getOptimizedImageParams('loading', isMobile),
-        auto: 'format',
-      })
-    );
-    setImageSources(urls);
-  }, [isMobile, imageMetadata]);
-
-  // Précharge: affiche la 1ère image immédiatement, charge les autres en background
-  useEffect(() => {
-    if (imageSources.length === 0) return;
-
-    // Injecter un preload link pour la 1ère image dans le <head>
-    if (typeof window !== 'undefined' && imageSources[0]) {
-      const link = document.createElement('link');
-      link.rel = 'preload';
-      link.as = 'image';
-      link.href = imageSources[0];
-      link.fetchPriority = 'high';
-      document.head.appendChild(link);
-
-      // Cleanup
-      return () => {
-        if (link.parentNode) {
-          link.parentNode.removeChild(link);
-        }
-      };
-    }
-  }, [imageSources]);
-
-  // Précharge: affiche la 1ère image immédiatement, charge les autres en background
-  useEffect(() => {
-    if (imageSources.length === 0) return;
-    let isMounted = true;
-    const ok = [];
     let done = 0;
-    let firstImageLoaded = false;
-
-    // Précharger toutes les images
-    imageSources.forEach((src, index) => {
-      const img = typeof window !== 'undefined' ? new window.Image() : null;
-      if (!img) return;
-
-      img.onload = () => {
-        done += 1;
-        ok.push(src);
-
-        // Dès que la 1ère image charge, afficher et démarrer l'animation
-        if (isMounted && index === 0 && !firstImageLoaded) {
-          firstImageLoaded = true;
-          setLoadedImages([src]);
-          setLoadingProgress(100);
-        }
-
-        // Une fois TOUTES les images chargées, mettre à jour la liste complète
-        if (isMounted && done === imageSources.length && ok.length > 0) {
-          setLoadedImages(ok);
-          setLoadingProgress(100);
-        }
+    activeSrcs.forEach(src => {
+      const img = new window.Image();
+      img.onload = img.onerror = () => {
+        done++;
+        if (done === activeSrcs.length) setAllLoaded(true);
       };
-
-      img.onerror = () => {
-        done += 1;
-
-        // Si c'est la 1ère image qui échoue, afficher quand même
-        if (isMounted && index === 0 && !firstImageLoaded) {
-          firstImageLoaded = true;
-          setLoadedImages([imageSources[0]]);
-          setLoadingProgress(100);
-        }
-
-        // Continuer même en cas d'erreur partielle
-        if (isMounted && done === imageSources.length) {
-          setLoadedImages(ok.length > 0 ? ok : [imageSources[0]]);
-          setLoadingProgress(100);
-        }
-      };
-
       img.src = src;
     });
+  }, [activeSrcs]);
 
-    return () => {
-      isMounted = false;
-    };
-  }, [imageSources]);
-
-  // Rotation du fond uniquement quand TOUTES les images sont chargées
+  // 3. Lancement du Flipbook
   useEffect(() => {
-    if (!visible || isExiting) return;
-    if (loadedImages.length === 0 || loadedImages.length < imageSources.length)
-      return;
+    if (!visible || isExiting || !allLoaded) return;
+    if (activeSrcs.length <= 1) return;
 
-    const framesCount = loadedImages.length;
     rotateInterval.current = setInterval(() => {
-      setCurrentIndex(i => (i + 1) % framesCount);
+      setCurrentIndex(i => (i + 1) % activeSrcs.length);
     }, 800);
 
-    return () => {
-      if (rotateInterval.current) clearInterval(rotateInterval.current);
-    };
-  }, [visible, isExiting, loadedImages.length, imageSources.length]);
-
-  // Pas de timer: l'intro reste affichée jusqu'au clic sur "Next"
+    return () => clearInterval(rotateInterval.current);
+  }, [visible, isExiting, allLoaded, activeSrcs.length]);
 
   const dismiss = () => {
     if (isExiting) return;
     setIsExiting(true);
   };
 
-  // Écoute un événement global pour réafficher l'intro à la demande
   useEffect(() => {
     const handler = () => {
       if (rotateInterval.current) clearInterval(rotateInterval.current);
@@ -300,35 +180,15 @@ export default function LoadingOverlay() {
       setIsReTrigger(true);
       setVisible(true);
     };
-    const cleanup = addEventHandler(EVENTS.INTRO_SHOW, handler);
-    return cleanup;
+    return addEventHandler(EVENTS.INTRO_SHOW, handler);
   }, []);
 
   if (!visible && !isExiting) return null;
 
-  // Mode sans fade: on affiche seulement l'image courante (préchargée). Si aucune image, fond neutre fixe.
-  const showImages = loadedImages.length > 0;
-
-  // Swipe up pour fermer (mobile)
-  const handleTouchStart = e => {
-    setTouchStart(e.touches[0].clientY);
-  };
-
-  const handleTouchMove = e => {
-    if (!touchStart) return;
-
-    const currentTouch = e.touches[0].clientY;
-    const diff = touchStart - currentTouch;
-
-    // Si swipe up d'au moins 50px
-    if (diff > 50) {
-      dismiss();
-      setTouchStart(null);
-    }
-  };
-
-  const handleTouchEnd = () => {
-    setTouchStart(null);
+  const imageStyle = {
+    filter: 'brightness(0.42) contrast(1.05) saturate(0.9)',
+    transform: 'scale(1.04)',
+    transition: 'opacity 0.1s ease-in-out',
   };
 
   return (
@@ -342,11 +202,9 @@ export default function LoadingOverlay() {
       transition={{ duration: 0.8, ease: 'easeInOut' }}
       onAnimationComplete={() => {
         if (isExiting) {
-          // Remettre le scroll en haut AVANT de rendre le contenu visible
           const scrollRoot = document.getElementById('scroll-root');
           if (scrollRoot) scrollRoot.scrollTo(0, 0);
           window.scrollTo(0, 0);
-
           setVisible(false);
           setIsExiting(false);
           setIsReTrigger(false);
@@ -354,66 +212,64 @@ export default function LoadingOverlay() {
         }
       }}
       onClick={dismiss}
-      onTouchStart={handleTouchStart}
-      onTouchMove={handleTouchMove}
-      onTouchEnd={handleTouchEnd}
+      onTouchStart={e => setTouchStart(e.touches[0].clientY)}
+      onTouchMove={e => {
+        if (touchStart && touchStart - e.touches[0].clientY > 50) {
+          dismiss();
+          setTouchStart(null);
+        }
+      }}
+      onTouchEnd={() => setTouchStart(null)}
     >
       <div className="relative w-full h-full">
-        {showImages && (
-          <>
-            {/* Afficher toutes les images préchargées avec opacité conditionnelle */}
-            {loadedImages.map((imageSrc, index) => (
-              <Image
-                key={imageSrc}
-                src={imageSrc}
-                alt=""
-                fill
-                unoptimized
-                className="absolute inset-0 w-full h-full object-cover z-0"
-                draggable={false}
-                fetchPriority={index === 0 ? 'high' : 'auto'}
-                style={{
-                  pointerEvents: 'none',
-                  userSelect: 'none',
-                  filter: 'brightness(0.42) contrast(1.05) saturate(0.9)',
-                  transform: 'scale(1.04)',
-                  transition: 'opacity 0.1s ease-in-out',
-                  opacity: index === currentIndex ? 1 : 0,
-                }}
-                sizes="100vw"
-                priority={index === 0}
-              />
-            ))}
-            <div className="absolute inset-0 bg-black/35 pointer-events-none z-10" />
+        {/* MAGIE DE PERFORMANCE : Ces deux images sont poussées par le serveur. */}
+        {/* Le navigateur télécharge la bonne version (Desktop ou Mobile) sans attendre que Javascript s'exécute grâce au priority=true */}
+        {desktopSrcs[0] && (
+          <Image
+            src={desktopSrcs[0]}
+            alt="Loading background"
+            fill
+            unoptimized
+            className={`absolute inset-0 w-full h-full object-cover z-0 hidden md:block ${currentIndex === 0 ? 'opacity-100' : 'opacity-0'}`}
+            style={imageStyle}
+            sizes="100vw"
+            priority={true}
+          />
+        )}
+        {mobileSrcs[0] && (
+          <Image
+            src={mobileSrcs[0]}
+            alt="Loading background mobile"
+            fill
+            unoptimized
+            className={`absolute inset-0 w-full h-full object-cover z-0 block md:hidden ${currentIndex === 0 ? 'opacity-100' : 'opacity-0'}`}
+            style={imageStyle}
+            sizes="100vw"
+            priority={true}
+          />
+        )}
 
-            {/* Indicateur de chargement visible tant que toutes les images ne sont pas chargées */}
-            {loadedImages.length === 0 && loadingProgress < 100 && (
-              <div className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none">
-                <div className="bg-black/60 backdrop-blur-sm rounded-lg px-6 py-4 flex flex-col items-center gap-3">
-                  <div className="text-white/80 text-sm font-light">
-                    Loading
-                  </div>
-                  <div className="w-32 h-1 bg-white/20 rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-white rounded-full transition-all duration-300 ease-out"
-                      style={{ width: `${loadingProgress}%` }}
-                    />
-                  </div>
-                  <div className="text-white/60 text-xs">
-                    {Math.round(loadingProgress)}%
-                  </div>
-                </div>
-              </div>
-            )}
+        {/* FLIPBOOK ANIMÉ : Remplace les frames suivantes */}
+        {currentIndex > 0 && activeSrcs[currentIndex] && (
+          <Image
+            key={activeSrcs[currentIndex]}
+            src={activeSrcs[currentIndex]}
+            alt="Loading frame"
+            fill
+            unoptimized
+            className="absolute inset-0 w-full h-full object-cover z-0 opacity-100"
+            style={imageStyle}
+            sizes="100vw"
+          />
+        )}
 
-            {/* Indicateur subtil une fois l'animation démarrée mais si de nouvelles images arrivent */}
-            {loadedImages.length > 0 &&
-              loadedImages.length < imageSources.length && (
-                <div className="absolute top-8 right-8 z-20 pointer-events-none">
-                  <div className="w-2 h-2 bg-white/30 rounded-full animate-pulse" />
-                </div>
-              )}
-          </>
+        <div className="absolute inset-0 bg-black/35 pointer-events-none z-10" />
+
+        {/* Petit pulse en attendant que les frames suivantes du carrousel soient chargées */}
+        {!allLoaded && (desktopSrcs.length > 1 || mobileSrcs.length > 1) && (
+          <div className="absolute top-8 right-8 z-20 pointer-events-none">
+            <div className="w-2 h-2 bg-white/30 rounded-full animate-pulse" />
+          </div>
         )}
 
         <div className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none select-none">
