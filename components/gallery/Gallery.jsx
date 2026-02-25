@@ -461,9 +461,7 @@ export default function Gallery() {
     >
       <div className="hidden lg:flex gap-4 mb-1">
         <button
-          className={`relative w-6 h-6 transition-opacity duration-300 ease-in-out text-blackCustom ${
-            view === 'grid' ? 'opacity-100' : 'opacity-50 hover:opacity-100'
-          }`}
+          className="group relative w-6 h-6"
           onPointerDown={e => {
             e.preventDefault();
             e.stopPropagation();
@@ -471,13 +469,28 @@ export default function Gallery() {
           }}
           aria-label="Grid view"
         >
-          <GridIcon className="w-full h-full" />
+          {/* Grille Inactive (Grise) */}
+          <GridIcon
+            color="#787878"
+            className={`absolute inset-0 w-full h-full pointer-events-none transition-opacity duration-300 ease-in-out ${
+              view === 'grid'
+                ? 'opacity-0'
+                : 'opacity-100 group-hover:opacity-0'
+            }`}
+          />
+          {/* Grille Active / Survolée (Noire) */}
+          <GridIcon
+            color="#222222"
+            className={`absolute inset-0 w-full h-full pointer-events-none transition-opacity duration-300 ease-in-out ${
+              view === 'grid'
+                ? 'opacity-100'
+                : 'opacity-0 group-hover:opacity-100'
+            }`}
+          />
         </button>
 
         <button
-          className={`relative w-6 h-6 transition-opacity duration-300 ease-in-out text-blackCustom ${
-            view === 'list' ? 'opacity-100' : 'opacity-50 hover:opacity-100'
-          }`}
+          className="group relative w-6 h-6"
           onPointerDown={e => {
             e.preventDefault();
             e.stopPropagation();
@@ -485,7 +498,24 @@ export default function Gallery() {
           }}
           aria-label="List view"
         >
-          <ListIcon className="w-full h-full" />
+          {/* Liste Inactive (Grise) */}
+          <ListIcon
+            color="#787878"
+            className={`absolute inset-0 w-full h-full pointer-events-none transition-opacity duration-300 ease-in-out ${
+              view === 'list'
+                ? 'opacity-0'
+                : 'opacity-100 group-hover:opacity-0'
+            }`}
+          />
+          {/* Liste Active / Survolée (Noire) */}
+          <ListIcon
+            color="#222222"
+            className={`absolute inset-0 w-full h-full pointer-events-none transition-opacity duration-300 ease-in-out ${
+              view === 'list'
+                ? 'opacity-100'
+                : 'opacity-0 group-hover:opacity-100'
+            }`}
+          />
         </button>
       </div>
 
@@ -621,11 +651,7 @@ export default function Gallery() {
                     {/* Boutons de vue à gauche */}
                     <div className="flex gap-4 flex-shrink-0">
                       <button
-                        className={`relative w-6 h-6 transition-opacity duration-300 ease-in-out transform-gpu text-blackCustom ${
-                          view === 'grid'
-                            ? 'opacity-100'
-                            : 'opacity-50 hover:opacity-100'
-                        }`}
+                        className="group relative w-6 h-6"
                         onPointerDown={e => {
                           e.preventDefault();
                           e.stopPropagation();
@@ -633,16 +659,28 @@ export default function Gallery() {
                         }}
                         aria-label="Grid view"
                       >
-                        {/* Ajout de pointer-events-none ici */}
-                        <GridIcon className="w-full h-full pointer-events-none" />
+                        {/* Grille Inactive (Grise) */}
+                        <GridIcon
+                          color="#787878"
+                          className={`absolute inset-0 w-full h-full pointer-events-none transition-opacity duration-300 ease-in-out ${
+                            view === 'grid'
+                              ? 'opacity-0'
+                              : 'opacity-100 group-hover:opacity-0'
+                          }`}
+                        />
+                        {/* Grille Active / Survolée (Noire) */}
+                        <GridIcon
+                          color="#222222"
+                          className={`absolute inset-0 w-full h-full pointer-events-none transition-opacity duration-300 ease-in-out ${
+                            view === 'grid'
+                              ? 'opacity-100'
+                              : 'opacity-0 group-hover:opacity-100'
+                          }`}
+                        />
                       </button>
 
                       <button
-                        className={`relative w-6 h-6 transition-opacity duration-300 ease-in-out transform-gpu text-blackCustom ${
-                          view === 'list'
-                            ? 'opacity-100'
-                            : 'opacity-50 hover:opacity-100'
-                        }`}
+                        className="group relative w-6 h-6"
                         onPointerDown={e => {
                           e.preventDefault();
                           e.stopPropagation();
@@ -650,8 +688,24 @@ export default function Gallery() {
                         }}
                         aria-label="List view"
                       >
-                        {/* Ajout de pointer-events-none ici */}
-                        <ListIcon className="w-full h-full pointer-events-none" />
+                        {/* Liste Inactive (Grise) */}
+                        <ListIcon
+                          color="#787878"
+                          className={`absolute inset-0 w-full h-full pointer-events-none transition-opacity duration-300 ease-in-out ${
+                            view === 'list'
+                              ? 'opacity-0'
+                              : 'opacity-100 group-hover:opacity-0'
+                          }`}
+                        />
+                        {/* Liste Active / Survolée (Noire) */}
+                        <ListIcon
+                          color="#222222"
+                          className={`absolute inset-0 w-full h-full pointer-events-none transition-opacity duration-300 ease-in-out ${
+                            view === 'list'
+                              ? 'opacity-100'
+                              : 'opacity-0 group-hover:opacity-100'
+                          }`}
+                        />
                       </button>
                     </div>
 

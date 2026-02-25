@@ -1,6 +1,6 @@
 import React from 'react';
 
-export function ListIcon({ className = '', ...props }) {
+export function ListIcon({ color = '#222222', className = '', ...props }) {
   return (
     <svg
       width="28"
@@ -11,15 +11,14 @@ export function ListIcon({ className = '', ...props }) {
       className={className}
       {...props}
     >
-      {/* On a remplacé les -5.35722e-08 par un simple 0 parfait */}
-      <path d="M28 2.5L0 2.5" stroke="currentColor" strokeWidth="5" />
-      <path d="M28 13.5L0 13.5" stroke="currentColor" strokeWidth="5" />
-      <path d="M28 24.5L0 24.5" stroke="currentColor" strokeWidth="5" />
+      <path d="M28 2.5L0 2.5" stroke={color} strokeWidth="5" />
+      <path d="M28 13.5L0 13.5" stroke={color} strokeWidth="5" />
+      <path d="M28 24.5L0 24.5" stroke={color} strokeWidth="5" />
     </svg>
   );
 }
 
-export function GridIcon({ className = '', ...props }) {
+export function GridIcon({ color = '#222222', className = '', ...props }) {
   return (
     <svg
       width="28"
@@ -30,10 +29,10 @@ export function GridIcon({ className = '', ...props }) {
       className={className}
       {...props}
     >
-      <rect width="13" height="13" fill="currentColor" />
-      <rect x="15" width="13" height="13" fill="currentColor" />
-      <rect y="15" width="13" height="13" fill="currentColor" />
-      <rect x="15" y="15" width="13" height="13" fill="currentColor" />
+      <rect width="13" height="13" fill={color} />
+      <rect x="15" width="13" height="13" fill={color} />
+      <rect y="15" width="13" height="13" fill={color} />
+      <rect x="15" y="15" width="13" height="13" fill={color} />
     </svg>
   );
 }
