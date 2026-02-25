@@ -116,7 +116,7 @@ export default function BlogPostOverlay({ post, onClose, onPrevious, onNext }) {
         )}
 
         {/* Navigation Footer */}
-        <div className="w-full border-t border-whiteCustom/20 px-8 md:px-16 py-6 flex items-center justify-center gap-16 shrink-0">
+        <div className="w-full border-t border-whiteCustom/20 px-8 md:px-16 py-6 hidden flex items-center justify-center gap-16 shrink-0">
           <button
             onClick={onPrevious}
             className="text-base text-whiteCustom/60 hover:text-whiteCustom transition-colors flex items-center gap-2"
