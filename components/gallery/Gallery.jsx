@@ -47,34 +47,27 @@ export default function Gallery() {
   }, [overlayOpen, selectedProject]);
 
   // Charger les projets depuis Sanity
-  // Charger les projets depuis Sanity
   useEffect(() => {
     const fetchProjects = async () => {
       const isMobileDevice =
         typeof window !== 'undefined' ? window.innerWidth < 768 : false;
-
-      // 1. AJOUT DE metadata { lqip } DANS LA REQUÊTE GROQ
       const data = await client.fetch(
-        '*[_type == "project"] { ..., images[]{ asset->{ url, metadata { lqip } } } }'
+        '*[_type == "project"] { ..., images[]{ asset->{ url } } }'
       );
-
       const mapped = data.map(p => ({
         id: p._id,
         name:
           p.name?.[locale] || p.name?.fr || p[`name_${locale}`] || p.name_fr,
         type: p.type,
-
-        // 2. MODIFICATION : Au lieu de renvoyer juste une URL (string), on renvoie un OBJET { src, lqip }
         images: (p.images || [])
-          .filter(img => img?.asset?.url)
-          .map(img => ({
-            src: buildSanityImageUrl(img.asset.url, {
+          .map(img => img?.asset?.url)
+          .filter(Boolean)
+          .map(url =>
+            buildSanityImageUrl(url, {
               ...getOptimizedImageParams('gallery-grid', isMobileDevice),
               auto: 'format',
-            }),
-            lqip: img.asset.metadata?.lqip, // La fameuse image floue en base64
-          })),
-
+            })
+          ),
         coords: p.coords,
         date: p.date,
         description:

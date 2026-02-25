@@ -1,5 +1,5 @@
 // components/gallery/GalleryList.jsx
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import { buildSanityImageUrl } from '../../lib/imageUtils';
@@ -107,12 +107,9 @@ export default function GalleryList({
     listTimersRef.current.tick = setTimeout(async () => {
       const next = computeNext();
       if (!next) return;
-
-      // Ici on pointe bien sur le nouvel objet
       const nextRaw =
         projects[next.nextProjectIndex]?.images?.[next.nextImageIndex];
-      // On extrait proprement .src pour précharger l'image HD
-      const nextSrc = buildSanityImageUrl(nextRaw?.src, {
+      const nextSrc = buildSanityImageUrl(nextRaw, {
         ...getOptimizedImageParams('gallery'),
         auto: 'format',
       });
@@ -169,19 +166,14 @@ export default function GalleryList({
     };
   }, [listTouchStart, navigateListNext, navigateListPrev]);
 
-  // --- CORRECTION DU BLUR UP : DÉCLARATION PROPRE DE LA VARIABLE ---
-  // On récupère l'objet image complet (qui contient .src et .lqip)
-  const currentListImgObj =
+  const currentListSrc =
     projects[currentProjectIndex]?.images?.[currentImageIndex] || null;
-
-  // On génère l'URL HD d'affichage à partir de currentListImgObj.src
-  const currentListDisplaySrc = currentListImgObj?.src
-    ? buildSanityImageUrl(currentListImgObj.src, {
+  const currentListDisplaySrc = currentListSrc
+    ? buildSanityImageUrl(currentListSrc, {
         ...getOptimizedImageParams('gallery'),
         auto: 'format',
       })
     : null;
-  // ----------------------------------------------------------------
 
   return (
     <motion.div
@@ -256,11 +248,6 @@ export default function GalleryList({
                     sizes="(max-width: 768px) 90vw, (max-width: 1200px) 60vw, 55vw"
                     quality={60}
                     unoptimized
-                    // --- NOUVEAUX AJOUTS POUR LE BLUR-UP ---
-                    placeholder={currentListImgObj?.lqip ? 'blur' : 'empty'}
-                    blurDataURL={currentListImgObj?.lqip}
-                    // ---------------------------------------
-
                     onError={() => {
                       if (currentImageVersionRef.current === capturedVersion)
                         setListImageError(true);

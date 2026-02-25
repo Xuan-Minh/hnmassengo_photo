@@ -172,7 +172,7 @@ export default function GalleryGrid({
                     }}
                   >
                     <Image
-                      src={imgData.img.src}
+                      src={imgData.img}
                       alt={imgData.name}
                       width={200}
                       height={300}
@@ -183,8 +183,6 @@ export default function GalleryGrid({
                       draggable={false}
                       sizes="(max-width: 768px) 45vw, 128px"
                       loading={slotIdx < 5 ? 'eager' : 'lazy'}
-                      placeholder={imgData.img.lqip ? 'blur' : 'empty'}
-                      blurDataURL={imgData.img.lqip}
                     />
                   </motion.div>
                 ) : (
