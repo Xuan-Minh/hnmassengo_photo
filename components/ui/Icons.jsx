@@ -1,3 +1,5 @@
+import React from 'react';
+
 export function ListIcon({ className = '', ...props }) {
   return (
     <svg
@@ -9,7 +11,6 @@ export function ListIcon({ className = '', ...props }) {
       className={className}
       {...props}
     >
-      {/* On utilise stroke="currentColor" et strokeWidth (camelCase) */}
       <path
         d="M28 2.5L-5.35722e-08 2.5"
         stroke="currentColor"
@@ -36,7 +37,6 @@ export function GridIcon({ className = '', ...props }) {
       className={className}
       {...props}
     >
-      {/* On utilise fill="currentColor" */}
       <rect width="13" height="13" fill="currentColor" />
       <rect x="15" width="13" height="13" fill="currentColor" />
       <rect y="15" width="13" height="13" fill="currentColor" />
