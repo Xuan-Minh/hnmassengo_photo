@@ -18,6 +18,7 @@ module.exports = {
         accent: 'rgba(34, 34, 34, 0.6)',
         accentHover: '#D9D9D9',
         blackCustom: '#222222',
+        greyCustom: '#787878',
         formBG: '#323232',
       },
       gridTemplateRows: {

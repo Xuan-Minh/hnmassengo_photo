@@ -15,6 +15,8 @@ import { AnimatePresence } from 'framer-motion';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import { buildSanityImageUrl } from '../../lib/imageUtils';
+// Ajout de l'import des icônes SVG
+import { GridIcon, ListIcon } from '../ui/Icons';
 
 function getProjectDateMs(project) {
   const raw = project?.date;
@@ -82,7 +84,6 @@ export default function Gallery() {
   // Swipe tactile pour le mode list (cohérent avec le lightbox)
   const [listTouchStart, setListTouchStart] = useState(null);
 
-  // Charger les projets depuis Sanity
   // Charger les projets depuis Sanity
   useEffect(() => {
     const fetchProjects = async () => {
@@ -460,8 +461,10 @@ export default function Gallery() {
     >
       <div className="hidden lg:flex gap-4 mb-1">
         <button
-          className={`relative w-6 h-6 transition-opacity duration-300 ease-in-out ${
-            view === 'grid' ? 'opacity-100' : 'opacity-50 hover:opacity-100'
+          className={`relative w-6 h-6 transition-all duration-300 ease-in-out ${
+            view === 'grid'
+              ? 'text-blackCustom opacity-100'
+              : 'text-greyCustom opacity-60 hover:opacity-100 hover:text-blackCustom'
           }`}
           onPointerDown={e => {
             e.preventDefault();
@@ -470,28 +473,14 @@ export default function Gallery() {
           }}
           aria-label="Grid view"
         >
-          <Image
-            src="/icons/gridOff.webp"
-            alt="Grid View Off"
-            fill
-            sizes="24px"
-            className={`absolute inset-0 w-full h-full object-contain transition-opacity duration-300 ${
-              view === 'grid' ? 'opacity-0' : 'opacity-100'
-            }`}
-          />
-          <Image
-            src="/icons/gridOn.webp"
-            alt="Grid View On"
-            fill
-            sizes="24px"
-            className={`absolute inset-0 w-full h-full object-contain transition-opacity duration-300 ${
-              view === 'grid' ? 'opacity-100' : 'opacity-0'
-            }`}
-          />
+          <GridIcon className="w-full h-full" />
         </button>
+
         <button
-          className={`relative w-6 h-6 transition-opacity duration-300 ease-in-out ${
-            view === 'list' ? 'opacity-100' : 'opacity-50 hover:opacity-100'
+          className={`relative w-6 h-6 transition-all duration-300 ease-in-out ${
+            view === 'list'
+              ? 'text-blackCustom opacity-100'
+              : 'text-greyCustom opacity-60 hover:opacity-100 hover:text-blackCustom'
           }`}
           onPointerDown={e => {
             e.preventDefault();
@@ -500,26 +489,10 @@ export default function Gallery() {
           }}
           aria-label="List view"
         >
-          <Image
-            src="/icons/listOff.webp"
-            alt="List View Off"
-            fill
-            sizes="24px"
-            className={`absolute inset-0 w-full h-full object-contain transition-opacity duration-300 ${
-              view === 'list' ? 'opacity-0' : 'opacity-100'
-            }`}
-          />
-          <Image
-            src="/icons/listOn.webp"
-            alt="List View On"
-            fill
-            sizes="24px"
-            className={`absolute inset-0 w-full h-full object-contain transition-opacity duration-300 ${
-              view === 'list' ? 'opacity-100' : 'opacity-0'
-            }`}
-          />
+          <ListIcon className="w-full h-full" />
         </button>
       </div>
+
       {view === 'grid' && (
         <div className="relative z-10 flex flex-col gap-1 items-start pointer-events-auto">
           {FILTERS.map(f => (
@@ -551,7 +524,6 @@ export default function Gallery() {
       )}
     </div>
   );
-
   return (
     <>
       <section className="relative w-full h-screen overflow-hidden">
@@ -653,10 +625,10 @@ export default function Gallery() {
                     {/* Boutons de vue à gauche */}
                     <div className="flex gap-4 flex-shrink-0">
                       <button
-                        className={`relative w-6 h-6 transition-opacity duration-300 ease-in-out ${
+                        className={`relative w-6 h-6 transition-all duration-300 ease-in-out ${
                           view === 'grid'
-                            ? 'opacity-100'
-                            : 'opacity-50 hover:opacity-100'
+                            ? 'text-blackCustom opacity-100'
+                            : 'text-greyCustom opacity-60 hover:opacity-100 hover:text-blackCustom'
                         }`}
                         onPointerDown={e => {
                           e.preventDefault();
@@ -665,28 +637,14 @@ export default function Gallery() {
                         }}
                         aria-label="Grid view"
                       >
-                        <Image
-                          src="/icons/gridOff.webp"
-                          alt="Grid View Off"
-                          fill
-                          className={`absolute inset-0 w-full h-full object-contain transition-opacity duration-300 ${
-                            view === 'grid' ? 'opacity-0' : 'opacity-100'
-                          }`}
-                        />
-                        <Image
-                          src="/icons/gridOn.webp"
-                          alt="Grid View On"
-                          fill
-                          className={`absolute inset-0 w-full h-full object-contain transition-opacity duration-300 ${
-                            view === 'grid' ? 'opacity-100' : 'opacity-0'
-                          }`}
-                        />
+                        <GridIcon className="w-full h-full" />
                       </button>
+
                       <button
-                        className={`relative w-6 h-6 transition-opacity duration-300 ease-in-out ${
+                        className={`relative w-6 h-6 transition-all duration-300 ease-in-out ${
                           view === 'list'
-                            ? 'opacity-100'
-                            : 'opacity-50 hover:opacity-100'
+                            ? 'text-blackCustom opacity-100'
+                            : 'text-greyCustom opacity-60 hover:opacity-100 hover:text-blackCustom'
                         }`}
                         onPointerDown={e => {
                           e.preventDefault();
@@ -695,22 +653,7 @@ export default function Gallery() {
                         }}
                         aria-label="List view"
                       >
-                        <Image
-                          src="/icons/listOff.webp"
-                          alt="List View Off"
-                          fill
-                          className={`absolute inset-0 w-full h-full object-contain transition-opacity duration-300 ${
-                            view === 'list' ? 'opacity-0' : 'opacity-100'
-                          }`}
-                        />
-                        <Image
-                          src="/icons/listOn.webp"
-                          alt="List View On"
-                          fill
-                          className={`absolute inset-0 w-full h-full object-contain transition-opacity duration-300 ${
-                            view === 'list' ? 'opacity-100' : 'opacity-0'
-                          }`}
-                        />
+                        <ListIcon className="w-full h-full" />
                       </button>
                     </div>
 
