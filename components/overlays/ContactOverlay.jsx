@@ -42,7 +42,11 @@ function ContactForm({ idSuffix = '', onSubmitSuccess, defaultSubject = '' }) {
       const result = await response.json();
 
       if (response.ok && result.success) {
-        // Validation réussie
+        await fetch('/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: new URLSearchParams(formData).toString(),
+        });
         setShowSuccess(true);
         // Réinitialiser le formulaire
         form.reset();
