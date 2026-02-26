@@ -1,14 +1,29 @@
+// components/ui/TextScramble.jsx
+
 'use client';
 import { useEffect, useState } from 'react';
-import { EVENTS, addEventHandler } from '../../lib/events';
+// 1. On importe notre nouvelle variable d'état
+import {
+  EVENTS,
+  addEventHandler,
+  isIntroDismissedState,
+} from '../../lib/events';
 
 export default function TextScramble({ text, className, delay = 0 }) {
   const [displayText, setDisplayText] = useState('');
   const [isAnimating, setIsAnimating] = useState(true);
-  const [canStart, setCanStart] = useState(false);
+
+  // 2. On initialise à "true" si l'intro a déjà été passée lors de cette session
+  const [canStart, setCanStart] = useState(isIntroDismissedState);
 
   // Attendre que l'intro soit terminée avant de commencer l'animation
   useEffect(() => {
+    // 3. Si on revient en arrière (back), l'état global dit que c'est déjà passé -> on démarre immédiatement
+    if (isIntroDismissedState) {
+      setCanStart(true);
+      return;
+    }
+
     const handler = () => setCanStart(true);
     const cleanup = addEventHandler(EVENTS.INTRO_DISMISSED, handler);
     return cleanup;
