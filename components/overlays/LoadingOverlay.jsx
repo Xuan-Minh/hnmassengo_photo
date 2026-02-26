@@ -72,8 +72,7 @@ export default function LoadingOverlay({ initialImages = [] }) {
 
   // --- NOUVEAU : État pour le délai minimal ---
   const [minDurationMet, setMinDurationMet] = useState(false);
-  const MIN_DURATION_MS = 2500; // 2.5 secondes. Tu peux ajuster ici (ex: 3000 pour 3s)
-  // --------------------------------------------
+  const MIN_DURATION_MS = 1000; // 2.5 secondes. Tu peux ajuster ici (ex: 3000 pour 3s)
 
   const rotateInterval = useRef(null);
   const [isReTrigger, setIsReTrigger] = useState(false);

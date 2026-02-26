@@ -361,7 +361,9 @@ export default function Shop() {
             >
               {t('cart.title')}
             </h2>
-            <span className="text-xs text-black/40">({cartCount})</span>
+            <span className="hidden md:block text-xs text-black/40">
+              ({cartCount})
+            </span>
           </div>
           {/* Contenu du panier, déroulant sur mobile */}
           <AnimatePresence>

@@ -259,10 +259,10 @@ export default function Menu() {
 
           {/* Logo - centré avec les sections du menu */}
           <div className="flex items-center justify-center gap-2 mb-8">
-            <span className="text-accent  font-playfair italic text-[32px]">
+            <span className="text-greyCustom font-playfair italic text-[32px]">
               Han-Noah
             </span>
-            <span className="text-accent  font-lexend text-[32px]">
+            <span className="text-greyCustom font-lexend text-[32px]">
               MASSENGO
             </span>
           </div>
