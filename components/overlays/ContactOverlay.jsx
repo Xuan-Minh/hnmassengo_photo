@@ -42,10 +42,14 @@ function ContactForm({ idSuffix = '', onSubmitSuccess, defaultSubject = '' }) {
       const result = await response.json();
 
       if (response.ok && result.success) {
-        await fetch('/', {
+        // Validation API réussie, on déclenche maintenant l'envoi réel du mail via Netlify Forms
+        const encodedBody = new URLSearchParams(formData);
+        encodedBody.set('form-name', 'contact'); // Sécurité absolue pour Netlify
+
+        await fetch('/contact.html', {
           method: 'POST',
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-          body: new URLSearchParams(formData).toString(),
+          body: encodedBody.toString(),
         });
         setShowSuccess(true);
         // Réinitialiser le formulaire
