@@ -1,8 +1,8 @@
 import { defineField, defineType } from 'sanity';
 
-export const loadingImageType = defineType({
+export const loadingImageMobileType = defineType({
   name: 'loadingImage',
-  title: 'Image de Chargement',
+  title: 'Image de Chargement MOBILE',
   type: 'document',
   fields: [
     defineField({
@@ -46,14 +46,6 @@ export const loadingImageType = defineType({
       description:
         "Numéro pour définir l'ordre (1 = première, 2 = deuxième, etc.)",
       validation: Rule => Rule.required().min(1),
-    }),
-    defineField({
-      name: 'portraitOnly',
-      title: 'Affichage mobile uniquement',
-      type: 'boolean',
-      description:
-        'Si activé, cette image sera affichée SEULEMENT sur mobile (format portrait). Sur desktop, elle sera cachée.',
-      initialValue: false,
     }),
   ],
   preview: {
