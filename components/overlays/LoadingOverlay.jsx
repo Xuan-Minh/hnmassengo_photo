@@ -43,8 +43,15 @@ export default function LoadingOverlay({ initialImages = [] }) {
     'linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 50%, #1a1a1a 100%)';
 
   // 1. Préparation des URLs ultra-optimisées côté serveur
-  const desktopData = initialImages.filter(img => !img.portraitOnly);
-  const mobileData = initialImages.filter(img => img.portraitOnly);
+  // Détection basée sur _type au lieu de portraitOnly
+  const isMobileImage = (img) =>
+    img?._type === 'loadingImageMobile' || img?.portraitOnly; // fallback legacy
+
+  const isDesktopImage = (img) =>
+    img?._type === 'loadingImageDesktop' || (!img?.portraitOnly && !img?._type);
+
+  const desktopData = initialImages.filter(isDesktopImage);
+  const mobileData = initialImages.filter(isMobileImage);
 
   const safeDesktopData = desktopData.length > 0 ? desktopData : initialImages;
   const safeMobileData = mobileData.length > 0 ? mobileData : initialImages;

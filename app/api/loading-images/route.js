@@ -5,26 +5,26 @@ export async function GET() {
   try {
     // Récupérer les images de chargement depuis Sanity
     const data = await client.fetch(
-      `*[_type == "loadingImage"] | order(order asc) {
+      `*[_type in ["loadingImageDesktop", "loadingImageMobile"]] | order(order asc) {
+        _type,
         image {
           asset->{
             url
           }
         },
-        alt,
-        portraitOnly
+        alt
       }`
     );
 
     // Transformer les données pour le format attendu par le composant
     const images = data.map(item => ({
+      _type: item._type,
       // Optimiser les images pour les performances : width jusqu'à 1200px (full-screen), qualité réduite (40 en production, 50 en local)
       url: buildSanityImageUrl(item.image.asset.url, {
         w: 1200,
         q: process.env.NODE_ENV === 'production' ? 40 : 50,
         auto: 'format',
       }),
-      portraitOnly: item.portraitOnly || false,
     }));
 
     return new Response(JSON.stringify({ images }), {
