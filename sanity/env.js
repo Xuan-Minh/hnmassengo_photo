@@ -1,3 +1,6 @@
+import dotenv from 'dotenv';
+dotenv.config({ path: new URL('../.env.local', import.meta.url) });
+
 function stripWrappingQuotes(value) {
   const raw = (value || '').trim();
   if (
