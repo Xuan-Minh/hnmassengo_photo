@@ -56,16 +56,16 @@ export default function LoadingOverlay({ initialImages = [] }) {
 
   const desktopSrcs = safeDesktopData
     .map(img =>
-      img?.url
-        ? buildSanityImageUrl(img.url, { w: 1920, q: 60, auto: 'format' })
+      img?.image && img.image.asset
+        ? buildSanityImageUrl(img.image, { w: 1920, q: 60, auto: 'format' })
         : null
     )
     .filter(Boolean);
 
   const mobileSrcs = safeMobileData
     .map(img =>
-      img?.url
-        ? buildSanityImageUrl(img.url, { w: 1080, q: 60, auto: 'format' })
+      img?.image && img.image.asset
+        ? buildSanityImageUrl(img.image, { w: 1080, q: 60, auto: 'format' })
         : null
     )
     .filter(Boolean);
