@@ -214,14 +214,19 @@ function ContactInfo() {
           Mail
         </a>
       </h3>
-      <p className="font-playfair text-sm md:text-[16px] leading-relaxed">
-        {contactT('info.copyright', { author: SITE_CONFIG.author })}
-      </p>
-      <p className="font-playfair text-sm md:text-[16px] leading-relaxed">
-        {contactT('info.credits', { developer: SITE_CONFIG.developer })}
-      </p>
-
-      <NewsletterSignup className="pt-2" />
+      <NewsletterSignup className="" />
+      <div className="font-playfair leading-relaxed">
+        <p className="text-sm md:text-3xl italic">STUDIO 42</p>
+        <p>14 Rue de Marignan, 75008 PARIS. FRANCE</p>
+      </div>
+      <div className="font-playfair leading-relaxed space-y-4">
+        <p className="font-playfair text-sm md:text-[16px] leading-relaxed">
+          {contactT('info.copyright', { author: SITE_CONFIG.author })}
+        </p>
+        <p className="font-playfair text-sm md:text-[16px] leading-relaxed">
+          {contactT('info.credits', { developer: SITE_CONFIG.developer })}
+        </p>
+      </div>
 
       <p className="font-playfair text-sm md:text-[16px] leading-relaxed">
         <Link

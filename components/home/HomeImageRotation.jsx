@@ -18,7 +18,6 @@ export default function HomeImageRotation({
   const pendingPosition = useRef(null);
   const [isNarrowLayout, setIsNarrowLayout] = useState(false);
 
-  // CORRECTION : Un dictionnaire pour mémoriser définitivement les images chargées
   const [loadedImages, setLoadedImages] = useState({});
 
   // Détection du layout (mobile + tablette)
@@ -83,16 +82,6 @@ export default function HomeImageRotation({
   }, [images.length, index, imgSrc, isCurrentLoaded, loadedImages]);
 
   useEffect(() => {
-    if (!images.length) {
-      console.log('[HomeImageRotation] No images');
-      return;
-    }
-    if (!isCurrentLoaded) {
-      console.log('[HomeImageRotation] Waiting for image to load');
-      return;
-    }
-
-    console.log('[HomeImageRotation] Starting rotation timer');
     const id = setTimeout(() => {
       if (isNarrowLayout) {
         pendingPosition.current = 'center';

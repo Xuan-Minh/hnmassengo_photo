@@ -46,7 +46,7 @@ export default function NewsletterSignup({ className = '' } = {}) {
 
   return (
     <div className={className}>
-      <div className="font-playfair italic text-base md:text-lg text-whiteCustom/90 mb-2">
+      <div className="font-playfair italic text-lg md:text-xl lg:text-2 xl  text-whiteCustom/90 mb-2">
         {t('title')}
       </div>
       <form onSubmit={onSubmit} className="flex gap-2">
