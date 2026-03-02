@@ -191,13 +191,14 @@ function ContactForm({ idSuffix = '', onSubmitSuccess, defaultSubject = '' }) {
 }
 
 // Composant pour les informations de contact
-function ContactInfo({ onOpenLegal }) {
+function ContactInfo({ onOpenLegal, onCopyLink }) {
   const t = useTranslations();
   const contactT = useTranslations('contact');
 
   return (
-    <div className="text-whiteCustom/90 space-y-4 md:space-y-6">
-      <h3 className="font-playfair italic text-xl md:text-2xl lg:text-3xl leading-tight">
+    <div className="text-whiteCustom/90 flex flex-col h-full">
+      {/* Titre aligné avec "Contact" */}
+      <h3 className="font-playfair italic text-xl md:text-2xl lg:text-3xl leading-tight mb-6 md:mb-8">
         <a
           href={SITE_CONFIG.instagram}
           target="_blank"
@@ -214,29 +215,40 @@ function ContactInfo({ onOpenLegal }) {
           Mail
         </a>
       </h3>
-      <NewsletterSignup className="" />
-      <div className="font-playfair leading-relaxed">
-        <p className="text-sm md:text-3xl italic">STUDIO 42</p>
-        <p>14 Rue de Marignan, 75008 PARIS. FRANCE</p>
-      </div>
-      <div className="font-playfair leading-relaxed space-y-4">
-        <p className="font-playfair text-sm md:text-[16px] leading-relaxed">
-          {contactT('info.copyright', { author: SITE_CONFIG.author })}
-        </p>
-        <p className="font-playfair text-sm md:text-[16px] leading-relaxed">
-          {contactT('info.credits', { developer: SITE_CONFIG.developer })}
-        </p>
-      </div>
 
-      <p className="font-playfair text-sm md:text-[16px] leading-relaxed">
-        <button
-          type="button"
-          onClick={onOpenLegal}
-          className="hover:text-whiteCustom transition-colors underline cursor-pointer"
-        >
-          {t('legal.link')}
-        </button>
-      </p>
+      {/* Contenu aligné avec le formulaire */}
+      <div className="space-y-4 md:space-y-6">
+        <NewsletterSignup className="" />
+        <div className="font-playfair leading-relaxed">
+          <p className="text-sm md:text-3xl italic">STUDIO 42</p>
+          <p>14 Rue de Marignan, 75008 PARIS. FRANCE</p>
+        </div>
+        <div className="font-playfair leading-relaxed space-y-4">
+          <p className="font-playfair text-sm md:text-[16px] leading-relaxed">
+            {contactT('info.copyright', { author: SITE_CONFIG.author })}
+          </p>
+          <p className="font-playfair text-sm md:text-[16px] leading-relaxed">
+            {contactT('info.credits', { developer: SITE_CONFIG.developer })}
+          </p>
+        </div>
+
+        <p className="font-playfair text-sm md:text-[16px] leading-relaxed flex items-center gap-4">
+          <button
+            type="button"
+            onClick={onOpenLegal}
+            className="hover:text-whiteCustom transition-colors underline cursor-pointer"
+          >
+            {t('legal.link')}
+          </button>
+          <button
+            type="button"
+            onClick={onCopyLink}
+            className="ml-2 px-3 py-1 border border-whiteCustom/40 text-sm hover:bg-whiteCustom/5 transition-colors"
+          >
+            Copy link
+          </button>
+        </p>
+      </div>
     </div>
   );
 }
@@ -250,12 +262,26 @@ export function ContactContent({
   onOpenLegal,
 }) {
   const t = useTranslations('contact');
+  const handleCopyLink = useCallback(() => {
+    try {
+      const mail = 'contact@hnmassengo.com';
+      if (mail && navigator?.clipboard?.writeText) {
+        navigator.clipboard.writeText(mail);
+        alert('Contact email copied to clipboard');
+      } else if (mail) {
+        window.prompt('Copy this email', mail);
+      }
+    } catch {
+      alert('Unable to copy link');
+    }
+  }, []);
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-8 lg:gap-10 xl:gap-14">
       <div className="lg:col-span-7">
         <h2
           id={headingId}
-          className="text-whiteCustom font-playfair italic text-[32px] sm:text-[36px] md:text-[42px] lg:text-[46px] xl:text-[48px] leading-none mb-6 md:mb-8"
+          onClick={handleCopyLink}
+          className="cursor-pointer text-whiteCustom font-playfair italic text-[32px] sm:text-[36px] md:text-[42px] lg:text-[46px] xl:text-[48px] leading-none mb-6 md:mb-8"
         >
           {t('title')}
         </h2>
@@ -263,7 +289,7 @@ export function ContactContent({
       </div>
 
       <div className="lg:col-span-5 md:mt-6 lg:mt-0">
-        <ContactInfo onOpenLegal={onOpenLegal} />
+        <ContactInfo onOpenLegal={onOpenLegal} onCopyLink={handleCopyLink} />
       </div>
     </div>
   );
