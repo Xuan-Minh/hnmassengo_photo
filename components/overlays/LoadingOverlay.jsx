@@ -167,20 +167,37 @@ export default function LoadingOverlay({ initialImages = [] }) {
 
   // 2. Préchargement furtif en arrière-plan des autres frames du flipbook
   useEffect(() => {
+    // Si pas d'images ou une seule, on considère comme chargé
     if (activeSrcs.length <= 1) {
       setAllLoaded(true);
       return;
     }
+    
+    // Réinitialiser quand les sources changent
+    setAllLoaded(false);
+    
     let done = 0;
+    const total = activeSrcs.length;
+    
+    // Timeout de sécurité : si le préchargement prend trop de temps, on continue quand même
+    const timeout = setTimeout(() => {
+      setAllLoaded(true);
+    }, 5000); // 5 secondes max
+    
     activeSrcs.forEach(src => {
       const img = new window.Image();
       img.onload = img.onerror = () => {
         done++;
-        if (done === activeSrcs.length) setAllLoaded(true);
+        if (done === total) {
+          clearTimeout(timeout);
+          setAllLoaded(true);
+        }
       };
       img.src = src;
     });
-  }, [activeSrcs]);
+    
+    return () => clearTimeout(timeout);
+  }, [activeSrcs.join(',')]); // Utiliser join pour détecter les changements de contenu
 
   // 3. Lancement du Flipbook
   useEffect(() => {
