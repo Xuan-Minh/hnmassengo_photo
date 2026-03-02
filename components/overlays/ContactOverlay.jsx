@@ -220,7 +220,7 @@ function ContactInfo({ onOpenLegal, onCopyLink }) {
       <div className="space-y-4 md:space-y-6">
         <NewsletterSignup className="" />
         <div className="font-playfair leading-relaxed">
-          <p className="text-sm md:text-3xl italic">STUDIO 42</p>
+          <p className="text-sm md:text-3xl italic">© STUDIO 42 - 2026</p>
           <p>14 Rue de Marignan, 75008 PARIS. FRANCE</p>
         </div>
         <div className="font-playfair leading-relaxed space-y-4">
@@ -239,13 +239,6 @@ function ContactInfo({ onOpenLegal, onCopyLink }) {
             className="hover:text-whiteCustom transition-colors underline cursor-pointer"
           >
             {t('legal.link')}
-          </button>
-          <button
-            type="button"
-            onClick={onCopyLink}
-            className="ml-2 px-3 py-1 border border-whiteCustom/40 text-sm hover:bg-whiteCustom/5 transition-colors"
-          >
-            Copy link
           </button>
         </p>
       </div>
@@ -281,7 +274,7 @@ export function ContactContent({
         <h2
           id={headingId}
           onClick={handleCopyLink}
-          className="cursor-pointer text-whiteCustom font-playfair italic text-[32px] sm:text-[36px] md:text-[42px] lg:text-[46px] xl:text-[48px] leading-none mb-6 md:mb-8"
+          className="cursor-pointer text-whiteCustom/90 hover:text-whiteCustom transition-colors font-playfair italic text-[32px] sm:text-[36px] md:text-[42px] lg:text-[46px] xl:text-[48px] leading-none mb-6 md:mb-8"
         >
           {t('title')}
         </h2>
@@ -299,12 +292,12 @@ export function ContactContent({
 export function ContactMarquee({ mode = 'absolute' } = {}) {
   const wrapperClassName =
     mode === 'inline'
-      ? 'flex-shrink-0 border-t border-whiteCustom/60 overflow-hidden pointer-events-none'
+      ? 'flex-shrink-0 border-t border-whiteCustom/60 overflow-hidden pointer-events-none '
       : 'absolute inset-x-0 bottom-0 border-t border-whiteCustom/60 overflow-hidden pointer-events-none';
 
   const MarqueeBlock = ({ ariaHidden = false } = {}) => (
     <div
-      className="flex items-center gap-6 sm:gap-6 md:gap-6 lg:gap-6 pr-10 sm:pr-12 md:pr-14 lg:pr-16"
+      className="flex items-center gap-6 sm:gap-6 md:gap-6 lg:gap-6 pr-6 uppercase  "
       aria-hidden={ariaHidden}
     >
       <span className="inline-block">{SITE_CONFIG.copyright}</span>
