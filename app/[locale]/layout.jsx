@@ -24,7 +24,11 @@ export default async function LocaleLayout({ children, params }) {
     const data = await client.fetch(
       `*[_type == "loadingImageDesktop" || _type == "loadingImageMobile"] {
         _type,
-        "url": image.asset->url,
+        image {
+          asset->,
+          crop,
+          hotspot
+        },
         order
       }`,
       {},
