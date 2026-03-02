@@ -79,9 +79,19 @@ export default function LoadingOverlay({ initialImages = [] }) {
     .map(img => getImageSource(img, 1080))
     .filter(Boolean);
 
+  // Debug: vérifier les URLs générées
+  useEffect(() => {
+    console.log('[LoadingOverlay] Sources:', {
+      desktopCount: desktopSrcs.length,
+      mobileCount: mobileSrcs.length,
+      initialImagesCount: initialImages.length,
+    });
+  }, [desktopSrcs.length, mobileSrcs.length, initialImages.length]);
+
   const [visible, setVisible] = useState(true);
   const [isExiting, setIsExiting] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
+  // Initialiser à true si pas d'images pour éviter le blocage
   const [allLoaded, setAllLoaded] = useState(false);
 
   // --- NOUVEAU : État pour le délai minimal ---
@@ -172,18 +182,18 @@ export default function LoadingOverlay({ initialImages = [] }) {
       setAllLoaded(true);
       return;
     }
-    
+
     // Réinitialiser quand les sources changent
     setAllLoaded(false);
-    
+
     let done = 0;
     const total = activeSrcs.length;
-    
+
     // Timeout de sécurité : si le préchargement prend trop de temps, on continue quand même
     const timeout = setTimeout(() => {
       setAllLoaded(true);
     }, 5000); // 5 secondes max
-    
+
     activeSrcs.forEach(src => {
       const img = new window.Image();
       img.onload = img.onerror = () => {
@@ -195,7 +205,7 @@ export default function LoadingOverlay({ initialImages = [] }) {
       };
       img.src = src;
     });
-    
+
     return () => clearTimeout(timeout);
   }, [activeSrcs.join(',')]); // Utiliser join pour détecter les changements de contenu
 
