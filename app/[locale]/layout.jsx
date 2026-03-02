@@ -29,10 +29,11 @@ export default async function LocaleLayout({ children, params }) {
           crop,
           hotspot
         },
+        "url": image.asset->url,
         order
       }`,
       {},
-      { next: { revalidate: 3600 } }
+      { next: { revalidate: 60 } }
     );
     // Tri séparé pour chaque type
     // Tri ascendant puis ré-attribution séquentielle du champ order

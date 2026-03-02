@@ -54,20 +54,29 @@ export default function LoadingOverlay({ initialImages = [] }) {
   const safeDesktopData = desktopData;
   const safeMobileData = mobileData;
 
+  // Fonction helper pour extraire l'image (supporte ancien et nouveau format)
+  const getImageSource = (img, width) => {
+    // Nouveau format : objet image avec asset
+    if (img?.image && img.image.asset) {
+      return buildSanityImageUrl(img.image, {
+        w: width,
+        q: 60,
+        auto: 'format',
+      });
+    }
+    // Ancien format : URL directe
+    if (img?.url) {
+      return buildSanityImageUrl(img.url, { w: width, q: 60, auto: 'format' });
+    }
+    return null;
+  };
+
   const desktopSrcs = safeDesktopData
-    .map(img =>
-      img?.image && img.image.asset
-        ? buildSanityImageUrl(img.image, { w: 1920, q: 60, auto: 'format' })
-        : null
-    )
+    .map(img => getImageSource(img, 1920))
     .filter(Boolean);
 
   const mobileSrcs = safeMobileData
-    .map(img =>
-      img?.image && img.image.asset
-        ? buildSanityImageUrl(img.image, { w: 1080, q: 60, auto: 'format' })
-        : null
-    )
+    .map(img => getImageSource(img, 1080))
     .filter(Boolean);
 
   const [visible, setVisible] = useState(true);
