@@ -61,10 +61,38 @@ export default function HomeImageRotation({
   // L'image courante est considérée comme chargée si elle est dans notre dictionnaire
   const isCurrentLoaded = loadedImages[imgSrc] || false;
 
+  // Sécurité : marquer l'image comme chargée après un délai si onLoad ne se déclenche pas
   useEffect(() => {
-    if (!images.length) return;
-    if (!isCurrentLoaded) return;
+    if (isCurrentLoaded || !imgSrc) return;
+    const timeout = setTimeout(() => {
+      console.log('[HomeImageRotation] Timeout - marking as loaded:', imgSrc);
+      setLoadedImages(prev => ({ ...prev, [imgSrc]: true }));
+    }, 2000); // 2 secondes max d'attente
+    return () => clearTimeout(timeout);
+  }, [imgSrc, isCurrentLoaded]);
 
+  // Debug
+  useEffect(() => {
+    console.log('[HomeImageRotation] State:', {
+      imagesCount: images.length,
+      index,
+      imgSrc,
+      isCurrentLoaded,
+      loadedImages,
+    });
+  }, [images.length, index, imgSrc, isCurrentLoaded, loadedImages]);
+
+  useEffect(() => {
+    if (!images.length) {
+      console.log('[HomeImageRotation] No images');
+      return;
+    }
+    if (!isCurrentLoaded) {
+      console.log('[HomeImageRotation] Waiting for image to load');
+      return;
+    }
+
+    console.log('[HomeImageRotation] Starting rotation timer');
     const id = setTimeout(() => {
       if (isNarrowLayout) {
         pendingPosition.current = 'center';
