@@ -4,9 +4,9 @@ import { useTranslations } from 'next-intl';
 import { AnimatePresence, motion } from 'framer-motion';
 import { SITE_CONFIG } from '../../lib/constants';
 import { EVENTS, addEventHandler } from '../../lib/events';
-import { Link } from '../../src/i18n/navigation';
 import { useParams } from 'next/navigation';
 import NewsletterSignup from '../ui/NewsletterSignup';
+import LegalOverlay from './LegalOverlay';
 
 // Composant pour le formulaire de contact réutilisable
 function ContactForm({ idSuffix = '', onSubmitSuccess, defaultSubject = '' }) {
@@ -191,7 +191,7 @@ function ContactForm({ idSuffix = '', onSubmitSuccess, defaultSubject = '' }) {
 }
 
 // Composant pour les informations de contact
-function ContactInfo() {
+function ContactInfo({ onOpenLegal }) {
   const t = useTranslations();
   const contactT = useTranslations('contact');
 
@@ -229,12 +229,13 @@ function ContactInfo() {
       </div>
 
       <p className="font-playfair text-sm md:text-[16px] leading-relaxed">
-        <Link
-          href="/legal"
-          className="hover:text-whiteCustom transition-colors underline"
+        <button
+          type="button"
+          onClick={onOpenLegal}
+          className="hover:text-whiteCustom transition-colors underline cursor-pointer"
         >
           {t('legal.link')}
-        </Link>
+        </button>
       </p>
     </div>
   );
@@ -246,6 +247,7 @@ export function ContactContent({
   headingId,
   variant: _variant = 'default',
   defaultSubject = '',
+  onOpenLegal,
 }) {
   const t = useTranslations('contact');
   return (
@@ -261,7 +263,7 @@ export function ContactContent({
       </div>
 
       <div className="lg:col-span-5 md:mt-6 lg:mt-0">
-        <ContactInfo />
+        <ContactInfo onOpenLegal={onOpenLegal} />
       </div>
     </div>
   );
@@ -312,6 +314,7 @@ export default function ContactOverlay({
   defaultSubject = '',
 } = {}) {
   const [openState, setOpenState] = useState(false);
+  const [legalOpen, setLegalOpen] = useState(false);
   const panelRef = useRef(null);
   const t = useTranslations('contact');
 
@@ -321,6 +324,14 @@ export default function ContactOverlay({
     if (typeof onCloseProp === 'function') return onCloseProp();
     setOpenState(false);
   }, [onCloseProp]);
+
+  const handleOpenLegal = useCallback(() => {
+    setLegalOpen(true);
+  }, []);
+
+  const handleCloseLegal = useCallback(() => {
+    setLegalOpen(false);
+  }, []);
 
   // Ouvrir/fermer via les événements globaux (seulement si non contrôlé par les props)
   useEffect(() => {
@@ -335,15 +346,15 @@ export default function ContactOverlay({
     };
   }, [openProp]);
 
-  // Fermer avec Échap quand ouvert
+  // Fermer avec Échap quand ouvert (seulement si le LegalOverlay n'est pas ouvert)
   useEffect(() => {
     if (!open) return;
     const onKey = e => {
-      if (e.key === 'Escape') handleClose();
+      if (e.key === 'Escape' && !legalOpen) handleClose();
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [open, handleClose]);
+  }, [open, legalOpen, handleClose]);
 
   // Verrouillage du scroll, focus initial et piège de focus quand l'overlay est ouvert
   useEffect(() => {
@@ -457,6 +468,7 @@ export default function ContactOverlay({
                   headingId="contact-title-overlay"
                   variant="overlay"
                   defaultSubject={defaultSubject}
+                  onOpenLegal={handleOpenLegal}
                 />
               </div>
             </div>
@@ -464,6 +476,9 @@ export default function ContactOverlay({
             {/* Marquee en position relative - fait partie du flux */}
             <ContactMarquee mode="inline" />
           </motion.div>
+
+          {/* Legal Overlay */}
+          <LegalOverlay open={legalOpen} onClose={handleCloseLegal} />
         </motion.section>
       )}
     </AnimatePresence>

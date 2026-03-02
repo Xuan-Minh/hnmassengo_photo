@@ -97,8 +97,12 @@
   },
   "legal": {
     "title": "Rechtliche Hinweise",
-    "link": "Rechtliche Hinweise",
-    "description": "Informationen zu rechtlichen Hinweisen und Datenschutz."
+    "link": "Impressum",
+    "description": "Informationen zu rechtlichen Hinweisen und Datenschutz.",
+    "overlay": {
+      "ariaLabel": "Rechtliche Hinweise",
+      "closeAriaLabel": "Rechtliche Hinweise schließen"
+    }
   },
   "menu": {
     "home": "Startseite",
@@ -140,34 +144,55 @@
   },
   "legalPage": {
     "editor": {
-      "title": "Seiten-Editor",
+      "title": "Herausgeber der Website",
       "name": "Han-Noah MASSENGO",
-      "profession": "Professioneller Fotograf",
+      "status": "Professioneller Fotograf - Einzelunternehmer",
+      "address": "14 Rue de Marignan, 75008 Paris, Frankreich",
       "email": "E-Mail: contact@hnmassengo.com",
-      "website": "Webseite: hnmassengo.com"
+      "phone": "Telefon: +33 (0)X XX XX XX XX",
+      "website": "Website: www.hnmassengo.com"
+    },
+    "registration": {
+      "title": "Registrierungsnummern",
+      "siret": "SIRET: XXX XXX XXX XXXXX",
+      "rne": "Eingetragen im französischen Unternehmensregister (RNE)",
+      "vat": "USt-IdNr.: FR XX XXX XXX XXX (falls zutreffend)"
+    },
+    "director": {
+      "title": "Verantwortlicher für den Inhalt",
+      "name": "Han-Noah MASSENGO"
     },
     "hosting": {
-      "title": "Hosting",
-      "line1": "Diese Seite wird von Netlify Inc. gehostet.",
-      "line2": "610 22nd Street, Suite 315",
-      "line3": "San Francisco, CA 94107",
-      "line4": "Vereinigte Staaten"
+      "title": "Hosting-Anbieter",
+      "name": "Netlify Inc.",
+      "address": "610 22nd Street, Suite 315",
+      "city": "San Francisco, CA 94107",
+      "country": "Vereinigte Staaten",
+      "phone": "Telefon: +1 (844) 899-7312",
+      "website": "Website: www.netlify.com"
     },
     "ip": {
       "title": "Geistiges Eigentum",
-      "text": "Alle Bilder auf dieser Website sind das alleinige Eigentum von Studio42. Jede Vervielfältigung, Verbreitung oder Veröffentlichung, auch auszugsweise, ist ohne vorherige schriftliche Genehmigung untersagt."
+      "text1": "Alle Inhalte dieser Website (Texte, Bilder, Fotografien, Illustrationen, Videos, Grafiken, Logos, Icons, Sounds, Software) sind, sofern nicht anders angegeben, ausschließliches Eigentum von Han-Noah MASSENGO / Studio42 und durch französische und internationale Gesetze zum geistigen Eigentum geschützt.",
+      "text2": "Jede Vervielfältigung, Darstellung, Änderung, Veröffentlichung, Übertragung, Entstellung, ganz oder teilweise, der Website oder ihrer Inhalte, durch jegliche Mittel und auf jeglichem Medium, ist ohne vorherige schriftliche Genehmigung von Han-Noah MASSENGO untersagt. Jede unbefugte Nutzung der Website oder ihrer Inhalte begründet die Haftung des Nutzers und stellt eine Urheberrechtsverletzung dar."
     },
     "data": {
-      "title": "Persönliche Daten",
-      "text": "Die über das Kontaktformular gesammelten Informationen sind ausschließlich für Studio42 bestimmt, um auf Ihre Anfragen zu antworten. Sie werden weder verkauft noch an Dritte weitergegeben."
+      "title": "Personenbezogene Daten und DSGVO",
+      "text1": "Gemäß der Datenschutz-Grundverordnung (DSGVO) und dem französischen Datenschutzgesetz haben Sie das Recht auf Zugang, Berichtigung, Löschung, Übertragbarkeit und Einschränkung der Verarbeitung Ihrer personenbezogenen Daten.",
+      "text2": "Die über das Kontaktformular und die Newsletter-Anmeldung gesammelten Informationen sind ausschließlich für Han-Noah MASSENGO bestimmt, um auf Ihre Anfragen zu antworten und Sie über Neuigkeiten zu informieren. Diese Informationen werden weder verkauft noch an Dritte weitergegeben.",
+      "text3": "Um Ihre Rechte auszuüben oder bei Fragen zur Verarbeitung Ihrer Daten kontaktieren Sie uns bitte unter: contact@hnmassengo.com"
     },
     "cookies": {
       "title": "Cookies",
-      "text": "Diese Website verwendet keine Tracking-Cookies. Es werden nur technische Cookies verwendet, die für den Betrieb der Website und des Warenkorbs erforderlich sind."
+      "text": "Diese Website verwendet keine Werbe-Tracking-Cookies oder Cookies von Drittanbietern. Es werden nur technisch notwendige Cookies für den Betrieb der Website (Snipcart-Warenkorb, Spracheinstellungen) verwendet. Diese Cookies sammeln keine personenbezogenen Daten zu kommerziellen Zwecken."
     },
     "law": {
-      "title": "Anwendbares Recht",
-      "text": "Diese Website unterliegt französischem Recht. Im Streitfall sind ausschließlich die französischen Gerichte zuständig."
+      "title": "Anwendbares Recht und Gerichtsstand",
+      "text": "Diese Website und alle ihre Inhalte unterliegen französischem Recht. Im Streitfall über die Nutzung der Website, und bei fehlender gütlicher Einigung, sind ausschließlich die französischen Gerichte im Zuständigkeitsbereich des Pariser Berufungsgerichts zuständig."
+    },
+    "credits": {
+      "title": "Credits",
+      "text": "Webdesign und Entwicklung: {developer}"
     }
   },
   "notFound": {

@@ -2,11 +2,6 @@
 import React from 'react';
 import { logger } from '../../lib/logger';
 import { useTranslations } from 'next-intl';
-
-/**
- * Error Boundary component avec traductions (pour LocaleLayout)
- * Utilise useTranslations qui requiert NextIntlClientProvider
- */
 class ErrorBoundaryInner extends React.Component {
   constructor(props) {
     super(props);

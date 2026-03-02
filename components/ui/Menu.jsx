@@ -3,7 +3,6 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { usePathname } from '../../src/i18n/navigation';
 import { MENU_ITEMS, LANGUAGES, THEME } from '../../lib/constants';
-import { computeIsDark } from '../../lib/utils';
 import { EVENTS, emitEvent } from '../../lib/events';
 
 // Menu one-page: scroll interne vers des sections dans #scroll-root

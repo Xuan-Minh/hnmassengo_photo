@@ -12,11 +12,6 @@ export default function SnipcartPortal({ apiKey }) {
   const [loadScript, setLoadScript] = useState(false);
 
   useEffect(() => {
-    // Déclencher le chargement de Snipcart seulement si:
-    // 1. L'user accède à la page /shop
-    // 2. L'user clique sur un élément avec data-snipcart-item
-    // 3. 20s timeouts pour les users sur d'autres pages (fallback)
-
     const currentPath = window.location.pathname;
 
     // Si on est sur la page shop, charger immédiatement
@@ -40,7 +35,6 @@ export default function SnipcartPortal({ apiKey }) {
 
     document.addEventListener('click', handleSnipcartClick);
 
-    // Fallback: charger après 20s (lazy mais sûr)
     if ('requestIdleCallback' in window) {
       const idleId = requestIdleCallback(() => setLoadScript(true), {
         timeout: 20000, // Augmenté de 5s à 20s

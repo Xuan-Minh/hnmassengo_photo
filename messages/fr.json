@@ -129,7 +129,11 @@
   "legal": {
     "title": "Mentions légales",
     "link": "Mentions légales",
-    "description": "Informations sur les mentions légales et la politique de confidentialité."
+    "description": "Informations sur les mentions légales et la politique de confidentialité.",
+    "overlay": {
+      "ariaLabel": "Mentions légales",
+      "closeAriaLabel": "Fermer les mentions légales"
+    }
   },
   "menu": {
     "home": "Accueil",
@@ -142,32 +146,53 @@
     "editor": {
       "title": "Éditeur du site",
       "name": "Han-Noah MASSENGO",
-      "profession": "Photographe professionnel",
+      "status": "Photographe professionnel - Entrepreneur individuel",
+      "address": "14 Rue de Marignan, 75008 Paris, France",
       "email": "Email : contact@hnmassengo.com",
-      "website": "Site web : hnmassengo.com"
+      "phone": "Téléphone : +33 (0)X XX XX XX XX",
+      "website": "Site web : www.hnmassengo.com"
+    },
+    "registration": {
+      "title": "Numéros d'identification",
+      "siret": "SIRET : XXX XXX XXX XXXXX",
+      "rne": "Inscrit au Registre National des Entreprises (RNE)",
+      "vat": "TVA intracommunautaire : FR XX XXX XXX XXX (si applicable)"
+    },
+    "director": {
+      "title": "Directeur de la publication",
+      "name": "Han-Noah MASSENGO"
     },
     "hosting": {
       "title": "Hébergement",
-      "line1": "Ce site est hébergé par Netlify Inc.",
-      "line2": "610 22nd Street, Suite 315",
-      "line3": "San Francisco, CA 94107",
-      "line4": "États-Unis"
+      "name": "Netlify Inc.",
+      "address": "610 22nd Street, Suite 315",
+      "city": "San Francisco, CA 94107",
+      "country": "États-Unis",
+      "phone": "Téléphone : +1 (844) 899-7312",
+      "website": "Site web : www.netlify.com"
     },
     "ip": {
       "title": "Propriété intellectuelle",
-      "text": "Toutes les images présentes sur ce site sont la propriété exclusive de Studio42. Toute reproduction, distribution ou publication, même partielle, est interdite sans autorisation écrite préalable."
+      "text1": "L'ensemble du contenu de ce site (textes, images, photographies, illustrations, vidéos, graphismes, logos, icônes, sons, logiciels) est la propriété exclusive de Han-Noah MASSENGO / Studio42, sauf mention contraire, et est protégé par les lois françaises et internationales relatives à la propriété intellectuelle.",
+      "text2": "Toute reproduction, représentation, modification, publication, transmission, dénaturation, totale ou partielle du site ou de son contenu, par quelque procédé que ce soit, et sur quelque support que ce soit est interdite sans autorisation écrite préalable de Han-Noah MASSENGO. Toute exploitation non autorisée du site ou de son contenu engage la responsabilité de l'utilisateur et constitue une contrefaçon sanctionnée par les articles L.335-2 et suivants du Code de Propriété Intellectuelle."
     },
     "data": {
-      "title": "Données personnelles",
-      "text": "Les informations recueillies via le formulaire de contact sont destinées uniquement à Studio42 pour répondre à vos demandes. Elles ne sont ni vendues, ni cédées à des tiers."
+      "title": "Données personnelles et RGPD",
+      "text1": "Conformément au Règlement Général sur la Protection des Données (RGPD) et à la loi Informatique et Libertés du 6 janvier 1978 modifiée, vous disposez d'un droit d'accès, de rectification, d'effacement, de portabilité et de limitation du traitement des données vous concernant.",
+      "text2": "Les informations recueillies via le formulaire de contact et l'inscription à la newsletter sont destinées uniquement à Han-Noah MASSENGO pour répondre à vos demandes et vous informer de l'actualité. Elles ne sont ni vendues, ni cédées à des tiers.",
+      "text3": "Pour exercer vos droits ou pour toute question relative au traitement de vos données, vous pouvez nous contacter à l'adresse : contact@hnmassengo.com"
     },
     "cookies": {
       "title": "Cookies",
-      "text": "Ce site n'utilise pas de cookies de suivi. Seuls les cookies techniques nécessaires au fonctionnement du site et du panier d'achat sont utilisés."
+      "text": "Ce site n'utilise pas de cookies de suivi publicitaire ni de cookies tiers. Seuls les cookies techniques strictement nécessaires au fonctionnement du site (panier d'achat Snipcart, préférences de langue) sont utilisés. Ces cookies ne collectent aucune donnée personnelle à des fins commerciales."
     },
     "law": {
-      "title": "Droit applicable",
-      "text": "Le présent site est soumis au droit français. En cas de litige, les tribunaux français seront seuls compétents."
+      "title": "Droit applicable et juridiction compétente",
+      "text": "Le présent site et l'ensemble de son contenu sont soumis au droit français. En cas de litige relatif à l'utilisation du site, et à défaut de résolution amiable, les tribunaux français du ressort de la Cour d'appel de Paris seront seuls compétents."
+    },
+    "credits": {
+      "title": "Crédits",
+      "text": "Conception et développement du site : {developer}"
     }
   },
   "notFound": {

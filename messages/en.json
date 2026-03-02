@@ -98,7 +98,11 @@
   "legal": {
     "title": "Legal Notice",
     "link": "Legal Notice",
-    "description": "Information on legal notices and privacy policy."
+    "description": "Information on legal notices and privacy policy.",
+    "overlay": {
+      "ariaLabel": "Legal Notice",
+      "closeAriaLabel": "Close legal notice"
+    }
   },
   "menu": {
     "home": "Home",
@@ -140,34 +144,55 @@
   },
   "legalPage": {
     "editor": {
-      "title": "Site Editor",
+      "title": "Site Publisher",
       "name": "Han-Noah MASSENGO",
-      "profession": "Professional Photographer",
+      "status": "Professional Photographer - Sole Proprietor",
+      "address": "14 Rue de Marignan, 75008 Paris, France",
       "email": "Email: contact@hnmassengo.com",
-      "website": "Website: hnmassengo.com"
+      "phone": "Phone: +33 (0)X XX XX XX XX",
+      "website": "Website: www.hnmassengo.com"
+    },
+    "registration": {
+      "title": "Registration Numbers",
+      "siret": "SIRET: XXX XXX XXX XXXXX",
+      "rne": "Registered with the French National Business Register (RNE)",
+      "vat": "VAT Number: FR XX XXX XXX XXX (if applicable)"
+    },
+    "director": {
+      "title": "Publication Director",
+      "name": "Han-Noah MASSENGO"
     },
     "hosting": {
-      "title": "Hosting",
-      "line1": "This site is hosted by Netlify Inc.",
-      "line2": "610 22nd Street, Suite 315",
-      "line3": "San Francisco, CA 94107",
-      "line4": "United States"
+      "title": "Hosting Provider",
+      "name": "Netlify Inc.",
+      "address": "610 22nd Street, Suite 315",
+      "city": "San Francisco, CA 94107",
+      "country": "United States",
+      "phone": "Phone: +1 (844) 899-7312",
+      "website": "Website: www.netlify.com"
     },
     "ip": {
       "title": "Intellectual Property",
-      "text": "All images on this site are the exclusive property of Studio42. Any reproduction, distribution, or publication, even partial, is prohibited without prior written permission."
+      "text1": "All content on this website (texts, images, photographs, illustrations, videos, graphics, logos, icons, sounds, software) is the exclusive property of Han-Noah MASSENGO / Studio42, unless otherwise stated, and is protected by French and international intellectual property laws.",
+      "text2": "Any reproduction, representation, modification, publication, transmission, distortion, in whole or in part, of the site or its content, by any means whatsoever, and on any medium whatsoever, is prohibited without prior written authorization from Han-Noah MASSENGO. Any unauthorized use of the site or its content engages the user's liability and constitutes infringement punishable under Articles L.335-2 et seq. of the French Intellectual Property Code."
     },
     "data": {
-      "title": "Personal Data",
-      "text": "The information collected via the contact form is intended solely for Studio42 to respond to your requests. It is neither sold nor transferred to third parties."
+      "title": "Personal Data and GDPR",
+      "text1": "In accordance with the General Data Protection Regulation (GDPR) and the French Data Protection Act of January 6, 1978, as amended, you have the right to access, rectify, delete, port, and limit the processing of your personal data.",
+      "text2": "Information collected through the contact form and newsletter subscription is intended solely for Han-Noah MASSENGO to respond to your inquiries and keep you informed of news. This information is neither sold nor transferred to third parties.",
+      "text3": "To exercise your rights or for any questions regarding the processing of your data, please contact us at: contact@hnmassengo.com"
     },
     "cookies": {
       "title": "Cookies",
-      "text": "This site does not use tracking cookies. Only technical cookies necessary for the operation of the site and the shopping cart are used."
+      "text": "This site does not use advertising tracking cookies or third-party cookies. Only strictly necessary technical cookies for the operation of the site (Snipcart shopping cart, language preferences) are used. These cookies do not collect any personal data for commercial purposes."
     },
     "law": {
-      "title": "Applicable Law",
-      "text": "This site is subject to French law. In the event of a dispute, the French courts will have sole jurisdiction."
+      "title": "Applicable Law and Jurisdiction",
+      "text": "This site and all its content are subject to French law. In the event of a dispute relating to the use of the site, and failing amicable resolution, the French courts within the jurisdiction of the Paris Court of Appeal shall have sole jurisdiction."
+    },
+    "credits": {
+      "title": "Credits",
+      "text": "Website design and development: {developer}"
     }
   },
   "notFound": {
