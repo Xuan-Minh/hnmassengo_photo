@@ -24,7 +24,7 @@ export default function BlogPostItem({ post, onClick }) {
             <h3 className="text-3xl lg:text-3xl font-playfair italic mb-2">
               "{post.title}"
             </h3>
-            <div className="text-lg lg:text-xl font-playfair mb-4">
+            <div className="text-lg text-whiteCustom/80 lg:text-base font-playfair mb-4">
               - {post.date}
             </div>
 
@@ -41,7 +41,7 @@ export default function BlogPostItem({ post, onClick }) {
             <h3 className="text-3xl lg:text-3xl font-playfair italic mb-2">
               "{post.title}"
             </h3>
-            <div className="text-lg lg:text-xl font-playfair mb-4">
+            <div className="text-lg text-whiteCustom/80 lg:text-base font-playfair mb-4">
               - {post.date}
             </div>
             <p className="text-lg lg:text-base font-playfair text-whiteCustom/80 leading-loose overflow-hidden text-ellipsis [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:4] lg:[-webkit-line-clamp:3]">
@@ -68,7 +68,7 @@ export default function BlogPostItem({ post, onClick }) {
             <h3 className="text-3xl lg:text-3xl font-playfair italic mb-2">
               "{post.title}"
             </h3>
-            <span className="text-lg lg:text-xl font-playfair">
+            <span className="text-whiteCustom/80 text-lg lg:text-base font-playfair">
               - {post.date}
             </span>
           </div>

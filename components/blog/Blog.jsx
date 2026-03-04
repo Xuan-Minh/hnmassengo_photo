@@ -130,28 +130,27 @@ export default function Blog() {
       >
         <div
           style={{ width: 'min(1000px, 85vw)' }}
-          className="flex flex-col h-full max-h-full 2xl:max-w-5xl"
+          className="flex flex-col justify-around h-full max-h-full 2xl:max-w-5xl"
         >
           {/* Posts List */}
-          <div className="flex-1 flex flex-col justify-center min-h-0">
-            {latestPosts.map(post => (
-              <BlogPostItem
-                key={post.id}
-                post={post}
-                onClick={() => {
-                  replacePostParam(post.id);
-                  setSelectedPost(post);
-                }}
-              />
-            ))}
-            <div className="w-full xl:justify-end 2xl:justify-center mt-4 shrink-0 hidden lg:flex">
-              <button
-                onClick={() => setArchiveOpen(true)}
-                className="text-lg font-playfair italic text-whiteCustom/60 hover:text-whiteCustom transition-colors"
-              >
-                {t('morePosts')}
-              </button>
-            </div>
+
+          {latestPosts.map(post => (
+            <BlogPostItem
+              key={post.id}
+              post={post}
+              onClick={() => {
+                replacePostParam(post.id);
+                setSelectedPost(post);
+              }}
+            />
+          ))}
+          <div className="w-full xl:justify-end 2xl:justify-center shrink-0 hidden lg:flex">
+            <button
+              onClick={() => setArchiveOpen(true)}
+              className="text-lg font-playfair italic text-whiteCustom/60 hover:text-whiteCustom transition-colors"
+            >
+              {t('morePosts')}
+            </button>
           </div>
 
           {/* Footer / More Posts - caché sur mobile */}
