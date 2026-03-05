@@ -77,7 +77,7 @@ export default function BlogPostOverlay({ post, onClose, onPrevious, onNext }) {
         ) : (
           // Mise en page SANS Image (même structure que avec image, contenu centré)
           <div className="flex-1 flex items-start justify-center w-full h-full px-16 md:px-24 py-20 overflow-y-auto">
-            <div className="max-w-5xl w-full">
+            <div className="max-w-5xl w-full h-full flex flex-col justify-between">
               {/* Date + Title - Left aligned */}
               <div className="mb-8 flex flex-col items-start">
                 {/* Date */}
@@ -103,10 +103,10 @@ export default function BlogPostOverlay({ post, onClose, onPrevious, onNext }) {
               </div>
 
               {/* Contact Button */}
-              <div className="mt-8 flex justify-end max-w-2xl mx-auto">
+              <div className="flex justify-end max-w-2xl mx-auto mt-4">
                 <button
                   onClick={() => setContactOpen(true)}
-                  className="text-sm text-whiteCustom/60 hover:text-whiteCustom transition-colors italic"
+                  className="text-sm text-whiteCustom/60 hover:text-whiteCustom transition-colors italic ml-4"
                 >
                   {t('contact')}
                 </button>
@@ -135,7 +135,6 @@ export default function BlogPostOverlay({ post, onClose, onPrevious, onNext }) {
         </div>
       </BaseOverlay>
 
-      {/* CORRECTION : On retire l'AnimatePresence ici car ContactOverlay gère déjà sa propre animation */}
       <ContactOverlay
         open={contactOpen}
         onClose={() => setContactOpen(false)}

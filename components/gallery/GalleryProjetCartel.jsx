@@ -11,7 +11,6 @@ import {
 } from 'framer-motion';
 import { useTranslations } from 'next-intl';
 
-import TextReveal from '../ui/TextReveal';
 import { buildSanityImageUrl } from '../../lib/imageUtils';
 import { getOptimizedImageParams } from '../../lib/hooks';
 
@@ -472,7 +471,7 @@ export default function GalleryProjetCartel({ project, onClose }) {
 
   useEffect(() => {
     const handleKeyDown = event => {
-      if (event.key === 'Escape') {
+      if (event.key === 'Escape' && !lightboxOpen) {
         onClose();
       }
     };
@@ -480,7 +479,7 @@ export default function GalleryProjetCartel({ project, onClose }) {
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [onClose]);
+  }, [onClose, lightboxOpen]);
 
   if (!project) return null;
 
@@ -531,19 +530,17 @@ export default function GalleryProjetCartel({ project, onClose }) {
 
           <div className="flex-1 overflow-y-auto p-6">
             <div className="font-playfair text-lg italic text-blackCustom mb-4">
-              <TextReveal text={project.coords} />
+              {project.coords}
             </div>
-            <h2 id="project-title" className="mb-6">
-              <TextReveal
-                text={project.name}
-                className="text-3xl font-playfair italic"
-              />
+            <h2
+              id="project-title"
+              className="text-3xl font-playfair italic mb-6"
+            >
+              {project.name}
             </h2>
             <div className="font-playfair text-base leading-relaxed space-y-4">
               {paragraphs.map((p, i) => (
-                <div key={i} className="relative">
-                  <TextReveal text={p} delay={0.2 + i * 0.1} />
-                </div>
+                <p key={i}>{p}</p>
               ))}
             </div>
           </div>
@@ -562,23 +559,18 @@ export default function GalleryProjetCartel({ project, onClose }) {
           </div>
 
           <section className="flex flex-col items-start justify-center my-8">
-            <h2 id="project-title" className="mb-8">
-              <TextReveal
-                text={project.name}
-                className="text-5xl font-playfair"
-              />
+            <h2 id="project-title" className="text-5xl font-playfair mb-8">
+              {project.name}
             </h2>
             <div className="font-playfair text-lg max-w-2xl leading-relaxed space-y-4">
               {paragraphs.map((p, i) => (
-                <div key={i} className="relative">
-                  <TextReveal text={p} delay={0.2 + i * 0.1} />
-                </div>
+                <p key={i}>{p}</p>
               ))}
             </div>
           </section>
 
           <div className="font-playfair text-xl italic text-blackCustom flex-shrink-0">
-            <TextReveal text={project.coords} delay={0.5} />
+            {project.coords}
           </div>
         </main>
 
