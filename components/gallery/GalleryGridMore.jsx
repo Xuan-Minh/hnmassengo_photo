@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { useTranslations } from 'next-intl';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
@@ -26,6 +26,8 @@ export default function GalleryGridMore({
   const t = useTranslations('gallery');
   const [filter, setFilter] = useState('all');
   const [hoveredId, setHoveredId] = useState(null);
+  const scrollContainerRef = useRef(null);
+  const [visibleRange, setVisibleRange] = useState({ start: 0, end: 50 });
 
   const projectsRecentFirst = useMemo(() => {
     const arr = [...projects];
@@ -48,13 +50,21 @@ export default function GalleryGridMore({
   const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
   const [showCustomCursor, setShowCustomCursor] = useState(false);
 
-  // Mouvement de souris pour le curseur personnalisé
+  // Mouvement de souris pour le curseur personnalisé (throttled)
   useEffect(() => {
+    let rafId = null;
     const handleMouseMove = e => {
-      setCursorPos({ x: e.clientX, y: e.clientY });
+      if (rafId) return;
+      rafId = requestAnimationFrame(() => {
+        setCursorPos({ x: e.clientX, y: e.clientY });
+        rafId = null;
+      });
     };
     window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      if (rafId) cancelAnimationFrame(rafId);
+    };
   }, []);
 
   // Gestion du curseur custom
@@ -98,6 +108,55 @@ export default function GalleryGridMore({
     );
   }, [filteredProjects]);
 
+  // Virtualisation : calculer les images visibles
+  useEffect(() => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+
+    const updateVisibleRange = () => {
+      const scrollTop = container.scrollTop;
+      const containerHeight = container.clientHeight;
+      const itemHeight = 200; // hauteur approximative d'un item
+      const cols =
+        window.innerWidth >= 1536
+          ? 9
+          : window.innerWidth >= 1280
+            ? 8
+            : window.innerWidth >= 1024
+              ? 7
+              : window.innerWidth >= 768
+                ? 6
+                : window.innerWidth >= 640
+                  ? 3
+                  : 2;
+
+      const rowsVisible = Math.ceil(containerHeight / itemHeight);
+      const currentRow = Math.floor(scrollTop / itemHeight);
+
+      const start = Math.max(0, (currentRow - 2) * cols); // 2 lignes avant
+      const end = Math.min(
+        allImages.length,
+        (currentRow + rowsVisible + 2) * cols
+      ); // 2 lignes après
+
+      setVisibleRange({ start, end });
+    };
+
+    updateVisibleRange();
+
+    const handleScroll = () => {
+      requestAnimationFrame(updateVisibleRange);
+    };
+
+    container.addEventListener('scroll', handleScroll);
+    window.addEventListener('resize', updateVisibleRange);
+
+    return () => {
+      container.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', updateVisibleRange);
+    };
+  }, [allImages.length]);
+
   const handleImageClick = project => {
     onProjectClick(project);
     onClose(); // Fermer l'overlay grille plus pour afficher le cartel
@@ -136,13 +195,8 @@ export default function GalleryGridMore({
         {/* Sidebar Filters */}
         <div className="w-48 flex flex-col gap-2 pt-8 shrink-0">
           {FILTERS.map(f => (
-            <motion.button
-              layout
+            <button
               key={f.value}
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.7 }}
-              transition={{ duration: 0.5, type: 'spring' }}
               className={`text-lg text-left font-playfair transition-colors duration-300 ${
                 filter === f.value
                   ? 'font-bold text-blackCustom'
@@ -151,42 +205,43 @@ export default function GalleryGridMore({
               onClick={() => setFilter(f.value)}
             >
               {t(`filters.${f.value}`)}
-            </motion.button>
+            </button>
           ))}
         </div>
 
         {/* Grid */}
-        <div className="flex-1 overflow-y-auto pl-8">
+        <div className="flex-1 overflow-y-auto pl-8" ref={scrollContainerRef}>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 lg:grid-cols-7 xl:grid-cols-8 2xl:grid-cols-9 gap-2 pb-16">
             {allImages.map((imgData, index) => {
               const isHovered = hoveredId === imgData.projectId;
+              const isVisible =
+                index >= visibleRange.start && index < visibleRange.end;
+
               return (
-                <motion.div
-                  layout
-                  exit={{ opacity: 0, scale: 0.7 }}
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.5, type: 'spring' }}
+                <div
                   key={imgData.projectId + '-' + index}
                   className="relative group cursor-pointer flex items-center justify-center w-full h-full overflow-hidden"
                   onMouseEnter={() => setHoveredId(imgData.projectId)}
                   onMouseLeave={() => setHoveredId(null)}
                   onClick={() => handleImageClick(imgData.project)}
+                  style={{ minHeight: '200px' }}
                 >
-                  <Image
-                    src={getSanityImageBase(imgData.src)}
-                    alt={imgData.name}
-                    width={200}
-                    height={300}
-                    className={`max-w-[90%] max-h-[90%] 2xl:max-w-[98%] 2xl:max-h-[98%] object-contain shadow transition-opacity duration-300 ${
-                      isHovered ? 'opacity-100' : 'opacity-40'
-                    }`}
-                    style={{ objectFit: 'contain' }}
-                    draggable={false}
-                    sizes="(max-width: 768px) 45vw, 128px"
-                    loading={index < 8 ? 'eager' : 'lazy'}
-                  />
-                </motion.div>
+                  {isVisible && (
+                    <Image
+                      src={getSanityImageBase(imgData.src)}
+                      alt={imgData.name}
+                      width={200}
+                      height={300}
+                      className={`max-w-[90%] max-h-[90%] 2xl:max-w-[98%] 2xl:max-h-[98%] object-contain shadow transition-opacity duration-300 ${
+                        isHovered ? 'opacity-100' : 'opacity-40'
+                      }`}
+                      style={{ objectFit: 'contain' }}
+                      draggable={false}
+                      sizes="(max-width: 768px) 45vw, 128px"
+                      loading="lazy"
+                    />
+                  )}
+                </div>
               );
             })}
           </div>

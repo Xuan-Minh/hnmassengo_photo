@@ -99,18 +99,22 @@ function CustomLightbox({ open, onClose, images, project }) {
     preload(currentDisplaySrc);
 
     if (images.length > 1) {
-      const nextIndex = (currentIndex + 1) % images.length;
-      const prevIndex = (currentIndex - 1 + images.length) % images.length;
+      // Précharger les 3 images suivantes pour une navigation fluide
+      for (let i = 1; i <= 3; i++) {
+        const nextIndex = (currentIndex + i) % images.length;
+        const nextSrc = buildSanityImageUrl(images[nextIndex], {
+          ...getOptimizedImageParams('gallery'),
+          auto: 'format',
+        });
+        preload(nextSrc);
+      }
 
-      const nextSrc = buildSanityImageUrl(images[nextIndex], {
-        ...getOptimizedImageParams('gallery'),
-        auto: 'format',
-      });
+      // Précharger l'image précédente
+      const prevIndex = (currentIndex - 1 + images.length) % images.length;
       const prevSrc = buildSanityImageUrl(images[prevIndex], {
         ...getOptimizedImageParams('gallery'),
         auto: 'format',
       });
-      preload(nextSrc);
       preload(prevSrc);
     }
 
