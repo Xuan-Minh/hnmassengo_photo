@@ -69,8 +69,6 @@ export default function HomeImageRotation({
     return () => clearTimeout(timeout);
   }, [imgSrc, isCurrentLoaded]);
 
-
-
   useEffect(() => {
     const id = setTimeout(() => {
       if (isNarrowLayout) {
