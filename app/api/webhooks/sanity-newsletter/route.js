@@ -18,7 +18,7 @@ function timingSafeEqualString(a, b) {
   }
 }
 
-function verifySanitySignature({ rawBody, signatureHeader }) {
+function _verifySanitySignature({ rawBody, signatureHeader }) {
   const secret = process.env.SANITY_WEBHOOK_SECRET;
   if (!secret) return { ok: false, reason: 'Missing SANITY_WEBHOOK_SECRET' };
 
@@ -62,7 +62,7 @@ function pickPostId(payload) {
 
 export async function POST(request) {
   const rawBody = await request.text();
-  const signatureHeader =
+  const _signatureHeader =
     request.headers.get('x-sanity-signature') ||
     request.headers.get('X-Sanity-Signature');
 
@@ -134,13 +134,12 @@ export async function POST(request) {
       post = await client.fetch('*[_id == $id][0]{_id}', { id: postId });
       if (post?._id) break;
       await new Promise(resolve => setTimeout(resolve, 500));
-    } catch (e) {
+    } catch {
       // Error fetching post
     }
   }
 
   if (!post?._id) {
-    console.error('Post could not be found after retries:', postId);
     return NextResponse.json(
       { success: false, message: 'Post not found after indexing wait' },
       { status: 404 }
@@ -156,7 +155,7 @@ export async function POST(request) {
   if (existingCampaign && existingCampaign.length > 0) {
     // Campaign already exists for this post
     const campaign = existingCampaign[0];
-    console.log(
+    return NextResponse.json({
       success: true,
       message: 'Campaign already exists (skipped)',
       campaignId: campaign._id,
@@ -218,7 +217,7 @@ export async function POST(request) {
           subject,
           html,
         });
-      } catch (e) {
+      } catch {
         errorCount++;
       }
     });

@@ -56,7 +56,7 @@ export async function POST(request) {
         ? 'Inscription enregistrée.'
         : 'Inscription mise à jour.',
     });
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { success: false, message: "Erreur lors de l'inscription." },
       { status: 500 }

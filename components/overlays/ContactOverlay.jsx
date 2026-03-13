@@ -191,7 +191,7 @@ function ContactForm({ idSuffix = '', onSubmitSuccess, defaultSubject = '' }) {
 }
 
 // Composant pour les informations de contact
-function ContactInfo({ onOpenLegal, onCopyLink }) {
+function ContactInfo({ onOpenLegal }) {
   const t = useTranslations();
   const contactT = useTranslations('contact');
 
@@ -282,7 +282,7 @@ export function ContactContent({
       </div>
 
       <div className="lg:col-span-5 md:mt-6 lg:mt-0">
-        <ContactInfo onOpenLegal={onOpenLegal} onCopyLink={handleCopyLink} />
+        <ContactInfo onOpenLegal={onOpenLegal} />
       </div>
     </div>
   );

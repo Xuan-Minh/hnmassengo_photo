@@ -2,13 +2,11 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { usePathname } from '../../src/i18n/navigation';
-import { MENU_ITEMS, LANGUAGES, THEME } from '../../lib/constants';
+import { MENU_ITEMS, LANGUAGES } from '../../lib/constants';
 import { EVENTS, emitEvent } from '../../lib/events';
 
 // Menu one-page: scroll interne vers des sections dans #scroll-root
 export default function Menu() {
-  const items = useMemo(() => MENU_ITEMS.slice(0, -1), []); // Tous sauf contact pour mobile
-
   const desktopItems = useMemo(() => MENU_ITEMS, []);
 
   const [active, setActive] = useState(null);
@@ -201,7 +199,7 @@ export default function Menu() {
 
     // Observer pour la section #info
     const io = new IntersectionObserver(
-      entries => {
+      _entries => {
         updateHideMenu(); // Recalculer à chaque changement d'intersection
       },
       { root, threshold: [0, 0.2, 0.4, 0.6, 0.8, 1] }

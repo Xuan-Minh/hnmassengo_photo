@@ -1,8 +1,9 @@
-import js from '@eslint/js';
-import react from 'eslint-plugin-react';
-import reactHooks from 'eslint-plugin-react-hooks';
+const js = require('@eslint/js');
+const react = require('eslint-plugin-react');
+const reactHooks = require('eslint-plugin-react-hooks');
+const nextPlugin = require('@next/eslint-plugin-next');
 
-export default [
+module.exports = [
   {
     ignores: [
       '.next/**',
@@ -19,6 +20,7 @@ export default [
     plugins: {
       react,
       'react-hooks': reactHooks,
+      '@next/next': nextPlugin,
     },
     languageOptions: {
       ecmaVersion: 'latest',
@@ -71,6 +73,8 @@ export default [
       },
     },
     rules: {
+      ...(nextPlugin.configs.recommended?.rules || {}),
+      ...(nextPlugin.configs['core-web-vitals']?.rules || {}),
       'react/jsx-uses-react': 'error',
       'react/jsx-uses-vars': 'error',
       'react-hooks/rules-of-hooks': 'error',
@@ -84,6 +88,9 @@ export default [
     settings: {
       react: {
         version: 'detect',
+      },
+      next: {
+        rootDir: ['.'],
       },
     },
   },

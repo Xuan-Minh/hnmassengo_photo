@@ -1,4 +1,5 @@
 'use client';
+import Link from 'next/link';
 
 export default function GlobalNotFound() {
   return (
@@ -10,12 +11,12 @@ export default function GlobalNotFound() {
         <p className="text-lg md:text-xl mb-8 opacity-80">
           The page you are looking for does not exist.
         </p>
-        <a
+        <Link
           href="/"
           className="inline-block bg-white text-black px-8 py-3 transition-colors duration-300 font-serif hover:bg-gray-200"
         >
           Back to Home
-        </a>
+        </Link>
       </div>
     </main>
   );

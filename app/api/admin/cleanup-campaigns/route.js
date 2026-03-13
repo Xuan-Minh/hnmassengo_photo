@@ -47,7 +47,6 @@ export async function POST(request) {
       const postCampaigns = campaignsByPost[postRef];
       if (postCampaigns.length > 1) {
         // Keep first, delete rest
-        const keep = postCampaigns[0];
         const removals = postCampaigns.slice(1);
         toDelete.push(...removals.map(c => c._id));
       }
@@ -73,9 +72,11 @@ export async function POST(request) {
       campaignIds: toDelete,
     });
   } catch (error) {
-    console.error('Cleanup error:', error);
     return NextResponse.json(
-      { success: false, message: error.message },
+      {
+        success: false,
+        message: error instanceof Error ? error.message : 'Cleanup error',
+      },
       { status: 500 }
     );
   }

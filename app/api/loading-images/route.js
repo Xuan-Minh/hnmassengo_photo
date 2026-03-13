@@ -35,7 +35,7 @@ export async function GET() {
         'CDN-Cache-Control': 'max-age=86400',
       },
     });
-  } catch (error) {
+  } catch {
     // Erreur lors de la récupération des images de chargement
     return new Response(JSON.stringify({ error: 'Erreur serveur' }), {
       status: 500,

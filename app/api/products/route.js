@@ -21,7 +21,7 @@ export async function GET(request) {
     }));
 
     return NextResponse.json(formatted);
-  } catch (error) {
+  } catch {
     // Erreur lors de la récupération des produits
     return NextResponse.json(
       { error: 'Failed to fetch products' },

@@ -31,7 +31,7 @@ function checkRateLimit(request) {
 
 export async function POST(request) {
   try {
-    const { ip, allowed, remaining, resetTime } = checkRateLimit(request);
+    const { allowed, remaining, resetTime } = checkRateLimit(request);
 
     // Rate limit check
     if (!allowed) {

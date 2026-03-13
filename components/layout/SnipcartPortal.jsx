@@ -36,11 +36,11 @@ export default function SnipcartPortal({ apiKey }) {
     document.addEventListener('click', handleSnipcartClick);
 
     if ('requestIdleCallback' in window) {
-      const idleId = requestIdleCallback(() => setLoadScript(true), {
+      const idleId = window.requestIdleCallback(() => setLoadScript(true), {
         timeout: 20000, // Augmenté de 5s à 20s
       });
       return () => {
-        cancelIdleCallback(idleId);
+        window.cancelIdleCallback(idleId);
         document.removeEventListener('click', handleSnipcartClick);
       };
     } else {

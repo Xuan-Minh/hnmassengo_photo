@@ -43,16 +43,20 @@ export default function LoadingOverlay({ initialImages = [] }) {
     'linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 50%, #1a1a1a 100%)';
 
   // 1. Préparation des URLs ultra-optimisées côté serveur
-  // Détection uniquement par _type
-  const isMobileImage = img => img?._type === 'loadingImageMobile';
-  const isDesktopImage = img => img?._type === 'loadingImageDesktop';
-
-  const desktopData = initialImages.filter(isDesktopImage);
-  const mobileData = initialImages.filter(isMobileImage);
-
-  // Si aucune image desktop/mobile, on ne montre rien
-  const safeDesktopData = desktopData;
-  const safeMobileData = mobileData;
+  const desktopData = useMemo(
+    () =>
+      (initialImages || []).filter(
+        img => img?._type === 'loadingImageDesktop'
+      ),
+    [initialImages]
+  );
+  const mobileData = useMemo(
+    () =>
+      (initialImages || []).filter(
+        img => img?._type === 'loadingImageMobile'
+      ),
+    [initialImages]
+  );
 
   // Fonction helper pour extraire l'image (supporte ancien et nouveau format)
   const getImageSource = (img, width) => {
@@ -71,22 +75,15 @@ export default function LoadingOverlay({ initialImages = [] }) {
     return null;
   };
 
-  const desktopSrcs = safeDesktopData
-    .map(img => getImageSource(img, 1920))
-    .filter(Boolean);
+  const desktopSrcs = useMemo(
+    () => desktopData.map(img => getImageSource(img, 1920)).filter(Boolean),
+    [desktopData]
+  );
 
-  const mobileSrcs = safeMobileData
-    .map(img => getImageSource(img, 1080))
-    .filter(Boolean);
-
-  // Debug: vérifier les URLs générées
-  useEffect(() => {
-    console.log('[LoadingOverlay] Sources:', {
-      desktopCount: desktopSrcs.length,
-      mobileCount: mobileSrcs.length,
-      initialImagesCount: initialImages.length,
-    });
-  }, [desktopSrcs.length, mobileSrcs.length, initialImages.length]);
+  const mobileSrcs = useMemo(
+    () => mobileData.map(img => getImageSource(img, 1080)).filter(Boolean),
+    [mobileData]
+  );
 
   const [visible, setVisible] = useState(true);
   const [isExiting, setIsExiting] = useState(false);
@@ -112,7 +109,10 @@ export default function LoadingOverlay({ initialImages = [] }) {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  const activeSrcs = isMobileDevice ? mobileSrcs : desktopSrcs;
+  const activeSrcs = useMemo(
+    () => (isMobileDevice ? mobileSrcs : desktopSrcs),
+    [isMobileDevice, mobileSrcs, desktopSrcs]
+  );
 
   useEffect(() => {
     previouslyFocusedElement.current = document.activeElement;
@@ -207,7 +207,7 @@ export default function LoadingOverlay({ initialImages = [] }) {
     });
 
     return () => clearTimeout(timeout);
-  }, [activeSrcs.join(',')]); // Utiliser join pour détecter les changements de contenu
+  }, [activeSrcs]);
 
   // 3. Lancement du Flipbook
   useEffect(() => {

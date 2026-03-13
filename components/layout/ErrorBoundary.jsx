@@ -1,5 +1,6 @@
 'use client';
 import React from 'react';
+import Link from 'next/link';
 import { logger } from '../../lib/logger';
 import { useTranslations } from 'next-intl';
 class ErrorBoundaryInner extends React.Component {
@@ -8,7 +9,7 @@ class ErrorBoundaryInner extends React.Component {
     this.state = { hasError: false, error: null, errorInfo: null };
   }
 
-  static getDerivedStateFromError(error) {
+  static getDerivedStateFromError(_error) {
     return { hasError: true };
   }
 
@@ -58,12 +59,12 @@ class ErrorBoundaryInner extends React.Component {
               >
                 {messages.retry}
               </button>
-              <a
+              <Link
                 href="/"
                 className="px-8 py-3 border border-whiteCustom hover:bg-background hover:text-blackCustom transition-colors inline-block"
               >
                 {messages.home}
-              </a>
+              </Link>
             </div>
 
             <p className="mt-8 text-sm opacity-60">

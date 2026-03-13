@@ -1,5 +1,5 @@
 // components/gallery/GalleryList.jsx
-import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import { buildSanityImageUrl } from '../../lib/imageUtils';

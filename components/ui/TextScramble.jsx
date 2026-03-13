@@ -11,7 +11,6 @@ import {
 
 export default function TextScramble({ text, className, delay = 0 }) {
   const [displayText, setDisplayText] = useState('');
-  const [isAnimating, setIsAnimating] = useState(true);
 
   // 2. On initialise à "true" si l'intro a déjà été passée lors de cette session
   const [canStart, setCanStart] = useState(isIntroDismissedState);
@@ -34,11 +33,10 @@ export default function TextScramble({ text, className, delay = 0 }) {
 
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()';
     let iteration = 0;
-    const maxIterations = text.length * 3; // Nombre d'itérations par lettre
 
     const interval = setTimeout(() => {
       const timer = setInterval(() => {
-        setDisplayText(prev => {
+        setDisplayText(() => {
           const newText = text
             .split('')
             .map((letter, index) => {
@@ -53,7 +51,6 @@ export default function TextScramble({ text, className, delay = 0 }) {
         });
 
         if (iteration >= text.length) {
-          setIsAnimating(false);
           clearInterval(timer);
           setDisplayText(text);
         }

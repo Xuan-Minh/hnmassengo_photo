@@ -1,5 +1,6 @@
 'use client';
 import React from 'react';
+import Link from 'next/link';
 import { logger } from '../../lib/logger';
 
 /**
@@ -11,13 +12,12 @@ class GlobalErrorBoundaryInner extends React.Component {
     this.state = { hasError: false, error: null, errorInfo: null };
   }
 
-  static getDerivedStateFromError(error) {
+  static getDerivedStateFromError(_error) {
     return { hasError: true };
   }
 
   componentDidCatch(error, errorInfo) {
     logger.error('GlobalErrorBoundary caught an error:', error, errorInfo);
-    console.error('Global Error Boundary caught:', error, errorInfo);
     this.state = {
       hasError: true,
       error,
@@ -48,12 +48,12 @@ class GlobalErrorBoundaryInner extends React.Component {
               >
                 Retry
               </button>
-              <a
+              <Link
                 href="/"
                 className="px-8 py-3 border border-white hover:bg-white hover:text-black transition-colors inline-block"
               >
                 Back to Home
-              </a>
+              </Link>
             </div>
           </div>
         </div>
