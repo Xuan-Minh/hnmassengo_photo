@@ -2,6 +2,8 @@ import '../globals.css';
 import React from 'react';
 import { Lexend, Playfair_Display } from 'next/font/google';
 import { getLocale } from 'next-intl/server';
+import GlobalErrorBoundary from '../components/layout/GlobalErrorBoundary';
+import StructuredData from '../lib/metadata';
 
 const lexend = Lexend({
   subsets: ['latin'],
@@ -30,11 +32,11 @@ export default async function RootLayout({ children }) {
     <html
       lang={locale}
       translate="no"
-      className={`${lexend.variable} ${playfair.variable}`}
       suppressHydrationWarning
     >
       <head>
         <meta name="theme-color" content="#222222" />
+        <StructuredData />
         <link
           rel="preconnect"
           href="https://cdn.snipcart.com"
@@ -79,7 +81,12 @@ export default async function RootLayout({ children }) {
           hrefLang="x-default"
         />
       </head>
-      <body suppressHydrationWarning>{children}</body>
+      <body
+        className={`${lexend.className} ${lexend.variable} ${playfair.variable}`}
+        suppressHydrationWarning
+      >
+        <GlobalErrorBoundary>{children}</GlobalErrorBoundary>
+      </body>
     </html>
   );
 }
