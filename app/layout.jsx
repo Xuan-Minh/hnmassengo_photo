@@ -29,11 +29,7 @@ export default async function RootLayout({ children }) {
   }
 
   return (
-    <html
-      lang={locale}
-      translate="no"
-      suppressHydrationWarning
-    >
+    <html lang={locale} translate="no" suppressHydrationWarning>
       <head>
         <meta name="theme-color" content="#222222" />
         <StructuredData />
