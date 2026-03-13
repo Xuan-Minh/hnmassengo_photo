@@ -68,14 +68,6 @@ export default async function RootLayout({ children }) {
           href="https://api.sanity.io"
           crossOrigin="anonymous"
         />
-        <link rel="alternate" href="https://hnmassengo.com/fr" hrefLang="fr" />
-        <link rel="alternate" href="https://hnmassengo.com/en" hrefLang="en" />
-        <link rel="alternate" href="https://hnmassengo.com/de" hrefLang="de" />
-        <link
-          rel="alternate"
-          href="https://hnmassengo.com/fr"
-          hrefLang="x-default"
-        />
       </head>
       <body
         className={`${lexend.className} ${lexend.variable} ${playfair.variable}`}
