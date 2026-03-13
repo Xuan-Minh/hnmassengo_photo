@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import Image from 'next/image';
 import { TIMING } from '../../lib/constants';
+import { isSanityCdnUrl } from '../../lib/imageUtils';
 
 // Composant simple de rotation d'images. Passer un tableau de noms de fichiers relatifs à /public/home.
 // position: "center" | "left" | "right"
@@ -37,10 +38,9 @@ export default function HomeImageRotation({
     const raw = value.trim();
     if (!raw) return '';
 
-    // URL absolue (ex: Sanity CDN)
+    // URL absolue (ex: Sanity CDN) — conserver les params CDN
     if (/^https?:\/\//i.test(raw)) {
-      // Nettoie les paramètres Sanity pour éviter les conflits avec Next.js Image
-      return raw.split('?')[0];
+      return raw;
     }
 
     // Normalise les chemins "public"
@@ -154,6 +154,7 @@ export default function HomeImageRotation({
               className="object-contain"
               priority
               fetchPriority="high"
+              unoptimized={isSanityCdnUrl(imgSrc)}
               quality={50}
               onLoad={() => {
                 // On ajoute l'image au dictionnaire sans écraser les précédentes

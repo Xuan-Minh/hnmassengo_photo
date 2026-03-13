@@ -3,7 +3,10 @@ import { useState, useEffect, useMemo, useRef } from 'react';
 import { useTranslations } from 'next-intl';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
-import { getSanityImageBase } from '../../lib/imageUtils';
+import {
+  getSanityImageDeliveryUrl,
+  isSanityCdnUrl,
+} from '../../lib/imageUtils';
 
 function getProjectDateMs(project) {
   const raw = project?.date;
@@ -96,15 +99,24 @@ export default function GalleryGridMore({
   // On veut toutes les images de tous les projets filtrés
   const allImages = useMemo(() => {
     return filteredProjects.flatMap(p =>
-      (p.images || []).filter(Boolean).map((img, idx) => ({
-        projectId: p.id,
-        project: p,
-        name: p.name,
-        type: p.type,
-        src: img,
-        coords: p.coords,
-        isFirst: idx === 0,
-      }))
+      (p.images || [])
+        .filter(Boolean)
+        .map((img, idx) => {
+          const src = getSanityImageDeliveryUrl(img, { w: 640, q: 70 });
+          if (!src) return null;
+
+          return {
+            projectId: p.id,
+            project: p,
+            name: p.name,
+            type: p.type,
+            src,
+            coords: p.coords,
+            isFirst: idx === 0,
+            isSanityImage: isSanityCdnUrl(src),
+          };
+        })
+        .filter(Boolean)
     );
   }, [filteredProjects]);
 
@@ -228,10 +240,11 @@ export default function GalleryGridMore({
                 >
                   {isVisible && (
                     <Image
-                      src={getSanityImageBase(imgData.src)}
+                      src={imgData.src}
                       alt={imgData.name}
                       width={200}
                       height={300}
+                      unoptimized={imgData.isSanityImage}
                       className={`max-w-[90%] max-h-[90%] 2xl:max-w-[98%] 2xl:max-h-[98%] object-contain shadow transition-opacity duration-300 ${
                         isHovered ? 'opacity-100' : 'opacity-40'
                       }`}

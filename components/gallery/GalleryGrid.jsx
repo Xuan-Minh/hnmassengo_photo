@@ -4,7 +4,46 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { GALLERY_FILTERS } from '../../lib/constants';
+import {
+  getSanityImageDeliveryUrl,
+  isSanityCdnUrl,
+} from '../../lib/imageUtils';
 import GalleryViewToggle from './GalleryViewToggle';
+
+const hashString = value => {
+  let hash = 0;
+  for (let i = 0; i < value.length; i += 1) {
+    hash = (hash << 5) - hash + value.charCodeAt(i);
+    hash |= 0;
+  }
+  return Math.abs(hash);
+};
+
+const createSeededRandom = seed => {
+  let current = seed % 2147483647;
+  if (current <= 0) current += 2147483646;
+
+  return () => {
+    current = (current * 16807) % 2147483647;
+    return (current - 1) / 2147483646;
+  };
+};
+
+const shuffleWithSeed = (items, random) => {
+  const copy = [...items];
+  for (let i = copy.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy;
+};
+
+const getProjectDateMs = project => {
+  const raw = project?.date;
+  if (!raw) return null;
+  const ms = new Date(raw).getTime();
+  return Number.isFinite(ms) ? ms : null;
+};
 
 export default function GalleryGrid({
   projects,
@@ -58,23 +97,69 @@ export default function GalleryGrid({
 
   // Filtrage
   const filteredProjectsGrid = useMemo(() => {
-    return projects.filter(p => gridFilter === 'all' || p.type === gridFilter);
+    return projects
+      .filter(p => gridFilter === 'all' || p.type === gridFilter)
+      .sort((a, b) => {
+        const am = getProjectDateMs(a);
+        const bm = getProjectDateMs(b);
+
+        if (am === null && bm === null)
+          return (a?.name || '').localeCompare(b?.name || '');
+        if (am === null) return 1;
+        if (bm === null) return -1;
+
+        return bm - am;
+      });
   }, [projects, gridFilter]);
 
+  const projectBuckets = useMemo(() => {
+    return filteredProjectsGrid
+      .map(project => {
+        const projectImages = (project.images || []).filter(Boolean);
+        if (!projectImages.length) return null;
+
+        const seed = hashString(`${project.id}-${gridFilter}`);
+        const random = createSeededRandom(seed);
+        const imageQuota = 5 + Math.floor(random() * 3); // 5, 6 ou 7
+        const indexedImages = projectImages.map((img, originalIdx) => ({
+          img,
+          originalIdx,
+        }));
+        const selectedImages = shuffleWithSeed(indexedImages, random).slice(
+          0,
+          imageQuota
+        );
+
+        return selectedImages
+          .map(({ img, originalIdx }) => {
+            const imgSrc = getSanityImageDeliveryUrl(img, { w: 640, q: 70 });
+            if (!imgSrc) return null;
+
+            return {
+              projectId: project.id,
+              uniqueKey: `${project.id}-${originalIdx}`,
+              name: project.name,
+              type: project.type,
+              imgSrc,
+              isSanityImage: isSanityCdnUrl(imgSrc),
+            };
+          })
+          .filter(Boolean);
+      })
+      .filter(Boolean);
+  }, [filteredProjectsGrid, gridFilter]);
+
   const allImages = useMemo(() => {
-    return filteredProjectsGrid.flatMap(p =>
-      (p.images || []).map((img, idx) => ({
-        projectId: p.id,
-        uniqueKey: `${p.id}-${idx}`,
-        name: p.name,
-        type: p.type,
-        img,
-      }))
-    );
-  }, [filteredProjectsGrid]);
+    return projectBuckets.flatMap(bucket => bucket);
+  }, [projectBuckets]);
 
   const gridSlots = useMemo(() => {
     if (!maxImages) return [];
+
+    if (!allImages.length) {
+      return Array.from({ length: maxImages }, () => null);
+    }
+
     return Array.from(
       { length: maxImages },
       (_, idx) => allImages[idx] || null
@@ -172,10 +257,11 @@ export default function GalleryGrid({
                     }}
                   >
                     <Image
-                      src={imgData.img}
+                      src={imgData.imgSrc}
                       alt={imgData.name}
                       width={200}
                       height={300}
+                      unoptimized={imgData.isSanityImage}
                       className={`max-w-full max-h-full object-contain shadow transition-opacity duration-300 ${
                         isHovered ? 'opacity-100' : 'opacity-40'
                       }`}
