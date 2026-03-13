@@ -64,22 +64,12 @@ export default function HomeImageRotation({
   useEffect(() => {
     if (isCurrentLoaded || !imgSrc) return;
     const timeout = setTimeout(() => {
-      console.log('[HomeImageRotation] Timeout - marking as loaded:', imgSrc);
       setLoadedImages(prev => ({ ...prev, [imgSrc]: true }));
     }, 2000); // 2 secondes max d'attente
     return () => clearTimeout(timeout);
   }, [imgSrc, isCurrentLoaded]);
 
-  // Debug
-  useEffect(() => {
-    console.log('[HomeImageRotation] State:', {
-      imagesCount: images.length,
-      index,
-      imgSrc,
-      isCurrentLoaded,
-      loadedImages,
-    });
-  }, [images.length, index, imgSrc, isCurrentLoaded, loadedImages]);
+
 
   useEffect(() => {
     const id = setTimeout(() => {

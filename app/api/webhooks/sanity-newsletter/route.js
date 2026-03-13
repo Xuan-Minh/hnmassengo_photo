@@ -89,15 +89,10 @@ export async function POST(request) {
     );
   }
 
-  console.log('Webhook payload:', JSON.stringify(payload, null, 2));
-
   // CRITICAL: Only process blogPost documents, never process newsletterCampaign
   // This prevents infinite loops when the webhook triggers on campaign creation
   const documentType = payload?._type || payload?.type;
   if (documentType !== 'blogPost') {
-    console.log(
-      `Ignoring non-blogPost document type: ${documentType}. Newsletter campaigns should never trigger this webhook.`
-    );
     return NextResponse.json({
       success: true,
       message: 'Webhook ignored (not a blogPost)',
@@ -105,7 +100,6 @@ export async function POST(request) {
   }
 
   const postId = pickPostId(payload);
-  console.log('Extracted postId:', postId);
 
   if (!postId) {
     return NextResponse.json(
@@ -139,10 +133,9 @@ export async function POST(request) {
     try {
       post = await client.fetch('*[_id == $id][0]{_id}', { id: postId });
       if (post?._id) break;
-      console.log(`Post not found yet (attempt ${i + 1}/5), retrying...`);
       await new Promise(resolve => setTimeout(resolve, 500));
     } catch (e) {
-      console.log('Error fetching post:', e);
+      // Error fetching post
     }
   }
 
@@ -164,9 +157,6 @@ export async function POST(request) {
     // Campaign already exists for this post
     const campaign = existingCampaign[0];
     console.log(
-      `Campaign already exists for post ${postId} (status: ${campaign.status}). Skipping.`
-    );
-    return NextResponse.json({
       success: true,
       message: 'Campaign already exists (skipped)',
       campaignId: campaign._id,

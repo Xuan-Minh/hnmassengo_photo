@@ -8,8 +8,23 @@ import RevealRoot from '../../components/layout/RevealRoot';
 import ErrorBoundary from '../../components/layout/ErrorBoundary';
 import SnipcartPortal from '../../components/layout/SnipcartPortal';
 import ClientLayout from '../../components/layout/ClientLayout';
+import { Lexend, Playfair_Display } from 'next/font/google';
 
 import client from '../../lib/sanity.client';
+
+const lexend = Lexend({
+  subsets: ['latin'],
+  weight: ['400', '700'],
+  display: 'swap',
+  variable: '--font-lexend',
+});
+
+const playfair = Playfair_Display({
+  subsets: ['latin'],
+  weight: ['400', '700'],
+  display: 'swap',
+  variable: '--font-playfair',
+});
 
 export default async function LocaleLayout({ children, params }) {
   const { locale } = await params;
@@ -51,15 +66,74 @@ export default async function LocaleLayout({ children, params }) {
   }
 
   return (
-    <NextIntlClientProvider locale={locale} messages={messages}>
-      <ErrorBoundary>
-        <UIControlBar />
-        <ClientLayout loadingImages={loadingImages}>
-          <RevealRoot>{children}</RevealRoot>
-        </ClientLayout>
-        <SnipcartPortal apiKey={process.env.SNIPCART_PUBLIC_API_KEY || ''} />
-      </ErrorBoundary>
-    </NextIntlClientProvider>
+    <html
+      lang={locale}
+      className={`${lexend.variable} ${playfair.variable}`}
+      suppressHydrationWarning
+    >
+      <head>
+        <meta name="theme-color" content="#222222" />
+        {/* Preconnect + DNS Prefetch para Third-Party Resources */}
+        <link
+          rel="preconnect"
+          href="https://cdn.snipcart.com"
+          crossOrigin="anonymous"
+        />
+        <link
+          rel="preconnect"
+          href="https://cdn.sanity.io"
+          crossOrigin="anonymous"
+        />
+        {/* Preconnect API Sanity - recommandé par Lighthouse (110ms savings) */}
+        <link
+          rel="preconnect"
+          href="https://api.sanity.io"
+          crossOrigin="anonymous"
+        />
+        <link
+          rel="dns-prefetch"
+          href="https://hmassengo-photo.netlify.app"
+          crossOrigin="anonymous"
+        />
+        <link
+          rel="dns-prefetch"
+          href="https://cdn.snipcart.com"
+          crossOrigin="anonymous"
+        />
+        <link
+          rel="dns-prefetch"
+          href="https://cdn.sanity.io"
+          crossOrigin="anonymous"
+        />
+        <link
+          rel="dns-prefetch"
+          href="https://api.sanity.io"
+          crossOrigin="anonymous"
+        />
+        {/* Alternates languages */}
+        <link rel="alternate" href="https://hnmassengo.com/fr" hrefLang="fr" />
+        <link rel="alternate" href="https://hnmassengo.com/en" hrefLang="en" />
+        <link rel="alternate" href="https://hnmassengo.com/de" hrefLang="de" />
+        <link
+          rel="alternate"
+          href="https://hnmassengo.com/fr"
+          hrefLang="x-default"
+        />
+      </head>
+      <body>
+        <NextIntlClientProvider locale={locale} messages={messages}>
+          <ErrorBoundary>
+            <UIControlBar />
+            <ClientLayout loadingImages={loadingImages}>
+              <RevealRoot>{children}</RevealRoot>
+            </ClientLayout>
+            <SnipcartPortal
+              apiKey={process.env.SNIPCART_PUBLIC_API_KEY || ''}
+            />
+          </ErrorBoundary>
+        </NextIntlClientProvider>
+      </body>
+    </html>
   );
 }
 
