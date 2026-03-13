@@ -45,16 +45,12 @@ export default function LoadingOverlay({ initialImages = [] }) {
   // 1. Préparation des URLs ultra-optimisées côté serveur
   const desktopData = useMemo(
     () =>
-      (initialImages || []).filter(
-        img => img?._type === 'loadingImageDesktop'
-      ),
+      (initialImages || []).filter(img => img?._type === 'loadingImageDesktop'),
     [initialImages]
   );
   const mobileData = useMemo(
     () =>
-      (initialImages || []).filter(
-        img => img?._type === 'loadingImageMobile'
-      ),
+      (initialImages || []).filter(img => img?._type === 'loadingImageMobile'),
     [initialImages]
   );
 
