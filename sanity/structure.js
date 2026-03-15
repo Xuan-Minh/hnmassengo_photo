@@ -4,15 +4,12 @@ export const structure = S =>
     .title('Content')
     .items([
       S.listItem()
-        .title('Home - Présentation')
-        .id('homePresentation')
+        .title('Home - Bio')
+        .id('homeBio')
         .child(
-          S.editor()
-            .id('homePresentation')
-            .schemaType('homePresentation')
-            .documentId('homePresentation')
+          S.editor().id('homeBio').schemaType('homeBio').documentId('homeBio')
         ),
       ...S.documentTypeListItems().filter(
-        listItem => listItem.getId() !== 'homePresentation'
+        listItem => listItem.getId() !== 'homeBio'
       ),
     ]);

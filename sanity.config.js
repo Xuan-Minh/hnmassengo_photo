@@ -21,7 +21,7 @@ export default defineConfig({
     newDocumentOptions: (prev, { creationContext }) => {
       if (creationContext.type === 'global') {
         return prev.filter(
-          templateItem => templateItem.templateId !== 'homePresentation'
+          templateItem => templateItem.templateId !== 'homeBio'
         );
       }
 

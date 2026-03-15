@@ -4,7 +4,7 @@ import shopItem from './shopItem';
 import { loadingImageType } from './loadingImageType';
 import { loadingImageMobileType } from './loadingImageMobileType';
 import { homeSectionImageType } from './homeSectionImageType';
-import { homePresentationType } from './homePresentationType';
+import { homeBioType } from './homeBioType';
 import { newsletterSubscriber } from './newsletterSubscriber';
 import { newsletterCampaign } from './newsletterCampaign';
 
@@ -16,7 +16,7 @@ export const schema = {
     loadingImageType,
     loadingImageMobileType,
     homeSectionImageType,
-    homePresentationType,
+    homeBioType,
     newsletterSubscriber,
     newsletterCampaign,
   ],
