@@ -17,6 +17,17 @@ export default defineConfig({
   basePath: '/studio',
   projectId,
   dataset,
+  document: {
+    newDocumentOptions: (prev, { creationContext }) => {
+      if (creationContext.type === 'global') {
+        return prev.filter(
+          templateItem => templateItem.templateId !== 'homePresentation'
+        );
+      }
+
+      return prev;
+    },
+  },
   // Add and edit the content schema in the './sanity/schemaTypes' folder
   schema,
   plugins: [
