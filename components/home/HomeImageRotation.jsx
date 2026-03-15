@@ -14,6 +14,7 @@ export default function HomeImageRotation({
   position = 'left',
 }) {
   const [index, setIndex] = useState(0);
+  const [transitionStep, setTransitionStep] = useState(0);
   const [imgPosition, setImgPosition] = useState(position);
   const lastPosition = useRef(position);
   const pendingPosition = useRef(null);
@@ -54,8 +55,12 @@ export default function HomeImageRotation({
     return `/${withoutLeading}`;
   };
 
-  const current = images[index];
-  const imgSrc = normalizeImageSrc(current);
+  const normalizedImages = (Array.isArray(images) ? images : [])
+    .map(normalizeImageSrc)
+    .filter(Boolean);
+
+  const current = normalizedImages[index];
+  const imgSrc = current || '';
 
   // L'image courante est considérée comme chargée si elle est dans notre dictionnaire
   const isCurrentLoaded = loadedImages[imgSrc] || false;
@@ -70,6 +75,19 @@ export default function HomeImageRotation({
   }, [imgSrc, isCurrentLoaded]);
 
   useEffect(() => {
+    if (normalizedImages.length === 0) {
+      if (index !== 0) setIndex(0);
+      return;
+    }
+
+    if (index >= normalizedImages.length) {
+      setIndex(0);
+    }
+  }, [index, normalizedImages.length]);
+
+  useEffect(() => {
+    if (normalizedImages.length <= 1) return;
+
     const id = setTimeout(() => {
       if (isNarrowLayout) {
         pendingPosition.current = 'center';
@@ -85,10 +103,11 @@ export default function HomeImageRotation({
         pendingPosition.current = nextPos;
         lastPosition.current = nextPos;
       }
-      setIndex(prev => (prev + 1) % images.length);
+      setTransitionStep(prev => prev + 1);
+      setIndex(prev => (prev + 1) % normalizedImages.length);
     }, interval);
     return () => clearTimeout(id);
-  }, [images, interval, isNarrowLayout, isCurrentLoaded]);
+  }, [normalizedImages.length, interval, isNarrowLayout, index]);
 
   if (!imgSrc) {
     return null;
@@ -127,7 +146,7 @@ export default function HomeImageRotation({
           }}
         >
           <motion.div
-            key={imgSrc}
+            key={`${imgSrc}-${transitionStep}`}
             className="absolute inset-0"
             initial={{ opacity: 0 }}
             animate={{ opacity: isCurrentLoaded ? 1 : 0 }}
