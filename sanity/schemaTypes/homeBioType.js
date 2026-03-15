@@ -6,15 +6,40 @@ export const homeBioType = defineType({
   type: 'document',
   preview: {
     select: {
-      title: 'bio.fr',
+      title: 'title.fr',
+      subtitle: 'bio.fr',
     },
-    prepare({ title }) {
+    prepare({ title, subtitle }) {
       return {
         title: title || 'Home bio',
+        subtitle: subtitle || 'Bio complete',
       };
     },
   },
   fields: [
+    defineField({
+      name: 'title',
+      title: 'Titre (optionnel)',
+      description: 'Laisser vide pour ne pas afficher de titre dans la home.',
+      type: 'object',
+      fields: [
+        {
+          name: 'fr',
+          title: 'Francais',
+          type: 'string',
+        },
+        {
+          name: 'en',
+          title: 'English',
+          type: 'string',
+        },
+        {
+          name: 'de',
+          title: 'Deutsch',
+          type: 'string',
+        },
+      ],
+    }),
     defineField({
       name: 'bio',
       title: 'Bio',
