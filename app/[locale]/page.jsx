@@ -1,6 +1,5 @@
 'use client';
 import { useParams } from 'next/navigation';
-import HomePresentation from '../../components/home/HomePresentation';
 import ContactOverlay, {
   ContactContent,
   ContactMarquee,
@@ -17,7 +16,6 @@ export default function HomePage() {
   const { locale } = useParams();
 
   // Fading refs pour chaque section
-  const [presRef, presVisible] = useFadeInOnScreen(locale);
   const [galleryRef, galleryVisible] = useFadeInOnScreen(locale);
   const [blogRef, blogVisible] = useFadeInOnScreen(locale);
   const [shopRef, shopVisible] = useFadeInOnScreen(locale);
@@ -26,17 +24,6 @@ export default function HomePage() {
     <>
       <ContactOverlay />
       <HomeSection />
-
-      <motion.section
-        ref={presRef}
-        id="presentation"
-        initial={false}
-        animate={presVisible ? { opacity: 1 } : { opacity: 0 }}
-        transition={{ duration: 0.8 }}
-        suppressHydrationWarning
-      >
-        <HomePresentation />
-      </motion.section>
       <motion.section
         ref={galleryRef}
         id="works"
