@@ -192,13 +192,21 @@ export default function GalleryList({
             <button
               key={p.id}
               onClick={() => navigateToImage(idx, 0)}
-              className={`text-lg font-playfair transition-all duration-300 ${
+              className={`text-lg font-playfair transition-opacity duration-300 relative group whitespace-nowrap ${
                 idx === currentProjectIndex
-                  ? 'font-bold underline underline-offset-4'
+                  ? 'font-bold opacity-100'
                   : 'opacity-60 hover:opacity-100'
               }`}
             >
               {p.name}
+              <span
+                className={`absolute left-0 bottom-0 h-[1px] bg-current transition-all duration-300 ease-in-out ${
+                  idx === currentProjectIndex
+                    ? 'w-full'
+                    : 'w-0 group-hover:w-full'
+                }`}
+                style={{ pointerEvents: 'none' }}
+              />
             </button>
           ))}
         </div>
@@ -285,13 +293,21 @@ export default function GalleryList({
           <button
             key={p.id}
             onClick={() => navigateToImage(idx, 0)}
-            className={`text-lg font-playfair transition-all duration-300 ${
+            className={`text-lg font-playfair transition-opacity duration-300 relative group whitespace-nowrap ${
               idx === currentProjectIndex
-                ? 'font-bold underline underline-offset-4'
-                : 'opacity-60'
+                ? 'font-bold opacity-100'
+                : 'opacity-60 hover:opacity-100'
             }`}
           >
             {p.name}
+            <span
+              className={`absolute left-0 bottom-0 h-[1px] bg-current transition-all duration-300 ease-in-out ${
+                idx === currentProjectIndex
+                  ? 'w-full'
+                  : 'w-0 group-hover:w-full'
+              }`}
+              style={{ pointerEvents: 'none' }}
+            />
           </button>
         ))}
       </div>
