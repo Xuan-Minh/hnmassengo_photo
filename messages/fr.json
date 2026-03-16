@@ -40,8 +40,8 @@
     "seeMore": "voir plus",
     "filters": {
       "all": "tous",
-      "artwork": "œuvres",
-      "commission": "commandes"
+      "artwork": "projets personnels",
+      "commission": "commissions"
     },
     "back": "retour"
   },

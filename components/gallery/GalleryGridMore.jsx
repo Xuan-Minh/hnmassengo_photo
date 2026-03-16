@@ -29,6 +29,7 @@ export default function GalleryGridMore({
   const t = useTranslations('gallery');
   const [filter, setFilter] = useState('all');
   const [hoveredId, setHoveredId] = useState(null);
+  const [gridHoveredProjectId, setGridHoveredProjectId] = useState(null);
   const [isHoverSourceGrid, setIsHoverSourceGrid] = useState(false);
   const scrollContainerRef = useRef(null);
   const [visibleRange, setVisibleRange] = useState({ start: 0, end: 50 });
@@ -236,7 +237,7 @@ export default function GalleryGridMore({
             {FILTERS.map(f => (
               <button
                 key={f.value}
-                className={`text-lg text-left font-playfair transition-colors duration-300 ${
+                className={`text-lg text-left font-playfair transition-colors duration-300 relative group self-start ${
                   filter === f.value
                     ? 'font-bold text-blackCustom'
                     : 'text-accent hover:text-blackCustom'
@@ -244,6 +245,12 @@ export default function GalleryGridMore({
                 onClick={() => setFilter(f.value)}
               >
                 {t(`filters.${f.value}`)}
+                <span
+                  className={`absolute left-0 bottom-0 h-[1px] bg-current transition-all duration-300 ease-in-out ${
+                    filter === f.value ? 'w-full' : 'w-0 group-hover:w-full'
+                  }`}
+                  style={{ pointerEvents: 'none' }}
+                />
               </button>
             ))}
           </div>
@@ -253,15 +260,30 @@ export default function GalleryGridMore({
             {filteredProjects.map(p => (
               <li key={p.id}>
                 <button
-                  className="text-sm md:text-base text-left font-playfair transition-colors duration-300 text-accent hover:text-blackCustom"
+                  className={`text-sm md:text-base text-left font-playfair transition-colors duration-300 relative group ${
+                    gridHoveredProjectId === p.id
+                      ? 'text-blackCustom'
+                      : 'text-accent/30 hover:text-blackCustom'
+                  }`}
                   onClick={() => handleImageClick(p)}
                   onMouseEnter={() => {
                     handleSidebarHover(p.id);
+                    setGridHoveredProjectId(null);
                     setIsHoverSourceGrid(false);
                   }}
-                  onMouseLeave={() => setHoveredId(null)}
+                  onMouseLeave={() => {
+                    if (!isHoverSourceGrid) setHoveredId(null);
+                  }}
                 >
                   {p.name}
+                  <span
+                    className={`absolute left-0 bottom-0 h-[1px] bg-current transition-all duration-300 ease-in-out ${
+                      hoveredId === p.id || gridHoveredProjectId === p.id
+                        ? 'w-full'
+                        : 'w-0 group-hover:w-full'
+                    }`}
+                    style={{ pointerEvents: 'none' }}
+                  />
                 </button>
               </li>
             ))}
@@ -286,10 +308,12 @@ export default function GalleryGridMore({
                   key={imgData.projectId + '-' + index}
                   className="relative group cursor-pointer flex items-center justify-center w-full h-full overflow-hidden"
                   onMouseEnter={() => {
+                    setGridHoveredProjectId(imgData.projectId);
                     setHoveredId(imgData.projectId);
                     setIsHoverSourceGrid(true);
                   }}
                   onMouseLeave={() => {
+                    setGridHoveredProjectId(null);
                     setHoveredId(null);
                     setIsHoverSourceGrid(false);
                   }}
