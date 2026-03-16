@@ -256,7 +256,7 @@ export default function GalleryGridMore({
           </div>
 
           {/* Liste dynamique des projets */}
-          <ul className="flex flex-col gap-3">
+          <ul className="flex flex-col gap-2">
             {filteredProjects.map(p => (
               <li key={p.id}>
                 <button
@@ -275,15 +275,15 @@ export default function GalleryGridMore({
                     if (!isHoverSourceGrid) setHoveredId(null);
                   }}
                 >
-                  {p.name}
                   <span
-                    className={`absolute left-0 bottom-0 h-[1px] bg-current transition-all duration-300 ease-in-out ${
+                    className={`inline box-decoration-clone bg-[linear-gradient(currentColor,currentColor)] bg-no-repeat [background-position:0_100%] transition-[background-size,color] duration-300 ease-in-out ${
                       hoveredId === p.id || gridHoveredProjectId === p.id
-                        ? 'w-full'
-                        : 'w-0 group-hover:w-full'
+                        ? '[background-size:100%_1px]'
+                        : '[background-size:0%_1px] group-hover:[background-size:100%_1px]'
                     }`}
-                    style={{ pointerEvents: 'none' }}
-                  />
+                  >
+                    {p.name}
+                  </span>
                 </button>
               </li>
             ))}
