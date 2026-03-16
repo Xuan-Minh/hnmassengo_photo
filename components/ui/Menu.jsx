@@ -13,7 +13,8 @@ export default function Menu() {
   const [hydrated, setHydrated] = useState(false);
   const [isDarkBg, setIsDarkBg] = useState(false);
   const [hideMenu, setHideMenu] = useState(false);
-  const shouldHideMenu = hideMenu || active === 'home';
+  const shouldHideDesktopMenu = hideMenu || active === 'home';
+  const shouldHideMobileMenu = hideMenu;
 
   // Logique mobile
   const [isMobile, setIsMobile] = useState(false);
@@ -231,7 +232,7 @@ export default function Menu() {
         {/* Bouton MENU fixe */}
         <button
           className={`fixed top-8 right-8 z-50 text-xl font-playfair italic tracking-wider transition-opacity duration-300 ${
-            shouldHideMenu && !mobileMenuOpen
+            shouldHideMobileMenu && !mobileMenuOpen
               ? 'opacity-0 pointer-events-none'
               : 'opacity-100'
           } ${isDarkBg ? 'text-whiteCustom' : 'text-blackCustom'}`}
@@ -314,11 +315,11 @@ export default function Menu() {
     <nav
       className={[
         'fixed right-8 top-1/2 -translate-y-1/2 z-50 select-none transition-opacity duration-300',
-        shouldHideMenu
+        shouldHideDesktopMenu
           ? 'opacity-0 pointer-events-none'
           : 'opacity-100 pointer-events-auto',
       ].join(' ')}
-      aria-hidden={shouldHideMenu ? 'true' : undefined}
+      aria-hidden={shouldHideDesktopMenu ? 'true' : undefined}
     >
       <ul className="flex flex-col items-end pr-2">
         {desktopItems.map((it, idx) => {
