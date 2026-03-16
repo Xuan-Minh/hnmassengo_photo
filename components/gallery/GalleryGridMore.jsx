@@ -29,6 +29,7 @@ export default function GalleryGridMore({
   const t = useTranslations('gallery');
   const [filter, setFilter] = useState('all');
   const [hoveredId, setHoveredId] = useState(null);
+  const [isHoverSourceGrid, setIsHoverSourceGrid] = useState(false);
   const scrollContainerRef = useRef(null);
   const [visibleRange, setVisibleRange] = useState({ start: 0, end: 50 });
 
@@ -48,6 +49,31 @@ export default function GalleryGridMore({
     });
     return arr;
   }, [projects]);
+
+  const handleSidebarHover = projectId => {
+    setHoveredId(projectId);
+    if (!projectId) return;
+
+    const targetEl = document.getElementById(`project-start-${projectId}`);
+    const container = scrollContainerRef.current;
+
+    if (targetEl && container) {
+      // Calcul du défilement pour centrer l'image verticalement
+      const containerRect = container.getBoundingClientRect();
+      const targetRect = targetEl.getBoundingClientRect();
+
+      const scrollPos =
+        container.scrollTop +
+        (targetRect.top - containerRect.top) -
+        containerRect.height / 2 +
+        targetRect.height / 2;
+
+      container.scrollTo({
+        top: scrollPos,
+        behavior: 'smooth',
+      });
+    }
+  };
 
   // Curseur personnalisé pour le nom du projet
   const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
@@ -72,7 +98,7 @@ export default function GalleryGridMore({
 
   // Gestion du curseur custom
   useEffect(() => {
-    if (!hoveredId) {
+    if (!hoveredId || !isHoverSourceGrid) {
       document.body.style.cursor = 'default';
       setShowCustomCursor(false);
       return;
@@ -87,7 +113,7 @@ export default function GalleryGridMore({
       document.body.style.cursor = 'default';
       setShowCustomCursor(false);
     };
-  }, [hoveredId, projectsRecentFirst]);
+  }, [hoveredId, projectsRecentFirst, isHoverSourceGrid]);
 
   // Filtrage des projets
   const filteredProjects = useMemo(() => {
@@ -171,7 +197,7 @@ export default function GalleryGridMore({
 
   const handleImageClick = project => {
     onProjectClick(project);
-    onClose(); // Fermer l'overlay grille plus pour afficher le cartel
+    // On ne ferme plus la grille ici, pour que le cartel s'ouvre par-dessus
   };
 
   // Trouver le projet survolé pour afficher les coordonnées
@@ -204,21 +230,42 @@ export default function GalleryGridMore({
 
       {/* Main Content */}
       <div className="flex-1 flex overflow-hidden px-8 md:px-16 pb-16">
-        {/* Sidebar Filters */}
-        <div className="w-48 flex flex-col gap-2 pt-8 shrink-0">
-          {FILTERS.map(f => (
-            <button
-              key={f.value}
-              className={`text-lg text-left font-playfair transition-colors duration-300 ${
-                filter === f.value
-                  ? 'font-bold text-blackCustom'
-                  : 'text-accent hover:text-blackCustom'
-              }`}
-              onClick={() => setFilter(f.value)}
-            >
-              {t(`filters.${f.value}`)}
-            </button>
-          ))}
+        {/* Sidebar Filters & Projects List */}
+        <div className="w-48 flex flex-col pt-8 shrink-0 overflow-y-auto no-scrollbar pb-16">
+          <div className="flex flex-col gap-2 mb-12">
+            {FILTERS.map(f => (
+              <button
+                key={f.value}
+                className={`text-lg text-left font-playfair transition-colors duration-300 ${
+                  filter === f.value
+                    ? 'font-bold text-blackCustom'
+                    : 'text-accent hover:text-blackCustom'
+                }`}
+                onClick={() => setFilter(f.value)}
+              >
+                {t(`filters.${f.value}`)}
+              </button>
+            ))}
+          </div>
+
+          {/* Liste dynamique des projets */}
+          <ul className="flex flex-col gap-3">
+            {filteredProjects.map(p => (
+              <li key={p.id}>
+                <button
+                  className="text-sm md:text-base text-left font-playfair transition-colors duration-300 text-accent hover:text-blackCustom"
+                  onClick={() => handleImageClick(p)}
+                  onMouseEnter={() => {
+                    handleSidebarHover(p.id);
+                    setIsHoverSourceGrid(false);
+                  }}
+                  onMouseLeave={() => setHoveredId(null)}
+                >
+                  {p.name}
+                </button>
+              </li>
+            ))}
+          </ul>
         </div>
 
         {/* Grid */}
@@ -231,10 +278,21 @@ export default function GalleryGridMore({
 
               return (
                 <div
+                  id={
+                    imgData.isFirst
+                      ? `project-start-${imgData.projectId}`
+                      : undefined
+                  }
                   key={imgData.projectId + '-' + index}
                   className="relative group cursor-pointer flex items-center justify-center w-full h-full overflow-hidden"
-                  onMouseEnter={() => setHoveredId(imgData.projectId)}
-                  onMouseLeave={() => setHoveredId(null)}
+                  onMouseEnter={() => {
+                    setHoveredId(imgData.projectId);
+                    setIsHoverSourceGrid(true);
+                  }}
+                  onMouseLeave={() => {
+                    setHoveredId(null);
+                    setIsHoverSourceGrid(false);
+                  }}
                   onClick={() => handleImageClick(imgData.project)}
                   style={{ minHeight: '200px' }}
                 >

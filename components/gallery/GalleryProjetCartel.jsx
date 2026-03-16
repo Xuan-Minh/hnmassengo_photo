@@ -2,7 +2,6 @@
 import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import Image from 'next/image';
 import PropTypes from 'prop-types';
-// IMPORT MODIFIÉ : On importe AnimatePresence normalement pour activer le SSR
 import {
   motion,
   animate,
@@ -169,8 +168,7 @@ function CustomLightbox({ open, onClose, images, project }) {
 
   return (
     <motion.div
-      // MODIFICATION : Utilisation de h-[100dvh] pour garantir que le footer reste visible
-      className="fixed inset-0 h-[100dvh] w-full z-[60] bg-blackCustom text-[#e5e5e5] font-playfair flex flex-col overflow-hidden"
+      className="fixed inset-0 h-[100dvh] w-full z-[200] bg-blackCustom text-[#e5e5e5] font-playfair flex flex-col overflow-hidden"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
@@ -493,10 +491,10 @@ export default function GalleryProjetCartel({ project, onClose }) {
   return (
     <motion.div
       key="gallery-cartel-wrapper"
-      exit={{ opacity: 0, transition: { duration: 0.2 } }}
+      exit={{ opacity: 0, transition: { duration: 1, delay: 0.2 } }}
     >
       <motion.div
-        className="fixed inset-0 bg-background/80 backdrop-blur-sm z-40"
+        className="fixed inset-0 bg-background/80 backdrop-blur-sm z-[140]"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
@@ -504,7 +502,7 @@ export default function GalleryProjetCartel({ project, onClose }) {
         aria-hidden="true"
       ></motion.div>
       <motion.section
-        className="fixed inset-0 h-[100dvh] w-full bg-background z-50 flex flex-col md:flex-row shadow-2xl"
+        className="fixed inset-0 h-[100dvh] w-full bg-background z-[150] flex flex-col md:flex-row shadow-2xl"
         initial={{ x: '100%' }}
         animate={{ x: 0 }}
         exit={{ x: '100%' }}
