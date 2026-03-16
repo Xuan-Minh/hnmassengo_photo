@@ -69,15 +69,15 @@ export default function GalleryGrid({
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, []);
 
-  // Gestion du nombre d'images (Responsive)
+  // Gestion du nombre d'images (Responsive) - NOUVELLES VALEURS
   useEffect(() => {
     const updateMaxImages = () => {
       if (window.innerWidth >= 1536)
-        setMaxImages(55); // 2xl
+        setMaxImages(135); // 2xl: grille 12x12
       else if (window.innerWidth >= 1024)
-        setMaxImages(47); // lg
+        setMaxImages(111); // lg: grille 10x12
       else if (window.innerWidth >= 768)
-        setMaxImages(24); // md
+        setMaxImages(60); // md: grille 8x8 avec bloc filtres 2x2
       else setMaxImages(null); // Pas de grille sur mobile
     };
     updateMaxImages();
@@ -120,15 +120,12 @@ export default function GalleryGrid({
 
         const seed = hashString(`${project.id}-${gridFilter}`);
         const random = createSeededRandom(seed);
-        const imageQuota = 5 + Math.floor(random() * 3); // 5, 6 ou 7
+
         const indexedImages = projectImages.map((img, originalIdx) => ({
           img,
           originalIdx,
         }));
-        const selectedImages = shuffleWithSeed(indexedImages, random).slice(
-          0,
-          imageQuota
-        );
+        const selectedImages = shuffleWithSeed(indexedImages, random);
 
         return selectedImages
           .map(({ img, originalIdx }) => {
@@ -149,9 +146,14 @@ export default function GalleryGrid({
       .filter(Boolean);
   }, [filteredProjectsGrid, gridFilter]);
 
+  // NOUVEAU : On mélange TOUTES les images ensemble pour créer la Constellation !
   const allImages = useMemo(() => {
-    return projectBuckets.flatMap(bucket => bucket);
-  }, [projectBuckets]);
+    const flat = projectBuckets.flatMap(bucket => bucket);
+    // On utilise un seed constant basé sur le filtre pour que le mélange reste stable
+    const seed = hashString(`global-shuffle-${gridFilter}`);
+    const random = createSeededRandom(seed);
+    return shuffleWithSeed(flat, random);
+  }, [projectBuckets, gridFilter]);
 
   const gridSlots = useMemo(() => {
     if (!maxImages) return [];
@@ -189,10 +191,14 @@ export default function GalleryGrid({
         animate={{ opacity: 1, x: 0 }}
         exit={{ opacity: 0, x: 50 }}
         transition={{ duration: 0.5, ease: 'easeInOut' }}
-        className="w-full h-full hidden md:grid md:grid-cols-5 lg:grid-cols-6 2xl:grid-cols-7 md:grid-rows-5 lg:grid-rows-8 2xl:grid-rows-8 gap-x-2 gap-y-2 overflow-hidden lg:pt-10"
+        // MODIFICATION DES COLONNES: Beaucoup plus denses ! (12 sur grand écran)
+        className="w-full h-full hidden md:grid md:grid-cols-8 lg:grid-cols-10 2xl:grid-cols-12 md:grid-rows-8 lg:grid-rows-12 2xl:grid-rows-12 gap-x-1 gap-y-1 overflow-hidden lg:pt-10"
       >
-        {/* Contrôles et Filtres */}
-        <div key="filters" className="flex items-center justify-center">
+        {/* Contrôles et Filtres (Prend plus de place pour être lisible au milieu des petites photos) */}
+        <div
+          key="filters"
+          className="flex items-center justify-center col-span-2 row-span-2 md:col-span-2 md:row-span-2 lg:col-span-3 lg:row-span-3 2xl:col-span-3 2xl:row-span-3"
+        >
           <div className="flex flex-col items-start p-4 md:p-6 md:mb-2 font-playfair md:h-full justify-center">
             <GalleryViewToggle view={view} onViewChange={onViewChange} />
             <div className="relative z-10 flex flex-col gap-1 items-start pointer-events-auto">

@@ -292,7 +292,7 @@ export default function GalleryGridMore({
 
         {/* Grid */}
         <div className="flex-1 overflow-y-auto pl-8" ref={scrollContainerRef}>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 lg:grid-cols-7 xl:grid-cols-8 2xl:grid-cols-9 gap-2 pb-16">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-8 lg:grid-cols-9 xl:grid-cols-10 2xl:grid-cols-11 gap-2 pb-16">
             {allImages.map((imgData, index) => {
               const isHovered = hoveredId === imgData.projectId;
               const isVisible =
