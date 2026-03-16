@@ -15,6 +15,16 @@ function getProjectDateMs(project) {
   return Number.isFinite(ms) ? ms : null;
 }
 
+// Fonction pour deviner la taille de l'image grâce à son URL Sanity (Masonry)
+function getAspectRatio(url) {
+  if (!url) return 1;
+  const match = url.match(/-(\d+)x(\d+)\./);
+  if (match) {
+    return parseInt(match[1], 10) / parseInt(match[2], 10);
+  }
+  return 1;
+}
+
 const FILTERS = [
   { label: 'all', value: 'all' },
   { label: 'artworks', value: 'artwork' },
@@ -29,10 +39,12 @@ export default function GalleryGridMore({
   const t = useTranslations('gallery');
   const [filter, setFilter] = useState('all');
   const [hoveredId, setHoveredId] = useState(null);
-  const [gridHoveredProjectId, setGridHoveredProjectId] = useState(null);
+  const [gridHoveredProjectId, setGridHoveredProjectId] = useState(null); // TON AJOUT GARDÉ
   const [isHoverSourceGrid, setIsHoverSourceGrid] = useState(false);
   const scrollContainerRef = useRef(null);
-  const [visibleRange, setVisibleRange] = useState({ start: 0, end: 50 });
+
+  // Nombre de colonnes dynamiques pour la cascade (Masonry)
+  const [colsCount, setColsCount] = useState(6);
 
   const projectsRecentFirst = useMemo(() => {
     const arr = [...projects];
@@ -40,13 +52,12 @@ export default function GalleryGridMore({
       const am = getProjectDateMs(a);
       const bm = getProjectDateMs(b);
 
-      // Sans date: on les met à la fin
       if (am === null && bm === null)
         return (a?.name || '').localeCompare(b?.name || '');
       if (am === null) return 1;
       if (bm === null) return -1;
 
-      return bm - am; // récent -> ancien
+      return bm - am;
     });
     return arr;
   }, [projects]);
@@ -59,7 +70,6 @@ export default function GalleryGridMore({
     const container = scrollContainerRef.current;
 
     if (targetEl && container) {
-      // Calcul du défilement pour centrer l'image verticalement
       const containerRect = container.getBoundingClientRect();
       const targetRect = targetEl.getBoundingClientRect();
 
@@ -76,11 +86,9 @@ export default function GalleryGridMore({
     }
   };
 
-  // Curseur personnalisé pour le nom du projet
   const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
   const [showCustomCursor, setShowCustomCursor] = useState(false);
 
-  // Mouvement de souris pour le curseur personnalisé (throttled)
   useEffect(() => {
     let rafId = null;
     const handleMouseMove = e => {
@@ -97,7 +105,6 @@ export default function GalleryGridMore({
     };
   }, []);
 
-  // Gestion du curseur custom
   useEffect(() => {
     if (!hoveredId || !isHoverSourceGrid) {
       document.body.style.cursor = 'default';
@@ -116,14 +123,13 @@ export default function GalleryGridMore({
     };
   }, [hoveredId, projectsRecentFirst, isHoverSourceGrid]);
 
-  // Filtrage des projets
   const filteredProjects = useMemo(() => {
     return projectsRecentFirst.filter(
       p => filter === 'all' || p.type === filter
     );
   }, [projectsRecentFirst, filter]);
 
-  // On veut toutes les images de tous les projets filtrés
+  // Extraction des images avec calcul du ratio
   const allImages = useMemo(() => {
     return filteredProjects.flatMap(p =>
       (p.images || [])
@@ -132,12 +138,15 @@ export default function GalleryGridMore({
           const src = getSanityImageDeliveryUrl(img, { w: 640, q: 70 });
           if (!src) return null;
 
+          const ratio = getAspectRatio(img); // Ajout du ratio calculé
+
           return {
             projectId: p.id,
             project: p,
             name: p.name,
             type: p.type,
             src,
+            ratio,
             coords: p.coords,
             isFirst: idx === 0,
             isSanityImage: isSanityCdnUrl(src),
@@ -147,61 +156,34 @@ export default function GalleryGridMore({
     );
   }, [filteredProjects]);
 
-  // Virtualisation : calculer les images visibles
+  // Définition responsive des colonnes de la cascade
   useEffect(() => {
-    const container = scrollContainerRef.current;
-    if (!container) return;
-
-    const updateVisibleRange = () => {
-      const scrollTop = container.scrollTop;
-      const containerHeight = container.clientHeight;
-      const itemHeight = 200; // hauteur approximative d'un item
-      const cols =
-        window.innerWidth >= 1536
-          ? 9
-          : window.innerWidth >= 1280
-            ? 8
-            : window.innerWidth >= 1024
-              ? 7
-              : window.innerWidth >= 768
-                ? 6
-                : window.innerWidth >= 640
-                  ? 3
-                  : 2;
-
-      const rowsVisible = Math.ceil(containerHeight / itemHeight);
-      const currentRow = Math.floor(scrollTop / itemHeight);
-
-      const start = Math.max(0, (currentRow - 2) * cols); // 2 lignes avant
-      const end = Math.min(
-        allImages.length,
-        (currentRow + rowsVisible + 10) * cols
-      ); // 2 lignes après
-
-      setVisibleRange({ start, end });
+    const updateCols = () => {
+      if (window.innerWidth >= 1536) setColsCount(9);
+      else if (window.innerWidth >= 1280) setColsCount(8);
+      else if (window.innerWidth >= 1024) setColsCount(7);
+      else if (window.innerWidth >= 768) setColsCount(6);
+      else if (window.innerWidth >= 640) setColsCount(3);
+      else setColsCount(2);
     };
+    updateCols();
+    window.addEventListener('resize', updateCols);
+    return () => window.removeEventListener('resize', updateCols);
+  }, []);
 
-    updateVisibleRange();
-
-    const handleScroll = () => {
-      requestAnimationFrame(updateVisibleRange);
-    };
-
-    container.addEventListener('scroll', handleScroll);
-    window.addEventListener('resize', updateVisibleRange);
-
-    return () => {
-      container.removeEventListener('scroll', handleScroll);
-      window.removeEventListener('resize', updateVisibleRange);
-    };
-  }, [allImages.length]);
+  // Distribution des images dans les colonnes (Masonry)
+  const masonryCols = useMemo(() => {
+    const cols = Array.from({ length: colsCount }, () => []);
+    allImages.forEach((img, idx) => {
+      cols[idx % colsCount].push({ ...img, globalIndex: idx });
+    });
+    return cols;
+  }, [allImages, colsCount]);
 
   const handleImageClick = project => {
     onProjectClick(project);
-    // On ne ferme plus la grille ici, pour que le cartel s'ouvre par-dessus
   };
 
-  // Trouver le projet survolé pour afficher les coordonnées
   const hoveredProject = projectsRecentFirst.find(p => p.id === hoveredId);
 
   return (
@@ -231,7 +213,7 @@ export default function GalleryGridMore({
 
       {/* Main Content */}
       <div className="flex-1 flex overflow-hidden px-8 md:px-16 pb-16">
-        {/* Sidebar Filters & Projects List */}
+        {/* Sidebar Filters & Projects List (TON CODE CONSERVÉ 100%) */}
         <div className="w-48 flex flex-col pt-8 shrink-0 overflow-y-auto no-scrollbar pb-16">
           <div className="flex flex-col gap-2 mb-12">
             {FILTERS.map(f => (
@@ -255,7 +237,6 @@ export default function GalleryGridMore({
             ))}
           </div>
 
-          {/* Liste dynamique des projets */}
           <ul className="flex flex-col gap-2">
             {filteredProjects.map(p => (
               <li key={p.id}>
@@ -290,55 +271,53 @@ export default function GalleryGridMore({
           </ul>
         </div>
 
-        {/* Grid */}
+        {/* NOUVEAU LAYOUT : Masonry (Cascade sans marge) avec tes Hover States */}
         <div className="flex-1 overflow-y-auto pl-8" ref={scrollContainerRef}>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-7 lg:grid-cols-8 xl:grid-cols-9 2xl:grid-cols-9 gap-2 pb-16">
-            {allImages.map((imgData, index) => {
-              const isHovered = hoveredId === imgData.projectId;
-              const isVisible =
-                index >= visibleRange.start && index < visibleRange.end;
+          <div className="flex w-full gap-2 pb-16 pr-8">
+            {masonryCols.map((col, colIdx) => (
+              <div key={`col-${colIdx}`} className="flex flex-col flex-1 gap-2">
+                {col.map(imgData => {
+                  const isHovered = hoveredId === imgData.projectId;
 
-              return (
-                <div
-                  id={
-                    imgData.isFirst
-                      ? `project-start-${imgData.projectId}`
-                      : undefined
-                  }
-                  key={imgData.projectId + '-' + index}
-                  className="relative group cursor-pointer flex items-center justify-center w-full h-full overflow-hidden"
-                  onMouseEnter={() => {
-                    setGridHoveredProjectId(imgData.projectId);
-                    setHoveredId(imgData.projectId);
-                    setIsHoverSourceGrid(true);
-                  }}
-                  onMouseLeave={() => {
-                    setGridHoveredProjectId(null);
-                    setHoveredId(null);
-                    setIsHoverSourceGrid(false);
-                  }}
-                  onClick={() => handleImageClick(imgData.project)}
-                  style={{ minHeight: '200px' }}
-                >
-                  {isVisible && (
-                    <Image
-                      src={imgData.src}
-                      alt={imgData.name}
-                      width={200}
-                      height={300}
-                      unoptimized={imgData.isSanityImage}
-                      className={`max-w-[90%] max-h-[90%] 2xl:max-w-[98%] 2xl:max-h-[98%] object-contain shadow transition-opacity duration-300 ${
-                        isHovered ? 'opacity-100' : 'opacity-40'
-                      }`}
-                      style={{ objectFit: 'contain' }}
-                      draggable={false}
-                      sizes="(max-width: 768px) 45vw, 128px"
-                      loading="lazy"
-                    />
-                  )}
-                </div>
-              );
-            })}
+                  return (
+                    <div
+                      id={
+                        imgData.isFirst
+                          ? `project-start-${imgData.projectId}`
+                          : undefined
+                      }
+                      key={imgData.projectId + '-' + imgData.globalIndex}
+                      className="relative group cursor-pointer w-full overflow-hidden"
+                      style={{ aspectRatio: imgData.ratio }}
+                      onMouseEnter={() => {
+                        setGridHoveredProjectId(imgData.projectId); // TON AJOUT GARDÉ
+                        setHoveredId(imgData.projectId);
+                        setIsHoverSourceGrid(true);
+                      }}
+                      onMouseLeave={() => {
+                        setGridHoveredProjectId(null); // TON AJOUT GARDÉ
+                        setHoveredId(null);
+                        setIsHoverSourceGrid(false);
+                      }}
+                      onClick={() => handleImageClick(imgData.project)}
+                    >
+                      <Image
+                        src={imgData.src}
+                        alt={imgData.name}
+                        fill
+                        unoptimized={imgData.isSanityImage}
+                        className={`object-cover shadow transition-opacity duration-300 ${
+                          isHovered ? 'opacity-100' : 'opacity-40'
+                        }`}
+                        draggable={false}
+                        sizes="(max-width: 768px) 45vw, 128px"
+                        loading={imgData.globalIndex < 20 ? 'eager' : 'lazy'}
+                      />
+                    </div>
+                  );
+                })}
+              </div>
+            ))}
           </div>
         </div>
       </div>
@@ -347,6 +326,7 @@ export default function GalleryGridMore({
       <div className="absolute bottom-8 left-8 md:left-16 text-xl font-playfair italic text-blackCustom pointer-events-none">
         {hoveredProject ? hoveredProject.coords : ''}
       </div>
+
       {/* Custom cursor for project name */}
       <AnimatePresence>
         {showCustomCursor && hoveredId && (
