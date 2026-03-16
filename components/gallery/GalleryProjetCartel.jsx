@@ -471,16 +471,45 @@ export default function GalleryProjetCartel({ project, onClose }) {
   const t = useTranslations('gallery');
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
+  const closeTimerRef = useRef(null);
+  const hasFinalizedCloseRef = useRef(false);
+
+  const finalizeClose = useCallback(() => {
+    if (hasFinalizedCloseRef.current) return;
+    hasFinalizedCloseRef.current = true;
+    onClose();
+  }, [onClose]);
 
   const handleRequestClose = useCallback(() => {
     if (isClosing) return;
+    hasFinalizedCloseRef.current = false;
     setIsClosing(true);
   }, [isClosing]);
 
   useEffect(() => {
+    if (closeTimerRef.current) {
+      clearTimeout(closeTimerRef.current);
+      closeTimerRef.current = null;
+    }
+    hasFinalizedCloseRef.current = false;
     setIsClosing(false);
     setLightboxOpen(false);
   }, [project?.id]);
+
+  useEffect(() => {
+    if (!isClosing) return;
+
+    closeTimerRef.current = setTimeout(() => {
+      finalizeClose();
+    }, 1150);
+
+    return () => {
+      if (closeTimerRef.current) {
+        clearTimeout(closeTimerRef.current);
+        closeTimerRef.current = null;
+      }
+    };
+  }, [isClosing, finalizeClose]);
 
   useEffect(() => {
     const handleKeyDown = event => {
@@ -505,7 +534,7 @@ export default function GalleryProjetCartel({ project, onClose }) {
       exit={{ opacity: 0, transition: { duration: 1, delay: 0.2 } }}
     >
       <motion.div
-        className="fixed inset-0 bg-background/80 backdrop-blur-sm z-[140]"
+        className={`fixed inset-0 bg-background/80 backdrop-blur-sm z-[140] ${isClosing ? 'pointer-events-none' : ''}`}
         initial={{ opacity: 0 }}
         animate={{ opacity: isClosing ? 0 : 1 }}
         transition={{ duration: 0.35, ease: 'easeInOut' }}
@@ -513,12 +542,12 @@ export default function GalleryProjetCartel({ project, onClose }) {
         aria-hidden="true"
       ></motion.div>
       <motion.section
-        className="fixed inset-0 h-[100dvh] w-full bg-background z-[150] flex flex-col md:flex-row shadow-2xl"
+        className={`fixed inset-0 h-[100dvh] w-full bg-background z-[150] flex flex-col md:flex-row shadow-2xl ${isClosing ? 'pointer-events-none' : ''}`}
         initial={{ x: '100%' }}
         animate={{ x: isClosing ? '100%' : 0 }}
         transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
         onAnimationComplete={() => {
-          if (isClosing) onClose();
+          if (isClosing) finalizeClose();
         }}
         aria-modal="true"
         role="dialog"
