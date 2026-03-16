@@ -18,7 +18,7 @@ function getProjectDateMs(project) {
 // Fonction pour deviner la taille de l'image grâce à son URL Sanity (Masonry)
 function getAspectRatio(url) {
   if (!url) return 1;
-  const match = url.match(/-(\d+)x(\d+)\./);
+  const match = url.match(/-(\d+)x(\d+)/);
   if (match) {
     return parseInt(match[1], 10) / parseInt(match[2], 10);
   }
@@ -39,7 +39,7 @@ export default function GalleryGridMore({
   const t = useTranslations('gallery');
   const [filter, setFilter] = useState('all');
   const [hoveredId, setHoveredId] = useState(null);
-  const [gridHoveredProjectId, setGridHoveredProjectId] = useState(null); // TON AJOUT GARDÉ
+  const [gridHoveredProjectId, setGridHoveredProjectId] = useState(null);
   const [isHoverSourceGrid, setIsHoverSourceGrid] = useState(false);
   const scrollContainerRef = useRef(null);
 
@@ -138,7 +138,7 @@ export default function GalleryGridMore({
           const src = getSanityImageDeliveryUrl(img, { w: 640, q: 70 });
           if (!src) return null;
 
-          const ratio = getAspectRatio(img); // Ajout du ratio calculé
+          const ratio = getAspectRatio(img);
 
           return {
             projectId: p.id,
@@ -159,10 +159,10 @@ export default function GalleryGridMore({
   // Définition responsive des colonnes de la cascade
   useEffect(() => {
     const updateCols = () => {
-      if (window.innerWidth >= 1536) setColsCount(7);
+      if (window.innerWidth >= 1536) setColsCount(9);
       else if (window.innerWidth >= 1280) setColsCount(8);
-      else if (window.innerWidth >= 1024) setColsCount(5);
-      else if (window.innerWidth >= 768) setColsCount(4);
+      else if (window.innerWidth >= 1024) setColsCount(7);
+      else if (window.innerWidth >= 768) setColsCount(6);
       else if (window.innerWidth >= 640) setColsCount(3);
       else setColsCount(2);
     };
@@ -171,11 +171,23 @@ export default function GalleryGridMore({
     return () => window.removeEventListener('resize', updateCols);
   }, []);
 
-  // Distribution des images dans les colonnes (Masonry)
+  // Distribution des images dans les colonnes (Algorithme "Shortest Column First")
   const masonryCols = useMemo(() => {
     const cols = Array.from({ length: colsCount }, () => []);
+    const colHeights = Array(colsCount).fill(0);
+
     allImages.forEach((img, idx) => {
-      cols[idx % colsCount].push({ ...img, globalIndex: idx });
+      let shortestIdx = 0;
+      let minHeight = colHeights[0];
+      for (let i = 1; i < colsCount; i++) {
+        if (colHeights[i] < minHeight) {
+          minHeight = colHeights[i];
+          shortestIdx = i;
+        }
+      }
+
+      cols[shortestIdx].push({ ...img, globalIndex: idx });
+      colHeights[shortestIdx] += 1 / (img.ratio || 1);
     });
     return cols;
   }, [allImages, colsCount]);
@@ -213,7 +225,7 @@ export default function GalleryGridMore({
 
       {/* Main Content */}
       <div className="flex-1 flex overflow-hidden px-8 md:px-16 pb-16">
-        {/* Sidebar Filters & Projects List (TON CODE CONSERVÉ 100%) */}
+        {/* Sidebar Filters & Projects List */}
         <div className="w-48 flex flex-col pt-8 shrink-0 overflow-y-auto no-scrollbar pb-16">
           <div className="flex flex-col gap-2 mb-12">
             {FILTERS.map(f => (
@@ -286,16 +298,16 @@ export default function GalleryGridMore({
                           ? `project-start-${imgData.projectId}`
                           : undefined
                       }
-                      key={imgData.projectId + '-' + imgData.globalIndex}
+                      key={`${imgData.projectId}-${imgData.globalIndex}`}
                       className="relative group cursor-pointer w-full overflow-hidden"
                       style={{ aspectRatio: imgData.ratio }}
                       onMouseEnter={() => {
-                        setGridHoveredProjectId(imgData.projectId); // TON AJOUT GARDÉ
+                        setGridHoveredProjectId(imgData.projectId);
                         setHoveredId(imgData.projectId);
                         setIsHoverSourceGrid(true);
                       }}
                       onMouseLeave={() => {
-                        setGridHoveredProjectId(null); // TON AJOUT GARDÉ
+                        setGridHoveredProjectId(null);
                         setHoveredId(null);
                         setIsHoverSourceGrid(false);
                       }}
@@ -306,12 +318,13 @@ export default function GalleryGridMore({
                         alt={imgData.name}
                         fill
                         unoptimized={imgData.isSanityImage}
-                        className={`object-cover shadow transition-opacity duration-300 ${
+                        // MODIFICATION ICI : on utilise object-contain
+                        className={`object-contain shadow transition-opacity duration-300 ${
                           isHovered ? 'opacity-100' : 'opacity-40'
                         }`}
                         draggable={false}
                         sizes="(max-width: 768px) 45vw, 128px"
-                        loading={imgData.globalIndex < 20 ? 'eager' : 'lazy'}
+                        loading={imgData.globalIndex < 30 ? 'eager' : 'lazy'}
                       />
                     </div>
                   );
