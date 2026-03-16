@@ -128,7 +128,7 @@ export default function Gallery() {
               ) : (
                 <GalleryList
                   key="list"
-                  projects={projectsRecentFirst}
+                  projects={projectsChrono}
                   view={view}
                   onViewChange={setView}
                   onProjectSelect={setSelectedProject}
