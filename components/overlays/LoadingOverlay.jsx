@@ -1,6 +1,13 @@
 'use client';
-import { useEffect, useMemo, useRef, useState, useLayoutEffect } from 'react';
-import { motion } from 'framer-motion';
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  useLayoutEffect,
+} from 'react';
+import { motion, useMotionValue, useSpring } from 'framer-motion';
 import Image from 'next/image';
 import { EVENTS, emitEvent, addEventHandler } from '../../lib/events';
 import { buildSanityImageUrl } from '../../lib/imageUtils';
@@ -24,7 +31,7 @@ function NextButton({ isExiting, onClick }) {
       }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      className={`px-6 py-3 text-lg font-whiteCustom font-medium font-playfair transition-colors duration-300 ${hovered ? 'text-whiteCustom opacity-100 backdrop-blur-[2px]' : 'text-greyCustom opacity-85'}`}
+      className={`px-6 py-3 text-lg font-whiteCustom lg:hidden font-medium font-playfair transition-colors duration-300 ${hovered ? 'text-whiteCustom opacity-100 backdrop-blur-[2px]' : 'text-greyCustom opacity-85'}`}
     >
       <motion.span
         className="inline-block mr-2"
@@ -95,6 +102,20 @@ export default function LoadingOverlay({ initialImages = [] }) {
   const [isReTrigger, setIsReTrigger] = useState(false);
   const [touchStart, setTouchStart] = useState(null);
   const overlayRef = useRef(null);
+  const titleIdleTimeoutRef = useRef(null);
+
+  const titleOffsetX = useMotionValue(0);
+  const titleOffsetY = useMotionValue(0);
+  const titleX = useSpring(titleOffsetX, {
+    stiffness: 180,
+    damping: 22,
+    mass: 0.4,
+  });
+  const titleY = useSpring(titleOffsetY, {
+    stiffness: 180,
+    damping: 22,
+    mass: 0.4,
+  });
 
   // Détection Mobile
   const [isMobileDevice, setIsMobileDevice] = useState(false);
@@ -110,6 +131,52 @@ export default function LoadingOverlay({ initialImages = [] }) {
     [isMobileDevice, mobileSrcs, desktopSrcs]
   );
 
+  const clearTitleIdleTimeout = useCallback(() => {
+    if (titleIdleTimeoutRef.current) {
+      clearTimeout(titleIdleTimeoutRef.current);
+      titleIdleTimeoutRef.current = null;
+    }
+  }, []);
+
+  const resetTitleToCenter = useCallback(() => {
+    if (typeof window === 'undefined') {
+      titleOffsetX.set(0);
+      titleOffsetY.set(0);
+      return;
+    }
+    titleOffsetX.set(window.innerWidth / 2);
+    titleOffsetY.set(window.innerHeight / 2);
+  }, [titleOffsetX, titleOffsetY]);
+
+  useEffect(() => {
+    clearTitleIdleTimeout();
+    resetTitleToCenter();
+
+    if (!visible || isExiting || isMobileDevice) {
+      return () => clearTitleIdleTimeout();
+    }
+
+    const handleResizeOrBlur = () => {
+      clearTitleIdleTimeout();
+      resetTitleToCenter();
+    };
+
+    window.addEventListener('resize', handleResizeOrBlur);
+    window.addEventListener('blur', handleResizeOrBlur);
+
+    return () => {
+      clearTitleIdleTimeout();
+      window.removeEventListener('resize', handleResizeOrBlur);
+      window.removeEventListener('blur', handleResizeOrBlur);
+    };
+  }, [
+    visible,
+    isExiting,
+    isMobileDevice,
+    clearTitleIdleTimeout,
+    resetTitleToCenter,
+  ]);
+
   useEffect(() => {
     previouslyFocusedElement.current = document.activeElement;
     return () => {
@@ -117,14 +184,12 @@ export default function LoadingOverlay({ initialImages = [] }) {
     };
   }, []);
 
-  // --- NOUVEAU : Timer de durée minimale ---
   useEffect(() => {
     const timer = setTimeout(() => {
       setMinDurationMet(true);
     }, MIN_DURATION_MS);
     return () => clearTimeout(timer);
   }, []);
-  // -----------------------------------------
 
   useEffect(() => {
     if (!visible && previouslyFocusedElement.current) {
@@ -171,7 +236,6 @@ export default function LoadingOverlay({ initialImages = [] }) {
     };
   }, [visible]);
 
-  // 2. Préchargement furtif en arrière-plan des autres frames du flipbook
   useEffect(() => {
     // Si pas d'images ou une seule, on considère comme chargé
     if (activeSrcs.length <= 1) {
@@ -285,6 +349,19 @@ export default function LoadingOverlay({ initialImages = [] }) {
         }
       }}
       onTouchEnd={() => setTouchStart(null)}
+      onMouseMove={e => {
+        if (!visible || isExiting || isMobileDevice) return;
+        titleOffsetX.set(e.clientX);
+        titleOffsetY.set(e.clientY);
+        clearTitleIdleTimeout();
+        titleIdleTimeoutRef.current = setTimeout(() => {
+          resetTitleToCenter();
+        }, 900);
+      }}
+      onMouseLeave={() => {
+        clearTitleIdleTimeout();
+        resetTitleToCenter();
+      }}
     >
       <div className="relative w-full h-full">
         {desktopSrcs[0] && (
@@ -335,14 +412,24 @@ export default function LoadingOverlay({ initialImages = [] }) {
             </div>
           )}
 
-        <div className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none select-none">
-          <h2 className="text-whiteCustom flex items-end justify-center gap-4 text-3xl md:text-5xl lg:text-6xl xl:text-7xl 2xl:text-7xl mb-0 drop-shadow-title">
-            <div className="font-playfair italic leading-none">Han-Noah</div>
-            <div className="font-lexend font-bold leading-none">MASSENGO</div>
-          </h2>
+        <div className="absolute inset-0 z-20 pointer-events-none select-none">
+          <motion.div
+            className="absolute top-0 left-0"
+            style={{ x: titleX, y: titleY }}
+          >
+            <div style={{ transform: 'translate(-50%, -50%)' }}>
+              <h2 className="text-whiteCustom/60 flex items-end justify-center gap-4 text-3xl md:text-4xl lg:text-5xl xl:text-6xl 2xl:text-6xl mb-0 drop-shadow-title">
+                <div className="font-playfair italic leading-none">
+                  Han-Noah
+                </div>
+                <div className="font-lexend font-bold leading-none">
+                  MASSENGO
+                </div>
+              </h2>
+            </div>
+          </motion.div>
         </div>
 
-        {/* On masque le bouton Next tant que le chargement OU le délai n'est pas bon */}
         <div
           className={`absolute bottom-16 left-1/2 -translate-x-1/2 z-20 transition-opacity duration-500 ${canDismiss ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
         >

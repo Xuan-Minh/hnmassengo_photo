@@ -7,6 +7,7 @@ import { EVENTS, addEventHandler } from '../../lib/events';
 import { useParams } from 'next/navigation';
 import NewsletterSignup from '../ui/NewsletterSignup';
 import LegalOverlay from './LegalOverlay';
+import Link from 'next/link';
 
 // Composant pour le formulaire de contact réutilisable
 function ContactForm({ idSuffix = '', onSubmitSuccess, defaultSubject = '' }) {
@@ -227,9 +228,16 @@ function ContactInfo({ onOpenLegal }) {
           <p className="font-playfair text-sm md:text-[16px] leading-relaxed">
             {contactT('info.copyright', { author: SITE_CONFIG.author })}
           </p>
-          <p className="font-playfair text-sm md:text-[16px] leading-relaxed">
-            {contactT('info.credits', { developer: SITE_CONFIG.developer })}
-          </p>
+          <Link
+            href="mailto:naux.pro@gmail.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:text-whiteCustom transition-all hover:underline block"
+          >
+            <p className="font-playfair text-sm md:text-[16px] leading-relaxed hover:text-whiteCustom transition-colors">
+              {contactT('info.credits', { developer: SITE_CONFIG.developer })}
+            </p>
+          </Link>
         </div>
 
         <p className="font-playfair text-sm md:text-[16px] leading-relaxed flex items-center gap-4">
