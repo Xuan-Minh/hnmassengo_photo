@@ -175,7 +175,7 @@ export default function GalleryGridMore({
       const start = Math.max(0, (currentRow - 2) * cols); // 2 lignes avant
       const end = Math.min(
         allImages.length,
-        (currentRow + rowsVisible + 2) * cols
+        (currentRow + rowsVisible + 10) * cols
       ); // 2 lignes après
 
       setVisibleRange({ start, end });
@@ -292,7 +292,7 @@ export default function GalleryGridMore({
 
         {/* Grid */}
         <div className="flex-1 overflow-y-auto pl-8" ref={scrollContainerRef}>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-8 lg:grid-cols-9 xl:grid-cols-10 2xl:grid-cols-11 gap-2 pb-16">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-7 lg:grid-cols-8 xl:grid-cols-9 2xl:grid-cols-9 gap-2 pb-16">
             {allImages.map((imgData, index) => {
               const isHovered = hoveredId === imgData.projectId;
               const isVisible =
