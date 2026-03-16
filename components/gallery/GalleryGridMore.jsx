@@ -15,7 +15,7 @@ function getProjectDateMs(project) {
   return Number.isFinite(ms) ? ms : null;
 }
 
-// Fonction pour deviner la taille de l'image grâce à son URL Sanity (Masonry)
+// Fonction pour deviner la taille exacte de l'image grâce à son URL Sanity (Masonry)
 function getAspectRatio(url) {
   if (!url) return 1;
   const match = url.match(/-(\d+)x(\d+)/);
@@ -45,6 +45,13 @@ export default function GalleryGridMore({
 
   // Nombre de colonnes dynamiques pour la cascade (Masonry)
   const [colsCount, setColsCount] = useState(6);
+
+  // Remise à zéro du scroll quand on change de filtre pour ne pas se perdre
+  useEffect(() => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, [filter]);
 
   const projectsRecentFirst = useMemo(() => {
     const arr = [...projects];
@@ -231,10 +238,10 @@ export default function GalleryGridMore({
             {FILTERS.map(f => (
               <button
                 key={f.value}
-                className={`text-lg text-left font-playfair transition-colors duration-300 relative group self-start ${
+                className={`text-lg text-left font-playfair transition-opacity duration-300 relative group self-start ${
                   filter === f.value
-                    ? 'font-bold text-blackCustom'
-                    : 'text-accent hover:text-blackCustom'
+                    ? 'font-bold opacity-100 text-blackCustom'
+                    : 'opacity-60 hover:opacity-100 text-accent hover:text-blackCustom'
                 }`}
                 onClick={() => setFilter(f.value)}
               >
@@ -283,55 +290,67 @@ export default function GalleryGridMore({
           </ul>
         </div>
 
-        {/* NOUVEAU LAYOUT : Masonry (Cascade sans marge) avec tes Hover States */}
+        {/* MASONRY : L'ANIMATION FADE OUT / FADE IN */}
         <div className="flex-1 overflow-y-auto pl-8" ref={scrollContainerRef}>
-          <div className="flex w-full gap-2 pb-16 pr-8">
-            {masonryCols.map((col, colIdx) => (
-              <div key={`col-${colIdx}`} className="flex flex-col flex-1 gap-2">
-                {col.map(imgData => {
-                  const isHovered = hoveredId === imgData.projectId;
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={`masonry-more-${filter}`}
+              initial={{ opacity: 0, scale: 0.98 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.98 }}
+              transition={{ duration: 0.4, ease: 'easeInOut' }}
+              className="flex w-full gap-2 pb-16 pr-8"
+            >
+              {masonryCols.map((col, colIdx) => (
+                <div
+                  key={`col-${colIdx}`}
+                  className="flex flex-col flex-1 gap-2"
+                >
+                  {col.map(imgData => {
+                    const isHovered = hoveredId === imgData.projectId;
 
-                  return (
-                    <div
-                      id={
-                        imgData.isFirst
-                          ? `project-start-${imgData.projectId}`
-                          : undefined
-                      }
-                      key={`${imgData.projectId}-${imgData.globalIndex}`}
-                      className="relative group cursor-pointer w-full overflow-hidden"
-                      style={{ aspectRatio: imgData.ratio }}
-                      onMouseEnter={() => {
-                        setGridHoveredProjectId(imgData.projectId);
-                        setHoveredId(imgData.projectId);
-                        setIsHoverSourceGrid(true);
-                      }}
-                      onMouseLeave={() => {
-                        setGridHoveredProjectId(null);
-                        setHoveredId(null);
-                        setIsHoverSourceGrid(false);
-                      }}
-                      onClick={() => handleImageClick(imgData.project)}
-                    >
-                      <Image
-                        src={imgData.src}
-                        alt={imgData.name}
-                        fill
-                        unoptimized={imgData.isSanityImage}
-                        // MODIFICATION ICI : on utilise object-contain
-                        className={`object-contain shadow transition-opacity duration-300 ${
-                          isHovered ? 'opacity-100' : 'opacity-40'
-                        }`}
-                        draggable={false}
-                        sizes="(max-width: 768px) 45vw, 128px"
-                        loading={imgData.globalIndex < 30 ? 'eager' : 'lazy'}
-                      />
-                    </div>
-                  );
-                })}
-              </div>
-            ))}
-          </div>
+                    return (
+                      <div
+                        id={
+                          imgData.isFirst
+                            ? `project-start-${imgData.projectId}`
+                            : undefined
+                        }
+                        key={`${imgData.projectId}-${imgData.globalIndex}`}
+                        className="relative group cursor-pointer w-full overflow-hidden"
+                        style={{ aspectRatio: imgData.ratio }}
+                        onMouseEnter={() => {
+                          setGridHoveredProjectId(imgData.projectId);
+                          setHoveredId(imgData.projectId);
+                          setIsHoverSourceGrid(true);
+                        }}
+                        onMouseLeave={() => {
+                          setGridHoveredProjectId(null);
+                          setHoveredId(null);
+                          setIsHoverSourceGrid(false);
+                        }}
+                        onClick={() => handleImageClick(imgData.project)}
+                      >
+                        <Image
+                          src={imgData.src}
+                          alt={imgData.name}
+                          fill
+                          unoptimized={imgData.isSanityImage}
+                          // FORMAT PRÉSERVÉ : object-contain empêche le rognage
+                          className={`object-contain shadow transition-opacity duration-300 ${
+                            isHovered ? 'opacity-100' : 'opacity-40'
+                          }`}
+                          draggable={false}
+                          sizes="(max-width: 768px) 45vw, 128px"
+                          loading={imgData.globalIndex < 30 ? 'eager' : 'lazy'}
+                        />
+                      </div>
+                    );
+                  })}
+                </div>
+              ))}
+            </motion.div>
+          </AnimatePresence>
         </div>
       </div>
 
@@ -355,7 +374,7 @@ export default function GalleryGridMore({
             exit={{ opacity: 0, scale: 0.8 }}
             transition={{ duration: 0.2 }}
           >
-            {projectsRecentFirst.find(p => p.id === hoveredId)?.name}
+            {projects.find(p => p.id === hoveredId)?.name}
           </motion.div>
         )}
       </AnimatePresence>

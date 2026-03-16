@@ -139,16 +139,11 @@ export default function LoadingOverlay({ initialImages = [] }) {
   }, []);
 
   const resetTitleToCenter = useCallback(() => {
-    if (typeof window === 'undefined') {
-      titleOffsetX.set(0);
-      titleOffsetY.set(0);
-      return;
-    }
-    titleOffsetX.set(window.innerWidth / 2);
-    titleOffsetY.set(window.innerHeight / 2);
+    titleOffsetX.set(0);
+    titleOffsetY.set(0);
   }, [titleOffsetX, titleOffsetY]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     clearTitleIdleTimeout();
     resetTitleToCenter();
 
@@ -351,8 +346,10 @@ export default function LoadingOverlay({ initialImages = [] }) {
       onTouchEnd={() => setTouchStart(null)}
       onMouseMove={e => {
         if (!visible || isExiting || isMobileDevice) return;
-        titleOffsetX.set(e.clientX);
-        titleOffsetY.set(e.clientY);
+        const centerX = window.innerWidth / 2;
+        const centerY = window.innerHeight / 2;
+        titleOffsetX.set(e.clientX - centerX);
+        titleOffsetY.set(e.clientY - centerY);
         clearTitleIdleTimeout();
         titleIdleTimeoutRef.current = setTimeout(() => {
           resetTitleToCenter();
@@ -414,7 +411,7 @@ export default function LoadingOverlay({ initialImages = [] }) {
 
         <div className="absolute inset-0 z-20 pointer-events-none select-none">
           <motion.div
-            className="absolute top-0 left-0"
+            className="absolute top-1/2 left-1/2"
             style={{ x: titleX, y: titleY }}
           >
             <div style={{ transform: 'translate(-50%, -50%)' }}>

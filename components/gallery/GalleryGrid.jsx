@@ -191,7 +191,6 @@ export default function GalleryGrid({
         animate={{ opacity: 1, x: 0 }}
         exit={{ opacity: 0, x: 50 }}
         transition={{ duration: 0.5, ease: 'easeInOut' }}
-        // MODIFICATION DES COLONNES: Beaucoup plus denses ! (12 sur grand écran)
         className="w-full h-full hidden md:grid md:grid-cols-8 lg:grid-cols-10 2xl:grid-cols-12 md:grid-rows-8 lg:grid-rows-12 2xl:grid-rows-12 gap-x-1 gap-y-1 overflow-hidden lg:pt-10"
       >
         {/* Contrôles et Filtres (Prend plus de place pour être lisible au milieu des petites photos) */}
