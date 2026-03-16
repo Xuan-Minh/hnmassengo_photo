@@ -470,18 +470,29 @@ function ImageMarquee({ images, onClick }) {
 export default function GalleryProjetCartel({ project, onClose }) {
   const t = useTranslations('gallery');
   const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [isClosing, setIsClosing] = useState(false);
+
+  const handleRequestClose = useCallback(() => {
+    if (isClosing) return;
+    setIsClosing(true);
+  }, [isClosing]);
+
+  useEffect(() => {
+    setIsClosing(false);
+    setLightboxOpen(false);
+  }, [project?.id]);
 
   useEffect(() => {
     const handleKeyDown = event => {
       if (event.key === 'Escape' && !lightboxOpen) {
-        onClose();
+        handleRequestClose();
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [onClose, lightboxOpen]);
+  }, [lightboxOpen, handleRequestClose]);
 
   if (!project) return null;
 
@@ -496,17 +507,19 @@ export default function GalleryProjetCartel({ project, onClose }) {
       <motion.div
         className="fixed inset-0 bg-background/80 backdrop-blur-sm z-[140]"
         initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        onClick={onClose}
+        animate={{ opacity: isClosing ? 0 : 1 }}
+        transition={{ duration: 0.35, ease: 'easeInOut' }}
+        onClick={handleRequestClose}
         aria-hidden="true"
       ></motion.div>
       <motion.section
         className="fixed inset-0 h-[100dvh] w-full bg-background z-[150] flex flex-col md:flex-row shadow-2xl"
         initial={{ x: '100%' }}
-        animate={{ x: 0 }}
-        exit={{ x: '100%' }}
+        animate={{ x: isClosing ? '100%' : 0 }}
         transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
+        onAnimationComplete={() => {
+          if (isClosing) onClose();
+        }}
         aria-modal="true"
         role="dialog"
         aria-labelledby="project-title"
@@ -514,7 +527,7 @@ export default function GalleryProjetCartel({ project, onClose }) {
         {/* Version Mobile */}
         <div className="md:hidden w-full h-full flex flex-col relative">
           <button
-            onClick={onClose}
+            onClick={handleRequestClose}
             className="absolute top-6 left-6 z-10 font-playfair text-lg text-accent hover:text-blackCustom transition-colors"
             aria-label={t('project.closeOverlayLabel')}
           >
@@ -552,7 +565,7 @@ export default function GalleryProjetCartel({ project, onClose }) {
         <main className="hidden md:flex w-[55%] h-full border-r border-blackCustom p-16 flex-col justify-between overflow-y-auto">
           <div>
             <button
-              onClick={onClose}
+              onClick={handleRequestClose}
               className="font-playfair text-lg text-accent hover:text-blackCustom transition-colors"
               aria-label={t('project.closeOverlayLabel')}
             >
