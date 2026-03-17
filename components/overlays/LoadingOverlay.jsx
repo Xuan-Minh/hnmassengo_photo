@@ -94,10 +94,6 @@ export default function LoadingOverlay({ initialImages = [] }) {
   // Initialiser à true si pas d'images pour éviter le blocage
   const [allLoaded, setAllLoaded] = useState(false);
 
-  // --- NOUVEAU : État pour le délai minimal ---
-  const [minDurationMet, setMinDurationMet] = useState(false);
-  const MIN_DURATION_MS = 1000; // 2.5 secondes. Tu peux ajuster ici (ex: 3000 pour 3s)
-
   const rotateInterval = useRef(null);
   const [isReTrigger, setIsReTrigger] = useState(false);
   const [touchStart, setTouchStart] = useState(null);
@@ -177,13 +173,6 @@ export default function LoadingOverlay({ initialImages = [] }) {
     return () => {
       if (rotateInterval.current) clearInterval(rotateInterval.current);
     };
-  }, []);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setMinDurationMet(true);
-    }, MIN_DURATION_MS);
-    return () => clearTimeout(timer);
   }, []);
 
   useEffect(() => {
@@ -288,9 +277,6 @@ export default function LoadingOverlay({ initialImages = [] }) {
       setIsExiting(false);
       setIsReTrigger(true);
       setVisible(true);
-      // Réinitialise le timer minimal si on re-déclenche l'intro
-      setMinDurationMet(false);
-      setTimeout(() => setMinDurationMet(true), MIN_DURATION_MS);
     };
     return addEventHandler(EVENTS.INTRO_SHOW, handler);
   }, []);
@@ -303,10 +289,7 @@ export default function LoadingOverlay({ initialImages = [] }) {
     transition: 'opacity 0.1s ease-in-out',
   };
 
-  // --- MODIFICATION DE LA LOGIQUE D'AFFICHAGE DU BOUTON "NEXT" ---
-  // On ne montre le bouton Next que si tout est chargé ET que le temps minimum est écoulé
-  const canDismiss = allLoaded && minDurationMet;
-  // ---------------------------------------------------------------
+  const canDismiss = allLoaded;
 
   return (
     <motion.div
@@ -401,13 +384,12 @@ export default function LoadingOverlay({ initialImages = [] }) {
 
         <div className="absolute inset-0 bg-black/35 pointer-events-none z-10" />
 
-        {/* L'indicateur de chargement reste s'il manque des images OU si le délai mini n'est pas passé */}
-        {(!allLoaded || !minDurationMet) &&
-          (desktopSrcs.length > 1 || mobileSrcs.length > 1) && (
-            <div className="absolute top-8 right-8 z-20 pointer-events-none">
-              <div className="w-2 h-2 bg-white/30 rounded-full animate-pulse" />
-            </div>
-          )}
+        {/* L'indicateur de chargement reste tant que les images ne sont pas prêtes */}
+        {!allLoaded && (desktopSrcs.length > 1 || mobileSrcs.length > 1) && (
+          <div className="absolute top-8 right-8 z-20 pointer-events-none">
+            <div className="w-2 h-2 bg-white/30 rounded-full animate-pulse" />
+          </div>
+        )}
 
         <div className="absolute inset-0 z-20 pointer-events-none select-none">
           <motion.div

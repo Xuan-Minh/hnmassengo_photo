@@ -1,4 +1,3 @@
-// components/gallery/GalleryViewToggle.jsx
 import { GridIcon, ListIcon } from '../ui/Icons';
 
 export default function GalleryViewToggle({ view, onViewChange }) {

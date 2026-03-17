@@ -166,10 +166,10 @@ export default function GalleryGridMore({
   // Définition responsive des colonnes de la cascade
   useEffect(() => {
     const updateCols = () => {
-      if (window.innerWidth >= 1536) setColsCount(9);
-      else if (window.innerWidth >= 1280) setColsCount(8);
-      else if (window.innerWidth >= 1024) setColsCount(7);
-      else if (window.innerWidth >= 768) setColsCount(6);
+      if (window.innerWidth >= 1536) setColsCount(11);
+      else if (window.innerWidth >= 1280) setColsCount(13);
+      else if (window.innerWidth >= 1024) setColsCount(12);
+      else if (window.innerWidth >= 768) setColsCount(10);
       else if (window.innerWidth >= 640) setColsCount(3);
       else setColsCount(2);
     };
