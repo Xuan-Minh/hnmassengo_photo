@@ -397,7 +397,7 @@ export default function LoadingOverlay({ initialImages = [] }) {
             style={{ x: titleX, y: titleY }}
           >
             <div style={{ transform: 'translate(-50%, -50%)' }}>
-              <h2 className="text-whiteCustom/60 flex items-end flex-nowrap justify-center gap-4 text-2xl md:text-4xl lg:text-5xl xl:text-6xl 2xl:text-6xl mb-0 drop-shadow-title">
+              <h2 className="text-whiteCustom/60 flex items-end flex-nowrap justify-center gap-4 text-2xl md:text-4xl lg:text-5xl xl:text-6xl 2xl:text-8xl mb-0 drop-shadow-title">
                 <div className="font-playfair italic leading-none">
                   Han-Noah
                 </div>
