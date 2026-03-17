@@ -135,28 +135,43 @@ export default function Menu() {
 
     // Récupère toutes les sections (y compris celles pas dans le menu, ex: blog)
     const allSections = Array.from(root.querySelectorAll('section[id]'));
+    const ratioMap = new Map(allSections.map(s => [s.id, 0]));
 
     const io = new IntersectionObserver(
       entries => {
-        const sorted = entries
-          .filter(e => e.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
-        const top = sorted[0]?.target;
-        if (top) {
-          // Active uniquement si section présente dans le menu
-          if (desktopItems.some(i => i.id === top.id)) {
-            setActive(prev => {
-              if (prev !== top.id) {
-                sessionStorage.setItem('menuActiveSection', top.id);
-              }
-              return top.id;
-            });
+        entries.forEach(e => {
+          ratioMap.set(e.target.id, e.intersectionRatio);
+        });
+
+        let bestMenuId = null;
+        let bestMenuRatio = -1;
+        let bestOverallId = null;
+        let bestOverallRatio = -1;
+
+        ratioMap.forEach((ratio, id) => {
+          if (ratio > bestOverallRatio) {
+            bestOverallRatio = ratio;
+            bestOverallId = id;
           }
-          // Menu blanc sur blog uniquement, noir partout ailleurs
-          setIsDarkBg(top.id === 'blog');
+          if (ratio > bestMenuRatio && desktopItems.some(i => i.id === id)) {
+            bestMenuRatio = ratio;
+            bestMenuId = id;
+          }
+        });
+
+        if (bestMenuId && bestMenuRatio > 0) {
+          setActive(prev => {
+            if (prev !== bestMenuId) {
+              sessionStorage.setItem('menuActiveSection', bestMenuId);
+            }
+            return bestMenuId;
+          });
+        }
+        if (bestOverallId) {
+          setIsDarkBg(bestOverallId === 'blog');
         }
       },
-      { root, threshold: [0.1, 0.9, 0.95] }
+      { root, threshold: Array.from({ length: 21 }, (_, i) => i / 20) }
     );
 
     allSections.forEach(sec => io.observe(sec));
@@ -341,8 +356,13 @@ export default function Menu() {
                     scrollToId(it.id);
                   }
                 }}
+                onWheel={e => {
+                  const root = document.getElementById('scroll-root');
+                  if (root) root.scrollBy({ top: e.deltaY });
+                }}
                 aria-current={isActive ? 'page' : undefined}
                 className={[
+                  'pointer-events-auto', // 3. MODIFICATION : On réactive le clic juste sur le texte
                   'uppercase tracking-wide transition-all duration-200 ease-out',
                   'text-right origin-right',
                   isActive

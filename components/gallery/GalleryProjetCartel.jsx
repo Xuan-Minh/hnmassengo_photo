@@ -606,7 +606,7 @@ export default function GalleryProjetCartel({ project, onClose }) {
             <h2 id="project-title" className="text-5xl font-playfair mb-8">
               {project.name}
             </h2>
-            <div className="font-playfair text-lg max-w-2xl leading-relaxed space-y-4">
+            <div className="font-playfair text-lg 2xl:text-xl max-w-2xl 2xl:max-w-6xl  leading-relaxed space-y-4">
               {paragraphs.map((p, i) => (
                 <p key={i}>{p}</p>
               ))}

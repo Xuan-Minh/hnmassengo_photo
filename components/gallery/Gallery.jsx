@@ -114,7 +114,7 @@ export default function Gallery() {
     <>
       <section className="relative w-full h-screen overflow-hidden">
         <div className="w-full h-full flex flex-col bg-background justify-center items-center">
-          <div className="relative flex flex-col justify-center items-start h-[75vh] lg:h-[90vh] w-[min(1000px,90vw)] 2xl:w-[min(1300px,90vw)]">
+          <div className="relative flex flex-col justify-center items-start h-[75vh] lg:h-[90vh] w-[min(1000px,90vw)] 2xl:w-[min(1800px,90vw)]">
             <AnimatePresence mode="wait">
               {view === 'grid' ? (
                 <GalleryGrid
