@@ -287,12 +287,12 @@ export default function GalleryList({
           })()}
       </div>
 
-      <div className="lg:hidden flex flex-row flex-wrap justify-center gap-x-6 gap-y-3 mt-3">
+      <div className="lg:hidden flex flex-row flex-nowrap justify-center gap-x-6 gap-y-3 mt-3 scroll">
         {projects.map((p, idx) => (
           <button
             key={p.id}
             onClick={() => navigateToImage(idx, 0)}
-            className={`text-lg font-playfair transition-opacity duration-300 relative group whitespace-nowrap ${
+            className={`text-md font-playfair transition-opacity duration-300 relative group whitespace-nowrap ${
               idx === currentProjectIndex
                 ? 'font-bold opacity-100'
                 : 'opacity-60 hover:opacity-100'
