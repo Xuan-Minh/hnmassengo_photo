@@ -5,7 +5,7 @@ import { buildSanityImageUrl } from '../../lib/imageUtils';
 import { getOptimizedImageParams } from '../../lib/hooks';
 import GalleryViewToggle from './GalleryViewToggle';
 
-// Icons internes pour éviter les erreurs d'import
+// Icônes de navigation internes
 const ArrowLeft = () => (
   <svg
     width="32"
@@ -46,14 +46,13 @@ export default function GalleryList({
   const [listImageError, setListImageError] = useState(false);
   const [listTouchStart, setListTouchStart] = useState(null);
 
-  // Refs pour le centrage du carrousel mobile uniquement
   const mobileNavRef = useRef(null);
   const itemsRef = useRef([]);
-
   const currentImageVersionRef = useRef(0);
   const listTimersRef = useRef({ tick: null, swap: null, cancelled: 0 });
 
-  // 1. DÉFINITION DES FONCTIONS DE NAVIGATION (Avant les useEffect)
+  // --- 1. DÉFINITION DES FONCTIONS DE NAVIGATION (Avant les useEffect) ---
+
   const navigateToImage = useCallback((projectIndex, imageIndex) => {
     currentImageVersionRef.current += 1;
     setIsListImageLoaded(false);
@@ -88,7 +87,7 @@ export default function GalleryList({
     }
   }, [currentProjectIndex, currentImageIndex, projects, navigateToImage]);
 
-  // 2. LOGIQUE DE CENTRAGE (Mobile uniquement)
+  // --- 2. LOGIQUE DE CENTRAGE (Mobile uniquement) ---
   const centerActiveProject = useCallback(index => {
     const container = mobileNavRef.current;
     const activeItem = itemsRef.current[index];
@@ -105,16 +104,13 @@ export default function GalleryList({
     }
   }, []);
 
-  // 3. EFFETS DE SYNCHRONISATION
   useEffect(() => {
     const project = projects[currentProjectIndex];
     setActiveCoord(project?.coords || '');
-
-    // Recentrer uniquement sur mobile
     centerActiveProject(currentProjectIndex);
   }, [currentProjectIndex, projects, setActiveCoord, centerActiveProject]);
 
-  // Timer automatique
+  // --- 3. TIMER AUTOMATIQUE ---
   useEffect(() => {
     const timers = listTimersRef.current;
     if (timers.tick) clearTimeout(timers.tick);
@@ -129,9 +125,7 @@ export default function GalleryList({
     const token = (timers.cancelled += 1);
 
     const computeNext = () => {
-      const imgs = projects[currentProjectIndex]?.images || [];
-      if (imgs.length === 0) return null;
-      if (currentImageIndex < imgs.length - 1) {
+      if (currentImageIndex < currentImages.length - 1) {
         return {
           nextProjectIndex: currentProjectIndex,
           nextImageIndex: currentImageIndex + 1,
@@ -143,29 +137,9 @@ export default function GalleryList({
       };
     };
 
-    const preload = src => {
-      return new Promise(resolve => {
-        if (!src || typeof window === 'undefined') return resolve();
-        const img = new window.Image();
-        const done = () => resolve();
-        img.onload = done;
-        img.onerror = done;
-        img.src = src;
-      });
-    };
-
-    listTimersRef.current.tick = setTimeout(async () => {
+    timers.tick = setTimeout(() => {
       const next = computeNext();
-      if (!next) return;
-      const nextRaw =
-        projects[next.nextProjectIndex]?.images?.[next.nextImageIndex];
-      const nextSrc = buildSanityImageUrl(nextRaw, {
-        ...getOptimizedImageParams('gallery'),
-        auto: 'format',
-      });
-      await preload(nextSrc);
-      if (timers.cancelled !== token) return;
-
+      if (!next || timers.cancelled !== token) return;
       setIsTransitioning(true);
       timers.swap = setTimeout(() => {
         if (timers.cancelled !== token) return;
@@ -181,31 +155,15 @@ export default function GalleryList({
     };
   }, [projects, currentProjectIndex, currentImageIndex]);
 
-  // Evénements tactiles et clavier
+  // --- 4. ÉVÉNEMENTS CLAVIER ---
   useEffect(() => {
-    const handleTouchStart = e => setListTouchStart(e.touches[0].clientX);
-    const handleTouchEnd = e => {
-      if (listTouchStart === null) return;
-      const diff = listTouchStart - e.changedTouches[0].clientX;
-      if (Math.abs(diff) > 50)
-        diff > 0 ? navigateListNext() : navigateListPrev();
-      setListTouchStart(null);
-    };
     const handleKeyDown = e => {
       if (e.key === 'ArrowRight') navigateListNext();
       if (e.key === 'ArrowLeft') navigateListPrev();
     };
-
-    window.addEventListener('touchstart', handleTouchStart);
-    window.addEventListener('touchend', handleTouchEnd);
     window.addEventListener('keydown', handleKeyDown);
-
-    return () => {
-      window.removeEventListener('touchstart', handleTouchStart);
-      window.removeEventListener('touchend', handleTouchEnd);
-      window.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [listTouchStart, navigateListNext, navigateListPrev]);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [navigateListNext, navigateListPrev]);
 
   const currentListSrc =
     projects[currentProjectIndex]?.images?.[currentImageIndex] || null;
@@ -218,17 +176,13 @@ export default function GalleryList({
 
   return (
     <motion.div
-      key="list"
-      initial={{ opacity: 0, x: 50 }}
-      animate={{ opacity: 1, x: 0 }}
-      exit={{ opacity: 0, x: -50 }}
-      transition={{ duration: 0.5, ease: 'easeInOut' }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
       className="w-full h-full flex flex-col"
     >
-      {/* HEADER DESKTOP : STATIQUE ET WRAP (RETOUR COMMIT efdfd36) */}
+      {/* DESKTOP : STATIQUE ET WRAP (Style commit efdfd36) */}
       <div className="hidden lg:flex items-center justify-between gap-8 mb-12 mt-8 md:mt-12 w-full">
         <GalleryViewToggle view={view} onViewChange={onViewChange} />
-
         <div className="flex flex-wrap justify-center gap-x-8 gap-y-2 flex-1">
           {projects.map((p, idx) => (
             <button
@@ -242,17 +196,12 @@ export default function GalleryList({
             >
               {p.name}
               <span
-                className={`absolute left-0 bottom-0 h-[1px] bg-current transition-all duration-300 ease-in-out ${
-                  idx === currentProjectIndex
-                    ? 'w-full'
-                    : 'w-0 group-hover:w-full'
-                }`}
-                style={{ pointerEvents: 'none' }}
+                className={`absolute left-0 bottom-0 h-[1px] bg-current transition-all duration-300 ${idx === currentProjectIndex ? 'w-full' : 'w-0 group-hover:w-full'}`}
               />
             </button>
           ))}
         </div>
-        <div className="w-[52px] flex-shrink-0"></div>
+        <div className="w-[52px] flex-shrink-0" />
       </div>
 
       {/* ZONE IMAGE : ANIMATION OPACITÉ PRÉSERVÉE */}
@@ -265,7 +214,6 @@ export default function GalleryList({
             >
               <ArrowLeft />
             </button>
-
             <div
               className="relative w-[85%] h-[50vh] lg:w-[70%] lg:h-[70vh] xl:w-[80%] xl:h-[80vh] cursor-pointer"
               onClick={() => onProjectSelect(projects[currentProjectIndex])}
@@ -275,16 +223,11 @@ export default function GalleryList({
                 src={currentListDisplaySrc}
                 alt={projects[currentProjectIndex]?.name || ''}
                 fill
-                className={`object-contain transition-opacity duration-300 ${
-                  isTransitioning || (!isListImageLoaded && !listImageError)
-                    ? 'opacity-0'
-                    : 'opacity-100'
-                }`}
+                className={`object-contain transition-opacity duration-300 ${isTransitioning || (!isListImageLoaded && !listImageError) ? 'opacity-0' : 'opacity-100'}`}
                 onLoad={() => setIsListImageLoaded(true)}
                 priority
               />
             </div>
-
             <button
               onClick={navigateListNext}
               className="z-10 opacity-40 hover:opacity-100 transition-opacity"
@@ -299,7 +242,7 @@ export default function GalleryList({
       <div className="lg:hidden w-full overflow-hidden mask-fade-edges mb-8">
         <div
           ref={mobileNavRef}
-          className="flex flex-row flex-nowrap overflow-x-auto no-scrollbar gap-x-10 px-[15%] scroll-smooth"
+          className="flex flex-row flex-nowrap overflow-x-auto no-scrollbar gap-x-10 px-[10%] scroll-smooth"
         >
           {projects.map((p, idx) => (
             <button
