@@ -1,4 +1,23 @@
 /* Accessibilité : focus visible sur tous les boutons et liens */
+@font-face {
+  font-family: 'Playfair Display';
+  src:
+    url('/fonts/PlayfairDisplay-Regular.woff2') format('woff2'),
+    url('/fonts/PlayfairDisplay-Regular.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Playfair Display';
+  src:
+    url('/fonts/PlayfairDisplay-Italic.woff2') format('woff2'),
+    url('/fonts/PlayfairDisplay-Italic.woff') format('woff');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
 button:focus-visible,
 a:focus-visible,
 [tabindex]:focus-visible {
@@ -78,5 +97,35 @@ a:focus-visible,
 @layer components {
   .font-playfair {
     letter-spacing: -0.05em; /* -5% */
+  }
+}
+
+@layer utilities {
+  /* Masquer la scrollbar tout en gardant le défilement */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  /* Masque de fondu pour les bords du carrousel */
+  .mask-fade-edges {
+    /* Le fondu ne prend que 10% de chaque côté */
+    mask-image: linear-gradient(
+      to right,
+      transparent 0%,
+      black 10%,
+      black 90%,
+      transparent 100%
+    );
+    -webkit-mask-image: linear-gradient(
+      to right,
+      transparent 0%,
+      black 10%,
+      black 90%,
+      transparent 100%
+    );
   }
 }
