@@ -85,18 +85,6 @@ export const eventType = defineType({
       title: 'Image',
       type: 'image',
       options: { hotspot: true },
-      fields: [
-        defineField({
-          name: 'alt',
-          title: 'Texte alternatif',
-          type: 'object',
-          fields: [
-            { name: 'fr', title: 'Français', type: 'string' },
-            { name: 'en', title: 'Anglais', type: 'string' },
-            { name: 'de', title: 'Allemand', type: 'string' },
-          ],
-        }),
-      ],
     }),
     defineField({
       name: 'layout',
