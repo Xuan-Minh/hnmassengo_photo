@@ -39,7 +39,7 @@ export const eventType = defineType({
       title: 'Title (EN)',
       type: 'string',
       validation: Rule => Rule.required(),
-      description: 'Titre uniquement en anglais',
+      description: 'Titre (unique en anglais)',
     }),
     defineField({
       name: 'date',
