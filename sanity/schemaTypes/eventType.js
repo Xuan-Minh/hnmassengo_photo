@@ -36,35 +36,18 @@ export const eventType = defineType({
   fields: [
     defineField({
       name: 'title',
-      title: 'Titre',
-      type: 'object',
-      fields: [
-        {
-          name: 'fr',
-          title: 'Français',
-          type: 'string',
-          validation: Rule => Rule.required(),
-        },
-        {
-          name: 'en',
-          title: 'Anglais',
-          type: 'string',
-          validation: Rule => Rule.required(),
-        },
-        {
-          name: 'de',
-          title: 'Allemand',
-          type: 'string',
-          validation: Rule => Rule.required(),
-        },
-      ],
+      title: 'Title (EN)',
+      type: 'string',
       validation: Rule => Rule.required(),
+      description: 'Titre uniquement en anglais',
     }),
     defineField({
       name: 'date',
       title: 'Date',
-      type: 'datetime',
+      type: 'date',
+      initialValue: () => new Date().toISOString().slice(0, 10),
       validation: Rule => Rule.required(),
+      description: 'Date du jour automatiquement à la création',
     }),
     defineField({
       name: 'texte',

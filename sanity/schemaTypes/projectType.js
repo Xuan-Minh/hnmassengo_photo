@@ -133,8 +133,9 @@ export const projectType = defineType({
       name: 'date',
       title: 'Date de Réalisation',
       description:
-        'Date de prise de vue ou de réalisation du projet (optionnel)',
-      type: 'datetime',
+        'Date de prise de vue ou de réalisation (remplie automatiquement à la création)',
+      type: 'date',
+      initialValue: () => new Date().toISOString().slice(0, 10),
     }),
   ],
 });
