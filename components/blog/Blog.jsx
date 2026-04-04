@@ -80,11 +80,7 @@ export default function Blog() {
       );
       const mapped = data.map(p => ({
         id: p._id,
-        title:
-          p.title ||
-          p[`title_${locale}`] ||
-          p.title_fr ||
-          null,
+        title: p.title || null,
         date: new Date(p.date).toLocaleDateString(
           locale === 'fr' ? 'fr-FR' : locale === 'de' ? 'de-DE' : 'en-US',
           { year: 'numeric', month: 'short', day: 'numeric' }
