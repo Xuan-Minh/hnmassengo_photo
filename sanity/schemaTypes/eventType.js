@@ -18,7 +18,7 @@ export const eventType = defineType({
   ],
   preview: {
     select: {
-      title: 'title.fr',
+      title: 'title',
       subtitle: 'date',
       media: 'image',
     },
@@ -38,7 +38,6 @@ export const eventType = defineType({
       name: 'title',
       title: 'Title (EN)',
       type: 'string',
-      validation: Rule => Rule.required(),
       description: 'Titre (unique en anglais)',
     }),
     defineField({
