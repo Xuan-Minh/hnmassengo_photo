@@ -1,7 +1,35 @@
 import Image from 'next/image';
 import PropTypes from 'prop-types';
 
-export default function BlogPostItem({ post, onClick }) {
+function renderTextPreview(text, postCount, extraClass = '') {
+  if (postCount === 1) {
+    const paragraphs = (text || '').split('\n\n').filter(Boolean).slice(0, 3);
+    return (
+      <div
+        className={`font-playfair text-whiteCustom/80 leading-loose space-y-2 ${extraClass}`}
+      >
+        {paragraphs.map((para, i) => (
+          <p key={i} className="sm:text-lg lg:text-base">
+            {para}
+          </p>
+        ))}
+      </div>
+    );
+  }
+  const clampClass =
+    postCount >= 3
+      ? '[-webkit-line-clamp:2] lg:[-webkit-line-clamp:2]'
+      : '[-webkit-line-clamp:3] lg:[-webkit-line-clamp:3]';
+  return (
+    <p
+      className={`sm:text-lg lg:text-base font-playfair text-whiteCustom/80 leading-loose overflow-hidden text-ellipsis [display:-webkit-box] [-webkit-box-orient:vertical] ${clampClass} ${extraClass}`}
+    >
+      {text}
+    </p>
+  );
+}
+
+export default function BlogPostItem({ post, onClick, postCount = 1 }) {
   return (
     <div
       className="w-full lg:border-b lg:border-whiteCustom/20 py-2  lg:py-12 cursor-pointer group lg:hover:border-l-4 lg:hover:border-l-white lg:pl-8 transition-all duration-300"
@@ -21,18 +49,21 @@ export default function BlogPostItem({ post, onClick }) {
             />
           </div>
           <div className="flex-1 text-whiteCustom flex flex-col justify-start">
-            {post.title && (
-              <h3 className="text-3xl lg:text-3xl font-playfair italic mb-2">
-                &ldquo;{post.title}&rdquo;
+            {post.title ? (
+              <>
+                <h3 className="text-3xl lg:text-3xl font-playfair italic mb-2">
+                  &ldquo;{post.title}&rdquo;
+                </h3>
+                <div className="text-lg text-whiteCustom/80 lg:text-base font-playfair mb-4">
+                  - {post.date}
+                </div>
+              </>
+            ) : (
+              <h3 className="text-3xl lg:text-3xl font-playfair italic mb-4">
+                {post.date}
               </h3>
             )}
-            <div className="text-lg text-whiteCustom/80 lg:text-base font-playfair mb-4">
-              - {post.date}
-            </div>
-
-            <p className="sm:text-lg lg:text-base font-playfair text-whiteCustom/80 leading-loose overflow-hidden text-ellipsis [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:4] lg:[-webkit-line-clamp:3]">
-              {post.text}
-            </p>
+            {renderTextPreview(post.text, postCount)}
           </div>
         </div>
       )}
@@ -40,17 +71,21 @@ export default function BlogPostItem({ post, onClick }) {
       {post.layout === 'image-right' && post.image && (
         <div className="flex flex-col lg:flex-row gap-4 items-start">
           <div className="flex-1 text-whiteCustom order-2 lg:order-1 flex flex-col justify-start">
-            {post.title && (
-              <h3 className="text-3xl lg:text-3xl font-playfair italic mb-2">
-                &ldquo;{post.title}&rdquo;
+            {post.title ? (
+              <>
+                <h3 className="text-3xl lg:text-3xl font-playfair italic mb-2">
+                  &ldquo;{post.title}&rdquo;
+                </h3>
+                <div className="text-lg text-whiteCustom/80 lg:text-base font-playfair mb-4">
+                  - {post.date}
+                </div>
+              </>
+            ) : (
+              <h3 className="text-3xl lg:text-3xl font-playfair italic mb-4">
+                {post.date}
               </h3>
             )}
-            <div className="text-lg text-whiteCustom/80 lg:text-base font-playfair mb-4">
-              - {post.date}
-            </div>
-            <p className="text-lg lg:text-base font-playfair text-whiteCustom/80 leading-loose overflow-hidden text-ellipsis [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:4] lg:[-webkit-line-clamp:3]">
-              {post.text}
-            </p>
+            {renderTextPreview(post.text, postCount)}
           </div>
           <div className="w-full lg:w-1/3 flex items-center justify-center order-1 lg:order-2">
             <Image
@@ -69,18 +104,22 @@ export default function BlogPostItem({ post, onClick }) {
       {(post.layout === 'text-only' || !post.image) && (
         <div className="text-whiteCustom">
           <div className="flex flex-col mb-4">
-            {post.title && (
-              <h3 className="text-3xl lg:text-3xl font-playfair italic mb-2">
-                &ldquo;{post.title}&rdquo;
+            {post.title ? (
+              <>
+                <h3 className="text-3xl lg:text-3xl font-playfair italic mb-2">
+                  &ldquo;{post.title}&rdquo;
+                </h3>
+                <span className="text-whiteCustom/80 text-lg lg:text-base font-playfair">
+                  - {post.date}
+                </span>
+              </>
+            ) : (
+              <h3 className="text-3xl lg:text-3xl font-playfair italic mb-4">
+                {post.date}
               </h3>
             )}
-            <span className="text-whiteCustom/80 text-lg lg:text-base font-playfair">
-              - {post.date}
-            </span>
           </div>
-          <p className="text-lg lg:text-base font-playfair text-whiteCustom/80 leading-loose max-w-3xl">
-            {post.text}
-          </p>
+          {renderTextPreview(post.text, postCount, 'max-w-3xl')}
         </div>
       )}
     </div>
@@ -97,4 +136,5 @@ BlogPostItem.propTypes = {
       .isRequired,
   }).isRequired,
   onClick: PropTypes.func.isRequired,
+  postCount: PropTypes.number,
 };
