@@ -9,12 +9,14 @@ import { motion } from 'framer-motion';
  * @param {React.ReactNode} children - Contenu de l'overlay
  * @param {number} animationDuration - Durée de l'animation (défaut 0.8s)
  * @param {string} ariaLabelledBy - ID du titre pour l'accessibilité
+ * @param {string} ariaLabel - Label de repli si ariaLabelledBy est absent
  */
 export default function BaseOverlay({
   onClose,
   children,
   animationDuration = 0.8,
   ariaLabelledBy,
+  ariaLabel,
 }) {
   const previouslyFocusedElement = useRef(null);
 
@@ -43,6 +45,7 @@ export default function BaseOverlay({
       role="dialog"
       aria-modal="true"
       aria-labelledby={ariaLabelledBy}
+      aria-label={ariaLabelledBy ? undefined : ariaLabel}
     >
       {/* Bouton Back */}
       <div className="absolute top-8 left-8 md:top-16 md:left-16 z-50">

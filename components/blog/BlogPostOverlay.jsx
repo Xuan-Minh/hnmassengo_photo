@@ -20,7 +20,7 @@ export default function BlogPostOverlay({ post, onClose, onPrevious, onNext }) {
       key="blog-post-overlay-wrapper"
       exit={{ opacity: 0, transition: { duration: 0.2 } }}
     >
-      <BaseOverlay onClose={onClose} ariaLabelledBy="blog-post-title">
+      <BaseOverlay onClose={onClose} ariaLabelledBy={post.title ? 'blog-post-title' : undefined} ariaLabel={post.title ? undefined : 'Article de blog'}>
         {/* Contenu principal - Deux mises en page */}
         {hasImage ? (
           // Mise en page AVEC Image (Date/Titre, Image, puis Contenu empilé verticalement)
@@ -33,19 +33,21 @@ export default function BlogPostOverlay({ post, onClose, onPrevious, onNext }) {
                   {post.date}
                 </div>
                 {/* Title separate */}
-                <h1
-                  className="text-3xl md:text-4xl lg:text-5xl italic font-normal leading-[0.85] mt-2"
-                  id="blog-post-title"
-                >
-                  "{post.title}"
-                </h1>
+                {post.title && (
+                  <h1
+                    className="text-3xl md:text-4xl lg:text-5xl italic font-normal leading-[0.85] mt-2"
+                    id="blog-post-title"
+                  >
+                    &ldquo;{post.title}&rdquo;
+                  </h1>
+                )}
               </div>
 
               {/* Image */}
               <div className="relative w-full mb-10 max-w-xl lg:max-w-lg mx-auto">
                 <Image
                   src={post.image}
-                  alt={post.title}
+                  alt={post.title || ''}
                   width={1200}
                   height={800}
                   className="w-full h-auto object-contain"
@@ -85,12 +87,14 @@ export default function BlogPostOverlay({ post, onClose, onPrevious, onNext }) {
                   {post.date}
                 </div>
                 {/* Title separate */}
-                <h1
-                  className="text-3xl md:text-4xl lg:text-5xl italic font-normal leading-[0.85] mt-2"
-                  id="blog-post-title"
-                >
-                  &ldquo;{post.title}&rdquo;
-                </h1>
+                {post.title && (
+                  <h1
+                    className="text-3xl md:text-4xl lg:text-5xl italic font-normal leading-[0.85] mt-2"
+                    id="blog-post-title"
+                  >
+                    &ldquo;{post.title}&rdquo;
+                  </h1>
+                )}
               </div>
 
               {/* Content - Left aligned and justified */}

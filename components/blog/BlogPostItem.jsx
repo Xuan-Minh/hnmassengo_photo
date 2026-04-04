@@ -12,18 +12,20 @@ export default function BlogPostItem({ post, onClick }) {
           <div className="w-full lg:w-1/3 flex items-center justify-center">
             <Image
               src={post.image}
-              alt={post.title}
+              alt={post.title || ''}
               width={400}
               height={300}
-              className="w-full h-auto xl:max-h-[150px] 2xl:max-h[300px] object-contain lg:grayscale group-hover:grayscale-0 transition-all duration-500"
+              className="w-full h-auto xl:max-h-[150px] 2xl:max-h-[300px] object-contain lg:grayscale group-hover:grayscale-0 transition-all duration-500"
               sizes="(max-width: 768px) 100vw, 400px"
               priority={false}
             />
           </div>
           <div className="flex-1 text-whiteCustom flex flex-col justify-start">
-            <h3 className="text-3xl lg:text-3xl font-playfair italic mb-2">
-              "{post.title}"
-            </h3>
+            {post.title && (
+              <h3 className="text-3xl lg:text-3xl font-playfair italic mb-2">
+                &ldquo;{post.title}&rdquo;
+              </h3>
+            )}
             <div className="text-lg text-whiteCustom/80 lg:text-base font-playfair mb-4">
               - {post.date}
             </div>
@@ -38,9 +40,11 @@ export default function BlogPostItem({ post, onClick }) {
       {post.layout === 'image-right' && post.image && (
         <div className="flex flex-col lg:flex-row gap-4 items-start">
           <div className="flex-1 text-whiteCustom order-2 lg:order-1 flex flex-col justify-start">
-            <h3 className="text-3xl lg:text-3xl font-playfair italic mb-2">
-              "{post.title}"
-            </h3>
+            {post.title && (
+              <h3 className="text-3xl lg:text-3xl font-playfair italic mb-2">
+                &ldquo;{post.title}&rdquo;
+              </h3>
+            )}
             <div className="text-lg text-whiteCustom/80 lg:text-base font-playfair mb-4">
               - {post.date}
             </div>
@@ -51,7 +55,7 @@ export default function BlogPostItem({ post, onClick }) {
           <div className="w-full lg:w-1/3 flex items-center justify-center order-1 lg:order-2">
             <Image
               src={post.image}
-              alt={post.title}
+              alt={post.title || ''}
               width={400}
               height={300}
               className="w-full h-auto max-h-[300px] lg:max-h-[150px] object-contain lg:grayscale group-hover:grayscale-0 transition-all duration-500"
@@ -65,9 +69,11 @@ export default function BlogPostItem({ post, onClick }) {
       {(post.layout === 'text-only' || !post.image) && (
         <div className="text-whiteCustom">
           <div className="flex flex-col mb-4">
-            <h3 className="text-3xl lg:text-3xl font-playfair italic mb-2">
-              "{post.title}"
-            </h3>
+            {post.title && (
+              <h3 className="text-3xl lg:text-3xl font-playfair italic mb-2">
+                &ldquo;{post.title}&rdquo;
+              </h3>
+            )}
             <span className="text-whiteCustom/80 text-lg lg:text-base font-playfair">
               - {post.date}
             </span>
@@ -83,7 +89,7 @@ export default function BlogPostItem({ post, onClick }) {
 
 BlogPostItem.propTypes = {
   post: PropTypes.shape({
-    title: PropTypes.string.isRequired,
+    title: PropTypes.string,
     date: PropTypes.string.isRequired,
     text: PropTypes.string.isRequired,
     image: PropTypes.string,
