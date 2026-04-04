@@ -134,6 +134,7 @@ export default function Blog() {
             <BlogPostItem
               key={post.id}
               post={post}
+              postCount={latestPosts.length}
               onClick={() => {
                 replacePostParam(post.id);
                 setSelectedPost(post);
