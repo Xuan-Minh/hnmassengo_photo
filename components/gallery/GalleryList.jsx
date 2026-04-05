@@ -242,7 +242,7 @@ export default function GalleryList({
       <div className="lg:hidden w-full overflow-hidden mask-fade-edges mb-8">
         <div
           ref={mobileNavRef}
-          className="flex flex-row flex-nowrap overflow-x-hidden no-scrollbar gap-x-10 px-[10%] scroll-smooth"
+          className="flex flex-row flex-nowrap overflow-x-auto overflow-y-hidden no-scrollbar gap-x-10 px-[10%] scroll-smooth touch-pan-x"
         >
           {projects.map((p, idx) => (
             <button
