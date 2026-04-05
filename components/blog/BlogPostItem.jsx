@@ -35,7 +35,11 @@ export default function BlogPostItem({ post, onClick, postCount = 1 }) {
     ? { headline: null, rest: post.text }
     : extractFirstSentence(post.text);
 
-  const displayTitle = post.title || autoHeadline;
+  const displayTitle =
+    post.title?.trim() ||
+    autoHeadline?.trim() ||
+    post.date?.trim() ||
+    'Untitled post';
   const displayText = post.title ? post.text : textRemainder;
 
   return (
