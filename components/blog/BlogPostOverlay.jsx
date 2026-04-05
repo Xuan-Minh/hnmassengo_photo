@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import ContactOverlay from '../overlays/ContactOverlay';
 import BaseOverlay from '../overlays/BaseOverlay';
 import { useTranslations } from 'next-intl';
+import { extractFirstSentence } from '../../lib/utils';
 
 export default function BlogPostOverlay({ post, onClose, onPrevious, onNext }) {
   const [contactOpen, setContactOpen] = useState(false);
@@ -13,14 +14,26 @@ export default function BlogPostOverlay({ post, onClose, onPrevious, onNext }) {
   if (!post) return null;
 
   const hasImage = post.image && post.image.trim() !== '';
-  const contactSubject = `${post.title || post.date} - ${t('reply')}`;
+
+  const { headline: autoHeadline, rest: textRemainder } = post.title
+    ? { headline: null, rest: post.text }
+    : extractFirstSentence(post.text);
+
+  const displayTitle = post.title || autoHeadline;
+  const displayText = post.title ? post.text : textRemainder;
+
+  const contactSubject = `${displayTitle || post.date} - ${t('reply')}`;
 
   return (
     <motion.div
       key="blog-post-overlay-wrapper"
       exit={{ opacity: 0, transition: { duration: 0.2 } }}
     >
-      <BaseOverlay onClose={onClose} ariaLabelledBy={post.title ? 'blog-post-title' : undefined} ariaLabel={post.title ? undefined : 'Article de blog'}>
+      <BaseOverlay
+        onClose={onClose}
+        ariaLabelledBy={displayTitle ? 'blog-post-title' : undefined}
+        ariaLabel={displayTitle ? undefined : post.date}
+      >
         {/* Contenu principal - Deux mises en page */}
         {hasImage ? (
           // Mise en page AVEC Image (Date/Titre, Image, puis Contenu empilé verticalement)
@@ -33,21 +46,19 @@ export default function BlogPostOverlay({ post, onClose, onPrevious, onNext }) {
                   {post.date}
                 </div>
                 {/* Title separate */}
-                {post.title && (
-                  <h1
-                    className="text-3xl md:text-4xl lg:text-5xl italic font-normal leading-[0.85] mt-2"
-                    id="blog-post-title"
-                  >
-                    &ldquo;{post.title}&rdquo;
-                  </h1>
-                )}
+                <h1
+                  className="text-3xl md:text-4xl lg:text-5xl italic font-normal leading-[0.85] mt-2"
+                  id="blog-post-title"
+                >
+                  &ldquo;{displayTitle}&rdquo;
+                </h1>
               </div>
 
               {/* Image */}
               <div className="relative w-full mb-10 max-w-xl lg:max-w-lg mx-auto">
                 <Image
                   src={post.image}
-                  alt={post.title || ''}
+                  alt={displayTitle || ''}
                   width={1200}
                   height={800}
                   className="w-full h-auto object-contain"
@@ -58,7 +69,7 @@ export default function BlogPostOverlay({ post, onClose, onPrevious, onNext }) {
 
               {/* Content - Left aligned and justified */}
               <div className="text-base md:text-lg leading-relaxed text-whiteCustom space-y-4 max-w-2xl mx-auto">
-                {post.text?.split('\n\n').map((paragraph, idx) => (
+                {displayText?.split('\n\n').map((paragraph, idx) => (
                   <p key={idx} className="text-justify">
                     {paragraph}
                   </p>
@@ -87,19 +98,17 @@ export default function BlogPostOverlay({ post, onClose, onPrevious, onNext }) {
                   {post.date}
                 </div>
                 {/* Title separate */}
-                {post.title && (
-                  <h1
-                    className="text-3xl md:text-4xl lg:text-5xl italic font-normal leading-[0.85] mt-2"
-                    id="blog-post-title"
-                  >
-                    &ldquo;{post.title}&rdquo;
-                  </h1>
-                )}
+                <h1
+                  className="text-3xl md:text-4xl lg:text-5xl italic font-normal leading-[0.85] mt-2"
+                  id="blog-post-title"
+                >
+                  &ldquo;{displayTitle}&rdquo;
+                </h1>
               </div>
 
               {/* Content - Left aligned and justified */}
               <div className="text-base md:text-lg leading-relaxed text-whiteCustom space-y-4 max-w-2xl mx-auto">
-                {post.text?.split('\n\n').map((paragraph, idx) => (
+                {displayText?.split('\n\n').map((paragraph, idx) => (
                   <p key={idx} className="text-justify">
                     {paragraph}
                   </p>
