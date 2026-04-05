@@ -572,7 +572,7 @@ export default function GalleryProjetCartel({ project, onClose }) {
 
           <div className="border-t border-blackCustom/20 flex-shrink-0"></div>
 
-          <div className="flex-1 overflow-y-auto p-6">
+          <div className="flex-1 overflow-hidden p-6">
             <div className="font-playfair text-lg italic text-blackCustom mb-4">
               {project.coords}
             </div>
