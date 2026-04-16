@@ -4,23 +4,33 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import ContactOverlay from '../overlays/ContactOverlay';
 import BaseOverlay from '../overlays/BaseOverlay';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { extractFirstSentence } from '../../lib/utils';
 
 export default function BlogPostOverlay({ post, onClose, onPrevious, onNext }) {
   const [contactOpen, setContactOpen] = useState(false);
   const t = useTranslations('blog.post');
+  const locale = useLocale();
 
   if (!post) return null;
 
   const hasImage = post.image && post.image.trim() !== '';
 
-  const { headline: autoHeadline, rest: textRemainder } = post.title
-    ? { headline: null, rest: post.text }
-    : extractFirstSentence(post.text);
+  const postText =
+    typeof post.text === 'object' && post.text !== null
+      ? post.text[locale]
+      : post.text;
+  const postTitle =
+    typeof post.title === 'object' && post.title !== null
+      ? post.title[locale]
+      : post.title;
 
-  const displayTitle = post.title || autoHeadline;
-  const displayText = post.title ? post.text : textRemainder;
+  const { headline: autoHeadline, rest: textRemainder } = postTitle
+    ? { headline: null, rest: postText }
+    : extractFirstSentence(postText);
+
+  const displayTitle = postTitle || autoHeadline;
+  const displayText = postTitle ? postText : textRemainder;
 
   const contactSubject = `${displayTitle || post.date} - ${t('reply')}`;
 
