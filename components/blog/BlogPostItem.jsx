@@ -1,6 +1,9 @@
+'use client';
+
 import Image from 'next/image';
 import PropTypes from 'prop-types';
 import { extractFirstSentence } from '../../lib/utils';
+import { useLocale } from 'next-intl';
 
 function renderTextPreview(text, postCount, extraClass = '') {
   if (postCount === 1) {
@@ -31,16 +34,23 @@ function renderTextPreview(text, postCount, extraClass = '') {
 }
 
 export default function BlogPostItem({ post, onClick, postCount = 1 }) {
+  const locale = useLocale();
   const { headline: autoHeadline, rest: textRemainder } = post.title
     ? { headline: null, rest: post.text }
     : extractFirstSentence(post.text);
 
   const displayTitle =
-    post.title?.trim() ||
+    (typeof post.title === 'object' && post.title !== null
+      ? post.title[locale]
+      : post.title
+    )?.trim() ||
     autoHeadline?.trim() ||
     post.date?.trim() ||
     'Untitled post';
-  const displayText = post.title ? post.text : textRemainder;
+  const displayText =
+    typeof post.text === 'object' && post.text !== null
+      ? post.text[locale]
+      : post.text || textRemainder;
 
   return (
     <div
@@ -116,9 +126,23 @@ export default function BlogPostItem({ post, onClick, postCount = 1 }) {
 
 BlogPostItem.propTypes = {
   post: PropTypes.shape({
-    title: PropTypes.string,
+    title: PropTypes.oneOfType([
+      PropTypes.string,
+      PropTypes.shape({
+        en: PropTypes.string,
+        fr: PropTypes.string,
+        de: PropTypes.string,
+      }),
+    ]),
     date: PropTypes.string.isRequired,
-    text: PropTypes.string.isRequired,
+    text: PropTypes.oneOfType([
+      PropTypes.string,
+      PropTypes.shape({
+        en: PropTypes.string,
+        fr: PropTypes.string,
+        de: PropTypes.string,
+      }),
+    ]).isRequired,
     image: PropTypes.string,
     layout: PropTypes.oneOf(['image-left', 'image-right', 'text-only'])
       .isRequired,
