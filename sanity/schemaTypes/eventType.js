@@ -24,8 +24,12 @@ export const eventType = defineType({
     },
     prepare(selection) {
       const { title, subtitle, media } = selection;
+      const displayTitle =
+        typeof title === 'object' && title !== null
+          ? title.fr || title.en || title.de
+          : title;
       return {
-        title: title || 'Sans titre',
+        title: displayTitle || 'Sans titre',
         subtitle: subtitle
           ? new Date(subtitle).toLocaleDateString('fr-FR')
           : 'Date non définie',
@@ -36,9 +40,26 @@ export const eventType = defineType({
   fields: [
     defineField({
       name: 'title',
-      title: 'Title (EN)',
-      type: 'string',
-      description: 'Titre (unique en anglais)',
+      title: 'Titre',
+      type: 'object',
+      fields: [
+        {
+          name: 'fr',
+          title: 'Français',
+          type: 'string',
+        },
+        {
+          name: 'en',
+          title: 'Anglais',
+          type: 'string',
+        },
+        {
+          name: 'de',
+          title: 'Allemand',
+          type: 'string',
+        },
+      ],
+      description: 'Titre affiché selon la langue du visiteur / abonné.',
     }),
     defineField({
       name: 'date',
