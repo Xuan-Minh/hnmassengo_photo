@@ -1,10 +1,11 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 
 export default function NewsletterSignup({ className = '' } = {}) {
   const t = useTranslations('newsletter');
+  const locale = useLocale();
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState('idle'); // idle | loading | success | error
   const [message, setMessage] = useState('');
@@ -25,7 +26,7 @@ export default function NewsletterSignup({ className = '' } = {}) {
       const res = await fetch('/api/newsletter/subscribe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, source: 'standalone' }),
+        body: JSON.stringify({ email, source: 'standalone', locale }),
       });
       const json = await res.json().catch(() => ({}));
 
