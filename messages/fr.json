@@ -89,6 +89,13 @@
     "success": "Merci ! Vous êtes inscrit.",
     "error": "Veuillez entrer une adresse email valide."
   },
+  "newsletterEmail": {
+    "subject": "Nouveau post — {post}",
+    "viewInBrowser": "Voir dans le navigateur",
+    "readPost": "lire le post",
+    "receivingBecause": "Vous recevez cet email car vous êtes inscrit(e) à hnmassengo.com",
+    "unsubscribe": "Se désabonner"
+  },
   "shop": {
     "inCart": "dans le panier",
     "cart": {

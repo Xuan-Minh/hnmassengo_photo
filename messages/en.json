@@ -89,6 +89,13 @@
     "success": "Thanks! You are subscribed.",
     "error": "Please enter a valid email."
   },
+  "newsletterEmail": {
+    "subject": "New post — {post}",
+    "viewInBrowser": "View in browser",
+    "readPost": "read post",
+    "receivingBecause": "You're receiving this email because you subscribed to hnmassengo.com",
+    "unsubscribe": "Unsubscribe"
+  },
   "presentation": {
     "line1": "I develop my artistic sense through my clubs and where I live.",
     "line2": "I am passionate about capturing moments that tell a story,",

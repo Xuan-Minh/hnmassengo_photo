@@ -89,6 +89,13 @@
     "success": "Danke! Du bist angemeldet.",
     "error": "Bitte eine gültige E-Mail eingeben."
   },
+  "newsletterEmail": {
+    "subject": "Neuer Beitrag — {post}",
+    "viewInBrowser": "Im Browser ansehen",
+    "readPost": "Beitrag lesen",
+    "receivingBecause": "Sie erhalten diese E-Mail, weil Sie hnmassengo.com abonniert haben",
+    "unsubscribe": "Abbestellen"
+  },
   "presentation": {
     "line1": "Ich entwickle meinen künstlerischen Sinn durch meine Clubs und wo ich lebe.",
     "line2": "Ich bin leidenschaftlich beim Einfangen von Momenten, die eine Geschichte erzählen,",
