@@ -98,5 +98,78 @@ export const eventType = defineType({
       },
       initialValue: 'image-left',
     }),
+
+    defineField({
+      name: 'imagePosition',
+      title: "Position de l'image (haut / bas)",
+      type: 'string',
+      options: {
+        list: [
+          { title: 'En haut', value: 'image-top' },
+          { tile: 'En bas', value: 'image-bot' },
+        ],
+      },
+      initialValue: 'image-top',
+    }),
+    defineField({
+      name: 'extras',
+      title: 'Extras (audio, YouTube, fichier)',
+      type: 'array',
+      of: [
+        {
+          type: 'object',
+          title: 'Élément',
+          fields: [
+            {
+              name: 'type',
+              title: 'Type',
+              type: 'string',
+              options: {
+                list: [
+                  { title: 'Audio', value: 'audio' },
+                  { title: 'Lien YouTube', value: 'youtube' },
+                  { title: 'Fichier', value: 'file' },
+                ],
+              },
+              validation: Rule => Rule.required(),
+            },
+            {
+              name: 'audio',
+              title: 'Fichier audio',
+              type: 'file',
+              options: { accept: 'audio/*' },
+              hidden: ({ parent }) => parent?.type !== 'audio',
+            },
+            {
+              name: 'youtube',
+              title: 'Lien YouTube',
+              type: 'url',
+              hidden: ({ parent }) => parent?.type !== 'youtube',
+            },
+            {
+              name: 'file',
+              title: 'Fichier',
+              type: 'file',
+              hidden: ({ parent }) => parent?.type !== 'file',
+            },
+          ],
+        },
+      ],
+      description:
+        'Ajoutez un ou plusieurs éléments : audio, lien YouTube ou fichier.',
+    }),
+    defineField({
+      name: 'extrasPosition',
+      title: 'Position des extras',
+      type: 'string',
+      options: {
+        list: [
+          { title: 'Début du post', value: 'start' },
+          { title: 'Fin du post', value: 'end' },
+        ],
+      },
+      initialValue: 'end',
+      description: 'Choisissez où afficher les extras dans le post.',
+    }),
   ],
 });
