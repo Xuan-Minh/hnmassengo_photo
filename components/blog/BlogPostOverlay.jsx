@@ -13,9 +13,8 @@ function ExtrasBlock({ extras }) {
     <div className="my-6 flex flex-col gap-4">
       {extras.map((extra, idx) => {
         if (!extra?.type) return null;
-        if (extra.type === 'audio' && extra.audio?.asset?._ref) {
-          // Sanity file URL construction simplifiée (à adapter si tu utilises @sanity/image-url ou autre)
-          const fileUrl = extra.audio.asset.url || extra.audio.asset._ref;
+        if (extra.type === 'audio' && extra.audio?.asset?.url) {
+          const fileUrl = extra.audio.asset.url;
           return (
             <audio key={idx} controls className="w-full">
               <source src={fileUrl} />
@@ -46,8 +45,8 @@ function ExtrasBlock({ extras }) {
             </div>
           ) : null;
         }
-        if (extra.type === 'file' && extra.file?.asset?._ref) {
-          const fileUrl = extra.file.asset.url || extra.file.asset._ref;
+        if (extra.type === 'file' && extra.file?.asset?.url) {
+          const fileUrl = extra.file.asset.url;
           return (
             <a
               key={idx}
