@@ -76,7 +76,7 @@ export default function Blog() {
   useEffect(() => {
     const fetchPosts = async () => {
       const data = await client.fetch(
-        '*[_type == "blogPost"] | order(date desc) { ..., image{ asset->{ url } } }'
+        '*[_type == "blogPost"] | order(date desc) { ..., image{ asset->{ url } }, extras[]{ ..., audio{ asset->{ url } }, file{ asset->{ url } } } }'
       );
       const mapped = data.map(p => ({
         id: p._id,
@@ -103,6 +103,9 @@ export default function Blog() {
             })
           : null,
         layout: p.layout,
+        imagePosition: p.imagePosition || 'image-top',
+        extras: p.extras || [],
+        extrasPosition: p.extrasPosition || 'end',
       }));
       setPosts(mapped);
     };
