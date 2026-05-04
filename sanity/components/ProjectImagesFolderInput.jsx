@@ -14,7 +14,6 @@ import {
   TextInput,
 } from '@sanity/ui';
 import {
-  ArrayOfObjectsInput,
   PatchEvent,
   insert,
   set,
@@ -390,8 +389,6 @@ export default function ProjectImagesFolderInput(props) {
           </Stack>
         </Card>
       )}
-
-      <ArrayOfObjectsInput {...props} />
 
       {editingImage && (
         <Dialog
