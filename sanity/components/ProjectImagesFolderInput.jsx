@@ -259,7 +259,7 @@ export default function ProjectImagesFolderInput(props) {
                     <Button
                       mode="ghost"
                       fontSize={1}
-                      text="Effacer la sélection"
+                      text="Déselectionner"
                       onClick={handleClearSelection}
                     />
                     <Button
@@ -289,7 +289,11 @@ export default function ProjectImagesFolderInput(props) {
                     radius={2}
                     border
                     tone={isSelected ? 'critical' : 'default'}
-                    style={{ cursor: 'pointer', position: 'relative', userSelect: 'none' }}
+                    style={{
+                      cursor: 'pointer',
+                      position: 'relative',
+                      userSelect: 'none',
+                    }}
                     onClick={() => toggleKey(image._key)}
                   >
                     {url ? (
@@ -333,7 +337,8 @@ export default function ProjectImagesFolderInput(props) {
 
             {effectiveSelectedKeys.size > 0 && (
               <Text size={1} muted>
-                {effectiveSelectedKeys.size} image(s) sélectionnée(s) sur {images.length}
+                {effectiveSelectedKeys.size} image(s) sélectionnée(s) sur{' '}
+                {images.length}
               </Text>
             )}
           </Stack>
