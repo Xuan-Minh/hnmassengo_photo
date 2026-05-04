@@ -1,12 +1,13 @@
 'use client';
 
-import React, { useMemo, useRef, useState } from 'react';
-import { Button, Card, Flex, Stack, Text } from '@sanity/ui';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
+import { Button, Card, Checkbox, Flex, Grid, Stack, Text } from '@sanity/ui';
 import {
   ArrayOfObjectsInput,
   PatchEvent,
   insert,
   setIfMissing,
+  unset,
   useClient,
   useFormValue,
 } from 'sanity';
@@ -23,10 +24,27 @@ function stripExtension(filename) {
   return idx > 0 ? filename.slice(0, idx) : filename;
 }
 
+// Build a small CDN thumbnail URL from a Sanity image asset _ref.
+// Ref format: image-{id}-{width}x{height}-{format}
+function assetRefToThumbnailUrl(ref, projectId, dataset) {
+  if (!ref || !projectId || !dataset) return null;
+  const withoutPrefix = ref.replace(/^image-/, '');
+  const lastDash = withoutPrefix.lastIndexOf('-');
+  if (lastDash === -1) return null;
+  const format = withoutPrefix.slice(lastDash + 1);
+  const withoutFormat = withoutPrefix.slice(0, lastDash);
+  const secondLastDash = withoutFormat.lastIndexOf('-');
+  if (secondLastDash === -1) return null;
+  const id = withoutFormat.slice(0, secondLastDash);
+  const dimensions = withoutFormat.slice(secondLastDash + 1);
+  return `https://cdn.sanity.io/images/${projectId}/${dataset}/${id}-${dimensions}.${format}?w=120&h=120&fit=crop&auto=format`;
+}
+
 export default function ProjectImagesFolderInput(props) {
   const { onChange, value } = props;
 
   const client = useClient({ apiVersion });
+  const { projectId, dataset } = client.config();
 
   const nameFr = useFormValue(['name', 'fr']);
   const nameEn = useFormValue(['name', 'en']);
@@ -46,6 +64,7 @@ export default function ProjectImagesFolderInput(props) {
 
   const [isUploading, setIsUploading] = useState(false);
   const [status, setStatus] = useState('');
+  const [selectedKeys, setSelectedKeys] = useState(() => new Set());
 
   async function handleFilesSelected(fileList) {
     const allFiles = Array.from(fileList || []);
@@ -126,6 +145,50 @@ export default function ProjectImagesFolderInput(props) {
     }
   }
 
+  const images = Array.isArray(value) ? value : [];
+
+  // Intersection of selectedKeys with the images currently in the array.
+  // Prevents stale keys (e.g. deleted via ArrayOfObjectsInput below) from
+  // corrupting the counter and from generating orphan unset patches.
+  const effectiveSelectedKeys = useMemo(
+    () =>
+      new Set(
+        images.filter(img => selectedKeys.has(img._key)).map(img => img._key)
+      ),
+    [images, selectedKeys]
+  );
+
+  const toggleKey = useCallback(
+    key => {
+      if (!images.some(img => img._key === key)) return;
+      setSelectedKeys(prev => {
+        const next = new Set(prev);
+        if (next.has(key)) next.delete(key);
+        else next.add(key);
+        return next;
+      });
+    },
+    [images]
+  );
+
+  const handleSelectAll = useCallback(() => {
+    setSelectedKeys(new Set(images.map(img => img._key)));
+  }, [images]);
+
+  const handleClearSelection = useCallback(() => {
+    setSelectedKeys(new Set());
+  }, []);
+
+  const handleDeleteSelected = useCallback(() => {
+    if (effectiveSelectedKeys.size === 0) return;
+    onChange(
+      PatchEvent.from(
+        Array.from(effectiveSelectedKeys).map(key => unset([{ _key: key }]))
+      )
+    );
+    setSelectedKeys(new Set());
+  }, [effectiveSelectedKeys, onChange]);
+
   return (
     <Stack space={3}>
       <Card padding={3} radius={2} border>
@@ -174,6 +237,108 @@ export default function ProjectImagesFolderInput(props) {
           </Text>
         </Stack>
       </Card>
+
+      {images.length > 0 && (
+        <Card padding={3} radius={2} border tone="caution">
+          <Stack space={3}>
+            <Flex align="center" justify="space-between" wrap="wrap" gap={2}>
+              <Text size={1} weight="semibold">
+                {`Supprimer des images (${images.length} au total)`}
+              </Text>
+              <Flex gap={2} wrap="wrap" align="center">
+                {effectiveSelectedKeys.size < images.length && (
+                  <Button
+                    mode="ghost"
+                    fontSize={1}
+                    text="Tout sélectionner"
+                    onClick={handleSelectAll}
+                  />
+                )}
+                {effectiveSelectedKeys.size > 0 && (
+                  <>
+                    <Button
+                      mode="ghost"
+                      fontSize={1}
+                      text="Effacer la sélection"
+                      onClick={handleClearSelection}
+                    />
+                    <Button
+                      mode="default"
+                      tone="critical"
+                      fontSize={1}
+                      text={`Supprimer ${effectiveSelectedKeys.size} image(s)`}
+                      onClick={handleDeleteSelected}
+                    />
+                  </>
+                )}
+              </Flex>
+            </Flex>
+
+            <Grid columns={6} gap={2}>
+              {images.map(image => {
+                const url = assetRefToThumbnailUrl(
+                  image?.asset?._ref,
+                  projectId,
+                  dataset
+                );
+                const isSelected = effectiveSelectedKeys.has(image._key);
+                return (
+                  <Card
+                    key={image._key}
+                    padding={1}
+                    radius={2}
+                    border
+                    tone={isSelected ? 'critical' : 'default'}
+                    style={{ cursor: 'pointer', position: 'relative', userSelect: 'none' }}
+                    onClick={() => toggleKey(image._key)}
+                  >
+                    {url ? (
+                      <img
+                        src={url}
+                        alt=""
+                        style={{
+                          width: '100%',
+                          aspectRatio: 1,
+                          objectFit: 'cover',
+                          borderRadius: '2px',
+                          opacity: isSelected ? 0.5 : 1,
+                          display: 'block',
+                          pointerEvents: 'none',
+                        }}
+                      />
+                    ) : (
+                      <div
+                        style={{
+                          width: '100%',
+                          aspectRatio: 1,
+                          background: '#e0e0e0',
+                          borderRadius: '2px',
+                        }}
+                      />
+                    )}
+                    {/* Prevents card click from firing twice when clicking the checkbox */}
+                    <div
+                      style={{ position: 'absolute', top: 4, right: 4 }}
+                      onPointerDown={e => e.stopPropagation()}
+                    >
+                      <Checkbox
+                        checked={isSelected}
+                        onChange={() => toggleKey(image._key)}
+                      />
+                    </div>
+                  </Card>
+                );
+              })}
+            </Grid>
+
+            {effectiveSelectedKeys.size > 0 && (
+              <Text size={1} muted>
+                {effectiveSelectedKeys.size} image(s) sélectionnée(s) sur {images.length}
+              </Text>
+            )}
+          </Stack>
+        </Card>
+      )}
 
       <ArrayOfObjectsInput {...props} />
     </Stack>
