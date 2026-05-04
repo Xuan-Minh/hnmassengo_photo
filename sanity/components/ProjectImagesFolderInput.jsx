@@ -1,11 +1,22 @@
 'use client';
 
 import React, { useCallback, useMemo, useRef, useState } from 'react';
-import { Button, Card, Checkbox, Flex, Grid, Stack, Text } from '@sanity/ui';
 import {
-  ArrayOfObjectsInput,
+  Button,
+  Card,
+  Checkbox,
+  Dialog,
+  Flex,
+  Grid,
+  Label,
+  Stack,
+  Text,
+  TextInput,
+} from '@sanity/ui';
+import {
   PatchEvent,
   insert,
+  set,
   setIfMissing,
   unset,
   useClient,
@@ -24,9 +35,9 @@ function stripExtension(filename) {
   return idx > 0 ? filename.slice(0, idx) : filename;
 }
 
-// Build a small CDN thumbnail URL from a Sanity image asset _ref.
+// Build a CDN URL from a Sanity image asset _ref.
 // Ref format: image-{id}-{width}x{height}-{format}
-function assetRefToThumbnailUrl(ref, projectId, dataset) {
+function assetRefToUrl(ref, projectId, dataset, options = '') {
   if (!ref || !projectId || !dataset) return null;
   const withoutPrefix = ref.replace(/^image-/, '');
   const lastDash = withoutPrefix.lastIndexOf('-');
@@ -37,7 +48,7 @@ function assetRefToThumbnailUrl(ref, projectId, dataset) {
   if (secondLastDash === -1) return null;
   const id = withoutFormat.slice(0, secondLastDash);
   const dimensions = withoutFormat.slice(secondLastDash + 1);
-  return `https://cdn.sanity.io/images/${projectId}/${dataset}/${id}-${dimensions}.${format}?w=120&h=120&fit=crop&auto=format`;
+  return `https://cdn.sanity.io/images/${projectId}/${dataset}/${id}-${dimensions}.${format}${options}`;
 }
 
 export default function ProjectImagesFolderInput(props) {
@@ -65,6 +76,8 @@ export default function ProjectImagesFolderInput(props) {
   const [isUploading, setIsUploading] = useState(false);
   const [status, setStatus] = useState('');
   const [selectedKeys, setSelectedKeys] = useState(() => new Set());
+  const [editingImage, setEditingImage] = useState(null);
+  const [editAlt, setEditAlt] = useState({ fr: '', en: '', de: '' });
 
   async function handleFilesSelected(fileList) {
     const allFiles = Array.from(fileList || []);
@@ -189,6 +202,34 @@ export default function ProjectImagesFolderInput(props) {
     setSelectedKeys(new Set());
   }, [effectiveSelectedKeys, onChange]);
 
+  const openEditModal = useCallback(
+    image => {
+      setEditAlt({
+        fr: image?.alt?.fr ?? '',
+        en: image?.alt?.en ?? '',
+        de: image?.alt?.de ?? '',
+      });
+      setEditingImage(image);
+    },
+    []
+  );
+
+  const handleSaveEdit = useCallback(() => {
+    if (!editingImage) return;
+    const makePatch = (langCode, val) =>
+      val
+        ? set(val, [{ _key: editingImage._key }, 'alt', langCode])
+        : unset([{ _key: editingImage._key }, 'alt', langCode]);
+    onChange(
+      PatchEvent.from([
+        makePatch('fr', editAlt.fr),
+        makePatch('en', editAlt.en),
+        makePatch('de', editAlt.de),
+      ])
+    );
+    setEditingImage(null);
+  }, [editingImage, editAlt, onChange]);
+
   return (
     <Stack space={3}>
       <Card padding={3} radius={2} border>
@@ -276,10 +317,11 @@ export default function ProjectImagesFolderInput(props) {
 
             <Grid columns={6} gap={2}>
               {images.map(image => {
-                const url = assetRefToThumbnailUrl(
+                const url = assetRefToUrl(
                   image?.asset?._ref,
                   projectId,
-                  dataset
+                  dataset,
+                  '?w=120&h=120&fit=crop&auto=format'
                 );
                 const isSelected = effectiveSelectedKeys.has(image._key);
                 return (
@@ -289,41 +331,44 @@ export default function ProjectImagesFolderInput(props) {
                     radius={2}
                     border
                     tone={isSelected ? 'critical' : 'default'}
-                    style={{
-                      cursor: 'pointer',
-                      position: 'relative',
-                      userSelect: 'none',
-                    }}
-                    onClick={() => toggleKey(image._key)}
+                    style={{ position: 'relative', userSelect: 'none' }}
                   >
-                    {url ? (
-                      <img
-                        src={url}
-                        alt=""
-                        style={{
-                          width: '100%',
-                          aspectRatio: 1,
-                          objectFit: 'cover',
-                          borderRadius: '2px',
-                          opacity: isSelected ? 0.5 : 1,
-                          display: 'block',
-                          pointerEvents: 'none',
-                        }}
-                      />
-                    ) : (
-                      <div
-                        style={{
-                          width: '100%',
-                          aspectRatio: 1,
-                          background: '#e0e0e0',
-                          borderRadius: '2px',
-                        }}
-                      />
-                    )}
-                    {/* Prevents card click from firing twice when clicking the checkbox */}
+                    {/* Clicking the image opens the edit modal */}
+                    <div
+                      style={{ cursor: 'pointer' }}
+                      onClick={() => openEditModal(image)}
+                    >
+                      {url ? (
+                        <img
+                          src={url}
+                          alt=""
+                          style={{
+                            width: '100%',
+                            aspectRatio: 1,
+                            objectFit: 'cover',
+                            borderRadius: '2px',
+                            opacity: isSelected ? 0.5 : 1,
+                            display: 'block',
+                          }}
+                        />
+                      ) : (
+                        <div
+                          style={{
+                            width: '100%',
+                            aspectRatio: 1,
+                            background: '#e0e0e0',
+                            borderRadius: '2px',
+                          }}
+                        />
+                      )}
+                    </div>
+                    {/* Clicking the checkbox toggles selection — propagation stopped so image click doesn't fire */}
                     <div
                       style={{ position: 'absolute', top: 4, right: 4 }}
-                      onPointerDown={e => e.stopPropagation()}
+                      onClick={e => {
+                        e.stopPropagation();
+                        toggleKey(image._key);
+                      }}
                     >
                       <Checkbox
                         checked={isSelected}
@@ -345,7 +390,116 @@ export default function ProjectImagesFolderInput(props) {
         </Card>
       )}
 
-      <ArrayOfObjectsInput {...props} />
+      {editingImage && (
+        <Dialog
+          id="edit-image-dialog"
+          header="Modifier l'image"
+          onClose={() => setEditingImage(null)}
+          width={1}
+          footer={
+            <Flex padding={3} gap={2} justify="flex-end">
+              <Button
+                mode="ghost"
+                text="Annuler"
+                onClick={() => setEditingImage(null)}
+              />
+              <Button
+                mode="default"
+                tone="primary"
+                text="Enregistrer"
+                onClick={handleSaveEdit}
+              />
+            </Flex>
+          }
+        >
+          <Stack space={4} padding={4}>
+            {/* Full-size image preview */}
+            <Card padding={2} radius={2} border>
+              {assetRefToUrl(editingImage?.asset?._ref, projectId, dataset, '?w=800&auto=format') ? (
+                <img
+                  src={assetRefToUrl(
+                    editingImage?.asset?._ref,
+                    projectId,
+                    dataset,
+                    '?w=800&auto=format'
+                  )}
+                  alt=""
+                  onError={e => {
+                    e.currentTarget.style.display = 'none';
+                    e.currentTarget.nextSibling.style.display = 'block';
+                  }}
+                  style={{
+                    display: 'block',
+                    maxWidth: '100%',
+                    maxHeight: '50vh',
+                    margin: '0 auto',
+                    objectFit: 'contain',
+                  }}
+                />
+              ) : null}
+              <Text
+                size={1}
+                muted
+                style={{ display: 'none', textAlign: 'center', padding: '2rem 0' }}
+              >
+                Image non disponible
+              </Text>
+            </Card>
+
+            {/* Link to edit crop/hotspot directly in Sanity Studio */}
+            {editingImage?.asset?._ref && (
+              <a
+                href={`/studio/intent/edit/id=${editingImage.asset._ref};type=sanity.imageAsset/`}
+                target="_blank"
+                rel="noreferrer"
+                style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.8125rem' }}
+              >
+                ✂️ Modifier le crop / hotspot dans la médiathèque →
+              </a>
+            )}
+
+            {/* Alt text fields */}
+            <Stack space={1}>
+              <Text size={2} weight="semibold">
+                Texte Alternatif (SEO)
+              </Text>
+              <Text size={1} muted>
+                Description de l&apos;image pour l&apos;accessibilité et le SEO
+              </Text>
+            </Stack>
+
+            <Stack space={2}>
+              <Label size={1}>Français</Label>
+              <TextInput
+                value={editAlt.fr}
+                onChange={e =>
+                  setEditAlt(prev => ({ ...prev, fr: e.currentTarget.value }))
+                }
+              />
+            </Stack>
+
+            <Stack space={2}>
+              <Label size={1}>Anglais</Label>
+              <TextInput
+                value={editAlt.en}
+                onChange={e =>
+                  setEditAlt(prev => ({ ...prev, en: e.currentTarget.value }))
+                }
+              />
+            </Stack>
+
+            <Stack space={2}>
+              <Label size={1}>Allemand</Label>
+              <TextInput
+                value={editAlt.de}
+                onChange={e =>
+                  setEditAlt(prev => ({ ...prev, de: e.currentTarget.value }))
+                }
+              />
+            </Stack>
+          </Stack>
+        </Dialog>
+      )}
     </Stack>
   );
 }
