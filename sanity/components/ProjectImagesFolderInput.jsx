@@ -147,28 +147,47 @@ export default function ProjectImagesFolderInput(props) {
 
   const images = Array.isArray(value) ? value : [];
 
-  const toggleKey = useCallback(key => {
-    setSelectedKeys(prev => {
-      const next = new Set(prev);
-      if (next.has(key)) next.delete(key);
-      else next.add(key);
-      return next;
-    });
-  }, []);
+  // Intersection of selectedKeys with the images currently in the array.
+  // Prevents stale keys (e.g. deleted via ArrayOfObjectsInput below) from
+  // corrupting the counter and from generating orphan unset patches.
+  const effectiveSelectedKeys = useMemo(
+    () =>
+      new Set(
+        images.filter(img => selectedKeys.has(img._key)).map(img => img._key)
+      ),
+    [images, selectedKeys]
+  );
+
+  const toggleKey = useCallback(
+    key => {
+      if (!images.some(img => img._key === key)) return;
+      setSelectedKeys(prev => {
+        const next = new Set(prev);
+        if (next.has(key)) next.delete(key);
+        else next.add(key);
+        return next;
+      });
+    },
+    [images]
+  );
 
   const handleSelectAll = useCallback(() => {
-    setSelectedKeys(prev =>
-      prev.size === images.length ? new Set() : new Set(images.map(img => img._key))
-    );
+    setSelectedKeys(new Set(images.map(img => img._key)));
   }, [images]);
 
+  const handleClearSelection = useCallback(() => {
+    setSelectedKeys(new Set());
+  }, []);
+
   const handleDeleteSelected = useCallback(() => {
-    if (selectedKeys.size === 0) return;
+    if (effectiveSelectedKeys.size === 0) return;
     onChange(
-      PatchEvent.from(Array.from(selectedKeys).map(key => unset([{ _key: key }])))
+      PatchEvent.from(
+        Array.from(effectiveSelectedKeys).map(key => unset([{ _key: key }]))
+      )
     );
     setSelectedKeys(new Set());
-  }, [selectedKeys, onChange]);
+  }, [effectiveSelectedKeys, onChange]);
 
   return (
     <Stack space={3}>
@@ -227,24 +246,30 @@ export default function ProjectImagesFolderInput(props) {
                 {`Supprimer des images (${images.length} au total)`}
               </Text>
               <Flex gap={2} wrap="wrap" align="center">
-                <Button
-                  mode="ghost"
-                  fontSize={1}
-                  text={
-                    selectedKeys.size === images.length
-                      ? 'Tout désélectionner'
-                      : 'Tout sélectionner'
-                  }
-                  onClick={handleSelectAll}
-                />
-                {selectedKeys.size > 0 && (
+                {effectiveSelectedKeys.size < images.length && (
                   <Button
-                    mode="default"
-                    tone="critical"
+                    mode="ghost"
                     fontSize={1}
-                    text={`Supprimer ${selectedKeys.size} image(s)`}
-                    onClick={handleDeleteSelected}
+                    text="Tout sélectionner"
+                    onClick={handleSelectAll}
                   />
+                )}
+                {effectiveSelectedKeys.size > 0 && (
+                  <>
+                    <Button
+                      mode="ghost"
+                      fontSize={1}
+                      text="Effacer la sélection"
+                      onClick={handleClearSelection}
+                    />
+                    <Button
+                      mode="default"
+                      tone="critical"
+                      fontSize={1}
+                      text={`Supprimer ${effectiveSelectedKeys.size} image(s)`}
+                      onClick={handleDeleteSelected}
+                    />
+                  </>
                 )}
               </Flex>
             </Flex>
@@ -256,7 +281,7 @@ export default function ProjectImagesFolderInput(props) {
                   projectId,
                   dataset
                 );
-                const isSelected = selectedKeys.has(image._key);
+                const isSelected = effectiveSelectedKeys.has(image._key);
                 return (
                   <Card
                     key={image._key}
@@ -294,7 +319,7 @@ export default function ProjectImagesFolderInput(props) {
                     {/* Prevents card click from firing twice when clicking the checkbox */}
                     <div
                       style={{ position: 'absolute', top: 4, right: 4 }}
-                      onClick={e => e.stopPropagation()}
+                      onPointerDown={e => e.stopPropagation()}
                     >
                       <Checkbox
                         checked={isSelected}
@@ -306,9 +331,9 @@ export default function ProjectImagesFolderInput(props) {
               })}
             </Grid>
 
-            {selectedKeys.size > 0 && (
+            {effectiveSelectedKeys.size > 0 && (
               <Text size={1} muted>
-                {selectedKeys.size} image(s) sélectionnée(s) sur {images.length}
+                {effectiveSelectedKeys.size} image(s) sélectionnée(s) sur {images.length}
               </Text>
             )}
           </Stack>
