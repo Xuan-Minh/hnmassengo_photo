@@ -217,11 +217,15 @@ export default function ProjectImagesFolderInput(props) {
 
   const handleSaveEdit = useCallback(() => {
     if (!editingImage) return;
+    const makePatch = (langCode, val) =>
+      val
+        ? set(val, [{ _key: editingImage._key }, 'alt', langCode])
+        : unset([{ _key: editingImage._key }, 'alt', langCode]);
     onChange(
       PatchEvent.from([
-        set(editAlt.fr, [{ _key: editingImage._key }, 'alt', 'fr']),
-        set(editAlt.en, [{ _key: editingImage._key }, 'alt', 'en']),
-        set(editAlt.de, [{ _key: editingImage._key }, 'alt', 'de']),
+        makePatch('fr', editAlt.fr),
+        makePatch('en', editAlt.en),
+        makePatch('de', editAlt.de),
       ])
     );
     setEditingImage(null);
@@ -392,7 +396,7 @@ export default function ProjectImagesFolderInput(props) {
       {editingImage && (
         <Dialog
           id="edit-image-dialog"
-          header="Edit Image"
+          header="Modifier l'image"
           onClose={() => setEditingImage(null)}
           width={1}
           footer={
@@ -414,22 +418,35 @@ export default function ProjectImagesFolderInput(props) {
           <Stack space={4} padding={4}>
             {/* Full-size image preview */}
             <Card padding={2} radius={2} border>
-              <img
-                src={assetRefToUrl(
-                  editingImage?.asset?._ref,
-                  projectId,
-                  dataset,
-                  '?w=800&auto=format'
-                )}
-                alt=""
-                style={{
-                  display: 'block',
-                  maxWidth: '100%',
-                  maxHeight: '50vh',
-                  margin: '0 auto',
-                  objectFit: 'contain',
-                }}
-              />
+              {assetRefToUrl(editingImage?.asset?._ref, projectId, dataset, '?w=800&auto=format') ? (
+                <img
+                  src={assetRefToUrl(
+                    editingImage?.asset?._ref,
+                    projectId,
+                    dataset,
+                    '?w=800&auto=format'
+                  )}
+                  alt=""
+                  onError={e => {
+                    e.currentTarget.style.display = 'none';
+                    e.currentTarget.nextSibling.style.display = 'block';
+                  }}
+                  style={{
+                    display: 'block',
+                    maxWidth: '100%',
+                    maxHeight: '50vh',
+                    margin: '0 auto',
+                    objectFit: 'contain',
+                  }}
+                />
+              ) : null}
+              <Text
+                size={1}
+                muted
+                style={{ display: 'none', textAlign: 'center', padding: '2rem 0' }}
+              >
+                Image non disponible
+              </Text>
             </Card>
 
             {/* Alt text fields */}
