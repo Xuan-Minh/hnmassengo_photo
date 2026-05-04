@@ -446,6 +446,18 @@ export default function ProjectImagesFolderInput(props) {
               </Text>
             </Card>
 
+            {/* Link to edit crop/hotspot directly in Sanity Studio */}
+            {editingImage?.asset?._ref && (
+              <a
+                href={`/studio/intent/edit/id=${editingImage.asset._ref};type=sanity.imageAsset/`}
+                target="_blank"
+                rel="noreferrer"
+                style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.8125rem' }}
+              >
+                ✂️ Modifier le crop / hotspot dans la médiathèque →
+              </a>
+            )}
+
             {/* Alt text fields */}
             <Stack space={1}>
               <Text size={2} weight="semibold">
