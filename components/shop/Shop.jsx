@@ -346,7 +346,7 @@ export default function Shop() {
   );
 
   return (
-    <section className="flex h-screen bg-background font-playfair snap-start relative">
+    <section className="flex h-screen bg-background font-liberation snap-start relative">
       {/* Produits - Layout vertical mobile, colonne centrale desktop */}
       <main className="flex-1 h-full flex flex-col md:flex-row items-stretch overflow-hidden">
         {/* Panier mobile (en haut, hauteur auto), desktop (gauche, 320px) */}
@@ -421,7 +421,7 @@ export default function Shop() {
         <div className="w-full md:flex-1 flex-1 md:h-full flex items-center justify-center bg-background order-2 md:order-2">
           {products.length === 0 ? (
             <div className="w-full flex flex-col items-center justify-center px-4 md:px-16 text-center italic">
-              <h2 className="text-xl md:text-3xl font-playfair mb-4">
+              <h2 className="text-xl md:text-3xl font-liberation mb-4">
                 {t('emptyState.title')}
               </h2>
               <p className="text-base md:text-lg text-black/60">

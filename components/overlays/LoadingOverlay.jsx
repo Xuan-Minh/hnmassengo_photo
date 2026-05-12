@@ -31,7 +31,7 @@ function NextButton({ isExiting, onClick }) {
       }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      className={`px-6 py-3 text-lg font-whiteCustom lg:hidden font-medium font-playfair transition-colors duration-300 ${hovered ? 'text-whiteCustom opacity-100 backdrop-blur-[2px]' : 'text-greyCustom opacity-85'}`}
+      className={`px-6 py-3 text-lg font-whiteCustom lg:hidden font-medium font-liberation transition-colors duration-300 ${hovered ? 'text-whiteCustom opacity-100 backdrop-blur-[2px]' : 'text-greyCustom opacity-85'}`}
     >
       <motion.span
         className="inline-block mr-2"
@@ -398,10 +398,10 @@ export default function LoadingOverlay({ initialImages = [] }) {
           >
             <div style={{ transform: 'translate(-50%, -50%)' }}>
               <h2 className="text-whiteCustom/60 flex flex-row items-baseline justify-center gap-2 md:gap-4 text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl 2xl:text-6xl mb-0 drop-shadow-title whitespace-nowrap">
-                <span className="font-playfair italic leading-none">
+                <span className="font-liberation italic leading-none">
                   Han-Noah
                 </span>
-                <span className="font-lexend font-bold leading-none">
+                <span className="font-liberation font-bold leading-none">
                   MASSENGO
                 </span>
               </h2>

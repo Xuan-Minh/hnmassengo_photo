@@ -1,24 +1,5 @@
 /* Accessibilité : focus visible sur tous les boutons et liens */
 @font-face {
-  font-family: 'Playfair Display';
-  src:
-    url('/fonts/PlayfairDisplay-Regular.woff2') format('woff2'),
-    url('/fonts/PlayfairDisplay-Regular.woff') format('woff');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Playfair Display';
-  src:
-    url('/fonts/PlayfairDisplay-Italic.woff2') format('woff2'),
-    url('/fonts/PlayfairDisplay-Italic.woff') format('woff');
-  font-weight: 400;
-  font-style: italic;
-  font-display: swap;
-}
-@font-face {
   font-family: 'Liberation Mono';
   src:
     url('/fonts/LiberationMono-BoldItalic.woff2') format('woff2'),
@@ -133,10 +114,9 @@ a:focus-visible,
   }
 }
 
-/* Default tighter letter-spacing for Playfair Display */
 @layer components {
-  .font-playfair {
-    letter-spacing: -0.05em; /* -5% */
+  .font-liberation {
+    /* Liberation Mono – keep default monospace letter-spacing */
   }
 }
 

@@ -18,7 +18,7 @@ export default function BlogArchives({ posts, onClose, onPostClick }) {
       <div className="absolute top-8 left-8 md:top-16 md:left-16 z-50">
         <button
           onClick={onClose}
-          className="text-lg font-playfair text-whiteCustom/60 hover:text-whiteCustom transition-colors"
+          className="text-lg font-liberation text-whiteCustom/60 hover:text-whiteCustom transition-colors"
         >
           back
         </button>
@@ -26,7 +26,7 @@ export default function BlogArchives({ posts, onClose, onPostClick }) {
 
       {/* Header */}
       <div className="relative w-full h-24 flex items-center justify-center px-8 md:px-16 shrink-0">
-        <h2 className="text-4xl font-playfair italic text-whiteCustom">
+        <h2 className="text-4xl font-liberation italic text-whiteCustom">
           {t('archives.title')}
         </h2>
       </div>

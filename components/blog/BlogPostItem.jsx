@@ -10,7 +10,7 @@ function renderTextPreview(text, postCount, extraClass = '') {
     const paragraphs = (text || '').split('\n\n').filter(Boolean).slice(0, 3);
     return (
       <div
-        className={`font-playfair text-whiteCustom/80 leading-loose space-y-2 ${extraClass}`}
+        className={`font-liberation text-whiteCustom/80 leading-loose space-y-2 ${extraClass}`}
       >
         {paragraphs.map((para, i) => (
           <p key={i} className="sm:text-lg lg:text-base">
@@ -26,7 +26,7 @@ function renderTextPreview(text, postCount, extraClass = '') {
       : '[-webkit-line-clamp:3] lg:[-webkit-line-clamp:3]';
   return (
     <p
-      className={`sm:text-lg lg:text-base font-playfair text-whiteCustom/80 leading-loose overflow-hidden text-ellipsis [display:-webkit-box] [-webkit-box-orient:vertical] ${clampClass} ${extraClass}`}
+      className={`sm:text-lg lg:text-base font-liberation text-whiteCustom/80 leading-loose overflow-hidden text-ellipsis [display:-webkit-box] [-webkit-box-orient:vertical] ${clampClass} ${extraClass}`}
     >
       {text}
     </p>
@@ -71,10 +71,10 @@ export default function BlogPostItem({ post, onClick, postCount = 1 }) {
             />
           </div>
           <div className="flex-1 text-whiteCustom flex flex-col justify-start">
-            <h3 className="text-3xl lg:text-3xl font-playfair italic mb-2">
+            <h3 className="text-3xl lg:text-3xl font-liberation italic mb-2">
               &ldquo;{displayTitle}&rdquo;
             </h3>
-            <div className="text-lg text-whiteCustom/80 lg:text-base font-playfair mb-4">
+            <div className="text-lg text-whiteCustom/80 lg:text-base font-liberation mb-4">
               - {post.date}
             </div>
             {renderTextPreview(displayText, postCount)}
@@ -85,10 +85,10 @@ export default function BlogPostItem({ post, onClick, postCount = 1 }) {
       {post.layout === 'image-right' && post.image && (
         <div className="flex flex-col lg:flex-row gap-4 items-start">
           <div className="flex-1 text-whiteCustom order-2 lg:order-1 flex flex-col justify-start">
-            <h3 className="text-3xl lg:text-3xl font-playfair italic mb-2">
+            <h3 className="text-3xl lg:text-3xl font-liberation italic mb-2">
               &ldquo;{displayTitle}&rdquo;
             </h3>
-            <div className="text-lg text-whiteCustom/80 lg:text-base font-playfair mb-4">
+            <div className="text-lg text-whiteCustom/80 lg:text-base font-liberation mb-4">
               - {post.date}
             </div>
             {renderTextPreview(displayText, postCount)}
@@ -110,10 +110,10 @@ export default function BlogPostItem({ post, onClick, postCount = 1 }) {
       {(post.layout === 'text-only' || !post.image) && (
         <div className="text-whiteCustom">
           <div className="flex flex-col mb-4">
-            <h3 className="text-3xl lg:text-3xl font-playfair italic mb-2">
+            <h3 className="text-3xl lg:text-3xl font-liberation italic mb-2">
               &ldquo;{displayTitle}&rdquo;
             </h3>
-            <span className="text-whiteCustom/80 text-lg lg:text-base font-playfair">
+            <span className="text-whiteCustom/80 text-lg lg:text-base font-liberation">
               - {post.date}
             </span>
           </div>

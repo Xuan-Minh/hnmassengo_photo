@@ -147,7 +147,7 @@ export default function Blog() {
           <div className="w-full xl:justify-end 2xl:justify-center shrink-0 hidden lg:flex">
             <button
               onClick={() => setArchiveOpen(true)}
-              className="text-lg font-playfair italic text-whiteCustom/60 hover:text-whiteCustom transition-colors"
+              className="text-lg font-liberation italic text-whiteCustom/60 hover:text-whiteCustom transition-colors"
             >
               {t('morePosts')}
             </button>

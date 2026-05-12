@@ -168,7 +168,7 @@ function CustomLightbox({ open, onClose, images, project }) {
 
   return (
     <motion.div
-      className="fixed inset-0 h-[100dvh] w-full z-[200] bg-blackCustom text-[#e5e5e5] font-playfair flex flex-col overflow-hidden"
+      className="fixed inset-0 h-[100dvh] w-full z-[200] bg-blackCustom text-[#e5e5e5] font-liberation flex flex-col overflow-hidden"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
@@ -250,7 +250,7 @@ function CustomLightbox({ open, onClose, images, project }) {
         <div>
           <button
             onClick={onClose}
-            className="font-playfair text-lg hover:text-white transition-colors"
+            className="font-liberation text-lg hover:text-white transition-colors"
           >
             back
           </button>
@@ -557,7 +557,7 @@ export default function GalleryProjetCartel({ project, onClose }) {
         <div className="md:hidden w-full h-full flex flex-col relative">
           <button
             onClick={handleRequestClose}
-            className="absolute top-6 left-6 z-10 font-playfair text-lg text-accent hover:text-blackCustom transition-colors"
+            className="absolute top-6 left-6 z-10 font-liberation text-lg text-accent hover:text-blackCustom transition-colors"
             aria-label={t('project.closeOverlayLabel')}
           >
             back
@@ -573,16 +573,16 @@ export default function GalleryProjetCartel({ project, onClose }) {
           <div className="border-t border-blackCustom/20 flex-shrink-0"></div>
 
           <div className="flex-1 overflow-y-auto p-6">
-            <div className="font-playfair text-lg italic text-blackCustom mb-4">
+            <div className="font-liberation text-lg italic text-blackCustom mb-4">
               {project.coords}
             </div>
             <h2
               id="project-title"
-              className="text-3xl font-playfair italic mb-6"
+              className="text-3xl font-liberation italic mb-6"
             >
               {project.name}
             </h2>
-            <div className="font-playfair text-base leading-relaxed space-y-4">
+            <div className="font-liberation text-base leading-relaxed space-y-4">
               {paragraphs.map((p, i) => (
                 <p key={i}>{p}</p>
               ))}
@@ -595,7 +595,7 @@ export default function GalleryProjetCartel({ project, onClose }) {
           <div>
             <button
               onClick={handleRequestClose}
-              className="font-playfair text-lg text-accent hover:text-blackCustom transition-colors"
+              className="font-liberation text-lg text-accent hover:text-blackCustom transition-colors"
               aria-label={t('project.closeOverlayLabel')}
             >
               back
@@ -603,17 +603,17 @@ export default function GalleryProjetCartel({ project, onClose }) {
           </div>
 
           <section className="flex flex-col items-start justify-center my-8">
-            <h2 id="project-title" className="text-5xl font-playfair mb-8">
+            <h2 id="project-title" className="text-5xl font-liberation mb-8">
               {project.name}
             </h2>
-            <div className="font-playfair text-lg 2xl:text-xl max-w-2xl 2xl:max-w-6xl  leading-relaxed space-y-4">
+            <div className="font-liberation text-lg 2xl:text-xl max-w-2xl 2xl:max-w-6xl  leading-relaxed space-y-4">
               {paragraphs.map((p, i) => (
                 <p key={i}>{p}</p>
               ))}
             </div>
           </section>
 
-          <div className="font-playfair text-xl italic text-blackCustom flex-shrink-0">
+          <div className="font-liberation text-xl italic text-blackCustom flex-shrink-0">
             {project.coords}
           </div>
         </main>

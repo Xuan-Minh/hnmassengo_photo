@@ -47,7 +47,7 @@ export default function NewsletterSignup({ className = '' } = {}) {
 
   return (
     <div className={className}>
-      <div className="font-playfair italic text-lg md:text-xl lg:text-2 xl  text-whiteCustom/90 mb-2">
+      <div className="font-liberation italic text-lg md:text-xl lg:text-2 xl  text-whiteCustom/90 mb-2">
         {t('title')}
       </div>
       <form onSubmit={onSubmit} className="flex gap-2">
@@ -62,7 +62,7 @@ export default function NewsletterSignup({ className = '' } = {}) {
         <button
           type="submit"
           disabled={status === 'loading'}
-          className="px-4 py-2 text-sm font-medium font-playfair text-whiteCustom/85 hover:text-whiteCustom transition-all duration-300 border border-whiteCustom/60"
+          className="px-4 py-2 text-sm font-medium font-liberation text-whiteCustom/85 hover:text-whiteCustom transition-all duration-300 border border-whiteCustom/60"
         >
           {t('cta')}
         </button>

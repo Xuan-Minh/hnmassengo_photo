@@ -104,7 +104,7 @@ function ContactForm({ idSuffix = '', onSubmitSuccess, defaultSubject = '' }) {
       <div>
         <label
           htmlFor={`fullName${idSuffix}`}
-          className="block text-whiteCustom/90 font-playfair text-sm mb-2"
+          className="block text-whiteCustom/90 font-liberation text-sm mb-2"
         >
           {t('form.fullName')} *
         </label>
@@ -122,7 +122,7 @@ function ContactForm({ idSuffix = '', onSubmitSuccess, defaultSubject = '' }) {
         <div>
           <label
             htmlFor={`email${idSuffix}`}
-            className="block text-whiteCustom/90 font-playfair text-sm mb-2"
+            className="block text-whiteCustom/90 font-liberation text-sm mb-2"
           >
             {t('form.email')} *
           </label>
@@ -137,7 +137,7 @@ function ContactForm({ idSuffix = '', onSubmitSuccess, defaultSubject = '' }) {
         <div>
           <label
             htmlFor={`subject${idSuffix}`}
-            className="block text-whiteCustom/90 font-playfair text-sm mb-2"
+            className="block text-whiteCustom/90 font-liberation text-sm mb-2"
           >
             {t('form.subject')} *
           </label>
@@ -156,7 +156,7 @@ function ContactForm({ idSuffix = '', onSubmitSuccess, defaultSubject = '' }) {
       <div>
         <label
           htmlFor={`message${idSuffix}`}
-          className="block text-whiteCustom/90 font-playfair text-sm mb-2"
+          className="block text-whiteCustom/90 font-liberation text-sm mb-2"
         >
           {t('form.message')} *
         </label>
@@ -171,7 +171,7 @@ function ContactForm({ idSuffix = '', onSubmitSuccess, defaultSubject = '' }) {
       </div>
 
       <div className="flex items-center justify-between gap-4 w-full">
-        <label className="inline-flex items-center gap-2 text-whiteCustom/80 font-playfair text-sm select-none">
+        <label className="inline-flex items-center gap-2 text-whiteCustom/80 font-liberation text-sm select-none">
           <input
             type="checkbox"
             name="newsletterOptIn"
@@ -182,7 +182,7 @@ function ContactForm({ idSuffix = '', onSubmitSuccess, defaultSubject = '' }) {
 
         <button
           type="submit"
-          className="px-4 py-2 text-sm font-medium font-playfair text-whiteCustom/85 hover:text-whiteCustom transition-all duration-300 border border-whiteCustom/60"
+          className="px-4 py-2 text-sm font-medium font-liberation text-whiteCustom/85 hover:text-whiteCustom transition-all duration-300 border border-whiteCustom/60"
         >
           <span>{t('form.send')}</span>
         </button>
@@ -199,7 +199,7 @@ function ContactInfo({ onOpenLegal }) {
   return (
     <div className="text-whiteCustom/90 flex flex-col h-full">
       {/* Titre aligné avec "Contact" */}
-      <h3 className="font-playfair italic text-xl md:text-2xl lg:text-3xl leading-tight mb-6 md:mb-8">
+      <h3 className="font-liberation italic text-xl md:text-2xl lg:text-3xl leading-tight mb-6 md:mb-8">
         <a
           href={SITE_CONFIG.instagram}
           target="_blank"
@@ -220,12 +220,12 @@ function ContactInfo({ onOpenLegal }) {
       {/* Contenu aligné avec le formulaire */}
       <div className="space-y-4 md:space-y-6">
         <NewsletterSignup className="" />
-        <div className="font-playfair leading-relaxed">
+        <div className="font-liberation leading-relaxed">
           <p className="text-sm md:text-3xl italic">© STUDIO 42 - 2026</p>
           <p>14 Rue de Marignan, 75008 PARIS. FRANCE</p>
         </div>
-        <div className="font-playfair leading-relaxed space-y-4">
-          <p className="font-playfair text-sm md:text-[16px] leading-relaxed">
+        <div className="font-liberation leading-relaxed space-y-4">
+          <p className="font-liberation text-sm md:text-[16px] leading-relaxed">
             {contactT('info.copyright', { author: SITE_CONFIG.author })}
           </p>
           <Link
@@ -234,13 +234,13 @@ function ContactInfo({ onOpenLegal }) {
             rel="noopener noreferrer"
             className="hover:text-whiteCustom transition-all hover:underline block"
           >
-            <p className="font-playfair text-sm md:text-[16px] leading-relaxed hover:text-whiteCustom transition-colors">
+            <p className="font-liberation text-sm md:text-[16px] leading-relaxed hover:text-whiteCustom transition-colors">
               {contactT('info.credits', { developer: SITE_CONFIG.developer })}
             </p>
           </Link>
         </div>
 
-        <p className="font-playfair text-sm md:text-[16px] leading-relaxed flex items-center gap-4">
+        <p className="font-liberation text-sm md:text-[16px] leading-relaxed flex items-center gap-4">
           <button
             type="button"
             onClick={onOpenLegal}
@@ -282,7 +282,7 @@ export function ContactContent({
         <h2
           id={headingId}
           onClick={handleCopyLink}
-          className="cursor-pointer text-whiteCustom/90 hover:text-whiteCustom transition-colors font-playfair italic text-[32px] sm:text-[36px] md:text-[42px] lg:text-[46px] xl:text-[48px] leading-none mb-6 md:mb-8"
+          className="cursor-pointer text-whiteCustom/90 hover:text-whiteCustom transition-colors font-liberation italic text-[32px] sm:text-[36px] md:text-[42px] lg:text-[46px] xl:text-[48px] leading-none mb-6 md:mb-8"
         >
           {t('title')}
         </h2>
@@ -318,7 +318,7 @@ export function ContactMarquee({ mode = 'absolute' } = {}) {
   return (
     <div className={wrapperClassName}>
       <motion.div
-        className="flex w-max whitespace-nowrap text-whiteCustom/90 font-playfair text-[18px] sm:text-[24px] md:text-[32px] lg:text-[38px] xl:text-[44px] py-1 sm:py-1.5 md:py-2 -tracking-normal"
+        className="flex w-max whitespace-nowrap text-whiteCustom/90 font-liberation text-[18px] sm:text-[24px] md:text-[32px] lg:text-[38px] xl:text-[44px] py-1 sm:py-1.5 md:py-2 -tracking-normal"
         animate={{ x: ['0%', '-50%'] }}
         transition={{
           duration: 30,

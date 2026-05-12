@@ -217,7 +217,7 @@ export default function GalleryGridMore({
       <div className="absolute top-8 left-8 md:top-16 md:left-16 z-50">
         <button
           onClick={onClose}
-          className="text-lg font-playfair text-accent hover:text-blackCustom transition-colors"
+          className="text-lg font-liberation text-accent hover:text-blackCustom transition-colors"
         >
           back
         </button>
@@ -225,7 +225,7 @@ export default function GalleryGridMore({
 
       {/* Header */}
       <div className="relative w-full h-24 flex items-center justify-center px-8 md:px-16 shrink-0">
-        <h2 className="text-4xl font-playfair italic text-blackCustom/20">
+        <h2 className="text-4xl font-liberation italic text-blackCustom/20">
           {t('title')}
         </h2>
       </div>
@@ -238,7 +238,7 @@ export default function GalleryGridMore({
             {FILTERS.map(f => (
               <button
                 key={f.value}
-                className={`text-lg text-left font-playfair transition-opacity duration-300 relative group self-start ${
+                className={`text-lg text-left font-liberation transition-opacity duration-300 relative group self-start ${
                   filter === f.value
                     ? 'font-bold opacity-100 text-blackCustom'
                     : 'opacity-60 hover:opacity-100 text-accent hover:text-blackCustom'
@@ -260,7 +260,7 @@ export default function GalleryGridMore({
             {filteredProjects.map(p => (
               <li key={p.id}>
                 <button
-                  className={`text-sm md:text-base text-left font-playfair transition-colors duration-300 relative group ${
+                  className={`text-sm md:text-base text-left font-liberation transition-colors duration-300 relative group ${
                     gridHoveredProjectId === p.id
                       ? 'text-blackCustom'
                       : 'text-accent/30 hover:text-blackCustom'
@@ -355,7 +355,7 @@ export default function GalleryGridMore({
       </div>
 
       {/* Footer Coords */}
-      <div className="absolute bottom-8 left-8 md:left-16 text-xl font-playfair italic text-blackCustom pointer-events-none">
+      <div className="absolute bottom-8 left-8 md:left-16 text-xl font-liberation italic text-blackCustom pointer-events-none">
         {hoveredProject ? hoveredProject.coords : ''}
       </div>
 
@@ -363,7 +363,7 @@ export default function GalleryGridMore({
       <AnimatePresence>
         {showCustomCursor && hoveredId && (
           <motion.div
-            className="fixed pointer-events-none z-[200] text-whiteCustom font-playfair italic text-lg"
+            className="fixed pointer-events-none z-[200] text-whiteCustom font-liberation italic text-lg"
             style={{
               left: cursorPos.x + 10,
               top: cursorPos.y + 10,

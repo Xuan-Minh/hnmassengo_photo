@@ -34,7 +34,7 @@ export default function BaseOverlay({
 
   return (
     <motion.div
-      className="fixed inset-0 z-[60] bg-blackCustom text-whiteCustom font-playfair flex flex-col"
+      className="fixed inset-0 z-[60] bg-blackCustom text-whiteCustom font-liberation flex flex-col"
       initial={{ x: '100%' }}
       animate={{ x: 0 }}
       exit={{ x: '100%' }}

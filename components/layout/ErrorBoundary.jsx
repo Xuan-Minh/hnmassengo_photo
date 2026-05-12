@@ -33,7 +33,7 @@ class ErrorBoundaryInner extends React.Component {
       return (
         <div className="min-h-screen bg-blackCustom text-whiteCustom flex items-center justify-center p-8">
           <div className="max-w-2xl w-full text-center">
-            <h1 className="text-4xl md:text-5xl font-playfair italic mb-6">
+            <h1 className="text-4xl md:text-5xl font-liberation italic mb-6">
               {messages.title}
             </h1>
             <p className="text-lg md:text-xl mb-8 opacity-80">
