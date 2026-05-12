@@ -116,7 +116,7 @@ a:focus-visible,
 
 @layer components {
   .font-liberation {
-    /* Liberation Mono – keep default monospace letter-spacing */
+    letter-spacing: -0.01em;
   }
 }
 
