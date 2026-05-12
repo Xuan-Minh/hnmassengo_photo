@@ -52,7 +52,7 @@ function assetRefToUrl(ref, projectId, dataset, options = '') {
 }
 
 export default function ProjectImagesFolderInput(props) {
-  const { onChange, value, onItemOpen, onPathFocus } = props;
+  const { onChange, value, onItemOpen, onPathFocus, members = [], renderItem } = props;
 
   const client = useClient({ apiVersion });
   const { projectId, dataset } = client.config();
@@ -425,6 +425,11 @@ export default function ProjectImagesFolderInput(props) {
           </Stack>
         </Card>
       )}
+
+      {/* Render open array members so Sanity's native image-editor dialog is shown */}
+      {members
+        .filter(member => member.kind === 'item' && member.open)
+        .map(member => renderItem && <React.Fragment key={member.key}>{renderItem(member)}</React.Fragment>)}
 
       {editingImage && (
         <Dialog
