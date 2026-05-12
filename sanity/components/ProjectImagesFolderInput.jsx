@@ -52,7 +52,7 @@ function assetRefToUrl(ref, projectId, dataset, options = '') {
 }
 
 export default function ProjectImagesFolderInput(props) {
-  const { onChange, value, onItemOpen } = props;
+  const { onChange, value, onItemOpen, path } = props;
 
   const client = useClient({ apiVersion });
   const { projectId, dataset } = client.config();
@@ -381,7 +381,9 @@ export default function ProjectImagesFolderInput(props) {
                           padding={1}
                           text="✂️"
                           title="Modifier le crop / hotspot"
-                          onClick={() => onItemOpen([{ _key: image._key }])}
+                          onClick={() =>
+                            onItemOpen?.([...(Array.isArray(path) ? path : []), { _key: image._key }])
+                          }
                           style={{ width: '100%', background: 'rgba(0,0,0,0.45)', color: '#fff' }}
                         />
                       </div>
