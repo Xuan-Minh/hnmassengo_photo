@@ -82,10 +82,11 @@ export default function Blog() {
       if (postId && isReloadNavigation()) {
         const url = new URL(window.location.href);
         url.searchParams.delete('post');
+        const nextSearch = url.searchParams.toString();
         window.history.replaceState(
           null,
           '',
-          `${url.pathname}${url.search}${window.location.hash}`
+          `${url.pathname}${nextSearch ? `?${nextSearch}` : ''}${window.location.hash}`
         );
         setRequestedPostId(null);
         return;
