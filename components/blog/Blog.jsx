@@ -31,6 +31,15 @@ export default function Blog() {
     }
   };
 
+  const isReloadNavigation = () => {
+    try {
+      const [entry] = window.performance.getEntriesByType('navigation');
+      return entry?.type === 'reload';
+    } catch {
+      return false;
+    }
+  };
+
   const replacePostParam = postId => {
     const sp = new URLSearchParams(window.location.search);
 
@@ -67,7 +76,24 @@ export default function Blog() {
 
   // Lire ?post=<id> côté client sans useSearchParams (évite l'erreur suspense en build)
   useEffect(() => {
-    const update = () => setRequestedPostId(readRequestedPostId());
+    const update = () => {
+      const postId = readRequestedPostId();
+
+      if (postId && isReloadNavigation()) {
+        const url = new URL(window.location.href);
+        const hash = window.location.hash || '#blog';
+        url.searchParams.delete('post');
+        window.history.replaceState(
+          null,
+          '',
+          `${url.pathname}${url.search}${hash}`
+        );
+        setRequestedPostId(null);
+        return;
+      }
+
+      setRequestedPostId(postId);
+    };
     update();
     window.addEventListener('popstate', update);
     return () => window.removeEventListener('popstate', update);
