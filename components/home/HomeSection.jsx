@@ -127,11 +127,11 @@ export default function HomeSection() {
 
         <div className="w-full lg:w-[58%]">
           {bioTitle ? (
-            <h2 className="mb-5 font-playfair text-[40px] leading-[1.05] text-blackCustom sm:text-[46px] lg:text-[54px] 2xl:text-[62px]">
+            <h2 className="mb-5 font-liberation text-[40px] leading-[1.05] text-blackCustom sm:text-[46px] lg:text-[54px] 2xl:text-[62px]">
               {bioTitle}
             </h2>
           ) : null}
-          <p className="whitespace-pre-line font-playfair italic leading-[1.3] text-blackCustom text-[16px] xl:text-[18px] 2xl:text-[28px]">
+          <p className="whitespace-pre-line font-liberation italic leading-[1.3] text-blackCustom text-[16px] xl:text-[18px] 2xl:text-[28px]">
             {bioText}
           </p>
         </div>

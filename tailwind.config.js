@@ -3,11 +3,10 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        playfair: ['var(--font-playfair)', 'serif'],
-        lexend: ['var(--font-lexend)', 'sans-serif'],
+        liberation: ['var(--font-liberation)', 'monospace'],
       },
       fontSize: {
-        'playfair-24': ['1.5rem', { lineHeight: '1.2' }],
+        'liberation-24': ['1.5rem', { lineHeight: '1.2' }],
       },
       letterSpacing: {
         'neg-05': '-0.05em',

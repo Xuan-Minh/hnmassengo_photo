@@ -52,7 +52,7 @@ function assetRefToUrl(ref, projectId, dataset, options = '') {
 }
 
 export default function ProjectImagesFolderInput(props) {
-  const { onChange, value } = props;
+  const { onChange, value, onItemOpen } = props;
 
   const client = useClient({ apiVersion });
   const { projectId, dataset } = client.config();
@@ -362,6 +362,30 @@ export default function ProjectImagesFolderInput(props) {
                         />
                       )}
                     </div>
+                    {/* Crop/hotspot button – opens Sanity's native image editor */}
+                    {onItemOpen && (
+                      <div
+                        style={{
+                          position: 'absolute',
+                          bottom: 4,
+                          left: 4,
+                          right: 4,
+                          display: 'flex',
+                          justifyContent: 'center',
+                        }}
+                        onClick={e => e.stopPropagation()}
+                      >
+                        <Button
+                          mode="ghost"
+                          fontSize={0}
+                          padding={1}
+                          text="✂️"
+                          title="Modifier le crop / hotspot"
+                          onClick={() => onItemOpen([{ _key: image._key }])}
+                          style={{ width: '100%', background: 'rgba(0,0,0,0.45)', color: '#fff' }}
+                        />
+                      </div>
+                    )}
                     {/* Clicking the checkbox toggles selection — propagation stopped so image click doesn't fire */}
                     <div
                       style={{ position: 'absolute', top: 4, right: 4 }}
@@ -393,7 +417,7 @@ export default function ProjectImagesFolderInput(props) {
       {editingImage && (
         <Dialog
           id="edit-image-dialog"
-          header="Modifier l'image"
+          header="Modifier le texte alternatif"
           onClose={() => setEditingImage(null)}
           width={1}
           footer={
@@ -413,51 +437,6 @@ export default function ProjectImagesFolderInput(props) {
           }
         >
           <Stack space={4} padding={4}>
-            {/* Full-size image preview */}
-            <Card padding={2} radius={2} border>
-              {assetRefToUrl(editingImage?.asset?._ref, projectId, dataset, '?w=800&auto=format') ? (
-                <img
-                  src={assetRefToUrl(
-                    editingImage?.asset?._ref,
-                    projectId,
-                    dataset,
-                    '?w=800&auto=format'
-                  )}
-                  alt=""
-                  onError={e => {
-                    e.currentTarget.style.display = 'none';
-                    e.currentTarget.nextSibling.style.display = 'block';
-                  }}
-                  style={{
-                    display: 'block',
-                    maxWidth: '100%',
-                    maxHeight: '50vh',
-                    margin: '0 auto',
-                    objectFit: 'contain',
-                  }}
-                />
-              ) : null}
-              <Text
-                size={1}
-                muted
-                style={{ display: 'none', textAlign: 'center', padding: '2rem 0' }}
-              >
-                Image non disponible
-              </Text>
-            </Card>
-
-            {/* Link to edit crop/hotspot directly in Sanity Studio */}
-            {editingImage?.asset?._ref && (
-              <a
-                href={`/studio/intent/edit/id=${editingImage.asset._ref};type=sanity.imageAsset/`}
-                target="_blank"
-                rel="noreferrer"
-                style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.8125rem' }}
-              >
-                ✂️ Modifier le crop / hotspot dans la médiathèque →
-              </a>
-            )}
-
             {/* Alt text fields */}
             <Stack space={1}>
               <Text size={2} weight="semibold">

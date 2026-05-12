@@ -143,12 +143,12 @@ export default function Gallery() {
             style={{ width: 'min(1100px, 90vw)' }}
             className="hidden lg:grid lg:grid-cols-3 grid-cols-2 items-center mt-16 lg:mt-4"
           >
-            <div className="text-xl font-playfair italic text-blackCustom h-8">
+            <div className="text-xl font-liberation italic text-blackCustom h-8">
               {activeCoord}
             </div>
             {view === 'grid' && (
               <button
-                className="justify-self-center text-xl font-playfair italic text-blackCustom hover:text-accent transition-all duration-300 px-4 py-2 rounded animate-in fade-in"
+                className="justify-self-center text-xl font-liberation italic text-blackCustom hover:text-accent transition-all duration-300 px-4 py-2 rounded animate-in fade-in"
                 onClick={() => setOverlayOpen(true)}
               >
                 {t('seeMore')}

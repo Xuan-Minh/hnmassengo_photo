@@ -20,27 +20,31 @@ const playfair = Playfair_Display({
   display: 'swap',
 });
 */
-const lexend = localFont({
-  src: '../public/fonts/Lexend-Regular.woff2',
-  display: 'swap',
-  variable: '--font-lexend',
-});
-
-const playfair = localFont({
+const liberation = localFont({
   src: [
     {
-      path: '../public/fonts/PlayfairDisplay-Regular.woff2',
+      path: '../public/fonts/LiberationMono.woff2',
       weight: '400',
       style: 'normal',
     },
     {
-      path: '../public/fonts/PlayfairDisplay-Italic.woff2',
+      path: '../public/fonts/LiberationMono-Italic.woff2',
       weight: '400',
+      style: 'italic',
+    },
+    {
+      path: '../public/fonts/LiberationMono-Bold.woff2',
+      weight: '700',
+      style: 'normal',
+    },
+    {
+      path: '../public/fonts/LiberationMono-BoldItalic.woff2',
+      weight: '700',
       style: 'italic',
     },
   ],
   display: 'swap',
-  variable: '--font-playfair',
+  variable: '--font-liberation',
 });
 export default async function RootLayout({ children }) {
   let locale = 'fr';
@@ -93,7 +97,7 @@ export default async function RootLayout({ children }) {
         />
       </head>
       <body
-        className={`${lexend.className} ${lexend.variable} ${playfair.variable}`}
+        className={`${liberation.className} ${liberation.variable}`}
         suppressHydrationWarning
       >
         <GlobalErrorBoundary>{children}</GlobalErrorBoundary>

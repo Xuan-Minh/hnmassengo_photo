@@ -188,7 +188,7 @@ export default function GalleryList({
             <button
               key={p.id}
               onClick={() => navigateToImage(idx, 0)}
-              className={`text-lg font-playfair transition-opacity duration-300 relative group whitespace-nowrap ${
+              className={`text-lg font-liberation transition-opacity duration-300 relative group whitespace-nowrap ${
                 idx === currentProjectIndex
                   ? 'font-bold opacity-100'
                   : 'opacity-60 hover:opacity-100'
@@ -249,7 +249,7 @@ export default function GalleryList({
               key={p.id}
               ref={el => (itemsRef.current[idx] = el)}
               onClick={() => navigateToImage(idx, 0)}
-              className={`text-md font-playfair whitespace-nowrap transition-all ${
+              className={`text-md font-liberation whitespace-nowrap transition-all ${
                 idx === currentProjectIndex
                   ? 'font-bold opacity-100 scale-105'
                   : 'opacity-30'

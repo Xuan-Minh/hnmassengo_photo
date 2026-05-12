@@ -9,10 +9,10 @@ import { SITE_CONFIG } from '../../lib/constants';
 function LegalSection({ title, children }) {
   return (
     <section className="mb-8">
-      <h2 className="text-2xl md:text-3xl font-playfair text-whiteCustom italic mb-4">
+      <h2 className="text-2xl md:text-3xl font-liberation text-whiteCustom italic mb-4">
         {title}
       </h2>
-      <div className="font-playfair text-base md:text-lg leading-relaxed text-whiteCustom">
+      <div className="font-liberation text-base md:text-lg leading-relaxed text-whiteCustom">
         {children}
       </div>
     </section>
@@ -239,7 +239,7 @@ export default function LegalOverlay({
             <header className="flex-shrink-0 p-6 md:p-12 lg:p-16 pb-0 md:pb-0 lg:pb-0">
               <button
                 onClick={handleClose}
-                className="font-playfair text-lg text-whiteCustom/80 hover:text-whiteCustom transition-colors"
+                className="font-liberation text-lg text-whiteCustom/80 hover:text-whiteCustom transition-colors"
                 aria-label={t('overlay.closeAriaLabel')}
               >
                 back
@@ -251,7 +251,7 @@ export default function LegalOverlay({
               <div className="max-w-4xl">
                 <h1
                   id="legal-title"
-                  className="text-4xl md:text-5xl lg:text-6xl font-playfair italic mb-8 md:mb-12 leading-tight text-whiteCustom"
+                  className="text-4xl md:text-5xl lg:text-6xl font-liberation italic mb-8 md:mb-12 leading-tight text-whiteCustom"
                 >
                   {t('title')}
                 </h1>

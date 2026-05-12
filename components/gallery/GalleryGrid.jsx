@@ -197,7 +197,7 @@ export default function GalleryGrid({
           key="filters"
           className="flex items-center justify-center col-span-2 row-span-2 md:col-span-2 md:row-span-2 lg:col-span-3 lg:row-span-3 2xl:col-span-3 2xl:row-span-3"
         >
-          <div className="flex flex-col items-start p-4 md:p-6 md:mb-2 font-playfair md:h-full justify-center">
+          <div className="flex flex-col items-start p-4 md:p-6 md:mb-2 font-liberation md:h-full justify-center">
             <GalleryViewToggle view={view} onViewChange={onViewChange} />
             <div className="relative z-10 flex flex-col gap-1 items-start pointer-events-auto">
               {GALLERY_FILTERS.map(f => (
@@ -295,7 +295,7 @@ export default function GalleryGrid({
       <AnimatePresence>
         {showCustomCursor && hoveredId && (
           <motion.div
-            className="fixed pointer-events-none z-[1000] text-whiteCustom font-playfair italic text-lg"
+            className="fixed pointer-events-none z-[1000] text-whiteCustom font-liberation italic text-lg"
             style={{
               left: cursorPos.x + 10,
               top: cursorPos.y + 10,

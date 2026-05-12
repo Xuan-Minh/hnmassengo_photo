@@ -246,7 +246,7 @@ export default function Menu() {
       <>
         {/* Bouton MENU fixe */}
         <button
-          className={`fixed top-8 right-8 z-50 text-xl font-playfair italic tracking-wider transition-opacity duration-300 ${
+          className={`fixed top-8 right-8 z-50 text-xl font-liberation italic tracking-wider transition-opacity duration-300 ${
             shouldHideMobileMenu && !mobileMenuOpen
               ? 'opacity-0 pointer-events-none'
               : 'opacity-100'
@@ -265,7 +265,7 @@ export default function Menu() {
         >
           {/* Close button */}
           <button
-            className="absolute top-8 right-8 text-xl font-playfair italic"
+            className="absolute top-8 right-8 text-xl font-liberation italic"
             onClick={() => setMobileMenuOpen(false)}
           >
             close
@@ -273,10 +273,10 @@ export default function Menu() {
 
           {/* Logo - centré avec les sections du menu */}
           <div className="flex items-center justify-center gap-2 mb-8">
-            <span className="text-greyCustom font-playfair italic text-[32px]">
+            <span className="text-greyCustom font-liberation italic text-[32px]">
               Han-Noah
             </span>
-            <span className="text-greyCustom font-lexend text-[32px]">
+            <span className="text-greyCustom font-liberation text-[32px]">
               MASSENGO
             </span>
           </div>
@@ -294,7 +294,7 @@ export default function Menu() {
                       scrollToId(it.id);
                     }
                   }}
-                  className="text-4xl font-lexend font-normal uppercase tracking-wide hover:text-gray-400 transition-colors"
+                  className="text-4xl font-liberation font-normal uppercase tracking-wide hover:text-gray-400 transition-colors"
                 >
                   {it.label}
                 </button>
