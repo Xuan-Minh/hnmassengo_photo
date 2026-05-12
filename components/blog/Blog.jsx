@@ -81,12 +81,11 @@ export default function Blog() {
 
       if (postId && isReloadNavigation()) {
         const url = new URL(window.location.href);
-        const hash = window.location.hash || '';
         url.searchParams.delete('post');
         window.history.replaceState(
           null,
           '',
-          `${url.pathname}${url.search}${hash}`
+          `${url.pathname}${url.search}${window.location.hash}`
         );
         setRequestedPostId(null);
         return;
