@@ -52,7 +52,7 @@ function assetRefToUrl(ref, projectId, dataset, options = '') {
 }
 
 export default function ProjectImagesFolderInput(props) {
-  const { onChange, value, onItemOpen, path } = props;
+  const { onChange, value, onItemOpen, onPathFocus } = props;
 
   const client = useClient({ apiVersion });
   const { projectId, dataset } = client.config();
@@ -230,6 +230,17 @@ export default function ProjectImagesFolderInput(props) {
     setEditingImage(null);
   }, [editingImage, editAlt, onChange]);
 
+  const editingImagePreviewUrl = useMemo(
+    () =>
+      assetRefToUrl(
+        editingImage?.asset?._ref,
+        projectId,
+        dataset,
+        '?w=1200&auto=format'
+      ),
+    [editingImage?.asset?._ref, projectId, dataset]
+  );
+
   return (
     <Stack space={3}>
       <Card padding={3} radius={2} border>
@@ -381,9 +392,11 @@ export default function ProjectImagesFolderInput(props) {
                           padding={1}
                           text="✂️"
                           title="Modifier le crop / hotspot"
-                          onClick={() =>
-                            onItemOpen?.([...(Array.isArray(path) ? path : []), { _key: image._key }])
-                          }
+                          onClick={() => {
+                            const itemPath = [{ _key: image._key }];
+                            onPathFocus?.(itemPath);
+                            onItemOpen?.(itemPath);
+                          }}
                           style={{ width: '100%', background: 'rgba(0,0,0,0.45)', color: '#fff' }}
                         />
                       </div>
@@ -439,6 +452,22 @@ export default function ProjectImagesFolderInput(props) {
           }
         >
           <Stack space={4} padding={4}>
+            {editingImagePreviewUrl ? (
+              <Card radius={2} overflow="hidden" border>
+                <img
+                  src={editingImagePreviewUrl}
+                  alt=""
+                  style={{
+                    width: '100%',
+                    maxHeight: '300px',
+                    objectFit: 'contain',
+                    display: 'block',
+                    background: '#111',
+                  }}
+                />
+              </Card>
+            ) : null}
+
             {/* Alt text fields */}
             <Stack space={1}>
               <Text size={2} weight="semibold">
