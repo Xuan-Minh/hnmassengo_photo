@@ -454,15 +454,18 @@ export default function ProjectImagesFolderInput(props) {
           <Stack space={4} padding={4}>
             {editingImagePreviewUrl ? (
               <Card radius={2} overflow="hidden" border>
-                <img
-                  src={editingImagePreviewUrl}
-                  alt=""
+                <div
+                  role="img"
+                  aria-label="Aperçu de l'image"
                   style={{
                     width: '100%',
                     maxHeight: '300px',
-                    objectFit: 'contain',
-                    display: 'block',
+                    aspectRatio: '16 / 9',
                     background: '#111',
+                    backgroundImage: `url(${editingImagePreviewUrl})`,
+                    backgroundRepeat: 'no-repeat',
+                    backgroundPosition: 'center',
+                    backgroundSize: 'contain',
                   }}
                 />
               </Card>
