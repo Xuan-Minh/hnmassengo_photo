@@ -149,7 +149,7 @@ export default function BlogPostOverlay({ post, onClose, onPrevious, onNext }) {
               {/* Content - Left aligned and justified */}
               <div className="text-base md:text-lg leading-relaxed text-whiteCustom space-y-4 max-w-2xl mx-auto">
                 {displayText?.split('\n\n').map((paragraph, idx) => (
-                  <p key={idx} className="text-justify indent-4">
+                  <p key={idx} className="text-justify indent-8">
                     {paragraph}
                   </p>
                 ))}
@@ -208,7 +208,7 @@ export default function BlogPostOverlay({ post, onClose, onPrevious, onNext }) {
               {/* Content - Left aligned and justified */}
               <div className="text-base md:text-lg leading-relaxed text-whiteCustom space-y-4 max-w-2xl mx-auto">
                 {displayText?.split('\n\n').map((paragraph, idx) => (
-                  <p key={idx} className="text-justify">
+                  <p key={idx} className="text-justify indent-8">
                     {paragraph}
                   </p>
                 ))}
