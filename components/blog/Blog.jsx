@@ -81,7 +81,7 @@ export default function Blog() {
 
       if (postId && isReloadNavigation()) {
         const url = new URL(window.location.href);
-        const hash = window.location.hash || '#blog';
+        const hash = window.location.hash || '';
         url.searchParams.delete('post');
         window.history.replaceState(
           null,
