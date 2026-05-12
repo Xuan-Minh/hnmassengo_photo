@@ -8,12 +8,12 @@ export default function LegalPage() {
   const t = useTranslations('legal');
 
   return (
-    <main className="relative min-h-screen bg-background text-blackCustom p-8 md:p-16">
+    <main className="relative min-h-screen bg-blackCustom text-whiteCustom p-8 md:p-16">
       {/* Bouton Back */}
       <div className="absolute top-8 left-8 md:top-16 md:left-16 z-50">
         <Link
           href="/"
-          className="text-lg font-liberation text-accent hover:text-blackCustom transition-colors"
+          className="text-lg font-liberation text-whiteCustom hover:text-whiteCustom/90 transition-colors"
         >
           back
         </Link>
@@ -26,8 +26,8 @@ export default function LegalPage() {
 
         <LegalContent />
 
-        <footer className="mt-12 pt-6 border-t border-blackCustom/20">
-          <p className="font-liberation text-sm text-blackCustom/70">
+        <footer className="mt-12 pt-6 border-t border-whiteCustom/20">
+          <p className="font-liberation text-sm text-whiteCustom/70">
             {SITE_CONFIG.copyright}
           </p>
         </footer>
