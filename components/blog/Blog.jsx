@@ -76,17 +76,18 @@ export default function Blog() {
 
   // Lire ?post=<id> côté client sans useSearchParams (évite l'erreur suspense en build)
   useEffect(() => {
+    const isReload = isReloadNavigation();
+
     const update = () => {
       const postId = readRequestedPostId();
 
-      if (postId && isReloadNavigation()) {
+      if (postId && isReload) {
         const url = new URL(window.location.href);
         url.searchParams.delete('post');
-        const nextSearch = url.searchParams.toString();
         window.history.replaceState(
           null,
           '',
-          `${url.pathname}${nextSearch ? `?${nextSearch}` : ''}${window.location.hash}`
+          `${url.pathname}${url.search}${url.hash}`
         );
         setRequestedPostId(null);
         return;
