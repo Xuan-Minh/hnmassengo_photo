@@ -6,7 +6,6 @@ module.exports = {
         liberation: ['var(--font-liberation)', 'monospace'],
       },
       fontSize: {
-        lg: ['1rem', { lineHeight: '1.75rem' }],
         'liberation-24': ['1.5rem', { lineHeight: '1.2' }],
       },
       letterSpacing: {

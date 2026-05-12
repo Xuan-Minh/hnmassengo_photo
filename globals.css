@@ -118,6 +118,11 @@ a:focus-visible,
   .font-liberation {
     letter-spacing: -0.01em;
   }
+
+  .font-liberation.text-lg {
+    font-size: 1rem;
+    line-height: 1.75rem;
+  }
 }
 
 @layer utilities {
