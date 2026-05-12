@@ -195,6 +195,16 @@ function ContactForm({ idSuffix = '', onSubmitSuccess, defaultSubject = '' }) {
 function ContactInfo({ onOpenLegal }) {
   const t = useTranslations();
   const contactT = useTranslations('contact');
+  const { locale = 'fr' } = useParams();
+
+  const handleLegalClick = useCallback(
+    e => {
+      if (typeof onOpenLegal !== 'function') return;
+      e.preventDefault();
+      onOpenLegal();
+    },
+    [onOpenLegal]
+  );
 
   return (
     <div className="text-whiteCustom/90 flex flex-col h-full">
@@ -241,13 +251,13 @@ function ContactInfo({ onOpenLegal }) {
         </div>
 
         <p className="font-liberation text-sm md:text-[16px] leading-relaxed flex items-center gap-4">
-          <button
-            type="button"
-            onClick={onOpenLegal}
+          <Link
+            href={`/${locale}/legal`}
+            onClick={handleLegalClick}
             className="hover:text-whiteCustom transition-colors underline cursor-pointer"
           >
             {t('legal.link')}
-          </button>
+          </Link>
         </p>
       </div>
     </div>
