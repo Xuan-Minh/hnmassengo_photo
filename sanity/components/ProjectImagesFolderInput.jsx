@@ -394,8 +394,8 @@ export default function ProjectImagesFolderInput(props) {
                           title="Modifier le crop / hotspot"
                           onClick={() => {
                             const itemPath = [{ _key: image._key }];
-                            onPathFocus?.(itemPath);
                             onItemOpen?.(itemPath);
+                            onPathFocus?.(itemPath);
                           }}
                           style={{ width: '100%', background: 'rgba(0,0,0,0.45)', color: '#fff' }}
                         />
