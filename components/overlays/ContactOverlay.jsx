@@ -8,6 +8,7 @@ import { useParams } from 'next/navigation';
 import NewsletterSignup from '../ui/NewsletterSignup';
 import LegalOverlay from './LegalOverlay';
 import Link from 'next/link';
+import { routing } from '../../src/i18n/routing';
 
 // Composant pour le formulaire de contact réutilisable
 function ContactForm({ idSuffix = '', onSubmitSuccess, defaultSubject = '' }) {
@@ -195,6 +196,16 @@ function ContactForm({ idSuffix = '', onSubmitSuccess, defaultSubject = '' }) {
 function ContactInfo({ onOpenLegal }) {
   const t = useTranslations();
   const contactT = useTranslations('contact');
+  const { locale } = useParams();
+
+  const handleLegalClick = useCallback(
+    e => {
+      if (typeof onOpenLegal !== 'function') return;
+      e.preventDefault();
+      onOpenLegal();
+    },
+    [onOpenLegal]
+  );
 
   return (
     <div className="text-whiteCustom/90 flex flex-col h-full">
@@ -241,13 +252,13 @@ function ContactInfo({ onOpenLegal }) {
         </div>
 
         <p className="font-liberation text-sm md:text-[16px] leading-relaxed flex items-center gap-4">
-          <button
-            type="button"
-            onClick={onOpenLegal}
+          <Link
+            href={`/${locale || routing.defaultLocale}/legal`}
+            onClick={handleLegalClick}
             className="hover:text-whiteCustom transition-colors underline cursor-pointer"
           >
             {t('legal.link')}
-          </button>
+          </Link>
         </p>
       </div>
     </div>
