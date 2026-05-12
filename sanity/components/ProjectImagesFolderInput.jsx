@@ -404,10 +404,7 @@ export default function ProjectImagesFolderInput(props) {
                     {/* Clicking the checkbox toggles selection — propagation stopped so image click doesn't fire */}
                     <div
                       style={{ position: 'absolute', top: 4, right: 4 }}
-                      onClick={e => {
-                        e.stopPropagation();
-                        toggleKey(image._key);
-                      }}
+                      onClick={e => e.stopPropagation()}
                     >
                       <Checkbox
                         checked={isSelected}
