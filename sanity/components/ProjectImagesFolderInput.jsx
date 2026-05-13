@@ -57,6 +57,7 @@ export default function ProjectImagesFolderInput(props) {
     value,
     onItemOpen,
     onPathFocus,
+    renderDefault,
     members = [],
   } = props;
 
@@ -164,7 +165,7 @@ export default function ProjectImagesFolderInput(props) {
     }
   }
 
-  const images = Array.isArray(value) ? value : [];
+  const images = useMemo(() => (Array.isArray(value) ? value : []), [value]);
 
   // Intersection of selectedKeys with the images currently in the array.
   // Prevents stale keys (e.g. deleted via ArrayOfObjectsInput below) from
@@ -373,16 +374,19 @@ export default function ProjectImagesFolderInput(props) {
                       onClick={() => openEditModal(image)}
                     >
                       {url ? (
-                        <img
-                          src={url}
-                          alt=""
+                        <div
+                          role="img"
+                          aria-label="Aperçu de l'image"
                           style={{
                             width: '100%',
                             aspectRatio: 1,
-                            objectFit: 'cover',
                             borderRadius: '2px',
                             opacity: isSelected ? 0.5 : 1,
                             display: 'block',
+                            backgroundImage: `url(${url})`,
+                            backgroundRepeat: 'no-repeat',
+                            backgroundPosition: 'center',
+                            backgroundSize: 'cover',
                           }}
                         />
                       ) : (
@@ -448,6 +452,21 @@ export default function ProjectImagesFolderInput(props) {
           </Stack>
         </Card>
       )}
+
+      {renderDefault ? (
+        <Card padding={3} radius={2} border>
+          <Stack space={2}>
+            <Text size={1} weight="semibold">
+              Liste native Sanity
+            </Text>
+            <Text size={1} muted>
+              Cette liste permet d&apos;ouvrir chaque image dans l&apos;éditeur
+              Sanity pour ajuster le crop et le hotspot.
+            </Text>
+            {renderDefault(props)}
+          </Stack>
+        </Card>
+      ) : null}
 
       {editingImage && (
         <Dialog
