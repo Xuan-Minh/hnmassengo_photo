@@ -319,9 +319,9 @@ export function ContactMarquee({ mode = 'absolute' } = {}) {
       className="flex items-center gap-6 sm:gap-6 md:gap-6 lg:gap-6 pr-6 uppercase  "
       aria-hidden={ariaHidden}
     >
+      <span className="inline-block font-bold">{SITE_CONFIG.copyright}</span>
       <span className="inline-block">{SITE_CONFIG.copyright}</span>
-      <span className="inline-block">{SITE_CONFIG.copyright}</span>
-      <span className="inline-block">{SITE_CONFIG.copyright}</span>
+      <span className="inline-block font-bold">{SITE_CONFIG.copyright}</span>
       <span className="inline-block">{SITE_CONFIG.copyright}</span>
     </div>
   );

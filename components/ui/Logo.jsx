@@ -32,7 +32,7 @@ export default function Logo({ visible = true }) {
       </span>
       <span
         onClick={handleLogoClick}
-        className="text-accent  font-normal font-liberation pointer-events-auto cursor-pointer"
+        className="text-accent  font-bold font-liberation pointer-events-auto cursor-pointer"
         title={t('title')}
       >
         MASSENGO
