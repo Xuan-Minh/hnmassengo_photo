@@ -38,11 +38,29 @@ export const homeSectionImageType = defineType({
       ],
     }),
     defineField({
-      name: 'order',
-      title: "Ordre d'affichage",
-      type: 'number',
-      description: 'Numéro pour définir la position (1, 2, 3, ...)',
-      validation: Rule => Rule.required().min(1),
+      name: 'isActive',
+      title: 'Image active',
+      type: 'boolean',
+      description:
+        'Cochez pour rendre cette image active. Une seule image doit être active.',
+      initialValue: false,
+      validation: Rule =>
+        Rule.custom(async (isActive, context) => {
+          if (!isActive) return true;
+          try {
+            const client = context.getClient({ apiVersion: '2021-06-07' });
+            const { document } = context;
+            const others = await client.fetch(
+              '*[_type == "homeSectionImage" && isActive == true && _id != $id]{_id}',
+              { id: document._id }
+            );
+            return others && others.length > 0
+              ? "Il ne peut y avoir qu'une seule image active."
+              : true;
+          } catch (e) {
+            return true;
+          }
+        }),
     }),
   ],
   preview: {
@@ -57,11 +75,5 @@ export const homeSectionImageType = defineType({
       };
     },
   },
-  orderings: [
-    {
-      title: "Ordre d'affichage",
-      name: 'orderAsc',
-      by: [{ field: 'order', direction: 'asc' }],
-    },
-  ],
+  // Le tri par 'order' a été supprimé ; on utilise `isActive` pour indiquer l'image active.
 });
