@@ -59,6 +59,7 @@ export default function ProjectImagesFolderInput(props) {
     onPathFocus,
     members = [],
     renderItem,
+    schemaType,
   } = props;
 
   const client = useClient({ apiVersion });
