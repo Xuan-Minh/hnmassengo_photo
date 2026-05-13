@@ -58,8 +58,6 @@ export default function ProjectImagesFolderInput(props) {
     onItemOpen,
     onPathFocus,
     members = [],
-    renderItem,
-    schemaType,
   } = props;
 
   const client = useClient({ apiVersion });
@@ -450,26 +448,6 @@ export default function ProjectImagesFolderInput(props) {
           </Stack>
         </Card>
       )}
-
-      {/* Render native array members list to keep access to Sanity's default item UI (incl. crop/hotspot) */}
-      {members.some(member => member.kind === 'item') && renderItem ? (
-        <Card padding={3} radius={2} border>
-          <Stack space={2}>
-            <Text size={1} weight="semibold">
-              Liste native (édition / crop)
-            </Text>
-            <Stack space={1}>
-              {members
-                .filter(member => member.kind === 'item')
-                .map(member => (
-                  <React.Fragment key={member.key}>
-                    {renderItem(member)}
-                  </React.Fragment>
-                ))}
-            </Stack>
-          </Stack>
-        </Card>
-      ) : null}
 
       {editingImage && (
         <Dialog
