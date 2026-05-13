@@ -214,7 +214,7 @@ export default function ProjectImagesFolderInput(props) {
       const member = members.find(
         item => item.kind === 'item' && item.key === imageKey
       );
-      return member?.path || [{ _key: imageKey }];
+      return member?.item?.path || [{ _key: imageKey }];
     },
     [members]
   );
