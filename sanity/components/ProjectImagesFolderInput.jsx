@@ -55,8 +55,8 @@ export default function ProjectImagesFolderInput(props) {
   const {
     onChange,
     value,
+    path = [],
     onItemOpen,
-    onPathFocus,
     renderDefault,
     members = [],
   } = props;
@@ -214,9 +214,9 @@ export default function ProjectImagesFolderInput(props) {
       const member = members.find(
         item => item.kind === 'item' && item.key === imageKey
       );
-      return member?.item?.path || [{ _key: imageKey }];
+      return member?.item?.path || [...path, { _key: imageKey }];
     },
-    [members]
+    [members, path]
   );
 
   const openCropEditor = useCallback(
@@ -224,9 +224,8 @@ export default function ProjectImagesFolderInput(props) {
       const itemPath = getImageItemPath(image._key);
 
       onItemOpen?.(itemPath);
-      onPathFocus?.(itemPath);
     },
-    [getImageItemPath, onItemOpen, onPathFocus]
+    [getImageItemPath, onItemOpen]
   );
 
   const openEditModal = useCallback(image => {
