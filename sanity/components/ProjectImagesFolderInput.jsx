@@ -209,17 +209,24 @@ export default function ProjectImagesFolderInput(props) {
     setSelectedKeys(new Set());
   }, [effectiveSelectedKeys, onChange]);
 
+  const getImageItemPath = useCallback(
+    imageKey => {
+      const member = members.find(
+        item => item.kind === 'item' && item.key === imageKey
+      );
+      return member?.path || [{ _key: imageKey }];
+    },
+    [members]
+  );
+
   const openCropEditor = useCallback(
     image => {
-      const member = members.find(
-        item => item.kind === 'item' && item.key === image._key
-      );
-      const itemPath = member?.path || [{ _key: image._key }];
+      const itemPath = getImageItemPath(image._key);
 
       onItemOpen?.(itemPath);
       onPathFocus?.(itemPath);
     },
-    [members, onItemOpen, onPathFocus]
+    [getImageItemPath, onItemOpen, onPathFocus]
   );
 
   const openEditModal = useCallback(image => {
@@ -443,17 +450,25 @@ export default function ProjectImagesFolderInput(props) {
         </Card>
       )}
 
-      {/* Render open array members so Sanity's native image-editor dialog is shown */}
-      {members
-        .filter(member => member.kind === 'item' && member.open)
-        .map(
-          member =>
-            renderItem && (
-              <React.Fragment key={member.key}>
-                {renderItem(member)}
-              </React.Fragment>
-            )
-        )}
+      {/* Render native array members list to keep access to Sanity's default item UI (incl. crop/hotspot) */}
+      {members.some(member => member.kind === 'item') && renderItem ? (
+        <Card padding={3} radius={2} border>
+          <Stack space={2}>
+            <Text size={1} weight="semibold">
+              Liste native (édition / crop)
+            </Text>
+            <Stack space={1}>
+              {members
+                .filter(member => member.kind === 'item')
+                .map(member => (
+                  <React.Fragment key={member.key}>
+                    {renderItem(member)}
+                  </React.Fragment>
+                ))}
+            </Stack>
+          </Stack>
+        </Card>
+      ) : null}
 
       {editingImage && (
         <Dialog
@@ -462,18 +477,30 @@ export default function ProjectImagesFolderInput(props) {
           onClose={() => setEditingImage(null)}
           width={1}
           footer={
-            <Flex padding={3} gap={2} justify="flex-end">
-              <Button
-                mode="ghost"
-                text="Annuler"
-                onClick={() => setEditingImage(null)}
-              />
-              <Button
-                mode="default"
-                tone="primary"
-                text="Enregistrer"
-                onClick={handleSaveEdit}
-              />
+            <Flex padding={3} gap={2} justify="space-between" wrap="wrap">
+              <div>
+                <Button
+                  mode="ghost"
+                  text="Ouvrir le crop/hotspot"
+                  onClick={() => {
+                    openCropEditor(editingImage);
+                    setEditingImage(null);
+                  }}
+                />
+              </div>
+              <Flex gap={2}>
+                <Button
+                  mode="ghost"
+                  text="Annuler"
+                  onClick={() => setEditingImage(null)}
+                />
+                <Button
+                  mode="default"
+                  tone="primary"
+                  text="Enregistrer"
+                  onClick={handleSaveEdit}
+                />
+              </Flex>
             </Flex>
           }
         >
