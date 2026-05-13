@@ -52,7 +52,14 @@ function assetRefToUrl(ref, projectId, dataset, options = '') {
 }
 
 export default function ProjectImagesFolderInput(props) {
-  const { onChange, value, onItemOpen, onPathFocus, members = [], renderItem } = props;
+  const {
+    onChange,
+    value,
+    onItemOpen,
+    onPathFocus,
+    members = [],
+    renderItem,
+  } = props;
 
   const client = useClient({ apiVersion });
   const { projectId, dataset } = client.config();
@@ -202,17 +209,27 @@ export default function ProjectImagesFolderInput(props) {
     setSelectedKeys(new Set());
   }, [effectiveSelectedKeys, onChange]);
 
-  const openEditModal = useCallback(
+  const openCropEditor = useCallback(
     image => {
-      setEditAlt({
-        fr: image?.alt?.fr ?? '',
-        en: image?.alt?.en ?? '',
-        de: image?.alt?.de ?? '',
-      });
-      setEditingImage(image);
+      const member = members.find(
+        item => item.kind === 'item' && item.key === image._key
+      );
+      const itemPath = member?.path || [{ _key: image._key }];
+
+      onItemOpen?.(itemPath);
+      onPathFocus?.(itemPath);
     },
-    []
+    [members, onItemOpen, onPathFocus]
   );
+
+  const openEditModal = useCallback(image => {
+    setEditAlt({
+      fr: image?.alt?.fr ?? '',
+      en: image?.alt?.en ?? '',
+      de: image?.alt?.de ?? '',
+    });
+    setEditingImage(image);
+  }, []);
 
   const handleSaveEdit = useCallback(() => {
     if (!editingImage) return;
@@ -392,12 +409,12 @@ export default function ProjectImagesFolderInput(props) {
                           padding={1}
                           text="✂️"
                           title="Modifier le crop / hotspot"
-                          onClick={() => {
-                            const itemPath = [{ _key: image._key }];
-                            onItemOpen?.(itemPath);
-                            onPathFocus?.(itemPath);
+                          onClick={() => openCropEditor(image)}
+                          style={{
+                            width: '100%',
+                            background: 'rgba(0,0,0,0.45)',
+                            color: '#fff',
                           }}
-                          style={{ width: '100%', background: 'rgba(0,0,0,0.45)', color: '#fff' }}
                         />
                       </div>
                     )}
@@ -429,7 +446,14 @@ export default function ProjectImagesFolderInput(props) {
       {/* Render open array members so Sanity's native image-editor dialog is shown */}
       {members
         .filter(member => member.kind === 'item' && member.open)
-        .map(member => renderItem && <React.Fragment key={member.key}>{renderItem(member)}</React.Fragment>)}
+        .map(
+          member =>
+            renderItem && (
+              <React.Fragment key={member.key}>
+                {renderItem(member)}
+              </React.Fragment>
+            )
+        )}
 
       {editingImage && (
         <Dialog
