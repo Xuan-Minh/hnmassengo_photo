@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import Image from 'next/image';
 import PropTypes from 'prop-types';
@@ -6,7 +6,12 @@ import { extractFirstSentence } from '../../lib/utils';
 import { useLocale } from 'next-intl';
 import { useRef, useState, useEffect } from 'react';
 
-export default function BlogPostItem({ post, onClick, postCount = 1, isMobile = false }) {
+export default function BlogPostItem({
+  post,
+  onClick,
+  postCount = 1,
+  isMobile = false,
+}) {
   const locale = useLocale();
   const { headline: autoHeadline, rest: textRemainder } = post.title
     ? { headline: null, rest: post.text }
@@ -80,9 +85,14 @@ export default function BlogPostItem({ post, onClick, postCount = 1, isMobile = 
 
   const renderTextPreview = () => {
     if (postCount === 1) {
-      const visible = paragraphs.slice(0, Math.min(visibleCount, paragraphs.length));
+      const visible = paragraphs.slice(
+        0,
+        Math.min(visibleCount, paragraphs.length)
+      );
       return (
-        <div className={`font-liberation text-whiteCustom/80 leading-loose space-y-2`}>
+        <div
+          className={`font-liberation text-whiteCustom/80 leading-loose space-y-2`}
+        >
           {visible.map((para, i) => (
             <p
               key={i}
@@ -123,10 +133,16 @@ export default function BlogPostItem({ post, onClick, postCount = 1, isMobile = 
             />
           </div>
           <div className="flex-1 text-whiteCustom flex flex-col justify-start">
-            <h3 ref={titleRef} className="text-3xl lg:text-3xl font-liberation italic mb-2">
+            <h3
+              ref={titleRef}
+              className="text-3xl lg:text-3xl font-liberation italic mb-2"
+            >
               &ldquo;{displayTitle}&rdquo;
             </h3>
-            <div ref={metaRef} className="text-lg text-whiteCustom/80 lg:text-base font-liberation mb-4">
+            <div
+              ref={metaRef}
+              className="text-lg text-whiteCustom/80 lg:text-base font-liberation mb-4"
+            >
               - {post.date}
             </div>
             {renderTextPreview()}
@@ -137,10 +153,16 @@ export default function BlogPostItem({ post, onClick, postCount = 1, isMobile = 
       {post.layout === 'image-right' && post.image && (
         <div className="flex flex-col lg:flex-row gap-4 items-start">
           <div className="flex-1 text-whiteCustom order-2 lg:order-1 flex flex-col justify-start">
-            <h3 ref={titleRef} className="text-3xl lg:text-3xl font-liberation italic mb-2">
+            <h3
+              ref={titleRef}
+              className="text-3xl lg:text-3xl font-liberation italic mb-2"
+            >
               &ldquo;{displayTitle}&rdquo;
             </h3>
-            <div ref={metaRef} className="text-lg text-whiteCustom/80 lg:text-base font-liberation mb-4">
+            <div
+              ref={metaRef}
+              className="text-lg text-whiteCustom/80 lg:text-base font-liberation mb-4"
+            >
               - {post.date}
             </div>
             {renderTextPreview()}
@@ -162,10 +184,16 @@ export default function BlogPostItem({ post, onClick, postCount = 1, isMobile = 
       {(post.layout === 'text-only' || !post.image) && (
         <div className="text-whiteCustom">
           <div className="flex flex-col mb-4">
-            <h3 ref={titleRef} className="text-3xl lg:text-3xl font-liberation italic mb-2">
+            <h3
+              ref={titleRef}
+              className="text-3xl lg:text-3xl font-liberation italic mb-2"
+            >
               &ldquo;{displayTitle}&rdquo;
             </h3>
-            <span ref={metaRef} className="text-whiteCustom/80 text-lg lg:text-base font-liberation">
+            <span
+              ref={metaRef}
+              className="text-whiteCustom/80 text-lg lg:text-base font-liberation"
+            >
               - {post.date}
             </span>
           </div>
