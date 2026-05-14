@@ -1,39 +1,12 @@
-'use client';
+"use client";
 
 import Image from 'next/image';
 import PropTypes from 'prop-types';
 import { extractFirstSentence } from '../../lib/utils';
 import { useLocale } from 'next-intl';
+import { useRef, useState, useEffect } from 'react';
 
-function renderTextPreview(text, postCount, extraClass = '') {
-  if (postCount === 1) {
-    const paragraphs = (text || '').split('\n\n').filter(Boolean).slice(0, 3);
-    return (
-      <div
-        className={`font-liberation text-whiteCustom/80 leading-loose space-y-2 ${extraClass}`}
-      >
-        {paragraphs.map((para, i) => (
-          <p key={i} className="sm:text-lg lg:text-base">
-            {para}
-          </p>
-        ))}
-      </div>
-    );
-  }
-  const clampClass =
-    postCount >= 3
-      ? '[-webkit-line-clamp:2] lg:[-webkit-line-clamp:2]'
-      : '[-webkit-line-clamp:3] lg:[-webkit-line-clamp:3]';
-  return (
-    <p
-      className={`sm:text-lg lg:text-base font-liberation text-whiteCustom/80 leading-loose overflow-hidden text-ellipsis [display:-webkit-box] [-webkit-box-orient:vertical] ${clampClass} ${extraClass}`}
-    >
-      {text}
-    </p>
-  );
-}
-
-export default function BlogPostItem({ post, onClick, postCount = 1 }) {
+export default function BlogPostItem({ post, onClick, postCount = 1, isMobile = false }) {
   const locale = useLocale();
   const { headline: autoHeadline, rest: textRemainder } = post.title
     ? { headline: null, rest: post.text }
@@ -51,6 +24,85 @@ export default function BlogPostItem({ post, onClick, postCount = 1 }) {
     typeof post.text === 'object' && post.text !== null
       ? post.text[locale]
       : post.text || textRemainder;
+
+  const titleRef = useRef(null);
+  const metaRef = useRef(null);
+  const paragraphsRef = useRef([]);
+  const [visibleCount, setVisibleCount] = useState(3);
+
+  useEffect(() => {
+    if (!isMobile || postCount !== 1) return;
+    const section = document.getElementById('blog');
+    if (!section) return;
+
+    const compute = () => {
+      const sectionH = section.clientHeight || window.innerHeight;
+      const titleH = titleRef.current ? titleRef.current.offsetHeight : 0;
+      const metaH = metaRef.current ? metaRef.current.offsetHeight : 0;
+      const padding = 48; // safety margin
+      const available = Math.max(0, sectionH - titleH - metaH - padding);
+
+      const paras = (displayText || '').split('\n\n').filter(Boolean);
+      if (paras.length === 0) return setVisibleCount(0);
+
+      // Measure actual paragraph heights if rendered
+      let total = 0;
+      let fit = 0;
+      for (let i = 0; i < paras.length; i++) {
+        const el = paragraphsRef.current[i];
+        const h = el ? el.offsetHeight : Math.ceil(available / paras.length);
+        if (total + h <= available) {
+          total += h;
+          fit += 1;
+        } else {
+          break;
+        }
+      }
+
+      setVisibleCount(Math.max(1, Math.min(fit || 1, paras.length)));
+    };
+
+    // Run after a tick to allow DOM to render paragraphs
+    const id = setTimeout(compute, 50);
+    window.addEventListener('resize', compute);
+    return () => {
+      clearTimeout(id);
+      window.removeEventListener('resize', compute);
+    };
+  }, [isMobile, postCount, displayText]);
+
+  const paragraphs = (displayText || '').split('\n\n').filter(Boolean);
+
+  const clampClass =
+    postCount >= 3
+      ? '[-webkit-line-clamp:2] lg:[-webkit-line-clamp:2]'
+      : '[-webkit-line-clamp:3] lg:[-webkit-line-clamp:3]';
+
+  const renderTextPreview = () => {
+    if (postCount === 1) {
+      const visible = paragraphs.slice(0, Math.min(visibleCount, paragraphs.length));
+      return (
+        <div className={`font-liberation text-whiteCustom/80 leading-loose space-y-2`}>
+          {visible.map((para, i) => (
+            <p
+              key={i}
+              ref={el => (paragraphsRef.current[i] = el)}
+              className="sm:text-lg lg:text-base"
+            >
+              {para}
+            </p>
+          ))}
+        </div>
+      );
+    }
+    return (
+      <p
+        className={`sm:text-lg lg:text-base font-liberation text-whiteCustom/80 leading-loose overflow-hidden text-ellipsis [display:-webkit-box] [-webkit-box-orient:vertical] ${clampClass} max-w-3xl`}
+      >
+        {displayText}
+      </p>
+    );
+  };
 
   return (
     <div
@@ -71,13 +123,13 @@ export default function BlogPostItem({ post, onClick, postCount = 1 }) {
             />
           </div>
           <div className="flex-1 text-whiteCustom flex flex-col justify-start">
-            <h3 className="text-3xl lg:text-3xl font-liberation italic mb-2">
+            <h3 ref={titleRef} className="text-3xl lg:text-3xl font-liberation italic mb-2">
               &ldquo;{displayTitle}&rdquo;
             </h3>
-            <div className="text-lg text-whiteCustom/80 lg:text-base font-liberation mb-4">
+            <div ref={metaRef} className="text-lg text-whiteCustom/80 lg:text-base font-liberation mb-4">
               - {post.date}
             </div>
-            {renderTextPreview(displayText, postCount)}
+            {renderTextPreview()}
           </div>
         </div>
       )}
@@ -85,13 +137,13 @@ export default function BlogPostItem({ post, onClick, postCount = 1 }) {
       {post.layout === 'image-right' && post.image && (
         <div className="flex flex-col lg:flex-row gap-4 items-start">
           <div className="flex-1 text-whiteCustom order-2 lg:order-1 flex flex-col justify-start">
-            <h3 className="text-3xl lg:text-3xl font-liberation italic mb-2">
+            <h3 ref={titleRef} className="text-3xl lg:text-3xl font-liberation italic mb-2">
               &ldquo;{displayTitle}&rdquo;
             </h3>
-            <div className="text-lg text-whiteCustom/80 lg:text-base font-liberation mb-4">
+            <div ref={metaRef} className="text-lg text-whiteCustom/80 lg:text-base font-liberation mb-4">
               - {post.date}
             </div>
-            {renderTextPreview(displayText, postCount)}
+            {renderTextPreview()}
           </div>
           <div className="w-full lg:w-1/3 flex items-center justify-center order-1 lg:order-2">
             <Image
@@ -110,14 +162,14 @@ export default function BlogPostItem({ post, onClick, postCount = 1 }) {
       {(post.layout === 'text-only' || !post.image) && (
         <div className="text-whiteCustom">
           <div className="flex flex-col mb-4">
-            <h3 className="text-3xl lg:text-3xl font-liberation italic mb-2">
+            <h3 ref={titleRef} className="text-3xl lg:text-3xl font-liberation italic mb-2">
               &ldquo;{displayTitle}&rdquo;
             </h3>
-            <span className="text-whiteCustom/80 text-lg lg:text-base font-liberation">
+            <span ref={metaRef} className="text-whiteCustom/80 text-lg lg:text-base font-liberation">
               - {post.date}
             </span>
           </div>
-          {renderTextPreview(displayText, postCount, 'max-w-3xl')}
+          {renderTextPreview()}
         </div>
       )}
     </div>
@@ -149,4 +201,5 @@ BlogPostItem.propTypes = {
   }).isRequired,
   onClick: PropTypes.func.isRequired,
   postCount: PropTypes.number,
+  isMobile: PropTypes.bool,
 };

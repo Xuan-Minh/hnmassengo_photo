@@ -232,7 +232,7 @@ function ContactInfo({ onOpenLegal }) {
       <div className="space-y-4 md:space-y-6">
         <NewsletterSignup className="" />
         <div className="font-liberation leading-relaxed">
-          <p className="text-sm md:text-3xl italic">© STUDIO 42 - 2026</p>
+          <p className="text-3xl italic">© STUDIO 42 - 2026</p>
           <p>14 Rue de Marignan, 75008 PARIS. FRANCE</p>
         </div>
         <div className="font-liberation leading-relaxed space-y-4">

@@ -48,6 +48,7 @@ export default function GalleryList({
 
   const mobileNavRef = useRef(null);
   const itemsRef = useRef([]);
+  const scrollEndTimeoutRef = useRef(null);
   const currentImageVersionRef = useRef(0);
   const listTimersRef = useRef({ tick: null, swap: null, cancelled: 0 });
 
@@ -109,6 +110,65 @@ export default function GalleryList({
     setActiveCoord(project?.coords || '');
     centerActiveProject(currentProjectIndex);
   }, [currentProjectIndex, projects, setActiveCoord, centerActiveProject]);
+
+  // Lorsque l'utilisateur arrête de scroller le carrousel mobile,
+  // on calcule quel élément est centré et on le rend actif.
+  useEffect(() => {
+    const container = mobileNavRef.current;
+    if (!container) return;
+
+    const onScrollEnd = () => {
+      const children = itemsRef.current || [];
+      if (children.length === 0) return;
+
+      // Si on est tout au début ou à la fin, sélectionner explicitement
+      const scrollLeft = container.scrollLeft;
+      const maxScrollLeft = container.scrollWidth - container.clientWidth;
+      const edgeThreshold = 20; // px de tolérance aux bords
+
+      let closestIndex = 0;
+      if (scrollLeft <= edgeThreshold) {
+        closestIndex = 0;
+      } else if (scrollLeft >= maxScrollLeft - edgeThreshold) {
+        closestIndex = children.length - 1;
+      } else {
+        const containerRect = container.getBoundingClientRect();
+        const containerCenter = containerRect.left + containerRect.width / 2;
+
+        let minDist = Infinity;
+        children.forEach((el, idx) => {
+          if (!el) return;
+          const r = el.getBoundingClientRect();
+          const center = r.left + r.width / 2;
+          const d = Math.abs(center - containerCenter);
+          if (d < minDist) {
+            minDist = d;
+            closestIndex = idx;
+          }
+        });
+      }
+
+      if (closestIndex !== currentProjectIndex) {
+        navigateToImage(closestIndex, 0);
+      }
+    };
+
+    const onScroll = () => {
+      if (scrollEndTimeoutRef.current)
+        clearTimeout(scrollEndTimeoutRef.current);
+      scrollEndTimeoutRef.current = setTimeout(onScrollEnd, 150);
+    };
+
+    container.addEventListener('scroll', onScroll, { passive: true });
+    container.addEventListener('touchend', onScrollEnd, { passive: true });
+
+    return () => {
+      container.removeEventListener('scroll', onScroll);
+      container.removeEventListener('touchend', onScrollEnd);
+      if (scrollEndTimeoutRef.current)
+        clearTimeout(scrollEndTimeoutRef.current);
+    };
+  }, [currentProjectIndex, navigateToImage]);
 
   // --- 3. TIMER AUTOMATIQUE ---
   useEffect(() => {
@@ -249,7 +309,7 @@ export default function GalleryList({
               key={p.id}
               ref={el => (itemsRef.current[idx] = el)}
               onClick={() => navigateToImage(idx, 0)}
-              className={`text-md font-liberation whitespace-nowrap transition-all ${
+              className={`text-xl font-liberation whitespace-nowrap transition-all ${
                 idx === currentProjectIndex
                   ? 'font-bold opacity-100 scale-105'
                   : 'opacity-30'
