@@ -192,6 +192,28 @@ function ContactForm({ idSuffix = '', onSubmitSuccess, defaultSubject = '' }) {
   );
 }
 
+function AnimatedUnderlineLink({
+  href,
+  onClick,
+  children,
+  className = '',
+  ...props
+}) {
+  return (
+    <Link
+      href={href}
+      onClick={onClick}
+      className={`group inline-flex w-fit flex-col text-whiteCustom transition-colors ${className}`.trim()}
+      {...props}
+    >
+      <span className="font-liberation text-sm md:text-[16px] leading-relaxed">
+        {children}
+      </span>
+      <span className="block h-px w-full origin-left scale-x-0 bg-whiteCustom transition-transform duration-300 ease-out group-hover:scale-x-100" />
+    </Link>
+  );
+}
+
 // Composant pour les informations de contact
 function ContactInfo({ onOpenLegal }) {
   const t = useTranslations();
@@ -239,26 +261,24 @@ function ContactInfo({ onOpenLegal }) {
           <p className="font-liberation text-sm md:text-[16px] leading-relaxed">
             {contactT('info.copyright', { author: SITE_CONFIG.author })}
           </p>
-          <Link
+          <AnimatedUnderlineLink
             href="mailto:naux.pro@gmail.com"
             target="_blank"
             rel="noopener noreferrer"
-            className="hover:text-whiteCustom transition-all hover:underline block"
+            className=""
           >
-            <p className="font-liberation text-sm md:text-[16px] leading-relaxed hover:text-whiteCustom transition-colors">
-              {contactT('info.credits', { developer: SITE_CONFIG.developer })}
-            </p>
-          </Link>
+            {contactT('info.credits', { developer: SITE_CONFIG.developer })}
+          </AnimatedUnderlineLink>
         </div>
 
         <p className="font-liberation text-sm md:text-[16px] leading-relaxed flex items-center gap-4">
-          <Link
+          <AnimatedUnderlineLink
             href={`/${locale || routing.defaultLocale}/legal`}
             onClick={handleLegalClick}
-            className="hover:text-whiteCustom transition-colors underline cursor-pointer"
+            className="cursor-pointer"
           >
             {t('legal.link')}
-          </Link>
+          </AnimatedUnderlineLink>
         </p>
       </div>
     </div>
