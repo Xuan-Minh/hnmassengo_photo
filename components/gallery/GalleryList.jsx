@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import { buildSanityImageUrl } from '../../lib/imageUtils';
@@ -39,32 +39,44 @@ export default function GalleryList({
   onProjectSelect,
   setActiveCoord,
 }) {
+  const [isMobile, setIsMobile] = useState(false);
   const [currentProjectIndex, setCurrentProjectIndex] = useState(0);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [isListImageLoaded, setIsListImageLoaded] = useState(false);
   const [listImageError, setListImageError] = useState(false);
-  const [listTouchStart, setListTouchStart] = useState(null);
 
   const mobileNavRef = useRef(null);
   const itemsRef = useRef([]);
   const scrollEndTimeoutRef = useRef(null);
   const currentImageVersionRef = useRef(0);
+  const preloadedUrlsRef = useRef(new Set());
   const listTimersRef = useRef({ tick: null, swap: null, cancelled: 0 });
+
+  useEffect(() => {
+    const updateMobile = () => setIsMobile(window.innerWidth < 1024);
+    updateMobile();
+    window.addEventListener('resize', updateMobile);
+    return () => window.removeEventListener('resize', updateMobile);
+  }, []);
 
   // --- 1. DÉFINITION DES FONCTIONS DE NAVIGATION (Avant les useEffect) ---
 
-  const navigateToImage = useCallback((projectIndex, imageIndex) => {
-    currentImageVersionRef.current += 1;
-    setIsListImageLoaded(false);
-    setListImageError(false);
-    setIsTransitioning(true);
-    setTimeout(() => {
-      setCurrentProjectIndex(projectIndex);
-      setCurrentImageIndex(imageIndex);
-      setIsTransitioning(false);
-    }, 250);
-  }, []);
+  const navigateToImage = useCallback(
+    (projectIndex, imageIndex) => {
+      const transitionDelay = isMobile ? 80 : 250;
+      currentImageVersionRef.current += 1;
+      setIsListImageLoaded(false);
+      setListImageError(false);
+      setIsTransitioning(true);
+      setTimeout(() => {
+        setCurrentProjectIndex(projectIndex);
+        setCurrentImageIndex(imageIndex);
+        setIsTransitioning(false);
+      }, transitionDelay);
+    },
+    [isMobile]
+  );
 
   const navigateListPrev = useCallback(() => {
     if (currentImageIndex > 0) {
@@ -225,14 +237,79 @@ export default function GalleryList({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [navigateListNext, navigateListPrev]);
 
-  const currentListSrc =
-    projects[currentProjectIndex]?.images?.[currentImageIndex] || null;
-  const currentListDisplaySrc = currentListSrc
-    ? buildSanityImageUrl(currentListSrc, {
-        ...getOptimizedImageParams('gallery'),
-        auto: 'format',
-      })
-    : null;
+  const galleryParams = getOptimizedImageParams('gallery', isMobile);
+  const imageParams = useMemo(
+    () => ({
+      ...galleryParams,
+      q: isMobile ? 68 : galleryParams.q,
+      auto: 'format',
+    }),
+    [galleryParams, isMobile]
+  );
+
+  const getDisplaySrcAt = useCallback(
+    (projectIndex, imageIndex) => {
+      const source = projects[projectIndex]?.images?.[imageIndex] || null;
+      if (!source) return null;
+      return buildSanityImageUrl(source, imageParams);
+    },
+    [projects, imageParams]
+  );
+
+  const currentListDisplaySrc = getDisplaySrcAt(
+    currentProjectIndex,
+    currentImageIndex
+  );
+
+  useEffect(() => {
+    if (projects.length === 0 || typeof window === 'undefined') return;
+    const currentImages = projects[currentProjectIndex]?.images || [];
+    if (currentImages.length === 0) return;
+
+    const prevTarget =
+      currentImageIndex > 0
+        ? {
+            projectIndex: currentProjectIndex,
+            imageIndex: currentImageIndex - 1,
+          }
+        : {
+            projectIndex:
+              currentProjectIndex === 0
+                ? projects.length - 1
+                : currentProjectIndex - 1,
+            imageIndex: Math.max(
+              0,
+              (
+                projects[
+                  currentProjectIndex === 0
+                    ? projects.length - 1
+                    : currentProjectIndex - 1
+                ]?.images || []
+              ).length - 1
+            ),
+          };
+
+    const nextTarget =
+      currentImageIndex < currentImages.length - 1
+        ? {
+            projectIndex: currentProjectIndex,
+            imageIndex: currentImageIndex + 1,
+          }
+        : {
+            projectIndex: (currentProjectIndex + 1) % projects.length,
+            imageIndex: 0,
+          };
+
+    const preload = url => {
+      if (!url || preloadedUrlsRef.current.has(url)) return;
+      preloadedUrlsRef.current.add(url);
+      const img = new window.Image();
+      img.src = url;
+    };
+
+    preload(getDisplaySrcAt(prevTarget.projectIndex, prevTarget.imageIndex));
+    preload(getDisplaySrcAt(nextTarget.projectIndex, nextTarget.imageIndex));
+  }, [projects, currentProjectIndex, currentImageIndex, getDisplaySrcAt]);
 
   return (
     <motion.div
@@ -275,7 +352,7 @@ export default function GalleryList({
               <ArrowLeft />
             </button>
             <div
-              className="relative w-[85%] h-[50vh] lg:w-[70%] lg:h-[70vh] xl:w-[80%] xl:h-[80vh] cursor-pointer"
+              className="relative w-[94%] h-[62vh] lg:w-[70%] lg:h-[70vh] xl:w-[80%] xl:h-[80vh] cursor-pointer"
               onClick={() => onProjectSelect(projects[currentProjectIndex])}
             >
               <Image
@@ -283,9 +360,10 @@ export default function GalleryList({
                 src={currentListDisplaySrc}
                 alt={projects[currentProjectIndex]?.name || ''}
                 fill
-                className={`object-contain transition-opacity duration-300 ${isTransitioning || (!isListImageLoaded && !listImageError) ? 'opacity-0' : 'opacity-100'}`}
+                sizes="(max-width: 1024px) 94vw, 70vw"
+                className={`object-contain transition-opacity ${isMobile ? 'duration-150' : 'duration-300'} ${isTransitioning || (!isListImageLoaded && !listImageError) ? 'opacity-0' : 'opacity-100'}`}
                 onLoad={() => setIsListImageLoaded(true)}
-                priority
+                priority={!isMobile}
               />
             </div>
             <button
