@@ -95,7 +95,7 @@ module.exports = [
     },
   },
   {
-    files: ['lib/logger.js', 'lib/hooks.js'],
+    files: ['lib/logger.js', 'lib/hooks.js', 'scripts/**/*.js'],
     rules: {
       'no-console': 'off',
     },
