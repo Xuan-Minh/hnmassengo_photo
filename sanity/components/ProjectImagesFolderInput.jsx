@@ -52,11 +52,7 @@ function assetRefToUrl(ref, projectId, dataset, options = '') {
 }
 
 export default function ProjectImagesFolderInput(props) {
-  const {
-    onChange,
-    value,
-    renderDefault,
-  } = props;
+  const { onChange, value, renderDefault } = props;
 
   const client = useClient({ apiVersion });
   const { projectId, dataset } = client.config();
