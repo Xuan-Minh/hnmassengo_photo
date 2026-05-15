@@ -111,8 +111,8 @@ export default function HomeSection() {
     >
       <Logo />
 
-      <div className="mx-auto flex w-full max-w-[1200px] 2xl:max-w-[2000px] flex-col gap-10 px-6 pt-24 2xl:mt-10 pb-12 sm:px-8 lg:flex-row lg:items-center lg:gap-14 lg:px-12 lg:pt-32 lg:pb-16 xl:px-16">
-        <div className="relative mx-auto aspect-[3/4] w-[70%] max-w-[360px] sm:max-w-[550px] 2xl:max-w-[700px] lg:mx-0 lg:w-[42%] 2xl:w-[32%]">
+      <div className="mx-auto flex w-full max-w-[1200px] xl:max-w-[1600px] 2xl:max-w-[2000px] flex-col gap-10 px-6 pt-24 2xl:mt-5 pb-12 sm:px-8 lg:flex-row lg:items-center lg:gap-14 lg:px-12 lg:pt-32 lg:pb-16 xl:px-16">
+        <div className="relative mx-auto aspect-[3/4] w-[70%] max-w-[360px] sm:max-w-[550px] xl:max-w-[500px]   2xl:max-w-[700px] lg:mx-0 lg:w-[42%] 2xl:w-[32%]">
           <Image
             src={heroImage}
             alt="Han-Noah portrait"
@@ -131,7 +131,7 @@ export default function HomeSection() {
               {bioTitle}
             </h2>
           ) : null}
-          <p className="whitespace-pre-line font-liberation italic leading-[1.3] text-blackCustom text-[18px] xl:text-[16px] 2xl:text-[20px]">
+          <p className="whitespace-pre-line font-liberation italic leading-[1.3] text-blackCustom text-[18px] xl:text-[18px] 2xl:text-[20px]">
             {bioText}
           </p>
         </div>

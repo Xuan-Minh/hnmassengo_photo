@@ -141,7 +141,7 @@ export default function Gallery() {
           {/* Footer commun isolé des animations ! */}
           <div
             style={{ width: 'min(1100px, 90vw)' }}
-            className="hidden lg:grid lg:grid-cols-3 grid-cols-2 items-center mt-16 lg:mt-4"
+            className="hidden md:grid lg:grid lg:grid-cols-3  md:grid-cols-1 items-center mt-16 lg:mt-4"
           >
             <div className="text-xl font-liberation italic text-blackCustom h-8">
               {activeCoord}

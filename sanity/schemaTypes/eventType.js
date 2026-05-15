@@ -87,7 +87,7 @@ export const eventType = defineType({
     }),
     defineField({
       name: 'layout',
-      title: 'Disposition',
+      title: "Disposition de l'image sur la page d'accueil",
       type: 'string',
       options: {
         list: [
@@ -101,7 +101,7 @@ export const eventType = defineType({
 
     defineField({
       name: 'imagePosition',
-      title: "Position de l'image (haut / bas)",
+      title: "Position de l'image dans le post (haut / bas)",
       type: 'string',
       options: {
         list: [
@@ -160,7 +160,8 @@ export const eventType = defineType({
     }),
     defineField({
       name: 'extrasPosition',
-      title: 'Position des extras',
+      title:
+        'Position des extras (Tous les extras d’un post vont être à la même position)',
       type: 'string',
       options: {
         list: [
