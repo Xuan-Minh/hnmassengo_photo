@@ -148,10 +148,15 @@ export default function Gallery() {
             </div>
             {view === 'grid' && (
               <button
-                className="justify-self-center text-xl font-liberation italic text-blackCustom hover:text-accent transition-all duration-300 px-4 py-2 rounded animate-in fade-in"
+                className="justify-self-center text-xl font-liberation italic text-blackCustom hover:text-accent transition-all duration-300 px-4 py-2 rounded animate-in fade-in hover:[--bg-size:100%_1px]"
                 onClick={() => setOverlayOpen(true)}
               >
-                {t('seeMore')}
+                <span
+                  className={`inline box-decoration-clone bg-[linear-gradient(currentColor,currentColor)] bg-no-repeat [background-position:0_100%] transition-[background-size,color] duration-300 ease-in-out`}
+                  style={{ backgroundSize: 'var(--bg-size, 0% 1px)' }}
+                >
+                  {t('seeMore')}
+                </span>
               </button>
             )}
             <div></div>

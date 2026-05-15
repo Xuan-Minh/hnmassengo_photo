@@ -203,13 +203,15 @@ function AnimatedUnderlineLink({
     <Link
       href={href}
       onClick={onClick}
-      className={`group inline-flex w-fit flex-col text-whiteCustom transition-colors ${className}`.trim()}
+      className={`group hover:[--bg-size:100%_1px] inline-block text-whiteCustom transition-colors ${className}`.trim()}
       {...props}
     >
-      <span className="font-liberation text-sm md:text-[16px] leading-relaxed">
+      <span
+        className={`font-liberation text-sm md:text-[16px] leading-relaxed inline box-decoration-clone bg-[linear-gradient(currentColor,currentColor)] bg-no-repeat [background-position:0_100%] transition-[background-size,color] duration-300 ease-in-out`}
+        style={{ backgroundSize: 'var(--bg-size, 0% 1px)' }}
+      >
         {children}
       </span>
-      <span className="block h-px w-full origin-left scale-x-0 bg-whiteCustom transition-transform duration-300 ease-out group-hover:scale-x-100" />
     </Link>
   );
 }
@@ -349,7 +351,7 @@ export function ContactMarquee({ mode = 'absolute' } = {}) {
   return (
     <div className={wrapperClassName}>
       <motion.div
-        className="flex w-max whitespace-nowrap text-whiteCustom/90 font-liberation text-[18px] sm:text-[24px] md:text-[32px] lg:text-[38px] xl:text-[44px] py-1 sm:py-1.5 md:py-2 -tracking-normal"
+        className="flex w-max whitespace-nowrap text-whiteCustom/90 font-liberation text-3xl md:text-[36px] lg:text-[px] xl:text-[44px] py-1 sm:py-1.5 md:py-2 -tracking-normal"
         animate={{ x: ['0%', '-50%'] }}
         transition={{
           duration: 30,

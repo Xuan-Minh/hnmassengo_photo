@@ -31,6 +31,20 @@ const FILTERS = [
   { label: 'commissions', value: 'commission' },
 ];
 
+function UnderlineLabel({ children }) {
+  return (
+    <span
+      className={`inline box-decoration-clone bg-[linear-gradient(currentColor,currentColor)] bg-no-repeat [background-position:0_100%] transition-[background-size,color] duration-300 ease-in-out`}
+      style={{
+        backgroundSize: 'var(--bg-size, 0% 1px)',
+        pointerEvents: 'none',
+      }}
+    >
+      {children}
+    </span>
+  );
+}
+
 export default function GalleryGridMore({
   onClose,
   onProjectClick,
@@ -238,20 +252,14 @@ export default function GalleryGridMore({
             {FILTERS.map(f => (
               <button
                 key={f.value}
-                className={`text-lg text-left font-liberation transition-opacity duration-300 relative group self-start ${
+                className={`text-lg text-left font-liberation transition-opacity duration-300 relative group hover:[--bg-size:100%_1px] self-start ${
                   filter === f.value
                     ? 'font-bold opacity-100 text-blackCustom'
                     : 'opacity-60 hover:opacity-100 text-accent hover:text-blackCustom'
                 }`}
                 onClick={() => setFilter(f.value)}
               >
-                {t(`filters.${f.value}`)}
-                <span
-                  className={`absolute left-0 bottom-0 h-[1px] bg-current transition-all duration-300 ease-in-out ${
-                    filter === f.value ? 'w-full' : 'w-0 group-hover:w-full'
-                  }`}
-                  style={{ pointerEvents: 'none' }}
-                />
+                <UnderlineLabel>{t(`filters.${f.value}`)}</UnderlineLabel>
               </button>
             ))}
           </div>
@@ -260,7 +268,7 @@ export default function GalleryGridMore({
             {filteredProjects.map(p => (
               <li key={p.id}>
                 <button
-                  className={`text-sm md:text-base text-left font-liberation transition-colors duration-300 relative group ${
+                  className={`text-sm md:text-base text-left font-liberation transition-colors duration-300 relative group hover:[--bg-size:100%_1px] ${
                     gridHoveredProjectId === p.id
                       ? 'text-blackCustom'
                       : 'text-accent/30 hover:text-blackCustom'
@@ -275,15 +283,7 @@ export default function GalleryGridMore({
                     if (!isHoverSourceGrid) setHoveredId(null);
                   }}
                 >
-                  <span
-                    className={`inline box-decoration-clone bg-[linear-gradient(currentColor,currentColor)] bg-no-repeat [background-position:0_100%] transition-[background-size,color] duration-300 ease-in-out ${
-                      hoveredId === p.id || gridHoveredProjectId === p.id
-                        ? '[background-size:100%_1px]'
-                        : '[background-size:0%_1px] group-hover:[background-size:100%_1px]'
-                    }`}
-                  >
-                    {p.name}
-                  </span>
+                  <UnderlineLabel>{p.name}</UnderlineLabel>
                 </button>
               </li>
             ))}
