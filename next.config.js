@@ -6,7 +6,9 @@ try {
   withBundleAnalyzer = require('@next/bundle-analyzer')({
     enabled: process.env.ANALYZE === 'true',
   });
-} catch (e) {}
+} catch {
+  withBundleAnalyzer = config => config;
+}
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -15,7 +17,7 @@ const nextConfig = {
   productionBrowserSourceMaps: false,
   poweredByHeader: false,
 
-  webpack: (config, { isServer }) => {
+  webpack: config => {
     return config;
   },
 

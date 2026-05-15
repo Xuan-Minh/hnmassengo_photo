@@ -55,10 +55,7 @@ export default function ProjectImagesFolderInput(props) {
   const {
     onChange,
     value,
-    path = [],
-    onItemOpen,
     renderDefault,
-    members = [],
   } = props;
 
   const client = useClient({ apiVersion });
@@ -208,25 +205,6 @@ export default function ProjectImagesFolderInput(props) {
     );
     setSelectedKeys(new Set());
   }, [effectiveSelectedKeys, onChange]);
-
-  const getImageItemPath = useCallback(
-    imageKey => {
-      const member = members.find(
-        item => item.kind === 'item' && item.key === imageKey
-      );
-      return member?.item?.path || [...path, { _key: imageKey }];
-    },
-    [members, path]
-  );
-
-  const openCropEditor = useCallback(
-    image => {
-      const itemPath = getImageItemPath(image._key);
-
-      onItemOpen?.(itemPath);
-    },
-    [getImageItemPath, onItemOpen]
-  );
 
   const openEditModal = useCallback(image => {
     setEditAlt({
@@ -399,34 +377,6 @@ export default function ProjectImagesFolderInput(props) {
                         />
                       )}
                     </div>
-                    {/* Crop/hotspot button – opens Sanity's native image editor */}
-                    {onItemOpen && (
-                      <div
-                        style={{
-                          position: 'absolute',
-                          bottom: 4,
-                          left: 4,
-                          right: 4,
-                          display: 'flex',
-                          justifyContent: 'center',
-                        }}
-                        onClick={e => e.stopPropagation()}
-                      >
-                        <Button
-                          mode="ghost"
-                          fontSize={0}
-                          padding={1}
-                          text="✂️"
-                          title="Modifier le crop / hotspot"
-                          onClick={() => openCropEditor(image)}
-                          style={{
-                            width: '100%',
-                            background: 'rgba(0,0,0,0.45)',
-                            color: '#fff',
-                          }}
-                        />
-                      </div>
-                    )}
                     {/* Clicking the checkbox toggles selection — propagation stopped so image click doesn't fire */}
                     <div
                       style={{ position: 'absolute', top: 4, right: 4 }}
@@ -458,10 +408,6 @@ export default function ProjectImagesFolderInput(props) {
             <Text size={1} weight="semibold">
               Liste native Sanity
             </Text>
-            <Text size={1} muted>
-              Cette liste permet d&apos;ouvrir chaque image dans l&apos;éditeur
-              Sanity pour ajuster le crop et le hotspot.
-            </Text>
             {renderDefault(props)}
           </Stack>
         </Card>
@@ -475,16 +421,6 @@ export default function ProjectImagesFolderInput(props) {
           width={1}
           footer={
             <Flex padding={3} gap={2} justify="space-between" wrap="wrap">
-              <div>
-                <Button
-                  mode="ghost"
-                  text="Ouvrir le crop/hotspot"
-                  onClick={() => {
-                    openCropEditor(editingImage);
-                    setEditingImage(null);
-                  }}
-                />
-              </div>
               <Flex gap={2}>
                 <Button
                   mode="ghost"

@@ -32,7 +32,9 @@ function ExtrasBlock({ extras }) {
             } else if (url.hostname.includes('youtube.com')) {
               videoId = url.searchParams.get('v');
             }
-          } catch {}
+          } catch {
+            videoId = null;
+          }
           return videoId ? (
             <div key={idx} className="aspect-video w-full max-w-xl mx-auto">
               <iframe

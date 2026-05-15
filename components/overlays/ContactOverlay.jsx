@@ -351,7 +351,7 @@ export function ContactMarquee({ mode = 'absolute' } = {}) {
   return (
     <div className={wrapperClassName}>
       <motion.div
-        className="flex w-max whitespace-nowrap text-whiteCustom/90 font-liberation text-3xl md:text-[36px] lg:text-[px] xl:text-[44px] py-1 sm:py-1.5 md:py-2 -tracking-normal"
+        className="flex w-max whitespace-nowrap text-whiteCustom/90 font-liberation text-3xl md:text-[36px] lg:text-[40px] xl:text-[44px] py-1 sm:py-1.5 md:py-2 -tracking-normal"
         animate={{ x: ['0%', '-50%'] }}
         transition={{
           duration: 30,

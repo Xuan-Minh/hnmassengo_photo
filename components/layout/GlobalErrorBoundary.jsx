@@ -18,11 +18,11 @@ class GlobalErrorBoundaryInner extends React.Component {
 
   componentDidCatch(error, errorInfo) {
     logger.error('GlobalErrorBoundary caught an error:', error, errorInfo);
-    this.state = {
+    this.setState({
       hasError: true,
       error,
       errorInfo,
-    };
+    });
   }
 
   handleReset = () => {

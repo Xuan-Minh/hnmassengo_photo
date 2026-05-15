@@ -32,7 +32,7 @@ export default function ShopItem({
         {imgDefault && (
           <Image
             src={imgDefault}
-            alt=""
+            alt={title}
             fill
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
             className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${hovered ? 'opacity-0' : 'opacity-100'}`}
@@ -43,7 +43,7 @@ export default function ShopItem({
         {imgHover && (
           <Image
             src={imgHover}
-            alt=""
+            alt={title}
             fill
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
             loading="lazy"
