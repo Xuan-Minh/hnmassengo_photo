@@ -18,7 +18,7 @@ function timingSafeEqualString(a, b) {
   }
 }
 
-function _verifySanitySignature({ rawBody, signatureHeader }) {
+function verifySanitySignature({ rawBody, signatureHeader }) {
   const secret = process.env.SANITY_WEBHOOK_SECRET;
   if (!secret) return { ok: false, reason: 'Missing SANITY_WEBHOOK_SECRET' };
 
@@ -62,22 +62,24 @@ function pickPostId(payload) {
 
 export async function POST(request) {
   const rawBody = await request.text();
-  const _signatureHeader =
+  const signatureHeader =
     request.headers.get('x-sanity-signature') ||
     request.headers.get('X-Sanity-Signature');
 
-  // TODO: Re-enable signature verification once Sanity webhook secret is properly configured
-  // const verified = verifySanitySignature({ rawBody, signatureHeader });
-  // if (!verified.ok) {
-  //   return NextResponse.json(
-  //     {
-  //       success: false,
-  //       message: 'Unauthorized webhook',
-  //       reason: verified.reason,
-  //     },
-  //     { status: 401 }
-  //   );
-  // }
+  const verified = verifySanitySignature({ rawBody, signatureHeader });
+  if (!verified.ok) {
+    return NextResponse.json(
+      {
+        success: false,
+        message: 'Unauthorized webhook',
+        reason: verified.reason,
+      },
+      {
+        status:
+          verified.reason === 'Missing SANITY_WEBHOOK_SECRET' ? 500 : 401,
+      }
+    );
+  }
 
   let payload;
   try {

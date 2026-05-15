@@ -1,37 +1,20 @@
 import { NextResponse } from 'next/server';
 import { logger } from '../../../lib/logger';
 import { upsertNewsletterSubscriber } from '../../../lib/newsletter/subscribe';
+import { checkRateLimit, getClientIp } from '../../../lib/rateLimit';
 
-// Rate limiting via HTTP headers (Netlify preserves these across requests)
 const RATE_LIMIT = 5; // max 5 req/10min/ip
 const WINDOW_MS = 10 * 60 * 1000;
 
-function checkRateLimit(request) {
-  const ip =
-    request.headers.get('x-forwarded-for') ||
-    request.headers.get('cf-connecting-ip') ||
-    'unknown';
-
-  // In production with Netlify Edge Functions, use request context
-  // For now, use X-Rate-Limit headers (set by Netlify Functions)
-  const remaining = parseInt(
-    request.headers.get('x-rate-limit-remaining') || RATE_LIMIT
-  );
-  const resetTime = parseInt(
-    request.headers.get('x-rate-limit-reset') || Date.now() + WINDOW_MS
-  );
-
-  return {
-    ip,
-    allowed: remaining > 0,
-    remaining: Math.max(0, remaining - 1),
-    resetTime,
-  };
-}
-
 export async function POST(request) {
   try {
-    const { allowed, remaining, resetTime } = checkRateLimit(request);
+    const ip = getClientIp(request);
+    const { allowed, remaining, resetTime } = checkRateLimit({
+      key: 'contact',
+      identifier: ip,
+      limit: RATE_LIMIT,
+      windowMs: WINDOW_MS,
+    });
 
     // Rate limit check
     if (!allowed) {
@@ -94,8 +77,9 @@ export async function POST(request) {
     );
 
     // Add rate limit headers for next requests
-    response.headers.set('x-rate-limit-remaining', remaining.toString());
-    response.headers.set('x-rate-limit-reset', resetTime.toString());
+    response.headers.set('x-rate-limit-limit', RATE_LIMIT.toString());
+    response.headers.set('x-rate-limit-remaining', String(remaining));
+    response.headers.set('x-rate-limit-reset', String(resetTime));
 
     return response;
   } catch (error) {

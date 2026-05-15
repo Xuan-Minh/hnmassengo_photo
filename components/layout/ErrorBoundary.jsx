@@ -15,11 +15,11 @@ class ErrorBoundaryInner extends React.Component {
 
   componentDidCatch(error, errorInfo) {
     logger.error('ErrorBoundary a capturé une erreur:', error, errorInfo);
-    this.state = {
+    this.setState({
       hasError: true,
       error,
       errorInfo,
-    };
+    });
   }
 
   handleReset = () => {

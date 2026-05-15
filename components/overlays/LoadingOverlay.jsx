@@ -31,7 +31,7 @@ function NextButton({ isExiting, onClick }) {
       }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      className={`px-6 py-3 text-xl font-whiteCustom lg:hidden font-medium font-liberation transition-colors duration-300 ${hovered ? 'text-whiteCustom opacity-100 backdrop-blur-[2px]' : 'text-greyCustom opacity-85'}`}
+      className={`px-6 py-3 text-xl text-whiteCustom lg:hidden font-medium font-liberation transition-colors duration-300 ${hovered ? 'opacity-100 backdrop-blur-[2px]' : 'text-greyCustom opacity-85'}`}
     >
       <motion.span
         className="inline-block mr-2"
