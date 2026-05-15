@@ -55,9 +55,7 @@ export default function ProjectImagesFolderInput(props) {
   const {
     onChange,
     value,
-    path: _path = [],
     renderDefault,
-    members: _members = [],
   } = props;
 
   const client = useClient({ apiVersion });
