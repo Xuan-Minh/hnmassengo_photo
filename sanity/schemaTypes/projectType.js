@@ -76,7 +76,6 @@ export const projectType = defineType({
       of: [
         {
           type: 'image',
-          options: { hotspot: true },
           fields: [
             defineField({
               name: 'alt',

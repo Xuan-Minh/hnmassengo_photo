@@ -57,7 +57,7 @@ export const homeSectionImageType = defineType({
             return others && others.length > 0
               ? "Il ne peut y avoir qu'une seule image active."
               : true;
-          } catch (e) {
+          } catch {
             return true;
           }
         }),
