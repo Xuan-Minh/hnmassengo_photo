@@ -100,4 +100,10 @@ module.exports = [
       'no-console': 'off',
     },
   },
+  {
+    files: ['scripts/**/*.js'],
+    rules: {
+      'no-console': 'off',
+    },
+  },
 ];
