@@ -15,15 +15,6 @@ function normalizeEmail(email) {
     .toLowerCase();
 }
 
-function escapeHtml(value) {
-  return String(value)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;');
-}
-
 export async function GET(request) {
   const { searchParams } = new URL(request.url);
   const email = normalizeEmail(searchParams.get('email'));
@@ -67,7 +58,7 @@ export async function GET(request) {
       `<!doctype html><html><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>Désinscription</title></head><body style="font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;padding:28px;background:#0b0b0b;color:#f2f2f2;">
 <h1 style="margin:0 0 10px 0;font-size:18px;">Vous êtes désinscrit.</h1>
-<p style="margin:0;opacity:0.85;">${escapeHtml(email)}</p>
+<p style="margin:0;opacity:0.85;">Votre adresse ne recevra plus la newsletter.</p>
 </body></html>`,
       { headers: { 'Content-Type': 'text/html; charset=utf-8' } }
     );
