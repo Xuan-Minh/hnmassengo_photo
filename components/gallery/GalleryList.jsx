@@ -387,7 +387,7 @@ export default function GalleryList({
               key={p.id}
               ref={el => (itemsRef.current[idx] = el)}
               onClick={() => navigateToImage(idx, 0)}
-              className={`text-xl font-liberation whitespace-nowrap transition-all ${
+              className={`text-[20px] font-liberation whitespace-nowrap transition-all ${
                 idx === currentProjectIndex
                   ? 'font-bold opacity-100 scale-105'
                   : 'opacity-30'
