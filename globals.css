@@ -68,6 +68,29 @@ a:focus-visible,
   body {
     background-color: var(--color-background);
   }
+  html {
+    scroll-behavior: smooth;
+    cursor:
+      url('/cursor-default.svg') 2 2,
+      auto !important;
+  }
+
+  body {
+    cursor:
+      url('/cursor-default.svg') 2 2,
+      auto !important;
+  }
+
+  a,
+  button,
+  [role='button'],
+  .cursor-pointer,
+  input[type='submit'],
+  input[type='button'] {
+    cursor:
+      url('/cursor-pointer.svg') 4 12,
+      pointer !important;
+  }
 
   /* Scrollbar styling */
   ::-webkit-scrollbar {
@@ -155,3 +178,5 @@ a:focus-visible,
     );
   }
 }
+
+/* Custom cursor styles removed — using native image cursor via body rule */
