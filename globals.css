@@ -75,7 +75,9 @@ a:focus-visible,
       auto !important;
   }
 
-  body {
+  body,
+  label,
+  input[type='checkbox'] {
     cursor:
       url('/cursor-default.svg') 2 2,
       auto !important;
@@ -90,6 +92,14 @@ a:focus-visible,
     cursor:
       url('/cursor-pointer.svg') 4 12,
       pointer !important;
+  }
+
+  input[type='text'],
+  input[type='email'],
+  input[type='password'] {
+    cursor:
+      url('/cursor-text.svg') 2 14,
+      text !important;
   }
 
   /* Scrollbar styling */
