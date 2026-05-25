@@ -70,37 +70,35 @@ a:focus-visible,
   }
   html {
     scroll-behavior: smooth;
-    cursor:
-      url('/cursor-default.svg') 2 2,
-      auto !important;
+    cursor: url('/cursor/Normal Select Light.cur'), auto !important;
   }
 
   body,
-  label,
-  input[type='checkbox'] {
-    cursor:
-      url('/cursor-default.svg') 2 2,
-      auto !important;
+  label {
+    cursor: url('/cursor/Normal Select Light.cur'), auto !important;
   }
 
+  .windowsTab {
+    cursor: url('/cursor/Move Light.cur'), grab !important;
+  }
+  .windowsTab:active {
+    cursor: url('/cursor/Move.cur'), grabbing !important;
+  }
   a,
   button,
   [role='button'],
   .cursor-pointer,
   input[type='submit'],
-  input[type='button'] {
-    cursor:
-      url('/cursor-pointer.svg') 4 12,
-      pointer !important;
+  input[type='button'],
+  input[type='checkbox'] {
+    cursor: url('/cursor/Select Light.cur'), pointer !important;
   }
 
   input[type='text'],
   input[type='email'],
   input[type='password'],
   textarea {
-    cursor:
-      url('/cursor-text.svg') 2 14,
-      text !important;
+    cursor: url('/cursor/Handwriting Light.cur'), text !important;
   }
 
   /* Scrollbar styling */
@@ -190,4 +188,72 @@ a:focus-visible,
   }
 }
 
+/* Other cursors */
+[style*='cursor: move'],
+[draggable='true'] {
+  cursor: url('/cursor/Move Light.cur'), move !important;
+}
+
+[style*='cursor: not-allowed'],
+[disabled] {
+  cursor: url('/cursor/Unavailable Light.cur'), not-allowed !important;
+}
+
+[style*='cursor: crosshair'] {
+  cursor: url('/cursor/Precision Select Light.cur'), crosshair !important;
+}
+
+[style*='cursor: help'],
+[aria-help] {
+  cursor: url('/cursor/Help Select Light.cur'), help !important;
+}
+
+[style*='cursor: wait'],
+.wait,
+[aria-busy='true'] {
+  cursor: url('/cursor/Busy Light.ani'), wait !important;
+}
+
+[style*='cursor: progress'] {
+  cursor: url('/cursor/Working In Background Light.ani'), progress !important;
+}
+
+/* Resize cursors */
+[style*='cursor: ew-resize'] {
+  cursor: url('/cursor/Horizontal Resize Light.cur'), ew-resize !important;
+}
+
+[style*='cursor: ns-resize'] {
+  cursor: url('/cursor/Verticle Resize Light.cur'), ns-resize !important;
+}
+
+[style*='cursor: nwse-resize'] {
+  cursor: url('/cursor/Diagonal Resize 1 Light.cur'), nwse-resize !important;
+}
+
+[style*='cursor: nesw-resize'] {
+  cursor: url('/cursor/Diagonal Resize 2 Light.cur'), nesw-resize !important;
+}
+
 /* Custom cursor styles removed — using native image cursor via body rule */
+
+a:active,
+button:active,
+[role='button']:active,
+.cursor-pointer:active,
+input[type='submit']:active,
+input[type='button']:active,
+input[type='checkbox']:active {
+  cursor: url('/cursor/Select.cur'), pointer !important;
+}
+
+html:active,
+body:active,
+label:active {
+  cursor: url('/cursor/Normal Select.cur'), auto !important;
+}
+
+.resize {
+  resize: both;
+  overflow: auto;
+}
