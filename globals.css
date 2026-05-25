@@ -96,7 +96,8 @@ a:focus-visible,
 
   input[type='text'],
   input[type='email'],
-  input[type='password'] {
+  input[type='password'],
+  textarea {
     cursor:
       url('/cursor-text.svg') 2 14,
       text !important;
