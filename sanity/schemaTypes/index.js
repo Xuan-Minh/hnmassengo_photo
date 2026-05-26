@@ -7,6 +7,12 @@ import { homeSectionImageType } from './homeSectionImageType';
 import { homeBioType } from './homeBioType';
 import { newsletterSubscriber } from './newsletterSubscriber';
 import { newsletterCampaign } from './newsletterCampaign';
+import { homeSection } from './homeSection';
+import windowBio from './objects/windowBio.js';
+import windowMusic from './objects/windowMusic';
+import windowRecommandation from './objects/windowRecommandation.js';
+import windowText from './objects/windowText';
+import windowCustom from './objects/windowCustom';
 
 export const schema = {
   types: [
@@ -17,6 +23,12 @@ export const schema = {
     loadingImageMobileType,
     homeSectionImageType,
     homeBioType,
+    homeSection,
+    windowBio,
+    windowMusic,
+    windowRecommandation,
+    windowText,
+    windowCustom,
     newsletterSubscriber,
     newsletterCampaign,
   ],
