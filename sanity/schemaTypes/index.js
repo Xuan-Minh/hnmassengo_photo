@@ -10,7 +10,7 @@ import { newsletterCampaign } from './newsletterCampaign';
 import { homeSection } from './homeSection';
 import windowBio from './objects/windowBio.js';
 import windowMusic from './objects/windowMusic';
-import windowRecommandation from './objects/windowRecommandation.js';
+import windowRecommendation from './objects/windowRecommendation.js';
 import windowText from './objects/windowText';
 import windowCustom from './objects/windowCustom';
 
@@ -26,7 +26,7 @@ export const schema = {
     homeSection,
     windowBio,
     windowMusic,
-    windowRecommandation,
+    windowRecommendation,
     windowText,
     windowCustom,
     newsletterSubscriber,

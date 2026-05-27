@@ -6,14 +6,52 @@ export default {
     {
       name: 'title',
       title: 'Titre de la fenêtre',
-      type: 'string',
-      initialValue: 'Présentation',
+      type: 'object',
+      fields: [
+        {
+          name: 'fr',
+          title: 'Français',
+          type: 'string',
+          initialValue: 'Présentation',
+        },
+        {
+          name: 'en',
+          title: 'Anglais',
+          type: 'string',
+          initialValue: 'Introduction',
+        },
+        {
+          name: 'de',
+          title: 'Allemand',
+          type: 'string',
+          initialValue: 'Einführung',
+        },
+      ],
     },
     {
       name: 'content',
       title: 'Contenu texte',
-      type: 'array',
-      of: [{ type: 'block' }], // Portable Text standard
+      type: 'object',
+      fields: [
+        {
+          name: 'fr',
+          title: 'Français',
+          type: 'array',
+          of: [{ type: 'block' }],
+        },
+        {
+          name: 'en',
+          title: 'Anglais',
+          type: 'array',
+          of: [{ type: 'block' }],
+        },
+        {
+          name: 'de',
+          title: 'Allemand',
+          type: 'array',
+          of: [{ type: 'block' }],
+        },
+      ],
     },
   ],
 };

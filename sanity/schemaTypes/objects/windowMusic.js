@@ -6,8 +6,27 @@ export default {
     {
       name: 'title',
       title: 'Titre de la fenêtre',
-      type: 'string',
-      initialValue: 'Musique du moment',
+      type: 'object',
+      fields: [
+        {
+          name: 'fr',
+          title: 'Français',
+          type: 'string',
+          initialValue: 'Musique du moment',
+        },
+        {
+          name: 'en',
+          title: 'Anglais',
+          type: 'string',
+          initialValue: 'Music of the moment',
+        },
+        {
+          name: 'de',
+          title: 'Allemand',
+          type: 'string',
+          initialValue: 'Musik des Augenblicks',
+        },
+      ],
     },
     {
       name: 'spotifyUrl',

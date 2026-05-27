@@ -14,7 +14,7 @@ export default {
     {
       name: 'title',
       title: 'Titre de la fenêtre',
-      type: 'string',
+      type: 'object',
       fields: [
         {
           name: 'fr',
