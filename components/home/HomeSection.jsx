@@ -113,21 +113,6 @@ export default function HomeSection() {
     >
       <Logo />
 
-      <WindowsManager>
-        <WindowsTab
-          id="window1"
-          couleur="bg-blue-300"
-          titre="Fenêtre 1"
-          contenu="Contenu de la fenêtre 1"
-        />
-        <WindowsTab
-          id="window2"
-          couleur="bg-green-300"
-          titre="Fenêtre 2"
-          contenu="Contenu de la fenêtre 2"
-        />
-      </WindowsManager>
-
       <div className="mx-auto flex w-full max-w-[1200px] xl:max-w-[1600px] 2xl:max-w-[2000px] flex-col gap-10 px-6 pt-12 pb-12 sm:px-8 lg:flex-row lg:items-center lg:gap-14 lg:px-12 lg:pt-24 lg:pb-32 xl:px-16 2xl:pt-32 2xl:px-24">
         <div className="relative mx-auto aspect-[3/4] w-[70%] max-w-[360px] sm:max-w-[550px] xl:max-w-[500px] 2xl:max-w-[700px] lg:mx-0 lg:w-[42%] 2xl:w-[32%]">
           <Image

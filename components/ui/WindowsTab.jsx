@@ -13,11 +13,12 @@ export default function WindowsTab({
   return (
     <motion.div
       drag
+      dragMomentum={false}
       onDragStart={bringToFront}
       onMouseDown={bringToFront}
       style={{ zIndex }}
       whileDrag={{
-        scale: 1.05,
+        scale: 1.01,
         boxShadow: '0px 10px 20px rgba(0,0,0,0.2)',
       }}
       className={`windowsTab absolute flex flex-col flex-nowrap ${color} w-[40%] h-[60%] shadow-md resize-y border border-black`}
