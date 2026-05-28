@@ -17,7 +17,7 @@ export default {
       of: [
         { type: 'windowBio' },
         { type: 'windowMusic' },
-        { type: 'windowRecommandation' },
+        { type: 'windowRecommendation' },
         { type: 'windowText' },
         { type: 'windowCustom' },
       ],
