@@ -7,12 +7,12 @@ import { homeSectionImageType } from './homeSectionImageType';
 import { homeBioType } from './homeBioType';
 import { newsletterSubscriber } from './newsletterSubscriber';
 import { newsletterCampaign } from './newsletterCampaign';
-import { homeSection } from './homeSection';
-import { windowBio } from './objects/windowBio';
-import { windowMusic } from './objects/windowMusic';
-import { windowRecommendation } from './objects/windowRecommendation';
-import { windowText } from './objects/windowText';
-import { windowCustom } from './objects/windowCustom';
+import homeSection from './homeSection';
+import windowBio from './objects/windowBio';
+import windowMusic from './objects/windowMusic';
+import windowRecommendation from './objects/windowRecommendation';
+import windowText from './objects/windowText';
+import windowCustom from './objects/windowCustom';
 
 export const schema = {
   types: [
