@@ -8,27 +8,52 @@ export default function WindowsTab({
   contenu,
   zIndex,
   bringToFront,
+  fontColor,
 }) {
   const color = couleur || 'bg-gray-300';
+  const fontcolor = fontColor || '#000000';
+  const [isDragging, setIsDragging] = useState(false);
+
+  const childrenVariants = {
+    idle: {
+      scale: 1,
+      boxShadow: '0px 1px 3px rgba(0,0,0,0.1)', // Ombre légère par défaut
+    },
+    dragging: {
+      scale: 1.01,
+      boxShadow: '0px 10px 20px rgba(0,0,0,0.2)',
+    },
+  };
+
   return (
     <motion.div
       drag
       dragMomentum={false}
-      onDragStart={bringToFront}
+      onDragStart={() => {
+        bringToFront();
+        setIsDragging(true);
+      }}
+      onDragEnd={() => setIsDragging(false)}
       onMouseDown={bringToFront}
       style={{ zIndex }}
-      whileDrag={{
-        scale: 1.01,
-        boxShadow: '0px 10px 20px rgba(0,0,0,0.2)',
-      }}
-      className={`windowsTab absolute flex flex-col flex-nowrap ${color} w-[40%] h-[60%] shadow-md resize-y border border-black`}
+      className={`windowsTab absolute flex flex-col flex-nowrap gap-2  h-[35%] bg-transparent`}
     >
-      <div className="flex items-center gap-2 border border-black border-t-0 border-l-0 border-r-0 px-2 py-1 cursor-grab active:cursor-grabbing">
-        <h3>{titre}</h3>
-      </div>
-      <div className="flex-1 px-2 py-1 bg-background overflow-auto">
-        <p>{contenu}</p>
-      </div>
+      <motion.div
+        style={{ backgroundColor: color, color: fontcolor }}
+        variants={childrenVariants}
+        animate={isDragging ? 'dragging' : 'idle'}
+        className={`flex items-center self-start border border-black gap-2 p-2 cursor-grab active:cursor-grabbing rounded-t-md`}
+      >
+        <h3 className="text-lg text-center font-bold">{titre}</h3>
+      </motion.div>
+      <motion.div
+        variants={childrenVariants}
+        animate={isDragging ? 'dragging' : 'idle'}
+        className="flex-1 p-4 border border-black bg-background flex justify-between rounded-b-md overflow-hidden"
+        {...(typeof contenu === 'string'
+          ? { dangerouslySetInnerHTML: { __html: contenu } }
+          : { children: contenu })}
+      ></motion.div>
     </motion.div>
   );
 }
