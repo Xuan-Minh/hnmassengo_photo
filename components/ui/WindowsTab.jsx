@@ -48,14 +48,14 @@ export default function WindowsTab({
         style={{ backgroundColor: color, color: fontcolor }}
         variants={childrenVariants}
         animate={isDragging ? 'dragging' : 'idle'}
-        className={`flex items-center self-start border border-black gap-2 p-2 cursor-grab active:cursor-grabbing rounded-t-md`}
+        className={`flex items-center self-start border border-black gap-2 p-2 cursor-grab active:cursor-grabbing windowsTab rounded-t-md`}
       >
         <h3 className="text-lg text-center font-bold">{titre}</h3>
       </motion.div>
       <motion.div
         variants={childrenVariants}
         animate={isDragging ? 'dragging' : 'idle'}
-        className="flex-1 p-4 border border-black bg-background flex justify-between rounded-b-md overflow-hidden"
+        className="flex-1 p-4 border border-black bg-background flex justify-between rounded-b-md overflow-hidden cursor-pointer windowsTab"
         {...(typeof contenu === 'string'
           ? { dangerouslySetInnerHTML: { __html: contenu } }
           : { children: contenu })}

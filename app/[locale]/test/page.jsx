@@ -3,7 +3,6 @@ import WindowsTab from '../../../components/ui/WindowsTab';
 import WindowsManager from '../../../components/ui/WindowsManager';
 import { useEffect } from 'react';
 import client from '../../../lib/sanity.client';
-import { extractIdYoutube } from '../../../lib/utils';
 
 export default function TestPage() {
   return (
@@ -20,8 +19,13 @@ export default function TestPage() {
         titre="in my ears."
         contenu={
           <iframe
+            style={{
+              borderRadius: '12px',
+              width: '100%',
+              height: '352px',
+              cursor: "url('/cursor/Select Light.cur'), pointer", // Corrigé ici
+            }}
             src="https://open.spotify.com/embed/track/0vJxo7x6jnFKbtFgtihMvJ?utm_source=generator&theme=0"
-            style={{ width: '100%' }}
             frameBorder="0"
             allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
             loading="lazy"
@@ -37,6 +41,7 @@ export default function TestPage() {
           <iframe
             src="https://www.youtube.com/embed/ZIdBrvu7buE"
             title="YouTube video player"
+            style={{ width: '35vw', height: '25vw', borderRadius: '12px' }}
             frameBorder="0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
             referrerPolicy="strict-origin-when-cross-origin"
