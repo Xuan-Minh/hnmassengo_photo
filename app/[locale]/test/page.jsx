@@ -1,18 +1,63 @@
 'use client';
+import { useMemo, useState, useEffect } from 'react';
+import { useParams } from 'next/navigation';
+import Image from 'next/image';
+import { useTranslations } from 'next-intl';
 import WindowsTab from '../../../components/ui/WindowsTab';
 import WindowsManager from '../../../components/ui/WindowsManager';
-import { useEffect } from 'react';
+import { HOME_FALLBACK_IMAGES } from '../../../lib/constants';
 import client from '../../../lib/sanity.client';
-import Image from 'next/image';
 import { useSanityImages } from '../../../lib/hooks';
 
+function localizeField(value, locale, fallback = '') {
+  if (!value) return fallback;
+  if (typeof value === 'string') return value;
+  return value?.[locale] || value?.fr || value?.en || value?.de || fallback;
+}
 export default function TestPage() {
-  const homeImages = useSanityImages('homeSectionImage', [], {
-    width: 900,
-    quality: 55,
+  const { locale = 'fr' } = useParams();
+  const t = useTranslations();
+  const [bioDoc, setBioDoc] = useState(null);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const fetchHomeBio = async () => {
+      try {
+        const data = await client.fetch(
+          'coalesce(*[_type == "homeBio" && _id in ["homeBio", "drafts.homeBio"]][0]{ title, bio }, *[_type == "homeBio"] | order(_updatedAt desc)[0]{ title, bio })'
+        );
+        if (!cancelled) setBioDoc(data || null);
+      } catch {
+        if (!cancelled) setBioDoc(null);
+      }
+    };
+
+    fetchHomeBio();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  // On garde les images du schema homeSectionImage et on affiche la premiere.
+  const isProduction = process.env.NODE_ENV === 'production';
+  const homeImages = useSanityImages('homeSectionImage', HOME_FALLBACK_IMAGES, {
+    width: isProduction ? 900 : 1200,
+    quality: isProduction ? 55 : 70,
     dpr: 1,
   });
   const heroImage = homeImages[0] || '';
+
+  const bioTitle = useMemo(() => {
+    const value = localizeField(bioDoc?.title, locale, '');
+    return typeof value === 'string' ? value.trim() : '';
+  }, [bioDoc, locale]);
+
+  const bioText = useMemo(
+    () => localizeField(bioDoc?.bio, locale, t('home.welcome')),
+    [bioDoc, locale, t]
+  );
 
   return (
     <WindowsManager>
@@ -26,7 +71,7 @@ export default function TestPage() {
               flexWrap: 'nowrap',
               justifyContent: 'between',
               gap: '1rem',
-              width: '50vw',
+              width: '45vw',
             }}
           >
             <div className="w-[38%] h-auto inline-block">
@@ -39,7 +84,7 @@ export default function TestPage() {
               />
             </div>
             <div className="p-4 w-[60%] h-auto flex">
-              <ul className="list-disc list-inside flex justify-around flex-col ">
+              <ul className="list-disc list-inside flex justify-around flex-col text-[18px] md:text-[16px] lg:text-[16px] xl:text-[18px] 2xl:text-[20px] font-bold">
                 <li>Name : Han-Noah MASSENGO</li>
                 <li>Age : 23 ans</li>
                 <li>Location : Augsbourg / Paris 📌</li>
@@ -78,7 +123,7 @@ export default function TestPage() {
           <iframe
             src="https://www.youtube.com/embed/ZIdBrvu7buE"
             title="YouTube video player"
-            style={{ width: '30vw', height: '20vw', borderRadius: '0.375rem ' }}
+            style={{ width: '26vw', height: '15vw', borderRadius: '0.375rem ' }}
             frameBorder="0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
             referrerPolicy="strict-origin-when-cross-origin"
@@ -91,7 +136,11 @@ export default function TestPage() {
       <WindowsTab
         id="tab4"
         titre="and in my heart."
-        contenu="Contenu de la quatrième fenêtre."
+        contenu={
+          <p className="w-[30vw] h-[20vw] bg-current/15 overflow-scroll-y whitespace-pre-line font-liberation italic leading-[1.3] text-blackCustom text-[18px] md:text-[16px] lg:text-[16px] xl:text-[18px] 2xl:text-[20px]">
+            {bioText}
+          </p>
+        }
         couleur="#E2131E"
         fontColor="#F4F3F2"
       />
