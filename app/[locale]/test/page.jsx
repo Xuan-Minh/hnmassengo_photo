@@ -23,13 +23,13 @@ export default function TestPage() {
           <div
             style={{
               display: 'flex',
-              flexWrap: 'wrap',
-              justifyContent: 'center',
+              flexWrap: 'nowrap',
+              justifyContent: 'between',
               gap: '1rem',
-              width: '30vw',
+              width: '50vw',
             }}
           >
-            <div className="w-[48%] h-auto inline-block">
+            <div className="w-[38%] h-auto inline-block">
               <Image
                 src={heroImage}
                 alt="Portrait"
@@ -38,14 +38,14 @@ export default function TestPage() {
                 className="w-full h-auto object-fill"
               />
             </div>
-            <div className="p-2 bg-green-500 w-[48%] h-auto inline-block">
-              <p className="text-whiteCustom">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed
-                tristique, nisl nec tincidunt lacinia, nunc est aliquam nunc,
-                eget aliquam nisl nunc eu nunc. Sed tristique, nisl nec
-                tincidunt lacinia, nunc est aliquam nunc, eget aliquam nisl nunc
-                eu nunc.
-              </p>
+            <div className="p-4 w-[60%] h-auto flex">
+              <ul className="list-disc list-inside flex justify-around flex-col ">
+                <li>Name : Han-Noah MASSENGO</li>
+                <li>Age : 23 ans</li>
+                <li>Location : Augsbourg / Paris 📌</li>
+                <li>Occupation : Soccer / Photographer</li>
+                <li>Last seen : 2 hours ago</li>
+              </ul>
             </div>
           </div>
         }

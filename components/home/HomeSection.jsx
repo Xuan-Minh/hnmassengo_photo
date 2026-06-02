@@ -7,8 +7,6 @@ import { motion, useReducedMotion } from 'framer-motion';
 import Logo from '../ui/Logo';
 import { useSanityImages } from '../../lib/hooks';
 import { HOME_FALLBACK_IMAGES } from '../../lib/constants';
-import WindowsManager from '../ui/WindowsManager';
-import WindowsTab from '../ui/WindowsTab';
 import { isSanityCdnUrl } from '../../lib/imageUtils';
 import client from '../../lib/sanity.client';
 
