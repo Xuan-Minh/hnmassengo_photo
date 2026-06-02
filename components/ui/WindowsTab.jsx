@@ -24,6 +24,12 @@ export default function WindowsTab({
       boxShadow: '0px 10px 20px rgba(0,0,0,0.2)',
     },
   };
+  function extractIdYoutube(url) {
+    const regex =
+      /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i;
+    const match = url.match(regex);
+    return match ? match[1] : null;
+  }
 
   return (
     <motion.div
@@ -36,7 +42,7 @@ export default function WindowsTab({
       onDragEnd={() => setIsDragging(false)}
       onMouseDown={bringToFront}
       style={{ zIndex }}
-      className={`windowsTab absolute flex flex-col flex-nowrap gap-2  h-[35%] bg-transparent`}
+      className={`windowsTab absolute flex flex-col flex-nowrap gap-2  h-auto bg-transparent`}
     >
       <motion.div
         style={{ backgroundColor: color, color: fontcolor }}
