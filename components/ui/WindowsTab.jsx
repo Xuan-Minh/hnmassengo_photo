@@ -42,13 +42,13 @@ export default function WindowsTab({
       onDragEnd={() => setIsDragging(false)}
       onMouseDown={bringToFront}
       style={{ zIndex }}
-      className={`windowsTab absolute flex flex-col flex-nowrap gap-2  h-auto bg-transparent`}
+      className={`windowsTab absolute flex flex-col flex-nowrap gap-1 h-auto bg-transparent`}
     >
       <motion.div
         style={{ backgroundColor: color, color: fontcolor }}
         variants={childrenVariants}
         animate={isDragging ? 'dragging' : 'idle'}
-        className={`flex items-center self-start border border-black gap-2 p-2 cursor-grab active:cursor-grabbing windowsTab rounded-t-md`}
+        className={`flex w-full border border-black gap-2 p-2 cursor-grab active:cursor-grabbing windowsTab rounded-t-md`}
       >
         <h3 className="text-lg text-center font-bold">{titre}</h3>
       </motion.div>
