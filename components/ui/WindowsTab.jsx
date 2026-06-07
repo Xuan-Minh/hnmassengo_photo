@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import { Minimize } from 'lucide-react'; // Import de l'icône
 
 export default function WindowsTab({
   couleur,
@@ -9,27 +10,23 @@ export default function WindowsTab({
   zIndex,
   bringToFront,
   fontColor,
+  style,
 }) {
   const color = couleur || 'bg-gray-300';
   const fontcolor = fontColor || '#000000';
   const [isDragging, setIsDragging] = useState(false);
+  const [isMinimized, setIsMinimized] = useState(false); // État pour la réduction
 
   const childrenVariants = {
     idle: {
       scale: 1,
-      boxShadow: '0px 1px 3px rgba(0,0,0,0.1)', // Ombre légère par défaut
+      boxShadow: '0px 1px 3px rgba(0,0,0,0.1)',
     },
     dragging: {
       scale: 1.01,
       boxShadow: '0px 10px 20px rgba(0,0,0,0.2)',
     },
   };
-  function extractIdYoutube(url) {
-    const regex =
-      /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i;
-    const match = url.match(regex);
-    return match ? match[1] : null;
-  }
 
   return (
     <motion.div
@@ -41,25 +38,40 @@ export default function WindowsTab({
       }}
       onDragEnd={() => setIsDragging(false)}
       onMouseDown={bringToFront}
-      style={{ zIndex }}
-      className={`windowsTab absolute flex flex-col flex-nowrap gap-1 h-auto bg-transparent`}
+      style={{ zIndex, ...style }}
+      className={`windowsTab absolute flex flex-col flex-nowrap gap-1 bg-transparent`}
     >
       <motion.div
         style={{ backgroundColor: color, color: fontcolor }}
         variants={childrenVariants}
         animate={isDragging ? 'dragging' : 'idle'}
-        className={`flex w-full border border-black gap-2 p-2  windowsTab rounded-t-md`}
+        // Le style des coins change si la fenêtre est réduite
+        className={`flex items-center justify-between w-full border border-black gap-2 p-2 cursor-grab active:cursor-grabbing ${
+          isMinimized ? 'rounded-md' : 'rounded-t-md'
+        }`}
       >
-        <h3 className="text-lg text-center font-bold">{titre}</h3>
+        <h3 className="text-lg text-center font-bold px-2">{titre}</h3>
+        {/* Le bouton qui change l'état isMinimized */}
+        <button
+          onClick={() => setIsMinimized(!isMinimized)}
+          className="p-1 hover:bg-white/20 rounded-sm"
+          aria-label="Réduire la fenêtre"
+        >
+          <Minimize size={16} />
+        </button>
       </motion.div>
-      <motion.div
-        variants={childrenVariants}
-        animate={isDragging ? 'dragging' : 'idle'}
-        className="flex-1 p-4 border border-black bg-background flex justify-between cursor-default rounded-b-md windowsTab overflow-auto"
-        {...(typeof contenu === 'string'
-          ? { dangerouslySetInnerHTML: { __html: contenu } }
-          : { children: contenu })}
-      ></motion.div>
+
+      {/* Le contenu ne s'affiche que si la fenêtre n'est pas réduite */}
+      {!isMinimized && (
+        <motion.div
+          variants={childrenVariants}
+          animate={isDragging ? 'dragging' : 'idle'}
+          className="flex-1 p-4 border border-black bg-background flex rounded-b-md overflow-auto"
+          {...(typeof contenu === 'string'
+            ? { dangerouslySetInnerHTML: { __html: contenu } }
+            : { children: contenu })}
+        ></motion.div>
+      )}
     </motion.div>
   );
 }

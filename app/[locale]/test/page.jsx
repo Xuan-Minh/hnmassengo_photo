@@ -59,6 +59,7 @@ export default function TestPage() {
     [bioDoc, locale, t]
   );
 
+  const teamColors = ['#BB3430', '#44724B', '#FED52A', '#FFFFFF'];
   return (
     <WindowsManager>
       <WindowsTab
@@ -80,7 +81,7 @@ export default function TestPage() {
                 alt="Portrait"
                 width={400}
                 height={400}
-                className="w-full h-auto object-fill"
+                className="w-full h-auto object-fill rounded-md"
               />
             </div>
             <div className="p-4 w-[60%] h-auto flex">
@@ -94,7 +95,7 @@ export default function TestPage() {
             </div>
           </div>
         }
-        couleur="#58003D"
+        couleur={teamColors[0]}
         fontColor="#F4F3F2"
       />
       <WindowsTab
@@ -113,7 +114,7 @@ export default function TestPage() {
             loading="lazy"
           ></iframe>
         }
-        couleur="#44724B"
+        couleur={teamColors[1]}
         fontColor="#F4F3F2"
       />
       <WindowsTab
@@ -130,8 +131,8 @@ export default function TestPage() {
             allowFullScreen
           ></iframe>
         }
-        couleur="#004DA3"
-        fontColor="#F4F3F2"
+        couleur={teamColors[2]}
+        fontColor="#0A0A0A"
       />
       <WindowsTab
         id="tab4"
@@ -141,7 +142,41 @@ export default function TestPage() {
             {bioText}
           </p>
         }
-        couleur="#E2131E"
+        couleur={teamColors[3]}
+        fontColor="#0A0A0A"
+      />
+      <WindowsTab
+        id="tab5"
+        titre="picture1.jpg"
+        contenu={
+          <div className="w-full h-auto inline-block">
+            <Image
+              src={heroImage}
+              alt="Portrait"
+              width={200}
+              height={200}
+              className="w-full h-auto object-fill"
+            />
+          </div>
+        }
+        couleur={teamColors[2]}
+        fontColor="#0A0A0A"
+      />
+      <WindowsTab
+        id="tab6"
+        titre="picture2.jpg"
+        contenu={
+          <div className="w-full h-auto inline-block">
+            <Image
+              src={heroImage}
+              alt="Portrait"
+              width={300}
+              height={300}
+              className="w-full h-auto object-fill rounded-md"
+            />
+          </div>
+        }
+        couleur={teamColors[0]}
         fontColor="#F4F3F2"
       />
     </WindowsManager>
