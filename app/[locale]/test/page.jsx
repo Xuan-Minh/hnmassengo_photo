@@ -76,13 +76,15 @@ export default function TestPage() {
             }}
           >
             <div className="w-[38%] h-auto inline-block">
-              <Image
-                src={heroImage}
-                alt="Portrait"
-                width={400}
-                height={400}
-                className="w-full h-auto object-fill rounded-md"
-              />
+              {heroImage && (
+                <Image
+                  src={heroImage}
+                  alt="Portrait"
+                  width={400}
+                  height={400}
+                  className="w-full h-auto object-fill rounded-md"
+                />
+              )}
             </div>
             <div className="p-4 w-[60%] h-auto flex">
               <ul className="list-disc list-inside flex justify-around flex-col text-[18px] md:text-[16px] lg:text-[16px] xl:text-[18px] 2xl:text-[20px] font-bold">
@@ -150,13 +152,15 @@ export default function TestPage() {
         titre="picture1.jpg"
         contenu={
           <div className="w-full h-auto inline-block">
-            <Image
-              src={heroImage}
-              alt="Portrait"
-              width={200}
-              height={200}
-              className="w-full h-auto object-fill"
-            />
+            {heroImage && (
+              <Image
+                src={heroImage}
+                alt="Portrait"
+                width={200}
+                height={200}
+                className="w-full h-auto object-fill"
+              />
+            )}
           </div>
         }
         couleur={teamColors[2]}
@@ -167,13 +171,15 @@ export default function TestPage() {
         titre="picture2.jpg"
         contenu={
           <div className="w-full h-auto inline-block">
-            <Image
-              src={heroImage}
-              alt="Portrait"
-              width={300}
-              height={300}
-              className="w-full h-auto object-fill rounded-md"
-            />
+            {heroImage && (
+              <Image
+                src={heroImage}
+                alt="Portrait"
+                width={300}
+                height={300}
+                className="w-full h-auto object-fill rounded-md"
+              />
+            )}
           </div>
         }
         couleur={teamColors[0]}

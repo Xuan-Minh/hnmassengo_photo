@@ -45,13 +45,11 @@ export default function WindowsTab({
         style={{ backgroundColor: color, color: fontcolor }}
         variants={childrenVariants}
         animate={isDragging ? 'dragging' : 'idle'}
-        // Le style des coins change si la fenêtre est réduite
         className={`flex items-center justify-between w-full border border-black gap-2 p-2 cursor-grab active:cursor-grabbing ${
           isMinimized ? 'rounded-md' : 'rounded-t-md'
         }`}
       >
         <h3 className="text-lg text-center font-bold px-2">{titre}</h3>
-        {/* Le bouton qui change l'état isMinimized */}
         <button
           onClick={() => setIsMinimized(!isMinimized)}
           className="p-1 hover:bg-white/20 rounded-sm"
@@ -61,7 +59,6 @@ export default function WindowsTab({
         </button>
       </motion.div>
 
-      {/* Le contenu ne s'affiche que si la fenêtre n'est pas réduite */}
       {!isMinimized && (
         <motion.div
           variants={childrenVariants}

@@ -13,6 +13,7 @@ import windowMusic from './objects/windowMusic';
 import windowRecommendation from './objects/windowRecommendation';
 import windowText from './objects/windowText';
 import windowCustom from './objects/windowCustom';
+import windowColor from './objects/windowColor';
 
 export const schema = {
   types: [
@@ -29,6 +30,7 @@ export const schema = {
     windowRecommendation,
     windowText,
     windowCustom,
+    windowColor,
     newsletterSubscriber,
     newsletterCampaign,
   ],
