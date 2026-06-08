@@ -97,7 +97,7 @@ export default function TestPage() {
             </div>
           </div>
         }
-        couleur={colorSettings?.tabColors?.[0] || teamColorsFALLBACK[0]}
+        couleur={teamColorsFALLBACK[0]}
         fontColor="#F4F3F2"
       />
       <WindowsTab
