@@ -29,6 +29,14 @@ export default {
       ],
     },
     {
+      name: 'windowColor',
+      title: 'Couleur de la fenêtre',
+      type: 'reference',
+      to: [{ type: 'teamColor' }],
+      validation: Rule =>
+        Rule.required().error('Vous devez choisir une couleur.'),
+    },
+    {
       name: 'spotifyUrl',
       title: 'Lien Spotify (Morceau, Album ou Playlist)',
       type: 'url',

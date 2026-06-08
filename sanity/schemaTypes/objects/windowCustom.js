@@ -26,6 +26,14 @@ export default {
       ],
     },
     {
+      name: 'windowColor',
+      title: 'Couleur de la fenêtre',
+      type: 'reference',
+      to: [{ type: 'teamColor' }],
+      validation: Rule =>
+        Rule.required().error('Vous devez choisir une couleur.'),
+    },
+    {
       name: 'content',
       title: 'Contenu',
       type: 'array',
