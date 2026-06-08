@@ -1,5 +1,5 @@
 export default {
-  name: 'colorSettings',
+  name: 'windowColor',
   title: 'Réglages des Couleurs',
   type: 'document',
   fields: [

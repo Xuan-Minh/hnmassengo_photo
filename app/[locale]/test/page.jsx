@@ -59,7 +59,7 @@ export default function TestPage() {
     [bioDoc, locale, t]
   );
 
-  const teamColors = ['#BB3430', '#44724B', '#FED52A', '#FFFFFF'];
+  const teamColorsFALLBACK = ['#BB3430', '#44724B', '#FED52A', '#FFFFFF'];
   return (
     <WindowsManager>
       <WindowsTab
@@ -97,7 +97,7 @@ export default function TestPage() {
             </div>
           </div>
         }
-        couleur={teamColors[0]}
+        couleur={colorSettings?.tabColors?.[0] || teamColorsFALLBACK[0]}
         fontColor="#F4F3F2"
       />
       <WindowsTab
@@ -116,7 +116,7 @@ export default function TestPage() {
             loading="lazy"
           ></iframe>
         }
-        couleur={teamColors[1]}
+        couleur={teamColorsFALLBACK[1]}
         fontColor="#F4F3F2"
       />
       <WindowsTab
@@ -133,7 +133,7 @@ export default function TestPage() {
             allowFullScreen
           ></iframe>
         }
-        couleur={teamColors[2]}
+        couleur={teamColorsFALLBACK[2]}
         fontColor="#0A0A0A"
       />
       <WindowsTab
@@ -144,7 +144,7 @@ export default function TestPage() {
             {bioText}
           </p>
         }
-        couleur={teamColors[3]}
+        couleur={teamColorsFALLBACK[3]}
         fontColor="#0A0A0A"
       />
       <WindowsTab
@@ -163,7 +163,7 @@ export default function TestPage() {
             )}
           </div>
         }
-        couleur={teamColors[2]}
+        couleur={teamColorsFALLBACK[2]}
         fontColor="#0A0A0A"
       />
       <WindowsTab
@@ -182,7 +182,7 @@ export default function TestPage() {
             )}
           </div>
         }
-        couleur={teamColors[0]}
+        couleur={teamColorsFALLBACK[0]}
         fontColor="#F4F3F2"
       />
     </WindowsManager>
