@@ -20,7 +20,6 @@ export default {
         { type: 'windowRecommendation' },
         { type: 'windowText' },
         { type: 'windowCustom' },
-        { type: 'windowColor' },
       ],
     },
   ],
