@@ -166,7 +166,13 @@ export default function ProjectImagesFolderInput(props) {
   const effectiveSelectedKeys = useMemo(
     () =>
       new Set(
-        images.filter(img => selectedKeys.has(img._key)).map(img => img._key)
+        images
+          .filter(img => selectedKeys.has(img._key))
+          .map(img => img._key)
+          .reduce((acc, key) => {
+            if (!acc.includes(key)) acc.push(key);
+            return acc;
+          }, [])
       ),
     [images, selectedKeys]
   );

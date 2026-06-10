@@ -62,12 +62,14 @@ export default function Gallery() {
         images: (p.images || [])
           .map(img => img?.asset?.url)
           .filter(Boolean)
-          .map(url =>
-            buildSanityImageUrl(url, {
+          .reduce((acc, url) => {
+            const optimized = buildSanityImageUrl(url, {
               ...getOptimizedImageParams('gallery-grid', isMobileDevice),
               auto: 'format',
-            })
-          ),
+            });
+            if (!acc.includes(optimized)) acc.push(optimized);
+            return acc;
+          }, []),
         coords: p.coords,
         date: p.date,
         description:

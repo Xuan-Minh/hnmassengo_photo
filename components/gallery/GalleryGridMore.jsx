@@ -160,6 +160,28 @@ export default function GalleryGridMore({ onClose, onProjectClick, projects }) {
     return filteredProjects.flatMap(p =>
       (p.images || [])
         .filter(Boolean)
+        .reduce((acc, img) => {
+          const src = getSanityImageDeliveryUrl(img, {
+            w: 640,
+            q: 70,
+          });
+          if (!src) return acc;
+
+          const ratio = getAspectRatio(img);
+
+          acc.push({
+            projectId: p.id,
+            project: p,
+            name: p.name,
+            type: p.type,
+            src,
+            ratio,
+            coords: p.coords,
+            isFirst: acc.length === 0, // Marque la première image du projet
+            isSanityImage: isSanityCdnUrl(src),
+          });
+          return acc;
+        }, [])
         .map((img, idx) => {
           const src = getSanityImageDeliveryUrl(img, { w: 640, q: 70 });
           if (!src) return null;
