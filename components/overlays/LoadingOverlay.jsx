@@ -44,7 +44,7 @@ function NextButton({ isExiting, onClick }) {
   );
 }
 
-export default function LoadingOverlay({ initialImages = [] }) {
+export default function LoadingOverlay({ initialImages }) {
   const previouslyFocusedElement = useRef(null);
   const elegantBackground =
     'linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 50%, #1a1a1a 100%)';
@@ -91,7 +91,6 @@ export default function LoadingOverlay({ initialImages = [] }) {
   const [visible, setVisible] = useState(true);
   const [isExiting, setIsExiting] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
-  // Initialiser à true si pas d'images pour éviter le blocage
   const [allLoaded, setAllLoaded] = useState(false);
 
   const rotateInterval = useRef(null);

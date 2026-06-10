@@ -1,25 +1,10 @@
 import '../globals.css';
 import React from 'react';
-import localFont from 'next/font/local'; // Utilise les polices locales
+import localFont from 'next/font/local';
 import { getLocale } from 'next-intl/server';
-//import { Lexend, Playfair_Display } from 'next/font/google';
 import GlobalErrorBoundary from '../components/layout/GlobalErrorBoundary';
 import StructuredData from '../lib/metadata';
 
-/*const lexend = Lexend({
-  subsets: ['latin'],
-  weight: ['400', '700'],
-  variable: '--font-lexend',
-  display: 'swap',
-});
-
-const playfair = Playfair_Display({
-  subsets: ['latin'],
-  weight: ['400', '400i', '700', '700i'],
-  variable: '--font-playfair',
-  display: 'swap',
-});
-*/
 const liberation = localFont({
   src: [
     {

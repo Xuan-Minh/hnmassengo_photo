@@ -45,11 +45,7 @@ function UnderlineLabel({ children }) {
   );
 }
 
-export default function GalleryGridMore({
-  onClose,
-  onProjectClick,
-  projects = [],
-}) {
+export default function GalleryGridMore({ onClose, onProjectClick, projects }) {
   const t = useTranslations('gallery');
   const [filter, setFilter] = useState('all');
   const [hoveredId, setHoveredId] = useState(null);
