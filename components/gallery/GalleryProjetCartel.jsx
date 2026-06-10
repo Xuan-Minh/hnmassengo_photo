@@ -187,23 +187,23 @@ function CustomLightbox({ open, onClose, images, project }) {
 
       {/* Contenu principal (MOBILE) */}
       <div className="flex-1 flex flex-col w-full relative bg-blackCustom md:hidden min-h-0">
-        <div
+        <button
+          type="button"
           className="absolute left-0 top-14 bottom-12 w-[20%] z-30"
           onClick={() => goToIndex(currentIndex - 1)}
           onKeyPress={e => {
             if (e.key === 'Left') goToIndex(currentIndex - 1);
           }}
           tabIndex={0}
-          role="button"
         />
-        <div
+        <button
+          type="button"
           className="absolute right-0 top-14 bottom-12 w-[20%] z-30"
           onClick={() => goToIndex(currentIndex + 1)}
           onKeyPress={e => {
             if (e.key === 'Right') goToIndex(currentIndex + 1);
           }}
           tabIndex={0}
-          role="button"
         />
 
         <div
@@ -345,33 +345,33 @@ function CustomLightbox({ open, onClose, images, project }) {
             />
           </div>
 
-          <div
+          <button
             className="absolute left-0 top-0 h-full w-[20%] z-30 flex items-center justify-start pl-8 md:pl-0 group cursor-pointer"
             onClick={() => goToIndex(currentIndex - 1)}
             onKeyPress={e => {
               if (e.key === 'Left') goToIndex(currentIndex - 1);
             }}
             tabIndex={0}
-            role="button"
+            type="button"
           >
             <span className="text-xl italic text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
               previous
             </span>
-          </div>
+          </button>
 
-          <div
+          <button
+            type="button"
             className="absolute right-0 top-0 h-full w-[20%] z-30 flex items-center justify-end pr-8 md:pr-0 group cursor-pointer"
             onClick={() => goToIndex(currentIndex + 1)}
             onKeyPress={e => {
               if (e.key === 'Right') goToIndex(currentIndex + 1);
             }}
             tabIndex={0}
-            role="button"
           >
             <span className="text-xl italic text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
               next
             </span>
-          </div>
+          </button>
         </div>
       </div>
 
@@ -394,7 +394,8 @@ function ImageMarqueeHorizontal({ images, onClick }) {
     >
       <div className="flex items-center gap-12 px-10">
         {images.map((img, index) => (
-          <div
+          <button
+            type="button"
             key={img + index}
             className="flex-shrink-0 flex justify-center items-center snap-center cursor-pointer hover:opacity-80 transition-opacity duration-200"
             onClick={onClick}
@@ -402,7 +403,6 @@ function ImageMarqueeHorizontal({ images, onClick }) {
               if (e.key === 'Enter' && onClick) onClick();
             }}
             tabIndex={0}
-            role="button"
           >
             <Image
               src={buildSanityImageUrl(img, { w: 400, q: 40, auto: 'format' })}
@@ -414,7 +414,7 @@ function ImageMarqueeHorizontal({ images, onClick }) {
               sizes="(max-width: 768px) 100vw, 400px"
               priority={false}
             />
-          </div>
+          </button>
         ))}
       </div>
     </div>
