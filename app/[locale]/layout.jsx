@@ -27,7 +27,7 @@ export async function generateMetadata({ params }) {
     metadataBase: new URL('https://hnmassengo.com'),
     title: 'Han-Noah MASSENGO | Photographer & Visual Artist',
     description:
-      'Explore the artistic portfolio of Han-Noah MASSENGO, a photographer capturing moments through light, shadow, and emotion. Discover commissioned works, fine art prints, and visual stories.',
+      'Explore the artistic portfolio of Han-Noah MASSENGO, a photographer capturing moments through light, shadow, and em. Discover commissioned works, fine art prints, and visual stories.',
     keywords: [
       'photography',
       'visual art',
@@ -50,7 +50,7 @@ export async function generateMetadata({ params }) {
     openGraph: {
       title: 'Han-Noah MASSENGO | Photographer & Visual Artist',
       description:
-        'Explore the artistic portfolio of Han-Noah MASSENGO, a photographer capturing moments through light, shadow, and emotion.',
+        'Explore the artistic portfolio of Han-Noah MASSENGO, a photographer capturing moments through light, shadow, and em.',
       url: `https://hnmassengo.com/${locale}`,
       siteName: 'Han-Noah MASSENGO Portfolio',
       locale: OG_LOCALE[locale] || 'fr_FR',
