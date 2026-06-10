@@ -49,11 +49,6 @@ export default function TestPage() {
   });
   const heroImage = homeImages[0] || '';
 
-  const bioTitle = useMemo(() => {
-    const value = localizeField(bioDoc?.title, locale, '');
-    return typeof value === 'string' ? value.trim() : '';
-  }, [bioDoc, locale]);
-
   const bioText = useMemo(
     () => localizeField(bioDoc?.bio, locale, t('home.welcome')),
     [bioDoc, locale, t]
