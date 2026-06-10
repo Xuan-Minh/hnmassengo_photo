@@ -11,12 +11,12 @@ function ExtrasBlock({ extras }) {
   if (!Array.isArray(extras) || extras.length === 0) return null;
   return (
     <div className="my-6 flex flex-col gap-4">
-      {extras.map((extra, idx) => {
+      {extras.map((extra, idx, item) => {
         if (!extra?.type) return null;
         if (extra.type === 'audio' && extra.audio?.asset?.url) {
           const fileUrl = extra.audio.asset.url;
           return (
-            <audio key={idx} controls className="w-full">
+            <audio key={item.id + '-' + idx} controls className="w-full">
               <track kind="captions"></track>
               <source src={fileUrl} />
               Votre navigateur ne supporte pas l'audio.
@@ -37,7 +37,10 @@ function ExtrasBlock({ extras }) {
             videoId = null;
           }
           return videoId ? (
-            <div key={idx} className="aspect-video w-full max-w-xl mx-auto">
+            <div
+              key={item.id + '-' + idx}
+              className="aspect-video w-full max-w-xl mx-auto"
+            >
               <iframe
                 src={`https://www.youtube.com/embed/${videoId}`}
                 title="YouTube video"
@@ -52,7 +55,7 @@ function ExtrasBlock({ extras }) {
           const fileUrl = extra.file.asset.url;
           return (
             <a
-              key={idx}
+              key={item.id + '-' + idx}
               href={fileUrl}
               target="_blank"
               rel="noopener noreferrer"
@@ -151,8 +154,11 @@ export default function BlogPostOverlay({ post, onClose, onPrevious, onNext }) {
 
               {/* Content - Left aligned and justified */}
               <div className="text-base md:text-lg leading-relaxed text-whiteCustom space-y-4 max-w-2xl mx-auto">
-                {displayText?.split('\n\n').map((paragraph, idx) => (
-                  <p key={idx} className="text-justify indent-8">
+                {displayText?.split('\n\n').map((paragraph, idx, item) => (
+                  <p
+                    key={item.id + '-' + idx}
+                    className="text-justify indent-8"
+                  >
                     {paragraph}
                   </p>
                 ))}
@@ -211,8 +217,11 @@ export default function BlogPostOverlay({ post, onClose, onPrevious, onNext }) {
 
               {/* Content - Left aligned and justified */}
               <div className="text-base md:text-lg leading-relaxed text-whiteCustom space-y-4 max-w-2xl mx-auto">
-                {displayText?.split('\n\n').map((paragraph, idx) => (
-                  <p key={idx} className="text-justify indent-8">
+                {displayText?.split('\n\n').map((paragraph, idx, item) => (
+                  <p
+                    key={item.id + '-' + idx}
+                    className="text-justify indent-8"
+                  >
                     {paragraph}
                   </p>
                 ))}

@@ -467,9 +467,9 @@ function ImageMarquee({ images, onClick }) {
     >
       <div className="w-full h-full overflow-hidden relative">
         <m.div ref={trackRef} className="flex flex-col" style={{ y }}>
-          {allImages.map((img, index) => (
+          {allImages.map((img, index, item) => (
             <div
-              key={index}
+              key={item.id + '-' + index}
               className="w-full pb-16 flex-shrink-0 flex justify-center items-center"
             >
               <Image
@@ -616,8 +616,8 @@ export default function GalleryProjetCartel({ project, onClose }) {
               {project.name}
             </h2>
             <div className="font-liberation text-base leading-relaxed space-y-4">
-              {paragraphs.map((p, i) => (
-                <p key={i}>{p}</p>
+              {paragraphs.map((p, i, item) => (
+                <p key={item.id + '-' + i}>{p}</p>
               ))}
             </div>
           </div>
@@ -641,8 +641,8 @@ export default function GalleryProjetCartel({ project, onClose }) {
               {project.name}
             </h2>
             <div className="font-liberation text-lg 2xl:text-xl max-w-2xl 2xl:max-w-6xl  leading-relaxed space-y-4">
-              {paragraphs.map((p, i) => (
-                <p key={i}>{p}</p>
+              {paragraphs.map((p, i, item) => (
+                <p key={item.id + '-' + i}>{p}</p>
               ))}
             </div>
           </section>

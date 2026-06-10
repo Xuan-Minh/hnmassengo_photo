@@ -95,7 +95,7 @@ export default function BlogPostItem({
         >
           {visible.map((para, i) => (
             <p
-              key={i}
+              key={post.id + '-' + i}
               ref={el => (paragraphsRef.current[i] = el)}
               className="sm:text-lg lg:text-base"
             >
