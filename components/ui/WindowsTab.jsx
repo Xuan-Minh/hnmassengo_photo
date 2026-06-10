@@ -3,6 +3,17 @@ import { motion } from 'framer-motion';
 import { useState } from 'react';
 import { Minimize } from 'lucide-react'; // Import de l'icône
 
+const childrenVariants = {
+  idle: {
+    scale: 1,
+    boxShadow: '0px 1px 3px rgba(0,0,0,0.1)',
+  },
+  dragging: {
+    scale: 1.01,
+    boxShadow: '0px 10px 20px rgba(0,0,0,0.2)',
+  },
+};
+
 export default function WindowsTab({
   couleur,
   titre,
@@ -16,17 +27,6 @@ export default function WindowsTab({
   const fontcolor = fontColor || '#000000';
   const [isDragging, setIsDragging] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false); // État pour la réduction
-
-  const childrenVariants = {
-    idle: {
-      scale: 1,
-      boxShadow: '0px 1px 3px rgba(0,0,0,0.1)',
-    },
-    dragging: {
-      scale: 1.01,
-      boxShadow: '0px 10px 20px rgba(0,0,0,0.2)',
-    },
-  };
 
   return (
     <motion.div

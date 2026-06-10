@@ -12,6 +12,12 @@ import Image from 'next/image';
 import { EVENTS, emitEvent, addEventHandler } from '../../lib/events';
 import { buildSanityImageUrl } from '../../lib/imageUtils';
 
+const imageStyle = {
+  filter: 'brightness(0.42) contrast(1.05) saturate(0.9)',
+  transform: 'scale(1.04)',
+  transition: 'opacity 0.1s ease-in-out',
+};
+
 function NextButton({ isExiting, onClick }) {
   const [hovered, setHovered] = useState(false);
   const [clickCount, setClickCount] = useState(0);
@@ -281,12 +287,6 @@ export default function LoadingOverlay({ initialImages }) {
   }, []);
 
   if (!visible && !isExiting) return null;
-
-  const imageStyle = {
-    filter: 'brightness(0.42) contrast(1.05) saturate(0.9)',
-    transform: 'scale(1.04)',
-    transition: 'opacity 0.1s ease-in-out',
-  };
 
   const canDismiss = allLoaded;
 
