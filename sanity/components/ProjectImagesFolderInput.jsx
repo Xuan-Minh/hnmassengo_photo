@@ -441,16 +441,8 @@ export default function ProjectImagesFolderInput(props) {
                 <button
                   type="button"
                   aria-label="image preview"
-                  style={{
-                    width: '100%',
-                    maxHeight: '300px',
-                    aspectRatio: '16 / 9',
-                    background: '#111',
-                    backgroundImage: `url(${editingImagePreviewUrl})`,
-                    backgroundRepeat: 'no-repeat',
-                    backgroundPosition: 'center',
-                    backgroundSize: 'contain',
-                  }}
+                  className="w-full max-h-[300px] aspect-video bg-[#111] bg-no-repeat bg-center bg-contain"
+                  style={{ backgroundImage: `url(${editingImagePreviewUrl})` }}
                 />
               </Card>
             ) : null}
