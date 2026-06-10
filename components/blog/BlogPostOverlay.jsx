@@ -17,6 +17,7 @@ function ExtrasBlock({ extras }) {
           const fileUrl = extra.audio.asset.url;
           return (
             <audio key={idx} controls className="w-full">
+              <track kind="captions"></track>
               <source src={fileUrl} />
               Votre navigateur ne supporte pas l'audio.
             </audio>

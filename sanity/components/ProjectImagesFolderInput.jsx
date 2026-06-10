@@ -344,8 +344,9 @@ export default function ProjectImagesFolderInput(props) {
                     style={{ position: 'relative', userSelect: 'none' }}
                   >
                     {/* Clicking the image opens the edit modal */}
-                    <button
-                      type="button"
+                    <div
+                      role="button"
+                      aria-label={`Modifier le texte alternatif de l'image ${image._key}`}
                       style={{ cursor: 'pointer' }}
                       onClick={() => openEditModal(image)}
                       onKeyPress={e => {
@@ -370,7 +371,9 @@ export default function ProjectImagesFolderInput(props) {
                           }}
                         />
                       ) : (
-                        <div
+                        <button
+                          type="button"
+                          aria-label={`Modifier le texte alternatif de l'image ${image._key}`}
                           style={{
                             width: '100%',
                             aspectRatio: 1,
@@ -379,7 +382,7 @@ export default function ProjectImagesFolderInput(props) {
                           }}
                         />
                       )}
-                    </button>
+                    </div>
                     {/* Clicking the checkbox toggles selection — propagation stopped so image click doesn't fire */}
                     <div
                       style={{ position: 'absolute', top: 4, right: 4 }}
