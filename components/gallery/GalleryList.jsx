@@ -357,7 +357,6 @@ export default function GalleryList({
               type="button"
               onClick={() => onProjectSelect(projects[currentProjectIndex])}
               className="relative w-[94%] h-[62vh] lg:w-[70%] lg:h-[70vh] xl:w-[80%] xl:h-[80vh] cursor-pointer"
-              onClick={() => onProjectSelect(projects[currentProjectIndex])}
               onKeyPress={e => {
                 if (e.key === 'Enter')
                   onProjectSelect(projects[currentProjectIndex]);
