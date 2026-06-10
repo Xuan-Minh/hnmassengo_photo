@@ -110,6 +110,7 @@ function ContactForm({ idSuffix = '', onSubmitSuccess, defaultSubject = '' }) {
           {t('form.fullName')} *
         </label>
         <input
+          label={`fullName${idSuffix}`}
           id={`fullName${idSuffix}`}
           name="fullName"
           type="text"
@@ -128,6 +129,7 @@ function ContactForm({ idSuffix = '', onSubmitSuccess, defaultSubject = '' }) {
             {t('form.email')} *
           </label>
           <input
+            label={`email${idSuffix}`}
             id={`email${idSuffix}`}
             name="email"
             type="email"
@@ -143,6 +145,7 @@ function ContactForm({ idSuffix = '', onSubmitSuccess, defaultSubject = '' }) {
             {t('form.subject')} *
           </label>
           <input
+            label={`subject${idSuffix}`}
             id={`subject${idSuffix}`}
             name="subject"
             type="text"
@@ -162,6 +165,7 @@ function ContactForm({ idSuffix = '', onSubmitSuccess, defaultSubject = '' }) {
           {t('form.message')} *
         </label>
         <textarea
+          label={`message${idSuffix}`}
           id={`message${idSuffix}`}
           name="message"
           rows={5}

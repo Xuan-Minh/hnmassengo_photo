@@ -261,6 +261,7 @@ export default function ProjectImagesFolderInput(props) {
           {status ? <Text size={1}>{status}</Text> : null}
 
           <input
+            label="folder input"
             ref={folderInputRef}
             type="file"
             multiple
@@ -273,6 +274,7 @@ export default function ProjectImagesFolderInput(props) {
           />
 
           <input
+            label="files input"
             ref={filesInputRef}
             type="file"
             multiple

@@ -183,6 +183,7 @@ function CustomLightbox({ open, onClose, images, project }) {
       {/* Contenu principal (MOBILE) */}
       <div className="flex-1 flex flex-col w-full relative bg-blackCustom md:hidden min-h-0">
         <button
+          label="previous image"
           type="button"
           className="absolute left-0 top-14 bottom-12 w-[20%] z-30"
           onClick={() => goToIndex(currentIndex - 1)}
@@ -192,6 +193,7 @@ function CustomLightbox({ open, onClose, images, project }) {
           tabIndex={0}
         />
         <button
+          label="next image"
           type="button"
           className="absolute right-0 top-14 bottom-12 w-[20%] z-30"
           onClick={() => goToIndex(currentIndex + 1)}
