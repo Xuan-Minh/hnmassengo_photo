@@ -31,6 +31,7 @@ export default function Logo({ visible = true }) {
         }}
         className="text-accent font-normal font-liberation italic pointer-events-auto cursor-pointer"
         title={t('title')}
+        tabIndex={0}
       >
         Han-Noah
       </button>
@@ -42,6 +43,7 @@ export default function Logo({ visible = true }) {
         }}
         className="text-accent  font-bold font-liberation pointer-events-auto cursor-pointer"
         title={t('title')}
+        tabIndex={0}
       >
         MASSENGO
       </button>
