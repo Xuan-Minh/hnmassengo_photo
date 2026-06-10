@@ -43,7 +43,6 @@ function ExtrasBlock({ extras }) {
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
                 className="w-full h-full border-none rounded"
-                sandbox=""
               />
             </div>
           ) : null;
