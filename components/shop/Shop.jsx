@@ -355,7 +355,8 @@ export default function Shop() {
         >
           {/* Header du cart, clickable sur mobile */}
           <div className="flex justify-between items-center mb-0 md:mb-8 px-6 py-4 md:px-0 md:py-0">
-            <h2
+            <button
+              type="button"
               className="text-2xl md:text-3xl cursor-pointer select-none"
               onClick={() => setCartOpen(open => !open)}
               onKeyPress={e => {
@@ -365,7 +366,7 @@ export default function Shop() {
               }}
             >
               @{t('cart.title')}
-            </h2>
+            </button>
             <span className="hidden md:block text-xs text-black/40">
               ({cartCount})
             </span>

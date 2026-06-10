@@ -458,7 +458,8 @@ function ImageMarquee({ images, onClick }) {
   }, [images, y]);
 
   return (
-    <aside
+    <button
+      type="button"
       className="hidden md:flex flex-col w-[45%] h-full relative bg-background cursor-pointer"
       onClick={onClick}
       onKeyPress={e => {
@@ -495,7 +496,7 @@ function ImageMarquee({ images, onClick }) {
           ))}
         </m.div>
       </div>
-    </aside>
+    </button>
   );
 }
 

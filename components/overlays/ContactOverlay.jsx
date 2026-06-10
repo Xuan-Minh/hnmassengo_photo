@@ -342,7 +342,8 @@ export function ContactContent({
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-8 lg:gap-10 xl:gap-14">
       <div className="lg:col-span-7">
-        <h2
+        <button
+          type="button"
           id={headingId}
           onClick={handleCopyLink}
           onKeyPress={e => {
@@ -351,7 +352,7 @@ export function ContactContent({
           className="cursor-pointer text-whiteCustom/90 hover:text-whiteCustom transition-colors font-liberation italic text-[32px] sm:text-[36px] md:text-[42px] lg:text-[46px] xl:text-[48px] leading-none mb-6 md:mb-8"
         >
           {t('title')}
-        </h2>
+        </button>
         <ContactForm idSuffix={idSuffix} defaultSubject={defaultSubject} />
       </div>
 
