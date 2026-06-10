@@ -350,8 +350,8 @@ export default function ProjectImagesFolderInput(props) {
                     style={{ position: 'relative', userSelect: 'none' }}
                   >
                     {/* Clicking the image opens the edit modal */}
-                    <div
-                      role="button"
+                    <button
+                      type="button"
                       aria-label={`Modifier le texte alternatif de l'image ${image._key}`}
                       style={{ cursor: 'pointer' }}
                       onClick={() => openEditModal(image)}
@@ -361,34 +361,20 @@ export default function ProjectImagesFolderInput(props) {
                       tabIndex={0}
                     >
                       {url ? (
-                        <button
-                          type="button"
+                        <div
+                          role="button"
                           aria-label="Aperçu de l'image"
-                          style={{
-                            width: '100%',
-                            aspectRatio: 1,
-                            borderRadius: '2px',
-                            opacity: isSelected ? 0.5 : 1,
-                            display: 'block',
-                            backgroundImage: `url(${url})`,
-                            backgroundRepeat: 'no-repeat',
-                            backgroundPosition: 'center',
-                            backgroundSize: 'cover',
-                          }}
+                          className="w-full aspect-square rounded-[2px] block bg-no-repeat bg-center bg-cover opacity-100 transition-opacity duration-300"
+                          style={{ backgroundImage: `url(${url})` }}
                         />
                       ) : (
-                        <button
-                          type="button"
+                        <div
+                          role="button"
                           aria-label={`Modifier le texte alternatif de l'image ${image._key}`}
-                          style={{
-                            width: '100%',
-                            aspectRatio: 1,
-                            background: '#e0e0e0',
-                            borderRadius: '2px',
-                          }}
+                          className="w-full aspect-square bg-[#e0e0e0] rounded-[2px]"
                         />
                       )}
-                    </div>
+                    </button>
                     {/* Clicking the checkbox toggles selection — propagation stopped so image click doesn't fire */}
                     <div
                       style={{ position: 'absolute', top: 4, right: 4 }}
