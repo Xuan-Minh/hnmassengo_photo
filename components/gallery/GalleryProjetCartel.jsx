@@ -2,13 +2,231 @@
 import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import Image from 'next/image';
 import PropTypes from 'prop-types';
-import { m, animate, useMotionValue, AnimatePresence } from 'framer-motion';
+import {
+  motion,
+  animate,
+  useMotionValue,
+  AnimatePresence,
+} from 'framer-motion';
 import { useTranslations } from 'next-intl';
 
 import { buildSanityImageUrl } from '../../lib/imageUtils';
 import { getOptimizedImageParams } from '../../lib/hooks';
 
-// Composant CustomLightbox
+// --- Sub-components for CustomLightbox ---
+
+function LightboxMobileView({
+  onClose,
+  images,
+  project,
+  currentIndex,
+  currentDisplaySrc,
+  isCurrentLoaded,
+  hasCurrentError,
+  setHasCurrentError,
+  setIsCurrentLoaded,
+  goToIndex,
+}) {
+  return (
+    <>
+      <div className="absolute top-8 landscape:top-2 left-8 z-40 md:hidden">
+        <button
+          type="button"
+          onClick={onClose}
+          className="text-lg hover:text-white transition-colors"
+        >
+          back
+        </button>
+      </div>
+
+      <div className="flex-1 flex flex-col w-full relative bg-blackCustom md:hidden min-h-0">
+        <div
+          className="absolute left-0 top-14 bottom-12 w-[20%] z-30"
+          onClick={() => goToIndex(currentIndex - 1)}
+        />
+        <div
+          className="absolute right-0 top-14 bottom-12 w-[20%] z-30"
+          onClick={() => goToIndex(currentIndex + 1)}
+        />
+
+        <div
+          className="flex-1 min-h-0 flex items-center justify-center px-4 pt-14 landscape:pt-2 landscape:pb-1"
+          style={{
+            paddingLeft: 'max(1rem, env(safe-area-inset-left, 0px))',
+            paddingRight: 'max(1rem, env(safe-area-inset-right, 0px))',
+          }}
+        >
+          <motion.div
+            key={currentIndex}
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.3 }}
+            className="w-full h-full flex items-center justify-center"
+          >
+            <Image
+              src={currentDisplaySrc}
+              alt={`${project.name} - Image ${currentIndex + 1} of ${images.length}`}
+              width={1200}
+              height={1200}
+              className="max-w-full max-h-full w-auto h-auto object-contain"
+              sizes="100vw"
+              unoptimized
+              fetchPriority="high"
+              decoding="async"
+              onError={() => setHasCurrentError(true)}
+              onLoad={() => setIsCurrentLoaded(true)}
+              priority
+            />
+          </motion.div>
+        </div>
+
+        <div
+          className="flex-shrink-0 text-center italic text-sm py-3 landscape:py-1"
+          style={{
+            paddingBottom: 'calc(env(safe-area-inset-bottom, 12px) + 14px)',
+          }}
+        >
+          {currentIndex + 1} / {images.length}
+        </div>
+
+        {!isCurrentLoaded && !hasCurrentError && (
+          <div className="absolute inset-0 bg-white/5 animate-pulse" />
+        )}
+        {hasCurrentError && (
+          <div className="absolute inset-0 flex items-center justify-center text-white/70">
+            image unavailable
+          </div>
+        )}
+      </div>
+    </>
+  );
+}
+
+function LightboxDesktopView({
+  onClose,
+  images,
+  project,
+  currentIndex,
+  currentDisplaySrc,
+  isCurrentLoaded,
+  hasCurrentError,
+  setHasCurrentError,
+  setIsCurrentLoaded,
+  goToIndex,
+}) {
+  return (
+    <div className="hidden md:flex flex-col flex-1 min-h-0 w-full pt-16 pr-16 pl-16">
+      <div>
+        <button
+          type="button"
+          onClick={onClose}
+          className="font-liberation text-lg hover:text-white transition-colors"
+        >
+          back
+        </button>
+      </div>
+      <div className="flex-1 relative flex items-center justify-center overflow-hidden">
+        {/* Image précédente */}
+        <div className="absolute left-0 top-1/2 -translate-y-1/2 h-[50%] w-[15%] opacity-40 blur-[2px] pointer-events-none">
+          <Image
+            src={buildSanityImageUrl(
+              images[(currentIndex - 1 + images.length) % images.length],
+              { w: 600, q: 40, auto: 'format' }
+            )}
+            alt={`${project.name} - Image précédente`}
+            width={300}
+            height={200}
+            className="w-full h-full object-contain"
+            sizes="(max-width: 768px) 100vw, 300px"
+            priority={false}
+            unoptimized
+          />
+        </div>
+
+        {/* Image principale */}
+        <div className="relative z-10 h-[60%] w-full max-w-[60%] flex items-center justify-center">
+          <motion.div
+            key={currentIndex}
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.3 }}
+          >
+            <div className="relative">
+              {!isCurrentLoaded && !hasCurrentError && (
+                <div className="absolute inset-0 bg-white/5 animate-pulse" />
+              )}
+              {hasCurrentError && (
+                <div className="absolute inset-0 flex items-center justify-center text-white/70">
+                  image unavailable
+                </div>
+              )}
+              <Image
+                src={currentDisplaySrc}
+                alt={`${project.name} - Image ${currentIndex + 1} sur ${images.length}`}
+                width={1100}
+                height={800}
+                className={`max-h-[75vh] max-w-[60vw] object-contain transition-opacity duration-300 ${
+                  isCurrentLoaded && !hasCurrentError
+                    ? 'opacity-100'
+                    : 'opacity-0'
+                }`}
+                sizes="(max-width: 1200px) 70vw, 1100px"
+                unoptimized
+                fetchPriority="high"
+                decoding="async"
+                onError={() => setHasCurrentError(true)}
+                onLoad={() => setIsCurrentLoaded(true)}
+                priority
+              />
+            </div>
+          </motion.div>
+        </div>
+
+        {/* Image suivante */}
+        <div className="absolute right-0 top-1/2 -translate-y-1/2 h-[50%] w-[15%] opacity-40 blur-[2px] pointer-events-none">
+          <Image
+            src={buildSanityImageUrl(
+              images[(currentIndex + 1) % images.length],
+              {
+                w: 600,
+                q: 40,
+                auto: 'format',
+              }
+            )}
+            alt="suivante"
+            width={300}
+            height={200}
+            className="w-full h-full object-contain"
+            sizes="(max-width: 768px) 100vw, 300px"
+            priority={false}
+            unoptimized
+          />
+        </div>
+
+        <div
+          className="absolute left-0 top-0 h-full w-[20%] z-30 flex items-center justify-start pl-8 md:pl-0 group cursor-pointer"
+          onClick={() => goToIndex(currentIndex - 1)}
+        >
+          <span className="text-xl italic text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            previous
+          </span>
+        </div>
+
+        <div
+          className="absolute right-0 top-0 h-full w-[20%] z-30 flex items-center justify-end pr-8 md:pr-0 group cursor-pointer"
+          onClick={() => goToIndex(currentIndex + 1)}
+        >
+          <span className="text-xl italic text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            next
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// --- Main Lightbox Component ---
+
 function CustomLightbox({ open, onClose, images, project }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isCurrentLoaded, setIsCurrentLoaded] = useState(false);
@@ -50,9 +268,7 @@ function CustomLightbox({ open, onClose, images, project }) {
   }, [images, currentIndex]);
 
   useEffect(() => {
-    if (open) {
-      goToIndex(0);
-    }
+    if (open) goToIndex(0);
   }, [open, goToIndex]);
 
   useEffect(() => {
@@ -62,9 +278,7 @@ function CustomLightbox({ open, onClose, images, project }) {
   }, [open, currentIndex, currentDisplaySrc]);
 
   useEffect(() => {
-    if (!open) return;
-    if (typeof window === 'undefined') return;
-    if (!images?.length) return;
+    if (!open || typeof window === 'undefined' || !images?.length) return;
 
     let cancelled = false;
 
@@ -81,10 +295,7 @@ function CustomLightbox({ open, onClose, images, project }) {
       };
 
       if (typeof img.decode === 'function') {
-        img
-          .decode()
-          .then(markReady)
-          .catch(() => {});
+        img.decode().then(markReady).catch(() => {});
       } else {
         img.onload = markReady;
       }
@@ -93,29 +304,18 @@ function CustomLightbox({ open, onClose, images, project }) {
     preload(currentDisplaySrc);
 
     if (images.length > 1) {
-      // Précharger les 3 images suivantes pour une navigation fluide
       for (let i = 1; i <= 3; i++) {
         const nextIndex = (currentIndex + i) % images.length;
-        const nextSrc = buildSanityImageUrl(images[nextIndex], {
-          ...getOptimizedImageParams('gallery'),
-          auto: 'format',
-        });
-        preload(nextSrc);
+        preload(getDisplaySrcForIndex(nextIndex));
       }
-
-      // Précharger l'image précédente
       const prevIndex = (currentIndex - 1 + images.length) % images.length;
-      const prevSrc = buildSanityImageUrl(images[prevIndex], {
-        ...getOptimizedImageParams('gallery'),
-        auto: 'format',
-      });
-      preload(prevSrc);
+      preload(getDisplaySrcForIndex(prevIndex));
     }
 
     return () => {
       cancelled = true;
     };
-  }, [open, images, currentIndex, currentDisplaySrc]);
+  }, [open, images, currentIndex, currentDisplaySrc, getDisplaySrcForIndex]);
 
   useEffect(() => {
     const handleKeyDown = e => {
@@ -131,21 +331,13 @@ function CustomLightbox({ open, onClose, images, project }) {
   useEffect(() => {
     if (!open || typeof window === 'undefined') return;
 
-    const handleTouchStart = e => {
-      setTouchStart(e.touches[0].clientX);
-    };
+    const handleTouchStart = e => setTouchStart(e.touches[0].clientX);
 
     const handleTouchEnd = e => {
       if (touchStart === null) return;
-      const touchEnd = e.changedTouches[0].clientX;
-      const diff = touchStart - touchEnd;
-
+      const diff = touchStart - e.changedTouches[0].clientX;
       if (Math.abs(diff) > 50) {
-        if (diff > 0) {
-          goToIndex(currentIndex + 1);
-        } else {
-          goToIndex(currentIndex - 1);
-        }
+        goToIndex(diff > 0 ? currentIndex + 1 : currentIndex - 1);
       }
       setTouchStart(null);
     };
@@ -162,226 +354,48 @@ function CustomLightbox({ open, onClose, images, project }) {
   if (!open) return null;
 
   return (
-    <m.div
+    <motion.div
       className="fixed inset-0 h-[100dvh] w-full z-[200] bg-blackCustom text-[#e5e5e5] font-liberation flex flex-col overflow-hidden"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.3 }}
     >
-      {/* En-tête (mobile uniquement) */}
-      <div className="absolute top-8 landscape:top-2 left-8 z-40 md:hidden">
-        <button
-          type="button"
-          onClick={onClose}
-          className="text-lg hover:text-white transition-colors"
-        >
-          back
-        </button>
-      </div>
+      <LightboxMobileView
+        onClose={onClose}
+        images={images}
+        project={project}
+        currentIndex={currentIndex}
+        currentDisplaySrc={currentDisplaySrc}
+        isCurrentLoaded={isCurrentLoaded}
+        hasCurrentError={hasCurrentError}
+        setHasCurrentError={setHasCurrentError}
+        setIsCurrentLoaded={setIsCurrentLoaded}
+        goToIndex={goToIndex}
+      />
+      <LightboxDesktopView
+        onClose={onClose}
+        images={images}
+        project={project}
+        currentIndex={currentIndex}
+        currentDisplaySrc={currentDisplaySrc}
+        isCurrentLoaded={isCurrentLoaded}
+        hasCurrentError={hasCurrentError}
+        setHasCurrentError={setHasCurrentError}
+        setIsCurrentLoaded={setIsCurrentLoaded}
+        goToIndex={goToIndex}
+      />
 
-      {/* Contenu principal (MOBILE) */}
-      <div className="flex-1 flex flex-col w-full relative bg-blackCustom md:hidden min-h-0">
-        <button
-          aria-label="previous image"
-          type="button"
-          className="absolute left-0 top-14 bottom-12 w-[20%] z-30"
-          onClick={() => goToIndex(currentIndex - 1)}
-          onKeyPress={e => {
-            if (e.key === 'Left') goToIndex(currentIndex - 1);
-          }}
-          tabIndex={0}
-        />
-        <button
-          aria-label="next image"
-          type="button"
-          className="absolute right-0 top-14 bottom-12 w-[20%] z-30"
-          onClick={() => goToIndex(currentIndex + 1)}
-          onKeyPress={e => {
-            if (e.key === 'Right') goToIndex(currentIndex + 1);
-          }}
-          tabIndex={0}
-        />
-
-        <div
-          className="flex-1 min-h-0 flex items-center justify-center px-4 pt-14 landscape:pt-2 landscape:pb-1"
-          style={{
-            paddingLeft: 'max(1rem, env(safe-area-inset-left, 0px))',
-            paddingRight: 'max(1rem, env(safe-area-inset-right, 0px))',
-          }}
-        >
-          <m.div
-            key={currentIndex}
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.3 }}
-            className="w-full h-full flex items-center justify-center"
-          >
-            <Image
-              src={currentDisplaySrc}
-              alt={`${project.name} - Image ${currentIndex + 1} of ${images.length}`}
-              width={1200}
-              height={1200}
-              className="max-w-full max-h-full w-auto h-auto object-contain"
-              sizes="100vw"
-              unoptimized
-              fetchPriority="high"
-              decoding="async"
-              onError={() => setHasCurrentError(true)}
-              onLoad={() => setIsCurrentLoaded(true)}
-              priority
-            />
-          </m.div>
-        </div>
-
-        <div
-          className="flex-shrink-0 text-center italic text-sm py-3 landscape:py-1"
-          style={{
-            paddingBottom: 'calc(env(safe-area-inset-bottom, 12px) + 14px)',
-          }}
-        >
-          {currentIndex + 1} / {images.length}
-        </div>
-
-        {!isCurrentLoaded && !hasCurrentError && (
-          <div className="absolute inset-0 bg-white/5 animate-pulse" />
-        )}
-        {hasCurrentError && (
-          <div className="absolute inset-0 flex items-center justify-center text-white/70">
-            image unavailable
-          </div>
-        )}
-      </div>
-
-      {/* Main Content (DESKTOP) */}
-      <div className="hidden md:flex flex-col flex-1 min-h-0 w-full pt-16 pr-16 pl-16">
-        <div>
-          <button
-            type="button"
-            onClick={onClose}
-            className="font-liberation text-lg hover:text-white transition-colors"
-          >
-            back
-          </button>
-        </div>
-        <div className="flex-1 relative flex items-center justify-center overflow-hidden">
-          {/* Image précédente */}
-          <div className="absolute left-0 top-1/2 -translate-y-1/2 h-[50%] w-[15%] opacity-40 blur-[2px] pointer-events-none">
-            <Image
-              src={buildSanityImageUrl(
-                images[(currentIndex - 1 + images.length) % images.length],
-                { w: 600, q: 40, auto: 'format' }
-              )}
-              alt={`${project.name} - Image précédente`}
-              width={300}
-              height={200}
-              className="w-full h-full object-contain"
-              sizes="(max-width: 768px) 100vw, 300px"
-              priority={false}
-              unoptimized
-            />
-          </div>
-
-          {/* Image principale */}
-          <div className="relative z-10 h-[60%] w-full max-w-[60%] flex items-center justify-center">
-            <m.div
-              key={currentIndex}
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.3 }}
-            >
-              <div className="relative">
-                {!isCurrentLoaded && !hasCurrentError && (
-                  <div className="absolute inset-0 bg-white/5 animate-pulse" />
-                )}
-                {hasCurrentError && (
-                  <div className="absolute inset-0 flex items-center justify-center text-white/70">
-                    image unavailable
-                  </div>
-                )}
-                <Image
-                  src={currentDisplaySrc}
-                  alt={`${project.name} - Image ${currentIndex + 1} sur ${images.length}`}
-                  width={1100}
-                  height={800}
-                  className={`max-h-[75vh] max-w-[60vw] object-contain transition-opacity duration-300 ${
-                    isCurrentLoaded && !hasCurrentError
-                      ? 'opacity-100'
-                      : 'opacity-0'
-                  }`}
-                  sizes="(max-width: 1200px) 70vw, 1100px"
-                  unoptimized
-                  fetchPriority="high"
-                  decoding="async"
-                  onError={() => setHasCurrentError(true)}
-                  onLoad={() => setIsCurrentLoaded(true)}
-                  priority
-                />
-              </div>
-            </m.div>
-          </div>
-
-          {/* Image suivante */}
-          <div className="absolute right-0 top-1/2 -translate-y-1/2 h-[50%] w-[15%] opacity-40 blur-[2px] pointer-events-none">
-            <Image
-              src={buildSanityImageUrl(
-                images[(currentIndex + 1) % images.length],
-                {
-                  w: 600,
-                  q: 40,
-                  auto: 'format',
-                }
-              )}
-              alt="suivante"
-              width={300}
-              height={200}
-              className="w-full h-full object-contain"
-              sizes="(max-width: 768px) 100vw, 300px"
-              priority={false}
-              unoptimized
-            />
-          </div>
-
-          <button
-            className="absolute left-0 top-0 h-full w-[20%] z-30 flex items-center justify-start pl-8 md:pl-0 group cursor-pointer"
-            onClick={() => goToIndex(currentIndex - 1)}
-            onKeyPress={e => {
-              if (e.key === 'Left') goToIndex(currentIndex - 1);
-            }}
-            tabIndex={0}
-            type="button"
-          >
-            <span className="text-xl italic text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-              previous
-            </span>
-          </button>
-
-          <button
-            type="button"
-            className="absolute right-0 top-0 h-full w-[20%] z-30 flex items-center justify-end pr-8 md:pr-0 group cursor-pointer"
-            onClick={() => goToIndex(currentIndex + 1)}
-            onKeyPress={e => {
-              if (e.key === 'Right') goToIndex(currentIndex + 1);
-            }}
-            tabIndex={0}
-          >
-            <span className="text-xl italic text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-              next
-            </span>
-          </button>
-        </div>
-      </div>
-
-      {/* Pied de page */}
       <footer className="hidden md:flex w-full flex-shrink-0 border-t border-whiteCustom/20 px-8 md:px-16 py-6 items-center justify-between mt-auto">
         <div className="text-xl italic">{project.coords}</div>
         <div className="text-xl">{project.name}</div>
       </footer>
-    </m.div>
+    </motion.div>
   );
 }
 
-// Composant pour le carrousel d'images horizontal (mobile)
+// --- Carrousels ---
+
 function ImageMarqueeHorizontal({ images, onClick }) {
   return (
     <div
@@ -391,15 +405,10 @@ function ImageMarqueeHorizontal({ images, onClick }) {
     >
       <div className="flex items-center gap-12 px-10">
         {images.map((img, index) => (
-          <button
-            type="button"
+          <div
             key={img + index}
             className="flex-shrink-0 flex justify-center items-center snap-center cursor-pointer hover:opacity-80 transition-opacity duration-200"
             onClick={onClick}
-            onKeyPress={e => {
-              if (e.key === 'Enter' && onClick) onClick();
-            }}
-            tabIndex={0}
           >
             <Image
               src={buildSanityImageUrl(img, { w: 400, q: 40, auto: 'format' })}
@@ -411,14 +420,13 @@ function ImageMarqueeHorizontal({ images, onClick }) {
               sizes="(max-width: 768px) 100vw, 400px"
               priority={false}
             />
-          </button>
+          </div>
         ))}
       </div>
     </div>
   );
 }
 
-// Composant pour le carrousel d'images vertical (desktop)
 function ImageMarquee({ images, onClick }) {
   const allImages = [...images, ...images];
   const trackRef = useRef(null);
@@ -458,19 +466,15 @@ function ImageMarquee({ images, onClick }) {
   }, [images, y]);
 
   return (
-    <button
-      type="button"
+    <aside
       className="hidden md:flex flex-col w-[45%] h-full relative bg-background cursor-pointer"
       onClick={onClick}
-      onKeyPress={e => {
-        if (e.key === 'Enter' && onClick) onClick();
-      }}
     >
       <div className="w-full h-full overflow-hidden relative">
-        <m.div ref={trackRef} className="flex flex-col" style={{ y }}>
-          {allImages.map((img, index, item) => (
+        <motion.div ref={trackRef} className="flex flex-col" style={{ y }}>
+          {allImages.map((img, index) => (
             <div
-              key={item.id + '-' + index}
+              key={index}
               className="w-full pb-16 flex-shrink-0 flex justify-center items-center"
             >
               <Image
@@ -486,19 +490,16 @@ function ImageMarquee({ images, onClick }) {
                 draggable={false}
                 sizes="(max-width: 1200px) 100vw, 400px"
                 priority={false}
-                tabIndex={0}
-                onKeyPress={e => {
-                  if (e.key === 'Enter' && onClick) onClick();
-                }}
-                role="button"
               />
             </div>
           ))}
-        </m.div>
+        </motion.div>
       </div>
-    </button>
+    </aside>
   );
 }
+
+// --- Main Export Component ---
 
 export default function GalleryProjetCartel({ project, onClose }) {
   const t = useTranslations('gallery');
@@ -543,146 +544,3 @@ export default function GalleryProjetCartel({ project, onClose }) {
       }
     };
   }, [isClosing, finalizeClose]);
-
-  useEffect(() => {
-    const handleKeyDown = event => {
-      if (event.key === 'Escape' && !lightboxOpen) {
-        handleRequestClose();
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [lightboxOpen, handleRequestClose]);
-
-  if (!project) return null;
-
-  const description = project.description || t('project.defaultDescription');
-  const paragraphs = description.split('\n\n');
-
-  return (
-    <m.div
-      key="gallery-cartel-wrapper"
-      exit={{ opacity: 0, transition: { duration: 1, delay: 0.2 } }}
-    >
-      <m.div
-        className={`fixed inset-0 bg-background/80 backdrop-blur-sm z-[140] ${isClosing ? 'pointer-events-none' : ''}`}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: isClosing ? 0 : 1 }}
-        transition={{ duration: 0.35, ease: 'easeInOut' }}
-        onClick={handleRequestClose}
-        aria-hidden="true"
-      ></m.div>
-      <m.section
-        className={`fixed inset-0 h-[100dvh] w-full bg-background z-[150] flex flex-col md:flex-row shadow-2xl ${isClosing ? 'pointer-events-none' : ''}`}
-        initial={{ x: '100%' }}
-        animate={{ x: isClosing ? '100%' : 0 }}
-        transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
-        onAnimationComplete={() => {
-          if (isClosing) finalizeClose();
-        }}
-        aria-modal="true"
-        role="dialog"
-        aria-labelledby="project-title"
-      >
-        {/* Version Mobile */}
-        <div className="md:hidden w-full h-full flex flex-col relative">
-          <button
-            type="button"
-            onClick={handleRequestClose}
-            className="absolute top-6 left-6 z-10 font-liberation text-lg text-accent hover:text-blackCustom transition-colors"
-            aria-label={t('project.closeOverlayLabel')}
-          >
-            back
-          </button>
-
-          <div className="h-[50vh] flex-shrink-0 flex items-center">
-            <ImageMarqueeHorizontal
-              images={project.images}
-              onClick={() => setLightboxOpen(true)}
-            />
-          </div>
-
-          <div className="border-t border-blackCustom/20 flex-shrink-0"></div>
-
-          <div className="flex-1 overflow-y-auto p-6">
-            <div className="font-liberation text-lg italic text-blackCustom mb-4">
-              {project.coords}
-            </div>
-            <h2
-              id="project-title"
-              className="text-3xl font-liberation italic mb-6"
-            >
-              {project.name}
-            </h2>
-            <div className="font-liberation text-base leading-relaxed space-y-4">
-              {paragraphs.map((p, i, item) => (
-                <p key={item.id + '-' + i}>{p}</p>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Version Desktop */}
-        <main className="hidden md:flex w-[55%] h-full border-r border-blackCustom p-16 flex-col justify-between overflow-y-auto">
-          <div>
-            <button
-              type="button"
-              onClick={handleRequestClose}
-              className="font-liberation text-lg text-accent hover:text-blackCustom transition-colors"
-              aria-label={t('project.closeOverlayLabel')}
-            >
-              back
-            </button>
-          </div>
-
-          <section className="flex flex-col items-start justify-center my-8">
-            <h2 id="project-title" className="text-5xl font-liberation mb-8">
-              {project.name}
-            </h2>
-            <div className="font-liberation text-lg 2xl:text-xl max-w-2xl 2xl:max-w-6xl  leading-relaxed space-y-4">
-              {paragraphs.map((p, i, item) => (
-                <p key={item.id + '-' + i}>{p}</p>
-              ))}
-            </div>
-          </section>
-
-          <div className="font-liberation text-xl italic text-blackCustom flex-shrink-0">
-            {project.coords}
-          </div>
-        </main>
-
-        {/* Colonne de droite : Carrousel (desktop uniquement) */}
-        <ImageMarquee
-          images={project.images}
-          onClick={() => setLightboxOpen(true)}
-        />
-      </m.section>
-
-      {/* Lightbox */}
-      <AnimatePresence>
-        {lightboxOpen && (
-          <CustomLightbox
-            open={lightboxOpen}
-            onClose={() => setLightboxOpen(false)}
-            images={project.images}
-            project={project}
-          />
-        )}
-      </AnimatePresence>
-    </m.div>
-  );
-}
-
-GalleryProjetCartel.propTypes = {
-  project: PropTypes.shape({
-    id: PropTypes.number.isRequired,
-    name: PropTypes.string.isRequired,
-    type: PropTypes.string.isRequired,
-    images: PropTypes.arrayOf(PropTypes.string).isRequired,
-    coords: PropTypes.string.isRequired,
-    description: PropTypes.string.isRequired,
-  }).isRequired,
-  onClose: PropTypes.func.isRequired,
-};
