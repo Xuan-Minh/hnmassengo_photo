@@ -14,6 +14,7 @@ import windowRecommendation from './objects/windowRecommendation';
 import windowText from './objects/windowText';
 import windowCustom from './objects/windowCustom';
 import teamColor from './teamColor';
+import windowImage from './objects/windowImage';
 
 export const schema = {
   types: [
@@ -33,5 +34,6 @@ export const schema = {
     newsletterSubscriber,
     newsletterCampaign,
     teamColor,
+    windowImage,
   ],
 };

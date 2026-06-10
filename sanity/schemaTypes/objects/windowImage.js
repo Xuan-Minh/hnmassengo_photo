@@ -1,8 +1,15 @@
 export default {
-  name: 'windowText',
-  title: 'Onglet Texte de présentation',
+  name: 'windowImage',
+  title: 'Fenêtre Bio',
   type: 'object',
   fields: [
+    {
+      name: 'photo',
+      type: 'image',
+      options: {
+        hotspot: true, // Permet de définir le point focal
+      },
+    },
     {
       name: 'title',
       title: 'Titre de la fenêtre',
@@ -12,19 +19,19 @@ export default {
           name: 'fr',
           title: 'Français',
           type: 'string',
-          initialValue: 'Présentation',
+          initialValue: 'À propos de moi',
         },
         {
           name: 'en',
           title: 'Anglais',
           type: 'string',
-          initialValue: 'Introduction',
+          initialValue: 'About me',
         },
         {
           name: 'de',
           title: 'Allemand',
           type: 'string',
-          initialValue: 'Einführung',
+          initialValue: 'Über mich',
         },
       ],
     },
@@ -35,31 +42,6 @@ export default {
       to: [{ type: 'teamColor' }],
       validation: Rule =>
         Rule.required().error('Vous devez choisir une couleur.'),
-    },
-    {
-      name: 'content',
-      title: 'Contenu texte',
-      type: 'object',
-      fields: [
-        {
-          name: 'fr',
-          title: 'Français',
-          type: 'array',
-          of: [{ type: 'block' }],
-        },
-        {
-          name: 'en',
-          title: 'Anglais',
-          type: 'array',
-          of: [{ type: 'block' }],
-        },
-        {
-          name: 'de',
-          title: 'Allemand',
-          type: 'array',
-          of: [{ type: 'block' }],
-        },
-      ],
     },
   ],
 };
