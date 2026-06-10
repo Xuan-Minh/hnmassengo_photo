@@ -44,6 +44,21 @@ function NextButton({ isExiting, onClick }) {
   );
 }
 
+const getImageSource = (img, width) => {
+  if (img?.image && img.image.asset) {
+    return buildSanityImageUrl(img.image, {
+      w: width,
+      q: 60,
+      auto: 'format',
+    });
+  }
+  // Ancien format : URL directe
+  if (img?.url) {
+    return buildSanityImageUrl(img.url, { w: width, q: 60, auto: 'format' });
+  }
+  return null;
+};
+
 export default function LoadingOverlay({ initialImages }) {
   const previouslyFocusedElement = useRef(null);
   const elegantBackground =
@@ -62,21 +77,6 @@ export default function LoadingOverlay({ initialImages }) {
   );
 
   // Fonction helper pour extraire l'image (supporte ancien et nouveau format)
-  const getImageSource = (img, width) => {
-    // Nouveau format : objet image avec asset
-    if (img?.image && img.image.asset) {
-      return buildSanityImageUrl(img.image, {
-        w: width,
-        q: 60,
-        auto: 'format',
-      });
-    }
-    // Ancien format : URL directe
-    if (img?.url) {
-      return buildSanityImageUrl(img.url, { w: width, q: 60, auto: 'format' });
-    }
-    return null;
-  };
 
   const desktopSrcs = useMemo(
     () => desktopData.map(img => getImageSource(img, 1920)).filter(Boolean),

@@ -288,7 +288,7 @@ function ContactInfo({ onOpenLegal }) {
 }
 const MarqueeBlock = ({ ariaHidden = false } = {}) => (
   <div
-    className="flex items-center gap-6 sm:gap-6 md:gap-6 lg:gap-6 pr-6 uppercase  "
+    className="flex items-center gap-6 sm:gap-6 md:gap-6 lg:gap-6 pr-6 uppercase"
     aria-hidden={ariaHidden}
   >
     <span className="inline-block font-bold">{SITE_CONFIG.copyright}</span>
@@ -360,7 +360,6 @@ export function ContactMarquee({ mode = 'absolute' } = {}) {
           repeat: Infinity,
           repeatType: 'loop',
         }}
-        style={{ willChange: 'transform' }}
       >
         <MarqueeBlock />
         <MarqueeBlock ariaHidden />

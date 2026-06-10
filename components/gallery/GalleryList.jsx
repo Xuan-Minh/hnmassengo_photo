@@ -373,7 +373,7 @@ export default function GalleryList({
                 onLoad={() => setIsListImageLoaded(true)}
                 priority={!isMobile}
               />
-            </butto>
+            </button>
             <button
               type="button"
               onClick={navigateListNext}

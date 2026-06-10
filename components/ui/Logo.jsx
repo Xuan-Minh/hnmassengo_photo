@@ -6,9 +6,7 @@ import { EVENTS, emitEvent } from '../../lib/events';
 export default function Logo({ visible = true }) {
   const t = useTranslations('logo');
   const router = useRouter();
-  const pathname = usePathname(
-    new URLSearchParams(window.location.search).searchParams
-  );
+  const pathname = usePathname();
 
   const handleLogoClick = () => {
     // Si on n'est pas sur la page d'accueil, on y retourne
