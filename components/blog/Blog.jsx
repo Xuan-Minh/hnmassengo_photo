@@ -11,6 +11,7 @@ import client from '../../lib/sanity.client';
 import { buildSanityImageUrl } from '../../lib/imageUtils';
 import { CONTENT } from '../../lib/constants';
 import { getOptimizedImageParams } from '../../lib/hooks';
+import { useIsMobile } from '../../lib/hooks';
 
 export default function Blog() {
   const t = useTranslations('blog');
@@ -19,8 +20,17 @@ export default function Blog() {
   const [posts, setPosts] = useState([]);
   const [archiveOpen, setArchiveOpen] = useState(false);
   const [selectedPost, setSelectedPost] = useState(null);
-  const [isMobile, setIsMobile] = React.useState(false);
-  const [requestedPostId, setRequestedPostId] = useState(null);
+  const isMobile = useIsMobile();
+  const [requestedPostId, setRequestedPostId] = useState(() => {
+    if (typeof window === 'undefined') return null;
+
+    // Logique de reload : si c'est un rafraîchissement, on ignore le paramètre
+    const [entry] = window.performance.getEntriesByType('navigation');
+    if (entry?.type === 'reload') return null;
+
+    const sp = new URLSearchParams(window.location.search);
+    return sp.get('post');
+  });
 
   const readRequestedPostId = () => {
     try {
@@ -51,13 +61,6 @@ export default function Blog() {
     router.replace(qs ? `/?${qs}#blog` : `/#blog`);
   };
 
-  React.useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 1024);
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
-
   // Gérer le scroll quand un archive ou un post overlay est ouvert
   useEffect(() => {
     const scrollRoot = document.getElementById('scroll-root');
@@ -77,25 +80,19 @@ export default function Blog() {
   // Lire ?post=<id> côté client sans useSearchParams (évite l'erreur suspense en build)
   useEffect(() => {
     const isReload = isReloadNavigation();
-
-    const update = () => {
-      const postId = readRequestedPostId();
-
-      if (postId && isReload) {
-        const url = new URL(window.location.href);
+    if (isReload) {
+      const url = new URL(window.location.href);
+      if (url.searchParams.has('post')) {
         url.searchParams.delete('post');
         window.history.replaceState(
           null,
           '',
           `${url.pathname}${url.search}${url.hash}`
         );
-        setRequestedPostId(null);
-        return;
       }
+    }
 
-      setRequestedPostId(postId);
-    };
-    update();
+    const update = () => setRequestedPostId(readRequestedPostId());
     window.addEventListener('popstate', update);
     return () => window.removeEventListener('popstate', update);
   }, []);

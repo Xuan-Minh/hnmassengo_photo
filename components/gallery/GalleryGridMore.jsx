@@ -15,6 +15,17 @@ function getProjectDateMs(project) {
   return Number.isFinite(ms) ? ms : null;
 }
 
+function getInitialCols() {
+  if (typeof window === 'undefined') return 6; // Valeur par défaut pour le SSR (serveur)
+
+  const width = window.innerWidth;
+  if (width >= 1536) return 11;
+  if (width >= 1280) return 13;
+  if (width >= 1024) return 12;
+  if (width >= 768) return 10;
+  if (width >= 640) return 3;
+  return 2;
+}
 // Fonction pour deviner la taille exacte de l'image grâce à son URL Sanity (Masonry)
 function getAspectRatio(url) {
   if (!url) return 1;
@@ -52,9 +63,7 @@ export default function GalleryGridMore({ onClose, onProjectClick, projects }) {
   const [gridHoveredProjectId, setGridHoveredProjectId] = useState(null);
   const [isHoverSourceGrid, setIsHoverSourceGrid] = useState(false);
   const scrollContainerRef = useRef(null);
-
-  // Nombre de colonnes dynamiques pour la cascade (Masonry)
-  const [colsCount, setColsCount] = useState(6);
+  const [colsCount, setColsCount] = useState(getInitialCols);
 
   // Remise à zéro du scroll quand on change de filtre pour ne pas se perdre
   useEffect(() => {
@@ -176,14 +185,10 @@ export default function GalleryGridMore({ onClose, onProjectClick, projects }) {
   // Définition responsive des colonnes de la cascade
   useEffect(() => {
     const updateCols = () => {
-      if (window.innerWidth >= 1536) setColsCount(11);
-      else if (window.innerWidth >= 1280) setColsCount(13);
-      else if (window.innerWidth >= 1024) setColsCount(12);
-      else if (window.innerWidth >= 768) setColsCount(10);
-      else if (window.innerWidth >= 640) setColsCount(3);
-      else setColsCount(2);
+      setColsCount(getInitialCols());
     };
-    updateCols();
+
+    // On n'appelle plus updateCols() ici car useState s'en est chargé
     window.addEventListener('resize', updateCols);
     return () => window.removeEventListener('resize', updateCols);
   }, []);
