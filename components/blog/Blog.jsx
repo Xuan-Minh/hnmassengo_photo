@@ -12,6 +12,23 @@ import { buildSanityImageUrl } from '../../lib/imageUtils';
 import { CONTENT } from '../../lib/constants';
 import { getOptimizedImageParams } from '../../lib/hooks';
 import { useIsMobile } from '../../lib/hooks';
+const readRequestedPostId = () => {
+  try {
+    const sp = new URLSearchParams(window.location.search);
+    return sp.get('post');
+  } catch {
+    return null;
+  }
+};
+
+const isReloadNavigation = () => {
+  try {
+    const [entry] = window.performance.getEntriesByType('navigation');
+    return entry?.type === 'reload';
+  } catch {
+    return false;
+  }
+};
 
 export default function Blog() {
   const t = useTranslations('blog');
@@ -31,24 +48,6 @@ export default function Blog() {
     const sp = new URLSearchParams(window.location.search);
     return sp.get('post');
   });
-
-  const readRequestedPostId = () => {
-    try {
-      const sp = new URLSearchParams(window.location.search);
-      return sp.get('post');
-    } catch {
-      return null;
-    }
-  };
-
-  const isReloadNavigation = () => {
-    try {
-      const [entry] = window.performance.getEntriesByType('navigation');
-      return entry?.type === 'reload';
-    } catch {
-      return false;
-    }
-  };
 
   const replacePostParam = postId => {
     const sp = new URLSearchParams(window.location.search);
