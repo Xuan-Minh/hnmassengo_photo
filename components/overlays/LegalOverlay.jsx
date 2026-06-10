@@ -209,12 +209,12 @@ export default function LegalOverlay({
   return (
     <AnimatePresence>
       {open && (
-        <motion.div
+        <m.div
           key="legal-overlay-wrapper"
           exit={{ opacity: 0, transition: { duration: 0.2 } }}
         >
           {/* Backdrop */}
-          <motion.div
+          <m.div
             className="fixed inset-0 bg-background/80 backdrop-blur-sm z-[200]"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -224,7 +224,7 @@ export default function LegalOverlay({
           />
 
           {/* Panel principal */}
-          <motion.section
+          <m.section
             ref={panelRef}
             className="fixed inset-0 h-[100dvh] w-full bg-blackCustom z-[201] flex flex-col grid-cols-2 shadow-2xl"
             initial={{ x: '100%' }}
@@ -260,8 +260,8 @@ export default function LegalOverlay({
                 <LegalContent />
               </div>
             </main>
-          </motion.section>
-        </motion.div>
+          </m.section>
+        </m.div>
       )}
     </AnimatePresence>
   );

@@ -1,7 +1,7 @@
 'use client';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, m } from 'framer-motion';
 import { SITE_CONFIG } from '../../lib/constants';
 import { EVENTS, addEventHandler } from '../../lib/events';
 import { useParams } from 'next/navigation';
@@ -351,7 +351,7 @@ export function ContactMarquee({ mode = 'absolute' } = {}) {
 
   return (
     <div className={wrapperClassName}>
-      <motion.div
+      <m.div
         className="flex w-max whitespace-nowrap text-whiteCustom/90 font-liberation text-3xl md:text-[36px] lg:text-[40px] xl:text-[44px] py-1 sm:py-1.5 md:py-2 -tracking-normal"
         animate={{ x: ['0%', '-50%'] }}
         transition={{
@@ -363,7 +363,7 @@ export function ContactMarquee({ mode = 'absolute' } = {}) {
       >
         <MarqueeBlock />
         <MarqueeBlock ariaHidden />
-      </motion.div>
+      </m.div>
     </div>
   );
 }
@@ -491,14 +491,14 @@ export default function ContactOverlay({
   return (
     <AnimatePresence>
       {open && (
-        <motion.section
+        <m.section
           key="contact-overlay-modal"
           id="info-overlay"
           className="fixed inset-0 z-[200]"
           aria-label={t('overlay.ariaLabel')}
           exit={{ opacity: 0, transition: { delay: 0.5, duration: 0.1 } }}
         >
-          <motion.button
+          <m.button
             type="button"
             aria-label={t('overlay.closeAriaLabel')}
             className="absolute inset-0 bg-black/60"
@@ -508,7 +508,7 @@ export default function ContactOverlay({
             onClick={handleClose}
           />
 
-          <motion.div
+          <m.div
             role="dialog"
             aria-modal="true"
             aria-labelledby="contact-title-overlay"
@@ -535,11 +535,11 @@ export default function ContactOverlay({
 
             {/* Marquee en position relative - fait partie du flux */}
             <ContactMarquee mode="inline" />
-          </motion.div>
+          </m.div>
 
           {/* Legal Overlay */}
           <LegalOverlay open={legalOpen} onClose={handleCloseLegal} />
-        </motion.section>
+        </m.section>
       )}
     </AnimatePresence>
   );

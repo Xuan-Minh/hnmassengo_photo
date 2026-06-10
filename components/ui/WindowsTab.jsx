@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import { useState } from 'react';
 import { Minimize } from 'lucide-react'; // Import de l'icône
 
@@ -29,7 +29,7 @@ export default function WindowsTab({
   };
 
   return (
-    <motion.div
+    <m.div
       drag
       dragMomentum={false}
       onDragStart={() => {
@@ -41,7 +41,7 @@ export default function WindowsTab({
       style={{ zIndex, ...style }}
       className={`windowsTab absolute flex flex-col flex-nowrap gap-1 bg-transparent`}
     >
-      <motion.div
+      <m.div
         style={{ backgroundColor: color, color: fontcolor }}
         variants={childrenVariants}
         animate={isDragging ? 'dragging' : 'idle'}
@@ -58,18 +58,18 @@ export default function WindowsTab({
         >
           <Minimize size={16} />
         </button>
-      </motion.div>
+      </m.div>
 
       {!isMinimized && (
-        <motion.div
+        <m.div
           variants={childrenVariants}
           animate={isDragging ? 'dragging' : 'idle'}
           className="flex-1 p-4 border border-black bg-background flex rounded-b-md overflow-auto"
           {...(typeof contenu === 'string'
             ? { dangerouslySetInnerHTML: { __html: contenu } }
             : { children: contenu })}
-        ></motion.div>
+        ></m.div>
       )}
-    </motion.div>
+    </m.div>
   );
 }

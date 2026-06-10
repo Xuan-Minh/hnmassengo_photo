@@ -1,7 +1,7 @@
 'use client';
 import Image from 'next/image';
 import { useState } from 'react';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import ContactOverlay from '../overlays/ContactOverlay';
 import BaseOverlay from '../overlays/BaseOverlay';
 import { useTranslations, useLocale } from 'next-intl';
@@ -103,7 +103,7 @@ export default function BlogPostOverlay({ post, onClose, onPrevious, onNext }) {
   const contactSubject = `${displayTitle || post.date} - ${t('reply')}`;
 
   return (
-    <motion.div
+    <m.div
       key="blog-post-overlay-wrapper"
       exit={{ opacity: 0, transition: { duration: 0.2 } }}
     >
@@ -262,6 +262,6 @@ export default function BlogPostOverlay({ post, onClose, onPrevious, onNext }) {
         onClose={() => setContactOpen(false)}
         defaultSubject={contactSubject}
       />
-    </motion.div>
+    </m.div>
   );
 }

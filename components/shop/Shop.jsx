@@ -3,7 +3,7 @@
 import { useTranslations } from 'next-intl';
 import { useMemo, useState, useEffect, useCallback } from 'react';
 import { useParams } from 'next/navigation';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, m } from 'framer-motion';
 import ShopItem from './ShopItem';
 import ShopOverlay from './ShopOverlay';
 import { formatPrice } from '../../lib/utils';
@@ -373,7 +373,7 @@ export default function Shop() {
           {/* Contenu du panier, déroulant sur mobile */}
           <AnimatePresence>
             {(cartOpen || isDesktop) && (
-              <motion.div
+              <m.div
                 key="snipcart-dropdown"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -419,7 +419,7 @@ export default function Shop() {
                     {t('cart.checkout')}
                   </button>
                 </div>
-              </motion.div>
+              </m.div>
             )}
           </AnimatePresence>
         </aside>

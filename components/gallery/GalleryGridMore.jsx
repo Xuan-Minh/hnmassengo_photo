@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { useTranslations } from 'next-intl';
-import { motion, AnimatePresence } from 'framer-motion';
+import { m, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import {
   getSanityImageDeliveryUrl,
@@ -221,7 +221,8 @@ export default function GalleryGridMore({ onClose, onProjectClick, projects }) {
   const hoveredProject = projectsRecentFirst.find(p => p.id === hoveredId);
 
   return (
-    <motion.div
+    <m.div
+      layout
       className="fixed inset-0 bg-background z-[100] flex flex-col"
       initial={{ x: '100%' }}
       animate={{ x: 0 }}
@@ -296,7 +297,7 @@ export default function GalleryGridMore({ onClose, onProjectClick, projects }) {
 
         <div className="flex-1 overflow-y-auto pl-8" ref={scrollContainerRef}>
           <AnimatePresence mode="wait">
-            <motion.div
+            <m.div
               key={`masonry-more-${filter}`}
               initial={{ opacity: 0, scale: 0.98 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -358,7 +359,7 @@ export default function GalleryGridMore({ onClose, onProjectClick, projects }) {
                   })}
                 </div>
               ))}
-            </motion.div>
+            </m.div>
           </AnimatePresence>
         </div>
       </div>
@@ -371,7 +372,7 @@ export default function GalleryGridMore({ onClose, onProjectClick, projects }) {
       {/* Custom cursor for project name */}
       <AnimatePresence>
         {showCustomCursor && hoveredId && (
-          <motion.div
+          <m.div
             className="fixed pointer-events-none z-[200] text-whiteCustom font-liberation italic text-lg"
             style={{
               left: cursorPos.x + 10,
@@ -384,9 +385,9 @@ export default function GalleryGridMore({ onClose, onProjectClick, projects }) {
             transition={{ duration: 0.2 }}
           >
             {projects.find(p => p.id === hoveredId)?.name}
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
-    </motion.div>
+    </m.div>
   );
 }

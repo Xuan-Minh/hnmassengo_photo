@@ -1,13 +1,13 @@
 'use client';
 import React from 'react';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import { useTranslations } from 'next-intl';
 import BlogPostItem from './BlogPostItem';
 
 export default function BlogArchives({ posts, onClose, onPostClick }) {
   const t = useTranslations('blog');
   return (
-    <motion.div
+    <m.div
       className="fixed inset-0 bg-blackCustom z-[60] flex flex-col"
       initial={{ x: '100%' }}
       animate={{ x: 0 }}
@@ -50,6 +50,6 @@ export default function BlogArchives({ posts, onClose, onPostClick }) {
           ))}
         </div>
       </div>
-    </motion.div>
+    </m.div>
   );
 }

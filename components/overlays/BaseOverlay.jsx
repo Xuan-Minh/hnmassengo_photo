@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useRef } from 'react';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 
 /**
  * BaseOverlay - Composant wrapper pour tous les overlays
@@ -33,7 +33,7 @@ export default function BaseOverlay({
   }, []);
 
   return (
-    <motion.div
+    <m.div
       className="fixed inset-0 z-[60] bg-blackCustom text-whiteCustom font-liberation flex flex-col"
       initial={{ x: '100%' }}
       animate={{ x: 0 }}
@@ -61,6 +61,6 @@ export default function BaseOverlay({
 
       {/* Contenu de l'overlay */}
       {children}
-    </motion.div>
+    </m.div>
   );
 }

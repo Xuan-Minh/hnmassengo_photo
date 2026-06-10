@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import Image from 'next/image';
 import { buildSanityImageUrl } from '../../lib/imageUtils';
 import { getOptimizedImageParams } from '../../lib/hooks';
@@ -312,7 +312,7 @@ export default function GalleryList({
   }, [projects, currentProjectIndex, currentImageIndex, getDisplaySrcAt]);
 
   return (
-    <motion.div
+    <m.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       className="w-full h-full flex flex-col"
@@ -408,6 +408,6 @@ export default function GalleryList({
           ))}
         </div>
       </div>
-    </motion.div>
+    </m.div>
   );
 }

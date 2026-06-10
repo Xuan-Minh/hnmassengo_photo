@@ -2,12 +2,7 @@
 import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import Image from 'next/image';
 import PropTypes from 'prop-types';
-import {
-  motion,
-  animate,
-  useMotionValue,
-  AnimatePresence,
-} from 'framer-motion';
+import { m, animate, useMotionValue, AnimatePresence } from 'framer-motion';
 import { useTranslations } from 'next-intl';
 
 import { buildSanityImageUrl } from '../../lib/imageUtils';
@@ -167,7 +162,7 @@ function CustomLightbox({ open, onClose, images, project }) {
   if (!open) return null;
 
   return (
-    <motion.div
+    <m.div
       className="fixed inset-0 h-[100dvh] w-full z-[200] bg-blackCustom text-[#e5e5e5] font-liberation flex flex-col overflow-hidden"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
@@ -213,7 +208,7 @@ function CustomLightbox({ open, onClose, images, project }) {
             paddingRight: 'max(1rem, env(safe-area-inset-right, 0px))',
           }}
         >
-          <motion.div
+          <m.div
             key={currentIndex}
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -234,7 +229,7 @@ function CustomLightbox({ open, onClose, images, project }) {
               onLoad={() => setIsCurrentLoaded(true)}
               priority
             />
-          </motion.div>
+          </m.div>
         </div>
 
         <div
@@ -287,7 +282,7 @@ function CustomLightbox({ open, onClose, images, project }) {
 
           {/* Image principale */}
           <div className="relative z-10 h-[60%] w-full max-w-[60%] flex items-center justify-center">
-            <motion.div
+            <m.div
               key={currentIndex}
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -321,7 +316,7 @@ function CustomLightbox({ open, onClose, images, project }) {
                   priority
                 />
               </div>
-            </motion.div>
+            </m.div>
           </div>
 
           {/* Image suivante */}
@@ -380,7 +375,7 @@ function CustomLightbox({ open, onClose, images, project }) {
         <div className="text-xl italic">{project.coords}</div>
         <div className="text-xl">{project.name}</div>
       </footer>
-    </motion.div>
+    </m.div>
   );
 }
 
@@ -469,7 +464,7 @@ function ImageMarquee({ images, onClick }) {
       }}
     >
       <div className="w-full h-full overflow-hidden relative">
-        <motion.div ref={trackRef} className="flex flex-col" style={{ y }}>
+        <m.div ref={trackRef} className="flex flex-col" style={{ y }}>
           {allImages.map((img, index) => (
             <div
               key={index}
@@ -496,7 +491,7 @@ function ImageMarquee({ images, onClick }) {
               />
             </div>
           ))}
-        </motion.div>
+        </m.div>
       </div>
     </aside>
   );
@@ -564,19 +559,19 @@ export default function GalleryProjetCartel({ project, onClose }) {
   const paragraphs = description.split('\n\n');
 
   return (
-    <motion.div
+    <m.div
       key="gallery-cartel-wrapper"
       exit={{ opacity: 0, transition: { duration: 1, delay: 0.2 } }}
     >
-      <motion.div
+      <m.div
         className={`fixed inset-0 bg-background/80 backdrop-blur-sm z-[140] ${isClosing ? 'pointer-events-none' : ''}`}
         initial={{ opacity: 0 }}
         animate={{ opacity: isClosing ? 0 : 1 }}
         transition={{ duration: 0.35, ease: 'easeInOut' }}
         onClick={handleRequestClose}
         aria-hidden="true"
-      ></motion.div>
-      <motion.section
+      ></m.div>
+      <m.section
         className={`fixed inset-0 h-[100dvh] w-full bg-background z-[150] flex flex-col md:flex-row shadow-2xl ${isClosing ? 'pointer-events-none' : ''}`}
         initial={{ x: '100%' }}
         animate={{ x: isClosing ? '100%' : 0 }}
@@ -660,7 +655,7 @@ export default function GalleryProjetCartel({ project, onClose }) {
           images={project.images}
           onClick={() => setLightboxOpen(true)}
         />
-      </motion.section>
+      </m.section>
 
       {/* Lightbox */}
       <AnimatePresence>
@@ -673,7 +668,7 @@ export default function GalleryProjetCartel({ project, onClose }) {
           />
         )}
       </AnimatePresence>
-    </motion.div>
+    </m.div>
   );
 }
 

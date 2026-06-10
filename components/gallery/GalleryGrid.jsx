@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { m, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { GALLERY_FILTERS } from '../../lib/constants';
@@ -184,7 +184,7 @@ export default function GalleryGrid({
 
   return (
     <>
-      <motion.div
+      <m.div
         key="grid"
         initial={{ opacity: 0, x: -50 }}
         animate={{ opacity: 1, x: 0 }}
@@ -244,7 +244,7 @@ export default function GalleryGrid({
             >
               <AnimatePresence mode="wait" initial={false}>
                 {imgData ? (
-                  <motion.div
+                  <m.div
                     key={contentKey}
                     initial={{ opacity: 0, scale: 0.98 }}
                     animate={{ opacity: 1, scale: 1 }}
@@ -274,9 +274,9 @@ export default function GalleryGrid({
                       sizes="(max-width: 768px) 45vw, 128px"
                       loading={slotIdx < 5 ? 'eager' : 'lazy'}
                     />
-                  </motion.div>
+                  </m.div>
                 ) : (
-                  <motion.div
+                  <m.div
                     key={contentKey}
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
@@ -289,12 +289,12 @@ export default function GalleryGrid({
             </div>
           );
         })}
-      </motion.div>
+      </m.div>
 
       {/* Curseur Personnalisé */}
       <AnimatePresence>
         {showCustomCursor && hoveredId && (
-          <motion.div
+          <m.div
             className="fixed pointer-events-none z-[1000] text-whiteCustom font-liberation italic text-lg"
             style={{
               left: cursorPos.x + 10,
@@ -307,7 +307,7 @@ export default function GalleryGrid({
             transition={{ duration: 0.2 }}
           >
             {projects.find(p => p.id === hoveredId)?.name}
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
     </>

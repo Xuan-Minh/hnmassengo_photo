@@ -3,7 +3,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
-import { motion, useReducedMotion } from 'framer-motion';
+import { m, useReducedMotion } from 'framer-motion';
 import Logo from '../ui/Logo';
 import { useSanityImages } from '../../lib/hooks';
 import { HOME_FALLBACK_IMAGES } from '../../lib/constants';
@@ -149,7 +149,7 @@ export default function HomeSection() {
             : 'opacity-0 pointer-events-none',
         ].join(' ')}
       >
-        <motion.span
+        <m.span
           className="block"
           animate={prefersReducedMotion ? undefined : { y: [0, 5, 0] }}
           transition={
@@ -179,7 +179,7 @@ export default function HomeSection() {
               strokeLinejoin="round"
             />
           </svg>
-        </motion.span>
+        </m.span>
       </button>
     </section>
   );
