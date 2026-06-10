@@ -5,7 +5,6 @@ import { usePathname } from '../../src/i18n/navigation';
 import { MENU_ITEMS, LANGUAGES } from '../../lib/constants';
 import { EVENTS, emitEvent } from '../../lib/events';
 
-// Menu one-page: scroll interne vers des sections dans #scroll-root
 export default function Menu() {
   const desktopItems = useMemo(() => MENU_ITEMS, []);
 
@@ -95,14 +94,20 @@ export default function Menu() {
       setTouchStart(null);
     };
 
-    overlay.addEventListener('touchstart', handleTouchStart);
-    overlay.addEventListener('touchmove', handleTouchMove);
-    overlay.addEventListener('touchend', handleTouchEnd);
+    overlay.addEventListener('touchstart', handleTouchStart, { passive: true });
+    overlay.addEventListener('touchmove', handleTouchMove, { passive: true });
+    overlay.addEventListener('touchend', handleTouchEnd, { passive: true });
 
     return () => {
-      overlay.removeEventListener('touchstart', handleTouchStart);
-      overlay.removeEventListener('touchmove', handleTouchMove);
-      overlay.removeEventListener('touchend', handleTouchEnd);
+      overlay.removeEventListener('touchstart', handleTouchStart, {
+        passive: true,
+      });
+      overlay.removeEventListener('touchmove', handleTouchMove, {
+        passive: true,
+      });
+      overlay.removeEventListener('touchend', handleTouchEnd, {
+        passive: true,
+      });
     };
   }, [mobileMenuOpen, touchStart]);
 

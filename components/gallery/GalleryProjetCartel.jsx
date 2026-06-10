@@ -459,6 +459,9 @@ function ImageMarquee({ images, onClick }) {
     <aside
       className="hidden md:flex flex-col w-[45%] h-full relative bg-background cursor-pointer"
       onClick={onClick}
+      onKeyPress={e => {
+        if (e.key === 'Enter' && onClick) onClick();
+      }}
     >
       <div className="w-full h-full overflow-hidden relative">
         <motion.div ref={trackRef} className="flex flex-col" style={{ y }}>
