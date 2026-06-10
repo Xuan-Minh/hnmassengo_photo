@@ -1,6 +1,6 @@
 export default {
   name: 'windowRecommendation',
-  title: 'Onglet Recommandation',
+  title: 'Fenêtre Recommandation',
   type: 'object',
   fields: [
     {
@@ -72,4 +72,17 @@ export default {
     },
     { name: 'link', title: 'Lien externe (optionnel)', type: 'url' },
   ],
+  preview: {
+    select: {
+      title: 'title.fr',
+      media: 'cover',
+    },
+    prepare(selection) {
+      const { title, media } = selection;
+      return {
+        title: title || 'Fenêtre Recommandation',
+        media,
+      };
+    },
+  },
 };

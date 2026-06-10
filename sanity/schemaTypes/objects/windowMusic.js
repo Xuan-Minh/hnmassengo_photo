@@ -1,6 +1,6 @@
 export default {
   name: 'windowMusic',
-  title: 'Onglet Musique',
+  title: 'Fenêtre Musique',
   type: 'object',
   fields: [
     {
@@ -42,4 +42,17 @@ export default {
       type: 'url',
     },
   ],
+  preview: {
+    select: {
+      title: 'title.fr',
+      media: 'spotifyUrl',
+    },
+    prepare(selection) {
+      const { title, media } = selection;
+      return {
+        title: title || 'Fenêtre Musique',
+        media,
+      };
+    },
+  },
 };

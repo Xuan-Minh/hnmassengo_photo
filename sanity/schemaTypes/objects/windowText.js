@@ -1,6 +1,6 @@
 export default {
   name: 'windowText',
-  title: 'Onglet Texte de présentation',
+  title: 'Fenêtre Texte de présentation',
   type: 'object',
   fields: [
     {

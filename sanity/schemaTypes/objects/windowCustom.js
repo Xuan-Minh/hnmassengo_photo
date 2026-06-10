@@ -40,4 +40,15 @@ export default {
       of: [{ type: 'block' }],
     },
   ],
+  preview: {
+    select: {
+      title: 'title.fr',
+    },
+    prepare(selection) {
+      const { title } = selection;
+      return {
+        title: title || 'Fenêtre Personnalisée',
+      };
+    },
+  },
 };

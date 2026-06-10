@@ -56,4 +56,19 @@ export default {
       type: 'string',
     },
   ],
+  preview: {
+    select: {
+      titreFr: 'title.fr', // On va chercher le texte dans l'objet title
+      nomUtilisateur: 'name',
+      photoBio: 'photo', // On sélectionne l'image pour la miniature
+    },
+    prepare(selection) {
+      const { titreFr, nomUtilisateur, photoBio } = selection;
+      return {
+        title: titreFr || 'Fenêtre Biographie (Sans titre)',
+        subtitle: nomUtilisateur ? `Profil : ${nomUtilisateur}` : '',
+        media: photoBio,
+      };
+    },
+  },
 };

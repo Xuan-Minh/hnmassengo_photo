@@ -1,6 +1,6 @@
 export default {
   name: 'windowImage',
-  title: 'Fenêtre Bio',
+  title: 'Fenêtre Image',
   type: 'object',
   fields: [
     {
@@ -44,4 +44,17 @@ export default {
         Rule.required().error('Vous devez choisir une couleur.'),
     },
   ],
+  preview: {
+    select: {
+      title: 'title.fr',
+      media: 'photo',
+    },
+    prepare(selection) {
+      const { title, media } = selection;
+      return {
+        title: title || 'Fenêtre Image',
+        media,
+      };
+    },
+  },
 };
