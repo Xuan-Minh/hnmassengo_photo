@@ -52,7 +52,7 @@ export default function NewsletterSignup({ className = '' } = {}) {
       </div>
       <form onSubmit={onSubmit} className="flex gap-2">
         <input
-          label="email"
+          aria-label="email"
           type="email"
           value={email}
           onChange={e => setEmail(e.target.value)}

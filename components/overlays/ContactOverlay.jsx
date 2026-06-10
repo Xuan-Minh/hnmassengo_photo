@@ -82,9 +82,24 @@ function ContactForm({ idSuffix = '', onSubmitSuccess, defaultSubject = '' }) {
       data-netlify-honeypot="bot-field"
       onSubmit={handleSubmit}
     >
-      <input type="hidden" name="form-name" value="contact" />
-      <input type="hidden" name="bot-field" style={{ display: 'none' }} />
-      <input type="hidden" name="locale" value={locale || ''} />
+      <input
+        type="hidden"
+        aria-label="form name"
+        name="form-name"
+        value="contact"
+      />
+      <input
+        type="hidden"
+        aria-label="bot field"
+        name="bot-field"
+        style={{ display: 'none' }}
+      />
+      <input
+        type="hidden"
+        aria-label="locale"
+        name="locale"
+        value={locale || ''}
+      />
 
       {showSuccess && (
         <div className="bg-green-600/20 border border-green-500 text-green-300 p-3 md:p-4 rounded mb-4 md:mb-6">
@@ -110,7 +125,7 @@ function ContactForm({ idSuffix = '', onSubmitSuccess, defaultSubject = '' }) {
           {t('form.fullName')} *
         </label>
         <input
-          label={`fullName${idSuffix}`}
+          aria-label={`fullName${idSuffix}`}
           id={`fullName${idSuffix}`}
           name="fullName"
           type="text"
@@ -129,7 +144,7 @@ function ContactForm({ idSuffix = '', onSubmitSuccess, defaultSubject = '' }) {
             {t('form.email')} *
           </label>
           <input
-            label={`email${idSuffix}`}
+            aria-label={`email${idSuffix}`}
             id={`email${idSuffix}`}
             name="email"
             type="email"
@@ -145,7 +160,7 @@ function ContactForm({ idSuffix = '', onSubmitSuccess, defaultSubject = '' }) {
             {t('form.subject')} *
           </label>
           <input
-            label={`subject${idSuffix}`}
+            aria-label={`subject${idSuffix}`}
             id={`subject${idSuffix}`}
             name="subject"
             type="text"
@@ -165,7 +180,7 @@ function ContactForm({ idSuffix = '', onSubmitSuccess, defaultSubject = '' }) {
           {t('form.message')} *
         </label>
         <textarea
-          label={`message${idSuffix}`}
+          aria-label={`message${idSuffix}`}
           id={`message${idSuffix}`}
           name="message"
           rows={5}
@@ -179,6 +194,7 @@ function ContactForm({ idSuffix = '', onSubmitSuccess, defaultSubject = '' }) {
         <label className="inline-flex items-center gap-2 text-whiteCustom/80 font-liberation text-sm select-none">
           <input
             type="checkbox"
+            aria-label="newsletter opt-in"
             name="newsletterOptIn"
             className="accent-whiteCustom"
           />

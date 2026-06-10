@@ -261,7 +261,7 @@ export default function ProjectImagesFolderInput(props) {
           {status ? <Text size={1}>{status}</Text> : null}
 
           <input
-            label="folder input"
+            aria-label="folder input"
             ref={folderInputRef}
             type="file"
             multiple
@@ -274,7 +274,7 @@ export default function ProjectImagesFolderInput(props) {
           />
 
           <input
-            label="files input"
+            aria-label="files input"
             ref={filesInputRef}
             type="file"
             multiple
@@ -445,7 +445,7 @@ export default function ProjectImagesFolderInput(props) {
               <Card radius={2} overflow="hidden" border>
                 <button
                   type="button"
-                  aria-label="Aperçu de l'image"
+                  aria-label="image preview"
                   style={{
                     width: '100%',
                     maxHeight: '300px',
@@ -471,7 +471,9 @@ export default function ProjectImagesFolderInput(props) {
             </Stack>
 
             <Stack space={2}>
-              <Label size={1}>Français</Label>
+              <Label size={1} aria-label="Français">
+                Français
+              </Label>
               <TextInput
                 value={editAlt.fr}
                 onChange={e =>
@@ -481,7 +483,9 @@ export default function ProjectImagesFolderInput(props) {
             </Stack>
 
             <Stack space={2}>
-              <Label size={1}>Anglais</Label>
+              <Label size={1} aria-label="Anglais">
+                Anglais
+              </Label>
               <TextInput
                 value={editAlt.en}
                 onChange={e =>
@@ -491,7 +495,9 @@ export default function ProjectImagesFolderInput(props) {
             </Stack>
 
             <Stack space={2}>
-              <Label size={1}>Allemand</Label>
+              <Label size={1} aria-label="Allemand">
+                Allemand
+              </Label>
               <TextInput
                 value={editAlt.de}
                 onChange={e =>
