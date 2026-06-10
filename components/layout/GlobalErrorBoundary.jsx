@@ -43,6 +43,7 @@ class GlobalErrorBoundaryInner extends React.Component {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <button
+                type="button"
                 onClick={this.handleReset}
                 className="px-8 py-3 border border-white hover:bg-white hover:text-black transition-colors"
               >

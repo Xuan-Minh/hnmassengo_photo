@@ -55,6 +55,7 @@ export default function ShopOverlay({
             <div className="mt-auto">
               <div className="text-2xl font-bold mb-2">{product.price}€</div>
               <button
+                type="button"
                 className={`text-lg italic transition-colors ${
                   inCart
                     ? 'text-whiteCustom/30 cursor-not-allowed'
@@ -97,6 +98,7 @@ export default function ShopOverlay({
             <div className="mt-auto">
               <div className="text-3xl font-bold mb-2">{product.price}€</div>
               <button
+                type="button"
                 className={`text-xl italic transition-colors ${
                   inCart
                     ? 'text-whiteCustom/30 cursor-not-allowed'

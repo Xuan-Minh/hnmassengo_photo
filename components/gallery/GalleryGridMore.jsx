@@ -230,6 +230,7 @@ export default function GalleryGridMore({
       {/* Bouton Back */}
       <div className="absolute top-8 left-8 md:top-16 md:left-16 z-50">
         <button
+          type="button"
           onClick={onClose}
           className="text-lg font-liberation text-accent hover:text-blackCustom transition-colors"
         >
@@ -251,6 +252,7 @@ export default function GalleryGridMore({
           <div className="flex flex-col gap-2 mb-12">
             {FILTERS.map(f => (
               <button
+                type="button"
                 key={f.value}
                 className={`text-lg text-left font-liberation transition-opacity duration-300 relative group hover:[--bg-size:100%_1px] self-start ${
                   filter === f.value
@@ -268,6 +270,7 @@ export default function GalleryGridMore({
             {filteredProjects.map(p => (
               <li key={p.id}>
                 <button
+                  type="button"
                   className={`text-sm md:text-base text-left font-liberation transition-colors duration-300 relative group hover:[--bg-size:100%_1px] ${
                     gridHoveredProjectId === p.id
                       ? 'text-blackCustom'

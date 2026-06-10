@@ -77,6 +77,7 @@ export default function LanguageSwitcher() {
       {langs.map((lang, i) => (
         <React.Fragment key={'frag-' + lang}>
           <button
+            type="button"
             key={lang}
             className={`uppercase font-bold transition-all duration-300 ease-in-out relative ${hoverClass} ${
               locale === lang ? activeClass : inactiveClass

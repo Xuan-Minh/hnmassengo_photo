@@ -244,8 +244,8 @@ export default function Menu() {
   if (isMobile) {
     return (
       <>
-        {/* Bouton MENU fixe */}
         <button
+          type="button"
           className={`fixed top-8 right-8 z-50 text-xl font-liberation italic tracking-wider transition-opacity duration-300 ${
             shouldHideMobileMenu && !mobileMenuOpen
               ? 'opacity-0 pointer-events-none'
@@ -256,7 +256,6 @@ export default function Menu() {
           menu
         </button>
 
-        {/* Overlay Mobile */}
         <div
           ref={mobileOverlayRef}
           className={`fixed inset-0 z-[60] bg-blackCustom text-whiteCustom flex flex-col items-center justify-center transition-transform duration-500 ease-in-out ${
@@ -265,6 +264,7 @@ export default function Menu() {
         >
           {/* Close button */}
           <button
+            type="button"
             className="absolute top-8 right-8 text-xl font-liberation italic"
             onClick={() => setMobileMenuOpen(false)}
           >
@@ -286,6 +286,7 @@ export default function Menu() {
             {desktopItems.map(it => (
               <li key={it.id}>
                 <button
+                  type="button"
                   onClick={() => {
                     if (it.id === 'info') {
                       emitEvent(EVENTS.CONTACT_SHOW);
@@ -307,6 +308,7 @@ export default function Menu() {
             {langs.map((lang, i) => (
               <React.Fragment key={lang}>
                 <button
+                  type="button"
                   onClick={() => handleChangeLang(lang)}
                   className={`uppercase font-bold transition-colors ${
                     locale === lang ? 'text-whiteCustom' : 'text-whiteCustom/60'

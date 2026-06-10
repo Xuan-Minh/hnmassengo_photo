@@ -17,6 +17,7 @@ export default function BlogArchives({ posts, onClose, onPostClick }) {
       {/* Bouton Back */}
       <div className="absolute top-8 left-8 md:top-16 md:left-16 z-50">
         <button
+          type="button"
           onClick={onClose}
           className="text-lg font-liberation text-whiteCustom/60 hover:text-whiteCustom transition-colors"
         >

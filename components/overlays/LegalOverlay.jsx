@@ -238,6 +238,7 @@ export default function LegalOverlay({
             {/* En-tête fixe */}
             <header className="flex-shrink-0 p-6 md:p-12 lg:p-16 pb-0 md:pb-0 lg:pb-0">
               <button
+                type="button"
                 onClick={handleClose}
                 className="font-liberation text-lg text-whiteCustom/80 hover:text-whiteCustom transition-colors"
                 aria-label={t('overlay.closeAriaLabel')}

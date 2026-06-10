@@ -178,6 +178,7 @@ export default function BlogPostOverlay({ post, onClose, onPrevious, onNext }) {
               {/* Contact Button */}
               <div className="mt-8 flex justify-end max-w-2xl mx-auto">
                 <button
+                  type="button"
                   onClick={() => setContactOpen(true)}
                   className="text-sm text-whiteCustom/60 hover:text-whiteCustom transition-colors italic"
                 >
@@ -222,6 +223,7 @@ export default function BlogPostOverlay({ post, onClose, onPrevious, onNext }) {
               {/* Contact Button */}
               <div className="flex justify-end max-w-2xl mx-auto mt-4">
                 <button
+                  type="button"
                   onClick={() => setContactOpen(true)}
                   className="text-sm text-whiteCustom/60 hover:text-whiteCustom transition-colors italic ml-4"
                 >
@@ -235,6 +237,7 @@ export default function BlogPostOverlay({ post, onClose, onPrevious, onNext }) {
         {/* Navigation Footer */}
         <div className="w-full border-t border-whiteCustom/20 px-8 md:px-16 py-6 hidden md:flex items-center justify-center gap-16 shrink-0">
           <button
+            type="button"
             onClick={onPrevious}
             className="text-base text-whiteCustom/60 hover:text-whiteCustom transition-colors flex items-center gap-2"
             disabled={!onPrevious}
@@ -243,6 +246,7 @@ export default function BlogPostOverlay({ post, onClose, onPrevious, onNext }) {
           </button>
 
           <button
+            type="button"
             onClick={onNext}
             className="text-base text-whiteCustom/60 hover:text-whiteCustom transition-colors flex items-center gap-2"
             disabled={!onNext}

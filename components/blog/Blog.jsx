@@ -175,6 +175,7 @@ export default function Blog() {
           ))}
           <div className="w-full xl:justify-end 2xl:justify-center shrink-0 hidden lg:flex">
             <button
+              type="button"
               onClick={() => setArchiveOpen(true)}
               className="text-lg font-liberation italic text-whiteCustom/60 hover:text-whiteCustom transition-colors hover:[--bg-size:100%_1px]"
             >

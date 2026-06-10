@@ -54,6 +54,7 @@ export default function WindowsTab({
           onClick={() => setIsMinimized(!isMinimized)}
           className="p-1 hover:bg-white/20 rounded-sm"
           aria-label="Réduire la fenêtre"
+          type="button"
         >
           <Minimize size={16} />
         </button>

@@ -177,6 +177,7 @@ function CustomLightbox({ open, onClose, images, project }) {
       {/* En-tête (mobile uniquement) */}
       <div className="absolute top-8 landscape:top-2 left-8 z-40 md:hidden">
         <button
+          type="button"
           onClick={onClose}
           className="text-lg hover:text-white transition-colors"
         >
@@ -249,6 +250,7 @@ function CustomLightbox({ open, onClose, images, project }) {
       <div className="hidden md:flex flex-col flex-1 min-h-0 w-full pt-16 pr-16 pl-16">
         <div>
           <button
+            type="button"
             onClick={onClose}
             className="font-liberation text-lg hover:text-white transition-colors"
           >
@@ -556,6 +558,7 @@ export default function GalleryProjetCartel({ project, onClose }) {
         {/* Version Mobile */}
         <div className="md:hidden w-full h-full flex flex-col relative">
           <button
+            type="button"
             onClick={handleRequestClose}
             className="absolute top-6 left-6 z-10 font-liberation text-lg text-accent hover:text-blackCustom transition-colors"
             aria-label={t('project.closeOverlayLabel')}
@@ -594,6 +597,7 @@ export default function GalleryProjetCartel({ project, onClose }) {
         <main className="hidden md:flex w-[55%] h-full border-r border-blackCustom p-16 flex-col justify-between overflow-y-auto">
           <div>
             <button
+              type="button"
               onClick={handleRequestClose}
               className="font-liberation text-lg text-accent hover:text-blackCustom transition-colors"
               aria-label={t('project.closeOverlayLabel')}

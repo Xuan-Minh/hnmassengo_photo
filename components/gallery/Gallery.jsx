@@ -148,6 +148,7 @@ export default function Gallery() {
             </div>
             {view === 'grid' && (
               <button
+                type="button"
                 className="justify-self-center text-xl font-liberation italic text-blackCustom hover:text-accent transition-all duration-300 px-4 py-2 rounded animate-in fade-in hover:[--bg-size:100%_1px]"
                 onClick={() => setOverlayOpen(true)}
               >

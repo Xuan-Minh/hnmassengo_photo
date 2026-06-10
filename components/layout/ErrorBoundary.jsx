@@ -54,6 +54,7 @@ class ErrorBoundaryInner extends React.Component {
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <button
+                type="button"
                 onClick={this.handleReset}
                 className="px-8 py-3 border border-whiteCustom hover:bg-background hover:text-blackCustom transition-colors"
               >

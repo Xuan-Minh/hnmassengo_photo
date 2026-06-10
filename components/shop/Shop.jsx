@@ -403,6 +403,7 @@ export default function Shop() {
                   </div>
                   {/* Bouton checkout Snipcart */}
                   <button
+                    type="button"
                     className={`snipcart-checkout text-right transition-colors ${
                       cartItems.length > 0
                         ? 'text-gray-300 hover:text-black'

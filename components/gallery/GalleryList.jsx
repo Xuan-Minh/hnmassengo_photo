@@ -323,6 +323,7 @@ export default function GalleryList({
         <div className="flex flex-wrap justify-center gap-x-8 gap-y-2 flex-1">
           {projects.map((p, idx) => (
             <button
+              type="button"
               key={p.id}
               onClick={() => navigateToImage(idx, 0)}
               className={`text-lg font-liberation transition-opacity duration-300 relative group whitespace-nowrap ${
@@ -346,6 +347,7 @@ export default function GalleryList({
         {currentListDisplaySrc && (
           <div className="relative w-full h-full flex items-center justify-center gap-4 px-4">
             <button
+              type="button"
               onClick={navigateListPrev}
               className="z-10 opacity-40 hover:opacity-100 transition-opacity"
             >
@@ -367,6 +369,7 @@ export default function GalleryList({
               />
             </div>
             <button
+              type="button"
               onClick={navigateListNext}
               className="z-10 opacity-40 hover:opacity-100 transition-opacity"
             >
@@ -384,6 +387,7 @@ export default function GalleryList({
         >
           {projects.map((p, idx) => (
             <button
+              type="button"
               key={p.id}
               ref={el => (itemsRef.current[idx] = el)}
               onClick={() => navigateToImage(idx, 0)}

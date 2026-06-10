@@ -4,6 +4,7 @@ export default function GalleryViewToggle({ view, onViewChange }) {
   return (
     <div className="hidden lg:flex gap-4 mb-1 flex-shrink-0">
       <button
+        type="button"
         className="group relative w-6 h-6"
         onPointerDown={e => {
           e.preventDefault();
@@ -31,6 +32,7 @@ export default function GalleryViewToggle({ view, onViewChange }) {
       </button>
 
       <button
+        type="button"
         className="group relative w-6 h-6"
         onPointerDown={e => {
           e.preventDefault();
