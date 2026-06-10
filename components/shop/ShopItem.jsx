@@ -15,7 +15,8 @@ export default function ShopItem({
   const t = useTranslations('shop');
   const [hovered, setHovered] = useState(false);
   return (
-    <div
+    <button
+      type="button"
       className={`flex flex-col items-start w-full group ${
         inCart
           ? 'opacity-40 grayscale cursor-not-allowed pointer-events-none'
@@ -24,7 +25,6 @@ export default function ShopItem({
       onClick={onClick}
       onMouseEnter={() => !inCart && setHovered(true)}
       onMouseLeave={() => !inCart && setHovered(false)}
-      role="button"
       tabIndex={0}
       onKeyPress={e => {
         if (e.key === 'Enter' && !inCart) onClick();
@@ -68,7 +68,7 @@ export default function ShopItem({
           {t('inCart')}
         </div>
       )}
-    </div>
+    </button>
   );
 }
 

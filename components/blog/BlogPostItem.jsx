@@ -115,13 +115,13 @@ export default function BlogPostItem({
   };
 
   return (
-    <div
+    <button
+      type="button"
       className="w-full lg:border-b lg:border-whiteCustom/20 py-2  lg:py-12 cursor-pointer group lg:hover:border-l-4 lg:hover:border-l-white lg:pl-8 transition-all duration-300"
       onClick={onClick}
       onKeyPress={e => {
         if (e.key === 'Enter') onClick();
       }}
-      role="button"
       tabIndex={0}
     >
       {post.layout === 'image-left' && post.image && (
@@ -205,7 +205,7 @@ export default function BlogPostItem({
           {renderTextPreview()}
         </div>
       )}
-    </div>
+    </button>
   );
 }
 

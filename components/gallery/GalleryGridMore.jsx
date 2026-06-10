@@ -308,7 +308,8 @@ export default function GalleryGridMore({ onClose, onProjectClick, projects }) {
                     const isHovered = hoveredId === imgData.projectId;
 
                     return (
-                      <div
+                      <button
+                        type="button"
                         id={
                           imgData.isFirst
                             ? `project-start-${imgData.projectId}`
@@ -333,7 +334,6 @@ export default function GalleryGridMore({ onClose, onProjectClick, projects }) {
                             handleImageClick(imgData.project);
                         }}
                         tabIndex={0}
-                        role="button"
                       >
                         <Image
                           src={imgData.src}
@@ -348,7 +348,7 @@ export default function GalleryGridMore({ onClose, onProjectClick, projects }) {
                           sizes="(max-width: 768px) 45vw, 128px"
                           loading={imgData.globalIndex < 30 ? 'eager' : 'lazy'}
                         />
-                      </div>
+                      </button>
                     );
                   })}
                 </div>

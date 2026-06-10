@@ -353,15 +353,15 @@ export default function GalleryList({
             >
               <ArrowLeft />
             </button>
-            <div
+            <button
+              type="button"
+              onClick={() => onProjectSelect(projects[currentProjectIndex])}
               className="relative w-[94%] h-[62vh] lg:w-[70%] lg:h-[70vh] xl:w-[80%] xl:h-[80vh] cursor-pointer"
               onClick={() => onProjectSelect(projects[currentProjectIndex])}
               onKeyPress={e => {
                 if (e.key === 'Enter')
                   onProjectSelect(projects[currentProjectIndex]);
               }}
-              role="button"
-              tabIndex={0}
             >
               <Image
                 key={`${currentProjectIndex}-${currentImageIndex}`}
@@ -373,7 +373,7 @@ export default function GalleryList({
                 onLoad={() => setIsListImageLoaded(true)}
                 priority={!isMobile}
               />
-            </div>
+            </butto>
             <button
               type="button"
               onClick={navigateListNext}

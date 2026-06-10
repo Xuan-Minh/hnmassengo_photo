@@ -342,18 +342,18 @@ export default function ProjectImagesFolderInput(props) {
                     style={{ position: 'relative', userSelect: 'none' }}
                   >
                     {/* Clicking the image opens the edit modal */}
-                    <div
+                    <button
+                      type="button"
                       style={{ cursor: 'pointer' }}
                       onClick={() => openEditModal(image)}
                       onKeyPress={e => {
                         if (e.key === 'Enter') openEditModal(image);
                       }}
-                      role="button"
                       tabIndex={0}
                     >
                       {url ? (
-                        <div
-                          role="img"
+                        <button
+                          type="button"
                           aria-label="Aperçu de l'image"
                           style={{
                             width: '100%',
@@ -377,7 +377,7 @@ export default function ProjectImagesFolderInput(props) {
                           }}
                         />
                       )}
-                    </div>
+                    </button>
                     {/* Clicking the checkbox toggles selection — propagation stopped so image click doesn't fire */}
                     <div
                       style={{ position: 'absolute', top: 4, right: 4 }}
@@ -441,8 +441,7 @@ export default function ProjectImagesFolderInput(props) {
           <Stack space={4} padding={4}>
             {editingImagePreviewUrl ? (
               <Card radius={2} overflow="hidden" border>
-                <div
-                  role="img"
+                <button
                   aria-label="Aperçu de l'image"
                   style={{
                     width: '100%',
