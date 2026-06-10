@@ -286,7 +286,17 @@ function ContactInfo({ onOpenLegal }) {
     </div>
   );
 }
-
+const MarqueeBlock = ({ ariaHidden = false } = {}) => (
+  <div
+    className="flex items-center gap-6 sm:gap-6 md:gap-6 lg:gap-6 pr-6 uppercase  "
+    aria-hidden={ariaHidden}
+  >
+    <span className="inline-block font-bold">{SITE_CONFIG.copyright}</span>
+    <span className="inline-block">{SITE_CONFIG.copyright}</span>
+    <span className="inline-block font-bold">{SITE_CONFIG.copyright}</span>
+    <span className="inline-block">{SITE_CONFIG.copyright}</span>
+  </div>
+);
 // Composant pour le contenu principal (formulaire + informations)
 export function ContactContent({
   idSuffix = '',
@@ -335,18 +345,6 @@ export function ContactMarquee({ mode = 'absolute' } = {}) {
     mode === 'inline'
       ? 'flex-shrink-0 border-t border-whiteCustom/60 overflow-hidden pointer-events-none '
       : 'absolute inset-x-0 bottom-0 border-t border-whiteCustom/60 overflow-hidden pointer-events-none';
-
-  const MarqueeBlock = ({ ariaHidden = false } = {}) => (
-    <div
-      className="flex items-center gap-6 sm:gap-6 md:gap-6 lg:gap-6 pr-6 uppercase  "
-      aria-hidden={ariaHidden}
-    >
-      <span className="inline-block font-bold">{SITE_CONFIG.copyright}</span>
-      <span className="inline-block">{SITE_CONFIG.copyright}</span>
-      <span className="inline-block font-bold">{SITE_CONFIG.copyright}</span>
-      <span className="inline-block">{SITE_CONFIG.copyright}</span>
-    </div>
-  );
 
   return (
     <div className={wrapperClassName}>

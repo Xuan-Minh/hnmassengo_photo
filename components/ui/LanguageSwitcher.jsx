@@ -63,8 +63,6 @@ export default function LanguageSwitcher() {
 
   const handleChangeLang = lang => {
     if (lang === locale) return;
-    // Full page navigation: avoids React/framer-motion race conditions
-    // LoadingOverlay shows naturally on page load (visible starts true)
     window.location.href = `/${lang}${pathname}`;
   };
 
