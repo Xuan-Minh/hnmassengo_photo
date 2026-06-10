@@ -268,7 +268,7 @@ export default function ProjectImagesFolderInput(props) {
             // Attributs non standard mais supportés par Chromium / Safari
             webkitdirectory="true"
             directory="true"
-            style={{ display: 'none' }}
+            className="hidden"
             onChange={e => handleFilesSelected(e.currentTarget.files)}
           />
 
@@ -442,6 +442,7 @@ export default function ProjectImagesFolderInput(props) {
             {editingImagePreviewUrl ? (
               <Card radius={2} overflow="hidden" border>
                 <button
+                  type="button"
                   aria-label="Aperçu de l'image"
                   style={{
                     width: '100%',
