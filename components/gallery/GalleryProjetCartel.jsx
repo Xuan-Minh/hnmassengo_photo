@@ -193,6 +193,7 @@ function CustomLightbox({ open, onClose, images, project }) {
           onKeyPress={e => {
             if (e.key === 'Left') goToIndex(currentIndex - 1);
           }}
+          tabIndex={0}
           role="button"
         />
         <div
@@ -201,6 +202,7 @@ function CustomLightbox({ open, onClose, images, project }) {
           onKeyPress={e => {
             if (e.key === 'Right') goToIndex(currentIndex + 1);
           }}
+          tabIndex={0}
           role="button"
         />
 
@@ -349,6 +351,7 @@ function CustomLightbox({ open, onClose, images, project }) {
             onKeyPress={e => {
               if (e.key === 'Left') goToIndex(currentIndex - 1);
             }}
+            tabIndex={0}
             role="button"
           >
             <span className="text-xl italic text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
@@ -362,6 +365,7 @@ function CustomLightbox({ open, onClose, images, project }) {
             onKeyPress={e => {
               if (e.key === 'Right') goToIndex(currentIndex + 1);
             }}
+            tabIndex={0}
             role="button"
           >
             <span className="text-xl italic text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
@@ -397,6 +401,7 @@ function ImageMarqueeHorizontal({ images, onClick }) {
             onKeyPress={e => {
               if (e.key === 'Enter' && onClick) onClick();
             }}
+            tabIndex={0}
             role="button"
           >
             <Image

@@ -349,6 +349,7 @@ export default function ProjectImagesFolderInput(props) {
                         if (e.key === 'Enter') openEditModal(image);
                       }}
                       role="button"
+                      tabIndex={0}
                     >
                       {url ? (
                         <div

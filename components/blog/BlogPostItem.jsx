@@ -122,6 +122,7 @@ export default function BlogPostItem({
         if (e.key === 'Enter') onClick();
       }}
       role="button"
+      tabIndex={0}
     >
       {post.layout === 'image-left' && post.image && (
         <div className="flex flex-col lg:flex-row gap-8 sm:items-start lg:items-center ">

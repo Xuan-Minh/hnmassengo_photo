@@ -332,6 +332,7 @@ export default function GalleryGridMore({ onClose, onProjectClick, projects }) {
                           if (e.key === 'Enter')
                             handleImageClick(imgData.project);
                         }}
+                        tabIndex={0}
                         role="button"
                       >
                         <Image
