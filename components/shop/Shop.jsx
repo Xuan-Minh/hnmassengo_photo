@@ -358,8 +358,13 @@ export default function Shop() {
             <h2
               className="text-2xl md:text-3xl cursor-pointer select-none"
               onClick={() => setCartOpen(open => !open)}
+              onKeyPress={e => {
+                if (e.key === 'Escape' && cartOpen) {
+                  setCartOpen(open => !open);
+                }
+              }}
             >
-              {t('cart.title')}
+              @{t('cart.title')}
             </h2>
             <span className="hidden md:block text-xs text-black/40">
               ({cartCount})

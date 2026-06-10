@@ -190,10 +190,18 @@ function CustomLightbox({ open, onClose, images, project }) {
         <div
           className="absolute left-0 top-14 bottom-12 w-[20%] z-30"
           onClick={() => goToIndex(currentIndex - 1)}
+          onKeyPress={e => {
+            if (e.key === 'Left') goToIndex(currentIndex - 1);
+          }}
+          role="button"
         />
         <div
           className="absolute right-0 top-14 bottom-12 w-[20%] z-30"
           onClick={() => goToIndex(currentIndex + 1)}
+          onKeyPress={e => {
+            if (e.key === 'Right') goToIndex(currentIndex + 1);
+          }}
+          role="button"
         />
 
         <div
@@ -338,6 +346,10 @@ function CustomLightbox({ open, onClose, images, project }) {
           <div
             className="absolute left-0 top-0 h-full w-[20%] z-30 flex items-center justify-start pl-8 md:pl-0 group cursor-pointer"
             onClick={() => goToIndex(currentIndex - 1)}
+            onKeyPress={e => {
+              if (e.key === 'Left') goToIndex(currentIndex - 1);
+            }}
+            role="button"
           >
             <span className="text-xl italic text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
               previous
@@ -347,6 +359,10 @@ function CustomLightbox({ open, onClose, images, project }) {
           <div
             className="absolute right-0 top-0 h-full w-[20%] z-30 flex items-center justify-end pr-8 md:pr-0 group cursor-pointer"
             onClick={() => goToIndex(currentIndex + 1)}
+            onKeyPress={e => {
+              if (e.key === 'Right') goToIndex(currentIndex + 1);
+            }}
+            role="button"
           >
             <span className="text-xl italic text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
               next
@@ -378,6 +394,10 @@ function ImageMarqueeHorizontal({ images, onClick }) {
             key={img + index}
             className="flex-shrink-0 flex justify-center items-center snap-center cursor-pointer hover:opacity-80 transition-opacity duration-200"
             onClick={onClick}
+            onKeyPress={e => {
+              if (e.key === 'Enter' && onClick) onClick();
+            }}
+            role="button"
           >
             <Image
               src={buildSanityImageUrl(img, { w: 400, q: 40, auto: 'format' })}
@@ -460,6 +480,11 @@ function ImageMarquee({ images, onClick }) {
                 draggable={false}
                 sizes="(max-width: 1200px) 100vw, 400px"
                 priority={false}
+                tabIndex={0}
+                onKeyPress={e => {
+                  if (e.key === 'Enter' && onClick) onClick();
+                }}
+                role="button"
               />
             </div>
           ))}

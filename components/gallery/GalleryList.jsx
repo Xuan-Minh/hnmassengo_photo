@@ -356,6 +356,12 @@ export default function GalleryList({
             <div
               className="relative w-[94%] h-[62vh] lg:w-[70%] lg:h-[70vh] xl:w-[80%] xl:h-[80vh] cursor-pointer"
               onClick={() => onProjectSelect(projects[currentProjectIndex])}
+              onKeyPress={e => {
+                if (e.key === 'Enter')
+                  onProjectSelect(projects[currentProjectIndex]);
+              }}
+              role="button"
+              tabIndex={0}
             >
               <Image
                 key={`${currentProjectIndex}-${currentImageIndex}`}

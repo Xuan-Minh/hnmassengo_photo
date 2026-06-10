@@ -118,6 +118,10 @@ export default function BlogPostItem({
     <div
       className="w-full lg:border-b lg:border-whiteCustom/20 py-2  lg:py-12 cursor-pointer group lg:hover:border-l-4 lg:hover:border-l-white lg:pl-8 transition-all duration-300"
       onClick={onClick}
+      onKeyPress={e => {
+        if (e.key === 'Enter') onClick();
+      }}
+      role="button"
     >
       {post.layout === 'image-left' && post.image && (
         <div className="flex flex-col lg:flex-row gap-8 sm:items-start lg:items-center ">

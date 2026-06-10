@@ -289,7 +289,6 @@ export default function GalleryGridMore({ onClose, onProjectClick, projects }) {
           </ul>
         </div>
 
-        {/* MASONRY : L'ANIMATION FADE OUT / FADE IN */}
         <div className="flex-1 overflow-y-auto pl-8" ref={scrollContainerRef}>
           <AnimatePresence mode="wait">
             <motion.div
@@ -329,6 +328,11 @@ export default function GalleryGridMore({ onClose, onProjectClick, projects }) {
                           setIsHoverSourceGrid(false);
                         }}
                         onClick={() => handleImageClick(imgData.project)}
+                        onKeyPress={e => {
+                          if (e.key === 'Enter')
+                            handleImageClick(imgData.project);
+                        }}
+                        role="button"
                       >
                         <Image
                           src={imgData.src}

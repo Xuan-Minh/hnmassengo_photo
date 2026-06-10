@@ -22,6 +22,13 @@ export default function ShopItem({
           : 'cursor-pointer'
       }`}
       onClick={onClick}
+      onMouseEnter={() => !inCart && setHovered(true)}
+      onMouseLeave={() => !inCart && setHovered(false)}
+      role="button"
+      tabIndex={0}
+      onKeyPress={e => {
+        if (e.key === 'Enter' && !inCart) onClick();
+      }}
     >
       <div
         className="relative w-full aspect-square mb-4 bg-gray-200"

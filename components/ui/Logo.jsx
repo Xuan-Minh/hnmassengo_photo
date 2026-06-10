@@ -25,6 +25,9 @@ export default function Logo({ visible = true }) {
     >
       <span
         onClick={handleLogoClick}
+        onKeyPress={e => {
+          if (e.key === 'Enter') handleLogoClick();
+        }}
         className="text-accent font-normal font-liberation italic pointer-events-auto cursor-pointer"
         title={t('title')}
       >
@@ -32,6 +35,9 @@ export default function Logo({ visible = true }) {
       </span>
       <span
         onClick={handleLogoClick}
+        onKeyPress={e => {
+          if (e.key === 'Enter') handleLogoClick();
+        }}
         className="text-accent  font-bold font-liberation pointer-events-auto cursor-pointer"
         title={t('title')}
       >

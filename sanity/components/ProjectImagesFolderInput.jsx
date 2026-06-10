@@ -345,6 +345,10 @@ export default function ProjectImagesFolderInput(props) {
                     <div
                       style={{ cursor: 'pointer' }}
                       onClick={() => openEditModal(image)}
+                      onKeyPress={e => {
+                        if (e.key === 'Enter') openEditModal(image);
+                      }}
+                      role="button"
                     >
                       {url ? (
                         <div

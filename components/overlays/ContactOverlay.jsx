@@ -325,6 +325,9 @@ export function ContactContent({
         <h2
           id={headingId}
           onClick={handleCopyLink}
+          onKeyPress={e => {
+            if (e.key === 'Enter') handleCopyLink();
+          }}
           className="cursor-pointer text-whiteCustom/90 hover:text-whiteCustom transition-colors font-liberation italic text-[32px] sm:text-[36px] md:text-[42px] lg:text-[46px] xl:text-[48px] leading-none mb-6 md:mb-8"
         >
           {t('title')}
