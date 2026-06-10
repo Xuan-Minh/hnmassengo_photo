@@ -45,7 +45,7 @@ export default function WindowsTab({
         style={{ backgroundColor: color, color: fontcolor }}
         variants={childrenVariants}
         animate={isDragging ? 'dragging' : 'idle'}
-        className={`flex items-center justify-between w-full border border-black gap-2 p-2 cursor-grab active:cursor-grabbing ${
+        className={`flex items-center justify-between w-full border border-black gap-2 p-2 ${
           isMinimized ? 'rounded-md' : 'rounded-t-md'
         }`}
       >
