@@ -23,8 +23,8 @@ export default function Logo({ visible = true }) {
       data-layer="HAN-NOAH MASSENGO"
       className={`absolute top-0 left-1/2 transform -translate-x-1/2 justify-center gap-2 m-4 items-center space-x-2  bg-transparent pointer-events-none hidden lg:flex lg:text-[36px] transition-opacity duration-300 ${visible ? 'opacity-100' : 'opacity-0'}`}
     >
-      <span
-        role="button"
+      <button
+        type="button"
         onClick={handleLogoClick}
         onKeyPress={e => {
           if (e.key === 'Enter') handleLogoClick();
@@ -33,9 +33,9 @@ export default function Logo({ visible = true }) {
         title={t('title')}
       >
         Han-Noah
-      </span>
-      <span
-        role="button"
+      </button>
+      <button
+        type="button"
         onClick={handleLogoClick}
         onKeyPress={e => {
           if (e.key === 'Enter') handleLogoClick();
@@ -44,7 +44,7 @@ export default function Logo({ visible = true }) {
         title={t('title')}
       >
         MASSENGO
-      </span>
+      </button>
     </div>
   );
 }
