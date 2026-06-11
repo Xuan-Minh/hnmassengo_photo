@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 import { m } from 'framer-motion';
 
 /**
@@ -18,17 +18,14 @@ export default function BaseOverlay({
   ariaLabelledBy,
   ariaLabel,
 }) {
-  const previouslyFocusedElement = useRef(null);
-
-  // Mémoriser l'élément actif à l'ouverture
+  // CORRECTION : Plus besoin de useRef ! Un seul useEffect suffit.
   useEffect(() => {
-    previouslyFocusedElement.current = document.activeElement;
-  }, []);
+    // 1. Capture l'élément actif au montage (variable locale)
+    const elementToFocus = document.activeElement;
 
-  // Rendre le focus à l'élément déclencheur à la fermeture
-  useEffect(() => {
+    // 2. Rend le focus au démontage
     return () => {
-      previouslyFocusedElement.current?.focus?.();
+      elementToFocus?.focus?.();
     };
   }, []);
 
@@ -47,7 +44,6 @@ export default function BaseOverlay({
       aria-labelledby={ariaLabelledBy}
       aria-label={ariaLabelledBy ? undefined : ariaLabel}
     >
-      {/* Bouton Back */}
       <div className="absolute top-8 left-8 md:top-16 md:left-16 z-50">
         <button
           type="button"
@@ -59,7 +55,6 @@ export default function BaseOverlay({
         </button>
       </div>
 
-      {/* Contenu de l'overlay */}
       {children}
     </m.div>
   );
