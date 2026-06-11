@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams } from 'next/navigation';
 import { useRouter } from '../../src/i18n/navigation';
 import { AnimatePresence } from 'framer-motion';
@@ -12,6 +12,7 @@ import { buildSanityImageUrl } from '../../lib/imageUtils';
 import { CONTENT } from '../../lib/constants';
 import { getOptimizedImageParams } from '../../lib/hooks';
 import { useIsMobile } from '../../lib/hooks';
+
 const readRequestedPostId = () => {
   try {
     const sp = new URLSearchParams(window.location.search);
@@ -38,16 +39,9 @@ export default function Blog() {
   const [archiveOpen, setArchiveOpen] = useState(false);
   const [selectedPost, setSelectedPost] = useState(null);
   const isMobile = useIsMobile();
-  const [requestedPostId, setRequestedPostId] = useState(() => {
-    if (typeof window === 'undefined') return null;
 
-    // Logique de reload : si c'est un rafraîchissement, on ignore le paramètre
-    const [entry] = window.performance.getEntriesByType('navigation');
-    if (entry?.type === 'reload') return null;
-
-    const sp = new URLSearchParams(window.location.search);
-    return sp.get('post');
-  });
+  // Remplacement de l'état "requestedPostId" par une simple Ref de contrôle interne
+  const initialCheckDone = useRef(false);
 
   const replacePostParam = postId => {
     const sp = new URLSearchParams(window.location.search);
@@ -76,26 +70,6 @@ export default function Blog() {
     };
   }, [archiveOpen, selectedPost]);
 
-  // Lire ?post=<id> côté client sans useSearchParams (évite l'erreur suspense en build)
-  useEffect(() => {
-    const isReload = isReloadNavigation();
-    if (isReload) {
-      const url = new URL(window.location.href);
-      if (url.searchParams.has('post')) {
-        url.searchParams.delete('post');
-        window.history.replaceState(
-          null,
-          '',
-          `${url.pathname}${url.search}${url.hash}`
-        );
-      }
-    }
-
-    const update = () => setRequestedPostId(readRequestedPostId());
-    window.addEventListener('popstate', update);
-    return () => window.removeEventListener('popstate', update);
-  }, []);
-
   useEffect(() => {
     const fetchPosts = async () => {
       const data = await client.fetch(
@@ -111,7 +85,6 @@ export default function Blog() {
         text:
           p.texte?.[locale] ||
           p.texte?.fr ||
-          // Compat ancien schéma (avant "texte")
           p.fullContent?.[locale] ||
           p.fullContent?.fr ||
           p.excerpt?.[locale] ||
@@ -135,12 +108,52 @@ export default function Blog() {
     fetchPosts();
   }, [locale]);
 
-  // Ouvrir un post directement via ?post=<id> (utile pour les liens newsletter)
+  // Gérer l'ouverture du post initial APRÈS le chargement des posts (sans état temporaire)
   useEffect(() => {
-    if (!requestedPostId || posts.length === 0) return;
-    const match = posts.find(p => p.id === requestedPostId);
-    if (match) setSelectedPost(match);
-  }, [requestedPostId, posts]);
+    if (posts.length === 0) return;
+    if (initialCheckDone.current) return;
+    if (typeof window === 'undefined') return;
+
+    initialCheckDone.current = true;
+
+    const isReload = isReloadNavigation();
+    if (isReload) {
+      const url = new URL(window.location.href);
+      if (url.searchParams.has('post')) {
+        url.searchParams.delete('post');
+        window.history.replaceState(
+          null,
+          '',
+          `${url.pathname}${url.search}${url.hash}`
+        );
+      }
+      return;
+    }
+
+    const initialId = readRequestedPostId();
+    if (initialId) {
+      const match = posts.find(p => p.id === initialId);
+      if (match) setSelectedPost(match);
+    }
+  }, [posts]);
+
+  // Gérer la navigation via les boutons Précédent/Suivant du navigateur
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const handlePopState = () => {
+      const currentId = readRequestedPostId();
+      if (currentId) {
+        const match = posts.find(p => p.id === currentId);
+        setSelectedPost(match || null);
+      } else {
+        setSelectedPost(null);
+      }
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, [posts]);
 
   const latestPosts = posts.slice(0, isMobile ? 1 : CONTENT.BLOG_PREVIEW_COUNT);
 
@@ -183,15 +196,13 @@ export default function Blog() {
               </span>
             </button>
           </div>
-
-          {/* Footer / More Posts - caché sur mobile */}
         </div>
       </section>
 
       <AnimatePresence>
         {archiveOpen && (
           <BlogArchives
-            key="blog-archives-modal" // <--- AJOUT ICI
+            key="blog-archives-modal"
             posts={posts}
             onClose={() => setArchiveOpen(false)}
             onPostClick={post => setSelectedPost(post)}
@@ -202,7 +213,7 @@ export default function Blog() {
       <AnimatePresence>
         {selectedPost && (
           <BlogPostOverlay
-            key={`blog-post-${selectedPost.id}`} // <--- AJOUT ICI
+            key={`blog-post-${selectedPost.id}`}
             post={selectedPost}
             onClose={() => {
               setSelectedPost(null);
