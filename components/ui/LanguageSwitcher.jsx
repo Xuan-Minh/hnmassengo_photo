@@ -21,9 +21,15 @@ export default function LanguageSwitcher() {
 
     const io = new IntersectionObserver(
       entries => {
+        // CORRECTION : On utilise reduce pour trouver le max au lieu de sort()[0]
         const visible = entries
           .filter(e => e.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+          .reduce(
+            (max, e) =>
+              max && max.intersectionRatio > e.intersectionRatio ? max : e,
+            null
+          );
+
         if (visible?.target) {
           const sectionId = visible.target.id;
           // Synchronisation stricte avec Menu : blanc uniquement sur blog
