@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef, useReducer } from 'react';
 import { useTranslations } from 'next-intl';
 import { m, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
@@ -26,6 +26,7 @@ function getInitialCols() {
   if (width >= 640) return 3;
   return 2;
 }
+
 // Fonction pour deviner la taille exacte de l'image grâce à son URL Sanity (Masonry)
 function getAspectRatio(url) {
   if (!url) return 1;
@@ -56,14 +57,42 @@ function UnderlineLabel({ children }) {
   );
 }
 
+// 1. Définition de l'état initial groupé
+const initialState = {
+  filter: 'all',
+  hoveredId: null,
+  gridHoveredProjectId: null,
+  isHoverSourceGrid: false,
+  colsCount: getInitialCols(),
+  cursorPos: { x: 0, y: 0 },
+  showCustomCursor: false,
+};
+
+// 2. Définition du Reducer unique
+function reducer(state, action) {
+  switch (action.type) {
+    case 'UPDATE_STATE':
+      return { ...state, ...action.payload };
+    default:
+      return state;
+  }
+}
+
 export default function GalleryGridMore({ onClose, onProjectClick, projects }) {
   const t = useTranslations('gallery');
-  const [filter, setFilter] = useState('all');
-  const [hoveredId, setHoveredId] = useState(null);
-  const [gridHoveredProjectId, setGridHoveredProjectId] = useState(null);
-  const [isHoverSourceGrid, setIsHoverSourceGrid] = useState(false);
   const scrollContainerRef = useRef(null);
-  const [colsCount, setColsCount] = useState(getInitialCols);
+
+  // 3. Initialisation du reducer
+  const [state, dispatch] = useReducer(reducer, initialState);
+  const {
+    filter,
+    hoveredId,
+    gridHoveredProjectId,
+    isHoverSourceGrid,
+    colsCount,
+    cursorPos,
+    showCustomCursor,
+  } = state;
 
   // Remise à zéro du scroll quand on change de filtre pour ne pas se perdre
   useEffect(() => {
@@ -89,7 +118,16 @@ export default function GalleryGridMore({ onClose, onProjectClick, projects }) {
   }, [projects]);
 
   const handleSidebarHover = projectId => {
-    setHoveredId(projectId);
+    // Grouping the hover states into a single render cycle
+    dispatch({
+      type: 'UPDATE_STATE',
+      payload: {
+        hoveredId: projectId,
+        gridHoveredProjectId: null,
+        isHoverSourceGrid: false,
+      },
+    });
+
     if (!projectId) return;
 
     const targetEl = document.getElementById(`project-start-${projectId}`);
@@ -112,15 +150,15 @@ export default function GalleryGridMore({ onClose, onProjectClick, projects }) {
     }
   };
 
-  const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
-  const [showCustomCursor, setShowCustomCursor] = useState(false);
-
   useEffect(() => {
     let rafId = null;
     const handleMouseMove = e => {
       if (rafId) return;
       rafId = requestAnimationFrame(() => {
-        setCursorPos({ x: e.clientX, y: e.clientY });
+        dispatch({
+          type: 'UPDATE_STATE',
+          payload: { cursorPos: { x: e.clientX, y: e.clientY } },
+        });
         rafId = null;
       });
     };
@@ -134,18 +172,18 @@ export default function GalleryGridMore({ onClose, onProjectClick, projects }) {
   useEffect(() => {
     if (!hoveredId || !isHoverSourceGrid) {
       document.body.style.cursor = 'default';
-      setShowCustomCursor(false);
+      dispatch({ type: 'UPDATE_STATE', payload: { showCustomCursor: false } });
       return;
     }
 
     const project = projectsRecentFirst.find(p => p.id === hoveredId);
     if (project) {
       document.body.style.cursor = 'none';
-      setShowCustomCursor(true);
+      dispatch({ type: 'UPDATE_STATE', payload: { showCustomCursor: true } });
     }
     return () => {
       document.body.style.cursor = 'default';
-      setShowCustomCursor(false);
+      dispatch({ type: 'UPDATE_STATE', payload: { showCustomCursor: false } });
     };
   }, [hoveredId, projectsRecentFirst, isHoverSourceGrid]);
 
@@ -177,7 +215,7 @@ export default function GalleryGridMore({ onClose, onProjectClick, projects }) {
             src,
             ratio,
             coords: p.coords,
-            isFirst: acc.length === 0, // Marque la première image du projet
+            isFirst: acc.length === 0,
             isSanityImage: isSanityCdnUrl(src),
           });
           return acc;
@@ -207,10 +245,12 @@ export default function GalleryGridMore({ onClose, onProjectClick, projects }) {
   // Définition responsive des colonnes de la cascade
   useEffect(() => {
     const updateCols = () => {
-      setColsCount(getInitialCols());
+      dispatch({
+        type: 'UPDATE_STATE',
+        payload: { colsCount: getInitialCols() },
+      });
     };
 
-    // On n'appelle plus updateCols() ici car useState s'en est chargé
     window.addEventListener('resize', updateCols);
     return () => window.removeEventListener('resize', updateCols);
   }, []);
@@ -283,7 +323,12 @@ export default function GalleryGridMore({ onClose, onProjectClick, projects }) {
                     ? 'font-bold opacity-100 text-blackCustom'
                     : 'opacity-60 hover:opacity-100 text-accent hover:text-blackCustom'
                 }`}
-                onClick={() => setFilter(f.value)}
+                onClick={() =>
+                  dispatch({
+                    type: 'UPDATE_STATE',
+                    payload: { filter: f.value },
+                  })
+                }
               >
                 <UnderlineLabel>{t(`filters.${f.value}`)}</UnderlineLabel>
               </button>
@@ -301,13 +346,14 @@ export default function GalleryGridMore({ onClose, onProjectClick, projects }) {
                       : 'text-accent/30 hover:text-blackCustom'
                   }`}
                   onClick={() => handleImageClick(p)}
-                  onMouseEnter={() => {
-                    handleSidebarHover(p.id);
-                    setGridHoveredProjectId(null);
-                    setIsHoverSourceGrid(false);
-                  }}
+                  onMouseEnter={() => handleSidebarHover(p.id)}
                   onMouseLeave={() => {
-                    if (!isHoverSourceGrid) setHoveredId(null);
+                    if (!isHoverSourceGrid) {
+                      dispatch({
+                        type: 'UPDATE_STATE',
+                        payload: { hoveredId: null },
+                      });
+                    }
                   }}
                 >
                   <UnderlineLabel>{p.name}</UnderlineLabel>
@@ -347,14 +393,24 @@ export default function GalleryGridMore({ onClose, onProjectClick, projects }) {
                         className="relative group cursor-pointer w-full overflow-hidden"
                         style={{ aspectRatio: imgData.ratio }}
                         onMouseEnter={() => {
-                          setGridHoveredProjectId(imgData.projectId);
-                          setHoveredId(imgData.projectId);
-                          setIsHoverSourceGrid(true);
+                          dispatch({
+                            type: 'UPDATE_STATE',
+                            payload: {
+                              gridHoveredProjectId: imgData.projectId,
+                              hoveredId: imgData.projectId,
+                              isHoverSourceGrid: true,
+                            },
+                          });
                         }}
                         onMouseLeave={() => {
-                          setGridHoveredProjectId(null);
-                          setHoveredId(null);
-                          setIsHoverSourceGrid(false);
+                          dispatch({
+                            type: 'UPDATE_STATE',
+                            payload: {
+                              gridHoveredProjectId: null,
+                              hoveredId: null,
+                              isHoverSourceGrid: false,
+                            },
+                          });
                         }}
                         onClick={() => handleImageClick(imgData.project)}
                         onKeyPress={e => {
@@ -368,7 +424,6 @@ export default function GalleryGridMore({ onClose, onProjectClick, projects }) {
                           alt={imgData.name}
                           fill
                           unoptimized={imgData.isSanityImage}
-                          // FORMAT PRÉSERVÉ : object-contain empêche le rognage
                           className={`object-contain shadow transition-opacity duration-300 ${
                             isHovered ? 'opacity-100' : 'opacity-40'
                           }`}

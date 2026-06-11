@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useReducer } from 'react';
 import { m, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
@@ -44,6 +44,25 @@ const getProjectDateMs = project => {
   return Number.isFinite(ms) ? ms : null;
 };
 
+// 1. Définition de l'état initial
+const initialState = {
+  gridFilter: 'all',
+  hoveredId: null,
+  maxImages: 24,
+  cursorPos: { x: 0, y: 0 },
+  showCustomCursor: false,
+};
+
+// 2. Définition du Reducer unique
+function reducer(state, action) {
+  switch (action.type) {
+    case 'UPDATE_STATE':
+      return { ...state, ...action.payload };
+    default:
+      return state;
+  }
+}
+
 export default function GalleryGrid({
   projects,
   view,
@@ -52,32 +71,42 @@ export default function GalleryGrid({
   setActiveCoord,
 }) {
   const t = useTranslations('gallery');
-  const [gridFilter, setGridFilter] = useState('all');
-  const [hoveredId, setHoveredId] = useState(null);
-  const [maxImages, setMaxImages] = useState(24);
 
-  const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 });
-  const [showCustomCursor, setShowCustomCursor] = useState(false);
+  // 3. Initialisation du reducer
+  const [state, dispatch] = useReducer(reducer, initialState);
+  const { gridFilter, hoveredId, maxImages, cursorPos, showCustomCursor } =
+    state;
 
   // Mouvement de souris pour le curseur personnalisé
   useEffect(() => {
+    let rafId = null;
     const handleMouseMove = e => {
-      setCursorPos({ x: e.clientX, y: e.clientY });
+      if (rafId) return;
+      rafId = requestAnimationFrame(() => {
+        dispatch({
+          type: 'UPDATE_STATE',
+          payload: { cursorPos: { x: e.clientX, y: e.clientY } },
+        });
+        rafId = null;
+      });
     };
     window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      if (rafId) cancelAnimationFrame(rafId);
+    };
   }, []);
 
-  // Gestion du nombre d'images (Responsive) - NOUVELLES VALEURS
+  // Gestion du nombre d'images (Responsive)
   useEffect(() => {
     const updateMaxImages = () => {
       if (window.innerWidth >= 1536)
-        setMaxImages(135); // 2xl: grille 12x12
+        dispatch({ type: 'UPDATE_STATE', payload: { maxImages: 135 } }); // 2xl: grille 12x12
       else if (window.innerWidth >= 1024)
-        setMaxImages(111); // lg: grille 10x12
+        dispatch({ type: 'UPDATE_STATE', payload: { maxImages: 111 } }); // lg: grille 10x12
       else if (window.innerWidth >= 768)
-        setMaxImages(60); // md: grille 8x8 avec bloc filtres 2x2
-      else setMaxImages(null); // Pas de grille sur mobile
+        dispatch({ type: 'UPDATE_STATE', payload: { maxImages: 60 } }); // md: grille 8x8 avec bloc filtres 2x2
+      else dispatch({ type: 'UPDATE_STATE', payload: { maxImages: null } }); // Pas de grille sur mobile
     };
     updateMaxImages();
     window.addEventListener('resize', updateMaxImages);
@@ -90,7 +119,7 @@ export default function GalleryGrid({
       const project = projects.find(p => p.id === hoveredId);
       setActiveCoord(project?.coords || '');
     } else {
-      setActiveCoord(''); // Vide quand rien n'est survolé
+      setActiveCoord('');
     }
   }, [hoveredId, projects, setActiveCoord]);
 
@@ -145,10 +174,8 @@ export default function GalleryGrid({
       .filter(Boolean);
   }, [filteredProjectsGrid, gridFilter]);
 
-  // NOUVEAU : On mélange TOUTES les images ensemble pour créer la Constellation !
   const allImages = useMemo(() => {
     const flat = projectBuckets.flatMap(bucket => bucket);
-    // On utilise un seed constant basé sur le filtre pour que le mélange reste stable
     const seed = hashString(`global-shuffle-${gridFilter}`);
     const random = createSeededRandom(seed);
     return shuffleWithSeed(flat, random);
@@ -167,18 +194,16 @@ export default function GalleryGrid({
     );
   }, [allImages, maxImages]);
 
-  // Curseur custom logic
+  // Curseur custom logic : Uniquement la manipulation du DOM ici.
+  // L'état 'showCustomCursor' est maintenant mis à jour en même temps que 'hoveredId' dans les évènements de survol.
   useEffect(() => {
     if (hoveredId) {
       document.body.style.cursor = 'none';
-      setShowCustomCursor(true);
     } else {
       document.body.style.cursor = 'default';
-      setShowCustomCursor(false);
     }
     return () => {
       document.body.style.cursor = 'default';
-      setShowCustomCursor(false);
     };
   }, [hoveredId]);
 
@@ -192,7 +217,6 @@ export default function GalleryGrid({
         transition={{ duration: 0.5, ease: 'easeInOut' }}
         className="w-full h-full hidden md:grid md:grid-cols-8 lg:grid-cols-10 2xl:grid-cols-12 md:grid-rows-8 lg:grid-rows-12 2xl:grid-rows-12 gap-x-1 gap-y-1 overflow-hidden lg:pt-10"
       >
-        {/* Contrôles et Filtres (Prend plus de place pour être lisible au milieu des petites photos) */}
         <div
           key="filters"
           className="flex items-center justify-center col-span-2 row-span-2 md:col-span-2 md:row-span-2 lg:col-span-3 lg:row-span-3 2xl:col-span-3 2xl:row-span-3"
@@ -212,7 +236,10 @@ export default function GalleryGrid({
                   onPointerDown={e => {
                     e.preventDefault();
                     e.stopPropagation();
-                    setGridFilter(f.value);
+                    dispatch({
+                      type: 'UPDATE_STATE',
+                      payload: { gridFilter: f.value },
+                    });
                   }}
                 >
                   {t(`filters.${f.value}`)}
@@ -230,7 +257,6 @@ export default function GalleryGrid({
           </div>
         </div>
 
-        {/* Slots d'images */}
         {gridSlots.map((imgData, slotIdx) => {
           const isHovered = imgData && hoveredId === imgData.projectId;
           const contentKey = imgData
@@ -251,8 +277,22 @@ export default function GalleryGrid({
                     exit={{ opacity: 0, scale: 0.98 }}
                     transition={{ duration: 0.35, ease: 'easeInOut' }}
                     className="relative group cursor-pointer flex items-center justify-center w-full h-full"
-                    onMouseEnter={() => setHoveredId(imgData.projectId)}
-                    onMouseLeave={() => setHoveredId(null)}
+                    // Élimination du "render cascade" en groupant les deux états ici
+                    onMouseEnter={() =>
+                      dispatch({
+                        type: 'UPDATE_STATE',
+                        payload: {
+                          hoveredId: imgData.projectId,
+                          showCustomCursor: true,
+                        },
+                      })
+                    }
+                    onMouseLeave={() =>
+                      dispatch({
+                        type: 'UPDATE_STATE',
+                        payload: { hoveredId: null, showCustomCursor: false },
+                      })
+                    }
                     onClick={() => {
                       const projectData = projects.find(
                         p => p.id === imgData.projectId
@@ -291,7 +331,6 @@ export default function GalleryGrid({
         })}
       </m.div>
 
-      {/* Curseur Personnalisé */}
       <AnimatePresence>
         {showCustomCursor && hoveredId && (
           <m.div

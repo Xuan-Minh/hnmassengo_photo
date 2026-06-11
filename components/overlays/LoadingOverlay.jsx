@@ -4,7 +4,7 @@ import {
   useEffect,
   useMemo,
   useRef,
-  useState,
+  useReducer,
   useLayoutEffect,
 } from 'react';
 import { motion, useMotionValue, useSpring } from 'framer-motion';
@@ -18,9 +18,13 @@ const imageStyle = {
   transition: 'opacity 0.1s ease-in-out',
 };
 
+// NextButton: Regroupement des petits états locaux pour rester cohérent
 function NextButton({ isExiting, onClick }) {
-  const [hovered, setHovered] = useState(false);
-  const [clickCount, setClickCount] = useState(0);
+  const [state, dispatch] = useReducer((s, action) => ({ ...s, ...action }), {
+    hovered: false,
+    clickCount: 0,
+  });
+  const { hovered, clickCount } = state;
 
   const rotateValue = useMemo(() => {
     const exitRotation = isExiting ? -90 : 0;
@@ -32,11 +36,11 @@ function NextButton({ isExiting, onClick }) {
       type="button"
       aria-label="next"
       onClick={e => {
-        setClickCount(c => c + 1);
+        dispatch({ clickCount: clickCount + 1 });
         onClick?.(e);
       }}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
+      onMouseEnter={() => dispatch({ hovered: true })}
+      onMouseLeave={() => dispatch({ hovered: false })}
       className={`px-6 py-3 text-xl text-whiteCustom lg:hidden font-medium font-liberation transition-colors duration-300 ${hovered ? 'opacity-100 backdrop-blur-[2px]' : 'text-greyCustom opacity-85'}`}
     >
       <motion.span
@@ -58,19 +62,43 @@ const getImageSource = (img, width) => {
       auto: 'format',
     });
   }
-  // Ancien format : URL directe
   if (img?.url) {
     return buildSanityImageUrl(img.url, { w: width, q: 60, auto: 'format' });
   }
   return null;
 };
 
+// 1. Définition de l'état initial pour l'Overlay
+const initialState = {
+  visible: true,
+  isExiting: false,
+  currentIndex: 0,
+  allLoaded: false,
+  isReTrigger: false,
+  touchStart: null,
+  isMobileDevice: false,
+};
+
+// 2. Définition du Reducer
+function reducer(state, action) {
+  switch (action.type) {
+    case 'UPDATE_STATE':
+      return { ...state, ...action.payload };
+    case 'NEXT_FRAME':
+      return {
+        ...state,
+        currentIndex: (state.currentIndex + 1) % action.payload,
+      };
+    default:
+      return state;
+  }
+}
+
 export default function LoadingOverlay({ initialImages }) {
   const previouslyFocusedElement = useRef(null);
   const elegantBackground =
     'linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 50%, #1a1a1a 100%)';
 
-  // 1. Préparation des URLs ultra-optimisées côté serveur
   const desktopData = useMemo(
     () =>
       (initialImages || []).filter(img => img?._type === 'loadingImageDesktop'),
@@ -82,8 +110,6 @@ export default function LoadingOverlay({ initialImages }) {
     [initialImages]
   );
 
-  // Fonction helper pour extraire l'image (supporte ancien et nouveau format)
-
   const desktopSrcs = useMemo(
     () => desktopData.map(img => getImageSource(img, 1920)).filter(Boolean),
     [desktopData]
@@ -94,14 +120,19 @@ export default function LoadingOverlay({ initialImages }) {
     [mobileData]
   );
 
-  const [visible, setVisible] = useState(true);
-  const [isExiting, setIsExiting] = useState(false);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [allLoaded, setAllLoaded] = useState(false);
+  // 3. Initialisation du Reducer
+  const [state, dispatch] = useReducer(reducer, initialState);
+  const {
+    visible,
+    isExiting,
+    currentIndex,
+    allLoaded,
+    isReTrigger,
+    touchStart,
+    isMobileDevice,
+  } = state;
 
   const rotateInterval = useRef(null);
-  const [isReTrigger, setIsReTrigger] = useState(false);
-  const [touchStart, setTouchStart] = useState(null);
   const overlayRef = useRef(null);
   const titleIdleTimeoutRef = useRef(null);
 
@@ -118,11 +149,17 @@ export default function LoadingOverlay({ initialImages }) {
     mass: 0.4,
   });
 
-  // Détection Mobile
-  const [isMobileDevice, setIsMobileDevice] = useState(false);
   useLayoutEffect(() => {
-    setIsMobileDevice(window.innerWidth < 768);
-    const checkMobile = () => setIsMobileDevice(window.innerWidth < 768);
+    dispatch({
+      type: 'UPDATE_STATE',
+      payload: { isMobileDevice: window.innerWidth < 768 },
+    });
+    const checkMobile = () =>
+      dispatch({
+        type: 'UPDATE_STATE',
+        payload: { isMobileDevice: window.innerWidth < 768 },
+      });
+
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
@@ -186,7 +223,6 @@ export default function LoadingOverlay({ initialImages }) {
     }
   }, [visible]);
 
-  // Blocage du scroll
   useEffect(() => {
     const scrollRoot = document.getElementById('scroll-root');
     const html = document.documentElement;
@@ -226,22 +262,19 @@ export default function LoadingOverlay({ initialImages }) {
   }, [visible]);
 
   useEffect(() => {
-    // Si pas d'images ou une seule, on considère comme chargé
     if (activeSrcs.length <= 1) {
-      setAllLoaded(true);
+      dispatch({ type: 'UPDATE_STATE', payload: { allLoaded: true } });
       return;
     }
 
-    // Réinitialiser quand les sources changent
-    setAllLoaded(false);
+    dispatch({ type: 'UPDATE_STATE', payload: { allLoaded: false } });
 
     let done = 0;
     const total = activeSrcs.length;
 
-    // Timeout de sécurité : si le préchargement prend trop de temps, on continue quand même
     const timeout = setTimeout(() => {
-      setAllLoaded(true);
-    }, 5000); // 5 secondes max
+      dispatch({ type: 'UPDATE_STATE', payload: { allLoaded: true } });
+    }, 5000);
 
     activeSrcs.forEach(src => {
       const img = new window.Image();
@@ -249,7 +282,7 @@ export default function LoadingOverlay({ initialImages }) {
         done++;
         if (done === total) {
           clearTimeout(timeout);
-          setAllLoaded(true);
+          dispatch({ type: 'UPDATE_STATE', payload: { allLoaded: true } });
         }
       };
       img.src = src;
@@ -258,13 +291,12 @@ export default function LoadingOverlay({ initialImages }) {
     return () => clearTimeout(timeout);
   }, [activeSrcs]);
 
-  // 3. Lancement du Flipbook
   useEffect(() => {
     if (!visible || isExiting || !allLoaded) return;
     if (activeSrcs.length <= 1) return;
 
     rotateInterval.current = setInterval(() => {
-      setCurrentIndex(i => (i + 1) % activeSrcs.length);
+      dispatch({ type: 'NEXT_FRAME', payload: activeSrcs.length });
     }, 800);
 
     return () => clearInterval(rotateInterval.current);
@@ -272,16 +304,22 @@ export default function LoadingOverlay({ initialImages }) {
 
   const dismiss = () => {
     if (isExiting) return;
-    setIsExiting(true);
+    dispatch({ type: 'UPDATE_STATE', payload: { isExiting: true } });
   };
 
   useEffect(() => {
     const handler = () => {
       if (rotateInterval.current) clearInterval(rotateInterval.current);
-      setCurrentIndex(0);
-      setIsExiting(false);
-      setIsReTrigger(true);
-      setVisible(true);
+      // Elimination of fan-out: 4 states updated in a single render cycle
+      dispatch({
+        type: 'UPDATE_STATE',
+        payload: {
+          currentIndex: 0,
+          isExiting: false,
+          isReTrigger: true,
+          visible: true,
+        },
+      });
     };
     return addEventHandler(EVENTS.INTRO_SHOW, handler);
   }, []);
@@ -304,17 +342,28 @@ export default function LoadingOverlay({ initialImages }) {
           const scrollRoot = document.getElementById('scroll-root');
           if (scrollRoot) scrollRoot.scrollTo(0, 0);
           window.scrollTo(0, 0);
-          setVisible(false);
-          setIsExiting(false);
-          setIsReTrigger(false);
+
+          // Elimination of fan-out: 3 states updated in a single render cycle
+          dispatch({
+            type: 'UPDATE_STATE',
+            payload: {
+              visible: false,
+              isExiting: false,
+              isReTrigger: false,
+            },
+          });
           emitEvent(EVENTS.INTRO_DISMISSED);
         }
       }}
-      // On bloque le clic (et le swipe) tant que canDismiss n'est pas true
       onClick={() => {
         if (canDismiss) dismiss();
       }}
-      onTouchStart={e => setTouchStart(e.touches[0].clientY)}
+      onTouchStart={e =>
+        dispatch({
+          type: 'UPDATE_STATE',
+          payload: { touchStart: e.touches[0].clientY },
+        })
+      }
       onTouchMove={e => {
         if (
           canDismiss &&
@@ -322,10 +371,12 @@ export default function LoadingOverlay({ initialImages }) {
           touchStart - e.touches[0].clientY > 50
         ) {
           dismiss();
-          setTouchStart(null);
+          dispatch({ type: 'UPDATE_STATE', payload: { touchStart: null } });
         }
       }}
-      onTouchEnd={() => setTouchStart(null)}
+      onTouchEnd={() =>
+        dispatch({ type: 'UPDATE_STATE', payload: { touchStart: null } })
+      }
       onMouseMove={e => {
         if (!visible || isExiting || isMobileDevice) return;
         const centerX = window.innerWidth / 2;
@@ -383,7 +434,6 @@ export default function LoadingOverlay({ initialImages }) {
 
         <div className="absolute inset-0 bg-black/35 pointer-events-none z-10" />
 
-        {/* L'indicateur de chargement reste tant que les images ne sont pas prêtes */}
         {!allLoaded && (desktopSrcs.length > 1 || mobileSrcs.length > 1) && (
           <div className="absolute top-8 right-8 z-20 pointer-events-none">
             <div className="w-2 h-2 bg-white/30 rounded-full animate-pulse" />

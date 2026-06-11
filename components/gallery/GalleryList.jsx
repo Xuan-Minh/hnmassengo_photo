@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import { useEffect, useRef, useCallback, useMemo, useReducer } from 'react';
 import { m } from 'framer-motion';
 import Image from 'next/image';
 import { buildSanityImageUrl } from '../../lib/imageUtils';
@@ -32,6 +32,26 @@ const ArrowRight = () => (
   </svg>
 );
 
+// 1. Définition de l'état initial groupé
+const initialState = {
+  isMobile: false,
+  currentProjectIndex: 0,
+  currentImageIndex: 0,
+  isTransitioning: false,
+  isListImageLoaded: false,
+  listImageError: false,
+};
+
+// 2. Définition du Reducer unique
+function reducer(state, action) {
+  switch (action.type) {
+    case 'UPDATE_STATE':
+      return { ...state, ...action.payload };
+    default:
+      return state;
+  }
+}
+
 export default function GalleryList({
   projects,
   view,
@@ -39,12 +59,16 @@ export default function GalleryList({
   onProjectSelect,
   setActiveCoord,
 }) {
-  const [isMobile, setIsMobile] = useState(false);
-  const [currentProjectIndex, setCurrentProjectIndex] = useState(0);
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [isTransitioning, setIsTransitioning] = useState(false);
-  const [isListImageLoaded, setIsListImageLoaded] = useState(false);
-  const [listImageError, setListImageError] = useState(false);
+  // 3. Initialisation du reducer
+  const [state, dispatch] = useReducer(reducer, initialState);
+  const {
+    isMobile,
+    currentProjectIndex,
+    currentImageIndex,
+    isTransitioning,
+    isListImageLoaded,
+    listImageError,
+  } = state;
 
   const mobileNavRef = useRef(null);
   const itemsRef = useRef([]);
@@ -54,25 +78,44 @@ export default function GalleryList({
   const listTimersRef = useRef({ tick: null, swap: null, cancelled: 0 });
 
   useEffect(() => {
-    const updateMobile = () => setIsMobile(window.innerWidth < 1024);
+    const updateMobile = () =>
+      dispatch({
+        type: 'UPDATE_STATE',
+        payload: { isMobile: window.innerWidth < 1024 },
+      });
+
     updateMobile();
     window.addEventListener('resize', updateMobile);
     return () => window.removeEventListener('resize', updateMobile);
   }, []);
 
-  // --- 1. DÉFINITION DES FONCTIONS DE NAVIGATION (Avant les useEffect) ---
+  // --- 1. DÉFINITION DES FONCTIONS DE NAVIGATION ---
 
   const navigateToImage = useCallback(
     (projectIndex, imageIndex) => {
       const transitionDelay = isMobile ? 80 : 250;
       currentImageVersionRef.current += 1;
-      setIsListImageLoaded(false);
-      setListImageError(false);
-      setIsTransitioning(true);
+
+      // Grouping 3 state updates into 1 render cycle
+      dispatch({
+        type: 'UPDATE_STATE',
+        payload: {
+          isListImageLoaded: false,
+          listImageError: false,
+          isTransitioning: true,
+        },
+      });
+
       setTimeout(() => {
-        setCurrentProjectIndex(projectIndex);
-        setCurrentImageIndex(imageIndex);
-        setIsTransitioning(false);
+        // Grouping 3 state updates into 1 render cycle
+        dispatch({
+          type: 'UPDATE_STATE',
+          payload: {
+            currentProjectIndex: projectIndex,
+            currentImageIndex: imageIndex,
+            isTransitioning: false,
+          },
+        });
       }, transitionDelay);
     },
     [isMobile]
@@ -123,8 +166,6 @@ export default function GalleryList({
     centerActiveProject(currentProjectIndex);
   }, [currentProjectIndex, projects, setActiveCoord, centerActiveProject]);
 
-  // Lorsque l'utilisateur arrête de scroller le carrousel mobile,
-  // on calcule quel élément est centré et on le rend actif.
   useEffect(() => {
     const container = mobileNavRef.current;
     if (!container) return;
@@ -133,10 +174,9 @@ export default function GalleryList({
       const children = itemsRef.current || [];
       if (children.length === 0) return;
 
-      // Si on est tout au début ou à la fin, sélectionner explicitement
       const scrollLeft = container.scrollLeft;
       const maxScrollLeft = container.scrollWidth - container.clientWidth;
-      const edgeThreshold = 20; // px de tolérance aux bords
+      const edgeThreshold = 20;
 
       let closestIndex = 0;
       if (scrollLeft <= edgeThreshold) {
@@ -212,12 +252,21 @@ export default function GalleryList({
     timers.tick = setTimeout(() => {
       const next = computeNext();
       if (!next || timers.cancelled !== token) return;
-      setIsTransitioning(true);
+
+      dispatch({ type: 'UPDATE_STATE', payload: { isTransitioning: true } });
+
       timers.swap = setTimeout(() => {
         if (timers.cancelled !== token) return;
-        setCurrentProjectIndex(next.nextProjectIndex);
-        setCurrentImageIndex(next.nextImageIndex);
-        setIsTransitioning(false);
+
+        // Grouping 3 state updates into 1 render cycle
+        dispatch({
+          type: 'UPDATE_STATE',
+          payload: {
+            currentProjectIndex: next.nextProjectIndex,
+            currentImageIndex: next.nextImageIndex,
+            isTransitioning: false,
+          },
+        });
       }, 250);
     }, 3000);
 
@@ -317,7 +366,6 @@ export default function GalleryList({
       animate={{ opacity: 1 }}
       className="w-full h-full flex flex-col"
     >
-      {/* DESKTOP : STATIQUE ET WRAP (Style commit efdfd36) */}
       <div className="hidden lg:flex items-center justify-between gap-8 mb-12 mt-8 md:mt-12 w-full">
         <GalleryViewToggle view={view} onViewChange={onViewChange} />
         <div className="flex flex-wrap justify-center gap-x-8 gap-y-2 flex-1">
@@ -342,7 +390,6 @@ export default function GalleryList({
         <div className="w-[52px] flex-shrink-0" />
       </div>
 
-      {/* ZONE IMAGE : ANIMATION OPACITÉ PRÉSERVÉE */}
       <div className="flex-1 relative w-full h-[100vh] flex items-center justify-center overflow-hidden">
         {currentListDisplaySrc && (
           <div className="relative w-full h-full flex items-center justify-center gap-4 px-4">
@@ -369,7 +416,12 @@ export default function GalleryList({
                 fill
                 sizes="(max-width: 1024px) 94vw, 70vw"
                 className={`object-contain transition-opacity ${isMobile ? 'duration-150' : 'duration-300'} ${isTransitioning || (!isListImageLoaded && !listImageError) ? 'opacity-0' : 'opacity-100'}`}
-                onLoad={() => setIsListImageLoaded(true)}
+                onLoad={() =>
+                  dispatch({
+                    type: 'UPDATE_STATE',
+                    payload: { isListImageLoaded: true },
+                  })
+                }
                 priority={!isMobile}
               />
             </button>
@@ -384,7 +436,6 @@ export default function GalleryList({
         )}
       </div>
 
-      {/* MOBILE : CARROUSEL AVEC SCROLL ET CENTRAGE AUTOMATIQUE */}
       <div className="lg:hidden w-full overflow-hidden mask-fade-edges mb-8">
         <div
           ref={mobileNavRef}

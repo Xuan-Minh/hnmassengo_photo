@@ -1,7 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { useMemo, useState, useEffect, useCallback } from 'react';
+import { useMemo, useEffect, useCallback, useReducer } from 'react';
 import { useParams } from 'next/navigation';
 import { AnimatePresence, m } from 'framer-motion';
 import ShopItem from './ShopItem';
@@ -59,11 +59,45 @@ const CartItem = ({ item, productsById, locale, onRemove, t }) => {
   );
 };
 
+// 1. Définition de l'état initial
+const initialState = {
+  cartOpen: false,
+  isDesktop: false,
+  selectedProduct: null,
+  products: [],
+  cartItems: [],
+  cartTotal: 0,
+  cartCount: 0,
+};
+
+// 2. Définition du Reducer
+function reducer(state, action) {
+  switch (action.type) {
+    case 'UPDATE_STATE':
+      return { ...state, ...action.payload };
+    case 'TOGGLE_CART':
+      return { ...state, cartOpen: !state.cartOpen };
+    default:
+      return state;
+  }
+}
+
 export default function Shop() {
   const t = useTranslations('shop');
   const { locale } = useParams();
-  const [cartOpen, setCartOpen] = useState(false);
-  const [isDesktop, setIsDesktop] = useState(false);
+
+  // 3. Initialisation du Reducer
+  const [state, dispatch] = useReducer(reducer, initialState);
+  const {
+    cartOpen,
+    isDesktop,
+    selectedProduct,
+    products,
+    cartItems,
+    cartTotal,
+    cartCount,
+  } = state;
+
   const snipcartItemUrl = useMemo(() => getSnipcartItemUrl(), []);
 
   // Nettoyer l'URL si elle contient des ancres Snipcart (après refresh)
@@ -75,7 +109,6 @@ export default function Shop() {
         window.location.hash === '#/cart' ||
         window.location.hash === '#/checkout')
     ) {
-      // Remplacer l'URL sans l'ancre
       window.history.replaceState(
         null,
         '',
@@ -86,17 +119,16 @@ export default function Shop() {
 
   // Détecter desktop/mobile côté client
   useEffect(() => {
-    const checkDesktop = () => setIsDesktop(window.innerWidth >= 768);
+    const checkDesktop = () => {
+      dispatch({
+        type: 'UPDATE_STATE',
+        payload: { isDesktop: window.innerWidth >= 768 },
+      });
+    };
     checkDesktop();
     window.addEventListener('resize', checkDesktop);
     return () => window.removeEventListener('resize', checkDesktop);
   }, []);
-
-  const [selectedProduct, setSelectedProduct] = useState(null);
-  const [products, setProducts] = useState([]);
-  const [cartItems, setCartItems] = useState([]);
-  const [cartTotal, setCartTotal] = useState(0);
-  const [cartCount, setCartCount] = useState(0);
 
   // Gérer le scroll quand un overlay produit est ouvert
   useEffect(() => {
@@ -147,8 +179,6 @@ export default function Shop() {
           title: p.title,
           price: p.price,
           description: p.description,
-          // ⚠️ Ne pas varier ces valeurs selon la langue, sinon Snipcart peut créer des doublons
-          // pour le même produit lors d'un switch FR/EN/DE.
           snipcartName:
             localizeField(p.title, 'fr') || localizeField(p.title, locale),
           snipcartDescription: localizeField(p.description, 'fr') || '',
@@ -156,7 +186,7 @@ export default function Shop() {
           snipcartUrl: snipcartItemUrl,
         }));
         logger.debug('Formatted products:', formatted);
-        setProducts(formatted);
+        dispatch({ type: 'UPDATE_STATE', payload: { products: formatted } });
       } catch (err) {
         logger.error('Failed to load products', err);
       }
@@ -168,18 +198,23 @@ export default function Shop() {
   const syncWithSnipcart = useCallback(() => {
     if (window.Snipcart && window.Snipcart.store) {
       try {
-        const state = window.Snipcart.store.getState();
-        const items = state.cart.items.items || [];
-        const count = state.cart.items.count || 0;
+        const snipcartState = window.Snipcart.store.getState();
+        const items = snipcartState.cart.items.items || [];
+        const count = snipcartState.cart.items.count || 0;
 
-        // Calculer le total manuellement à partir des items pour garantir la précision
         const calculatedTotal = items.reduce((sum, item) => {
           return sum + item.price * item.quantity;
         }, 0);
 
-        setCartItems(items);
-        setCartTotal(calculatedTotal);
-        setCartCount(count);
+        // Grouping updates into a single render cycle
+        dispatch({
+          type: 'UPDATE_STATE',
+          payload: {
+            cartItems: items,
+            cartTotal: calculatedTotal,
+            cartCount: count,
+          },
+        });
       } catch (error) {
         logger.error('Error syncing with Snipcart:', error);
       }
@@ -190,12 +225,11 @@ export default function Shop() {
     async item => {
       if (typeof window === 'undefined' || !window.Snipcart) return;
 
-      // Snipcart supprime via `uniqueId` (pas le product id)
       let uniqueId = item.uniqueId;
       if (!uniqueId && window.Snipcart.store?.getState) {
         try {
-          const state = window.Snipcart.store.getState();
-          const items = state?.cart?.items?.items || [];
+          const snipcartState = window.Snipcart.store.getState();
+          const items = snipcartState?.cart?.items?.items || [];
           uniqueId = items.find(i => i.id === item.id)?.uniqueId;
         } catch {
           // ignore
@@ -217,11 +251,9 @@ export default function Shop() {
         } else if (window.Snipcart.api?.items?.remove) {
           await window.Snipcart.api.items.remove(uniqueId);
         } else if (window.Snipcart.store?.dispatch) {
-          // Certaines versions exposent un dispatch « shortcut » (type, payload)
           try {
             window.Snipcart.store.dispatch('cart.items.remove', uniqueId);
           } catch {
-            // ...d'autres demandent une action redux complète
             window.Snipcart.store.dispatch({
               type: 'cart.items.remove',
               payload: uniqueId,
@@ -246,7 +278,6 @@ export default function Shop() {
           hasStore: !!window.Snipcart.store,
         });
       } finally {
-        // resync, même si l'appel API est asynchrone côté Snipcart
         setTimeout(syncWithSnipcart, 150);
       }
     },
@@ -274,7 +305,6 @@ export default function Shop() {
       }
     };
 
-    // Attendre que Snipcart soit prêt
     let loadHandler;
     if (document.readyState === 'complete') {
       setTimeout(initSnipcart, 1000);
@@ -284,7 +314,6 @@ export default function Shop() {
     }
 
     return () => {
-      // Nettoyage défensif des écouteurs Snipcart
       if (
         typeof window !== 'undefined' &&
         window.Snipcart &&
@@ -311,7 +340,7 @@ export default function Shop() {
   const addToCart = useCallback(
     product => {
       if (cartItemIds.has(product.id)) {
-        setCartOpen(true);
+        dispatch({ type: 'UPDATE_STATE', payload: { cartOpen: true } });
         return;
       }
 
@@ -339,7 +368,7 @@ export default function Shop() {
       setTimeout(() => {
         document.body.removeChild(tempBtn);
         syncWithSnipcart();
-        setCartOpen(true); // Ouvre le cart sur ajout
+        dispatch({ type: 'UPDATE_STATE', payload: { cartOpen: true } });
       }, 100);
     },
     [cartItemIds, snipcartItemUrl, syncWithSnipcart]
@@ -347,21 +376,18 @@ export default function Shop() {
 
   return (
     <section className="flex h-screen bg-background font-liberation snap-start relative">
-      {/* Produits - Layout vertical mobile, colonne centrale desktop */}
       <main className="flex-1 h-full flex flex-col md:flex-row items-stretch overflow-hidden">
-        {/* Panier mobile (en haut, hauteur auto), desktop (gauche, 320px) */}
         <aside
           className={`w-full md:w-[320px] h-auto md:h-full ${cartOpen ? 'border-b' : ''} md:border-b-0 md:border-r border-black/30 p-0 md:p-10 flex flex-col z-10 bg-background order-1 md:order-1`}
         >
-          {/* Header du cart, clickable sur mobile */}
           <div className="flex justify-between items-center mb-0 md:mb-8 px-6 py-4 md:px-0 md:py-0">
             <button
               type="button"
               className="text-2xl md:text-3xl cursor-pointer select-none"
-              onClick={() => setCartOpen(open => !open)}
+              onClick={() => dispatch({ type: 'TOGGLE_CART' })}
               onKeyPress={e => {
                 if (e.key === 'Escape' && cartOpen) {
-                  setCartOpen(open => !open);
+                  dispatch({ type: 'TOGGLE_CART' });
                 }
               }}
             >
@@ -371,7 +397,6 @@ export default function Shop() {
               ({cartCount})
             </span>
           </div>
-          {/* Contenu du panier, déroulant sur mobile */}
           <AnimatePresence>
             {(cartOpen || isDesktop) && (
               <m.div
@@ -407,7 +432,6 @@ export default function Shop() {
                     <span>{t('cart.total')}</span>
                     <span>{formatPrice(cartTotal)}</span>
                   </div>
-                  {/* Bouton checkout Snipcart */}
                   <button
                     type="button"
                     className={`snipcart-checkout text-right transition-colors ${
@@ -424,7 +448,6 @@ export default function Shop() {
             )}
           </AnimatePresence>
         </aside>
-        {/* Liste produits (mobile: prend le reste, desktop: colonne centrale) */}
         <div className="w-full md:flex-1 flex-1 md:h-full flex items-center justify-center bg-background order-2 md:order-2">
           {products.length === 0 ? (
             <div className="w-full flex flex-col items-center justify-center px-4 md:px-16 text-center italic">
@@ -448,21 +471,23 @@ export default function Shop() {
                     onClick={
                       cartItemIds.has(product.id)
                         ? undefined
-                        : () => setSelectedProduct(product)
+                        : () =>
+                            dispatch({
+                              type: 'UPDATE_STATE',
+                              payload: { selectedProduct: product },
+                            })
                     }
                     inCart={cartItemIds.has(product.id)}
-                    className="!h-36 md:!h-64" // hauteur réduite sur mobile
+                    className="!h-36 md:!h-64"
                   />
                 ))}
               </div>
             </div>
           )}
         </div>
-        {/* Spacer desktop pour décaler le contenu vers la gauche */}
         <div className="hidden lg:block w-[200px] shrink-0 order-3" />
       </main>
 
-      {/* Overlay produit */}
       <AnimatePresence>
         {selectedProduct && (
           <ShopOverlay
@@ -471,7 +496,12 @@ export default function Shop() {
             product={selectedProduct}
             locale={locale}
             inCart={cartItemIds.has(selectedProduct.id)}
-            onClose={() => setSelectedProduct(null)}
+            onClose={() =>
+              dispatch({
+                type: 'UPDATE_STATE',
+                payload: { selectedProduct: null },
+              })
+            }
             onAddToCart={addToCart}
           />
         )}

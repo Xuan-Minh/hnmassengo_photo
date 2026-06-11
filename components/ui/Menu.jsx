@@ -1,24 +1,49 @@
 'use client';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useReducer } from 'react';
 import { useParams } from 'next/navigation';
 import { usePathname } from '../../src/i18n/navigation';
 import { MENU_ITEMS, LANGUAGES } from '../../lib/constants';
 import { EVENTS, emitEvent } from '../../lib/events';
 
+// 1. Define Initial State
+const initialState = {
+  active: null,
+  hydrated: false,
+  isDarkBg: false,
+  hideMenu: false,
+  isMobile: false,
+  mobileMenuOpen: false,
+  touchStart: null,
+};
+
+// 2. Define Reducer
+function reducer(state, action) {
+  switch (action.type) {
+    case 'UPDATE_STATE':
+      return { ...state, ...action.payload };
+    default:
+      return state;
+  }
+}
+
 export default function Menu() {
   const desktopItems = useMemo(() => MENU_ITEMS, []);
 
-  const [active, setActive] = useState(null);
-  const [hydrated, setHydrated] = useState(false);
-  const [isDarkBg, setIsDarkBg] = useState(false);
-  const [hideMenu, setHideMenu] = useState(false);
+  // 3. Initialize Reducer
+  const [state, dispatch] = useReducer(reducer, initialState);
+  const {
+    active,
+    hydrated,
+    isDarkBg,
+    hideMenu,
+    isMobile,
+    mobileMenuOpen,
+    touchStart,
+  } = state;
+
   const shouldHideDesktopMenu = hideMenu || active === 'home';
   const shouldHideMobileMenu = hideMenu;
 
-  // Logique mobile
-  const [isMobile, setIsMobile] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [touchStart, setTouchStart] = useState(null);
   const mobileOverlayRef = React.useRef(null);
 
   // Logique du sélecteur de langue
@@ -29,8 +54,6 @@ export default function Menu() {
 
   const handleChangeLang = lang => {
     if (lang === locale) return;
-    // Full page navigation: avoids React/framer-motion race conditions
-    // LoadingOverlay shows naturally on page load (visible starts true)
     window.location.href = `/${lang}${pathname}`;
   };
 
@@ -74,7 +97,10 @@ export default function Menu() {
     const overlay = mobileOverlayRef.current;
 
     const handleTouchStart = e => {
-      setTouchStart(e.touches[0].clientY);
+      dispatch({
+        type: 'UPDATE_STATE',
+        payload: { touchStart: e.touches[0].clientY },
+      });
     };
 
     const handleTouchMove = e => {
@@ -83,15 +109,17 @@ export default function Menu() {
       const touchEnd = e.touches[0].clientY;
       const diff = touchStart - touchEnd;
 
-      // Swipe up (diff positif) d'au moins 50px
       if (diff > 50) {
-        setMobileMenuOpen(false);
-        setTouchStart(null);
+        // Grouping updates
+        dispatch({
+          type: 'UPDATE_STATE',
+          payload: { mobileMenuOpen: false, touchStart: null },
+        });
       }
     };
 
     const handleTouchEnd = () => {
-      setTouchStart(null);
+      dispatch({ type: 'UPDATE_STATE', payload: { touchStart: null } });
     };
 
     overlay.addEventListener('touchstart', handleTouchStart, { passive: true });
@@ -114,10 +142,24 @@ export default function Menu() {
   // Initialisation au montage
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      setActive(sessionStorage.getItem('menuActiveSection') || 'home');
-      setHydrated(true);
-      const handleResize = () => setIsMobile(window.innerWidth < 1024);
-      handleResize();
+      const isMob = window.innerWidth < 1024;
+      // Grouping initialization states
+      dispatch({
+        type: 'UPDATE_STATE',
+        payload: {
+          active: sessionStorage.getItem('menuActiveSection') || 'home',
+          hydrated: true,
+          isMobile: isMob,
+        },
+      });
+
+      const handleResize = () => {
+        dispatch({
+          type: 'UPDATE_STATE',
+          payload: { isMobile: window.innerWidth < 1024 },
+        });
+      };
+
       window.addEventListener('resize', handleResize);
       return () => window.removeEventListener('resize', handleResize);
     }
@@ -131,14 +173,13 @@ export default function Menu() {
       root.scrollTop +
       (el.getBoundingClientRect().top - root.getBoundingClientRect().top);
     root.scrollTo({ top, behavior: 'smooth' });
-    setMobileMenuOpen(false); // Fermer le menu mobile
+    dispatch({ type: 'UPDATE_STATE', payload: { mobileMenuOpen: false } });
   }, []);
 
   useEffect(() => {
     const root = document.getElementById('scroll-root');
     if (!root) return;
 
-    // Récupère toutes les sections (y compris celles pas dans le menu, ex: blog)
     const allSections = Array.from(root.querySelectorAll('section[id]'));
     const ratioMap = new Map(allSections.map(s => [s.id, 0]));
 
@@ -164,16 +205,26 @@ export default function Menu() {
           }
         });
 
-        if (bestMenuId && bestMenuRatio > 0) {
-          setActive(prev => {
-            if (prev !== bestMenuId) {
-              sessionStorage.setItem('menuActiveSection', bestMenuId);
-            }
-            return bestMenuId;
-          });
+        // Batch updates to avoid consecutive renders
+        const updates = {};
+        let shouldUpdate = false;
+
+        if (bestMenuId && bestMenuRatio > 0 && bestMenuId !== active) {
+          sessionStorage.setItem('menuActiveSection', bestMenuId);
+          updates.active = bestMenuId;
+          shouldUpdate = true;
         }
+
         if (bestOverallId) {
-          setIsDarkBg(bestOverallId === 'blog');
+          const dark = bestOverallId === 'blog';
+          if (dark !== isDarkBg) {
+            updates.isDarkBg = dark;
+            shouldUpdate = true;
+          }
+        }
+
+        if (shouldUpdate) {
+          dispatch({ type: 'UPDATE_STATE', payload: updates });
         }
       },
       { root, threshold: Array.from({ length: 21 }, (_, i) => i / 20) }
@@ -181,7 +232,7 @@ export default function Menu() {
 
     allSections.forEach(sec => io.observe(sec));
     return () => io.disconnect();
-  }, [desktopItems]);
+  }, [desktopItems, active, isDarkBg]); // Added active and isDarkBg to dependencies
 
   // Logique unifiée pour masquer le menu (section #info OU URLs Snipcart)
   useEffect(() => {
@@ -196,13 +247,11 @@ export default function Menu() {
         hash.includes('#/checkout') ||
         hash.includes('#snipcart');
 
-      // Priorité aux URLs Snipcart
       if (isSnipcartUrl) {
-        setHideMenu(true);
+        dispatch({ type: 'UPDATE_STATE', payload: { hideMenu: true } });
         return;
       }
 
-      // Sinon, vérifier la visibilité de la section #info
       const rect = infoEl.getBoundingClientRect();
       const rootRect = root.getBoundingClientRect();
       const isInfoVisible =
@@ -216,25 +265,24 @@ export default function Menu() {
             rect.height
         )
       );
-      setHideMenu(isInfoVisible && intersectionRatio > 0.2);
+
+      const newHideMenu = isInfoVisible && intersectionRatio > 0.2;
+      dispatch({ type: 'UPDATE_STATE', payload: { hideMenu: newHideMenu } });
     };
 
-    // Observer pour la section #info
     const io = new IntersectionObserver(
       _entries => {
-        updateHideMenu(); // Recalculer à chaque changement d'intersection
+        updateHideMenu();
       },
       { root, threshold: [0, 0.2, 0.4, 0.6, 0.8, 1] }
     );
     io.observe(infoEl);
 
-    // Écouter les changements d'URL hash
     const handleHashChange = () => {
       updateHideMenu();
     };
     window.addEventListener('hashchange', handleHashChange);
 
-    // Vérification initiale
     updateHideMenu();
 
     return () => {
@@ -256,7 +304,12 @@ export default function Menu() {
               ? 'opacity-0 pointer-events-none'
               : 'opacity-100'
           } ${isDarkBg ? 'text-whiteCustom' : 'text-blackCustom'}`}
-          onClick={() => setMobileMenuOpen(true)}
+          onClick={() =>
+            dispatch({
+              type: 'UPDATE_STATE',
+              payload: { mobileMenuOpen: true },
+            })
+          }
         >
           menu
         </button>
@@ -271,7 +324,12 @@ export default function Menu() {
           <button
             type="button"
             className="absolute top-8 right-8 text-xl font-liberation italic"
-            onClick={() => setMobileMenuOpen(false)}
+            onClick={() =>
+              dispatch({
+                type: 'UPDATE_STATE',
+                payload: { mobileMenuOpen: false },
+              })
+            }
           >
             close
           </button>
@@ -295,7 +353,10 @@ export default function Menu() {
                   onClick={() => {
                     if (it.id === 'info') {
                       emitEvent(EVENTS.CONTACT_SHOW);
-                      setMobileMenuOpen(false);
+                      dispatch({
+                        type: 'UPDATE_STATE',
+                        payload: { mobileMenuOpen: false },
+                      });
                     } else {
                       scrollToId(it.id);
                     }
@@ -369,7 +430,7 @@ export default function Menu() {
                 }}
                 aria-current={isActive ? 'page' : undefined}
                 className={[
-                  'pointer-events-auto', // 3. MODIFICATION : On réactive le clic juste sur le texte
+                  'pointer-events-auto',
                   'uppercase tracking-wide transition-all duration-200 ease-out',
                   'text-right origin-right',
                   isActive

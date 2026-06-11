@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useReducer } from 'react';
 import {
   Button,
   Card,
@@ -35,8 +35,6 @@ function stripExtension(filename) {
   return idx > 0 ? filename.slice(0, idx) : filename;
 }
 
-// Build a CDN URL from a Sanity image asset _ref.
-// Ref format: image-{id}-{width}x{height}-{format}
 function assetRefToUrl(ref, projectId, dataset, options = '') {
   if (!ref || !projectId || !dataset) return null;
   const withoutPrefix = ref.replace(/^image-/, '');
@@ -49,6 +47,54 @@ function assetRefToUrl(ref, projectId, dataset, options = '') {
   const id = withoutFormat.slice(0, secondLastDash);
   const dimensions = withoutFormat.slice(secondLastDash + 1);
   return `https://cdn.sanity.io/images/${projectId}/${dataset}/${id}-${dimensions}.${format}${options}`;
+}
+
+// 1. Define Initial State
+const initialState = {
+  isUploading: false,
+  status: '',
+  selectedKeys: new Set(),
+  editingImage: null,
+  editAlt: { fr: '', en: '', de: '' },
+};
+
+// 2. Define the Single Reducer
+function reducer(state, action) {
+  switch (action.type) {
+    case 'UPLOAD_START':
+      return { ...state, isUploading: true, status: action.status };
+    case 'UPLOAD_PROGRESS':
+      return { ...state, status: action.status };
+    case 'UPLOAD_FINISH':
+      return { ...state, isUploading: false, status: action.status || '' };
+    case 'TOGGLE_KEY': {
+      const nextKeys = new Set(state.selectedKeys);
+      if (nextKeys.has(action.key)) nextKeys.delete(action.key);
+      else nextKeys.add(action.key);
+      return { ...state, selectedKeys: nextKeys };
+    }
+    case 'SET_SELECTED_KEYS':
+      return { ...state, selectedKeys: action.keys };
+    case 'OPEN_EDIT':
+      return {
+        ...state,
+        editingImage: action.image,
+        editAlt: {
+          fr: action.image?.alt?.fr ?? '',
+          en: action.image?.alt?.en ?? '',
+          de: action.image?.alt?.de ?? '',
+        },
+      };
+    case 'CLOSE_EDIT':
+      return { ...state, editingImage: null };
+    case 'UPDATE_EDIT_ALT':
+      return {
+        ...state,
+        editAlt: { ...state.editAlt, [action.lang]: action.value },
+      };
+    default:
+      return state;
+  }
 }
 
 export default function ProjectImagesFolderInput(props) {
@@ -73,11 +119,9 @@ export default function ProjectImagesFolderInput(props) {
   const folderInputRef = useRef(null);
   const filesInputRef = useRef(null);
 
-  const [isUploading, setIsUploading] = useState(false);
-  const [status, setStatus] = useState('');
-  const [selectedKeys, setSelectedKeys] = useState(() => new Set());
-  const [editingImage, setEditingImage] = useState(null);
-  const [editAlt, setEditAlt] = useState({ fr: '', en: '', de: '' });
+  // 3. Consume the grouped state
+  const [state, dispatch] = useReducer(reducer, initialState);
+  const { isUploading, status, selectedKeys, editingImage, editAlt } = state;
 
   async function handleFilesSelected(fileList) {
     const allFiles = Array.from(fileList || []);
@@ -89,7 +133,6 @@ export default function ProjectImagesFolderInput(props) {
           file.type.startsWith('image/')
       )
       .sort((a, b) => {
-        // Pour un dossier, on conserve l'ordre du chemin relatif quand dispo
         const ap = a.webkitRelativePath || a.name;
         const bp = b.webkitRelativePath || b.name;
         return ap.localeCompare(bp, undefined, {
@@ -102,8 +145,10 @@ export default function ProjectImagesFolderInput(props) {
 
     const currentCount = Array.isArray(value) ? value.length : 0;
 
-    setIsUploading(true);
-    setStatus(`Upload de ${imageFiles.length} image(s)…`);
+    dispatch({
+      type: 'UPLOAD_START',
+      status: `Upload de ${imageFiles.length} image(s)…`,
+    });
 
     try {
       const newItems = [];
@@ -119,7 +164,6 @@ export default function ProjectImagesFolderInput(props) {
         const baseDe =
           (typeof nameDe === 'string' && nameDe.trim()) || fallbackName;
 
-        // Si aucun nom de projet n'est encore rempli, on bascule sur le nom de fichier
         const safeBase = fallbackName || stripExtension(file.name) || 'Projet';
 
         const alt = {
@@ -128,7 +172,10 @@ export default function ProjectImagesFolderInput(props) {
           de: `${baseDe || safeBase} ${photoNumber}`,
         };
 
-        setStatus(`Upload ${i + 1}/${imageFiles.length} : ${file.name}`);
+        dispatch({
+          type: 'UPLOAD_PROGRESS',
+          status: `Upload ${i + 1}/${imageFiles.length} : ${file.name}`,
+        });
 
         const asset = await client.assets.upload('image', file, {
           filename: file.name,
@@ -145,14 +192,17 @@ export default function ProjectImagesFolderInput(props) {
       onChange(
         PatchEvent.from([setIfMissing([]), insert(newItems, 'after', [-1])])
       );
-      setStatus(`Ajouté ${newItems.length} image(s).`);
+      dispatch({
+        type: 'UPLOAD_FINISH',
+        status: `Ajouté ${newItems.length} image(s).`,
+      });
     } catch (err) {
-      // eslint-disable-next-line no-console
       console.error(err);
-      setStatus(`Erreur pendant l'upload : ${err?.message || 'échec inconnu'}`);
+      dispatch({
+        type: 'UPLOAD_FINISH',
+        status: `Erreur pendant l'upload : ${err?.message || 'échec inconnu'}`,
+      });
     } finally {
-      setIsUploading(false);
-      // Permet de re-sélectionner le même dossier/fichiers
       if (folderInputRef.current) folderInputRef.current.value = '';
       if (filesInputRef.current) filesInputRef.current.value = '';
     }
@@ -160,9 +210,6 @@ export default function ProjectImagesFolderInput(props) {
 
   const images = useMemo(() => (Array.isArray(value) ? value : []), [value]);
 
-  // Intersection of selectedKeys with the images currently in the array.
-  // Prevents stale keys (e.g. deleted via ArrayOfObjectsInput below) from
-  // corrupting the counter and from generating orphan unset patches.
   const effectiveSelectedKeys = useMemo(
     () =>
       new Set(
@@ -180,22 +227,20 @@ export default function ProjectImagesFolderInput(props) {
   const toggleKey = useCallback(
     key => {
       if (!images.some(img => img._key === key)) return;
-      setSelectedKeys(prev => {
-        const next = new Set(prev);
-        if (next.has(key)) next.delete(key);
-        else next.add(key);
-        return next;
-      });
+      dispatch({ type: 'TOGGLE_KEY', key });
     },
     [images]
   );
 
   const handleSelectAll = useCallback(() => {
-    setSelectedKeys(new Set(images.map(img => img._key)));
+    dispatch({
+      type: 'SET_SELECTED_KEYS',
+      keys: new Set(images.map(img => img._key)),
+    });
   }, [images]);
 
   const handleClearSelection = useCallback(() => {
-    setSelectedKeys(new Set());
+    dispatch({ type: 'SET_SELECTED_KEYS', keys: new Set() });
   }, []);
 
   const handleDeleteSelected = useCallback(() => {
@@ -205,16 +250,11 @@ export default function ProjectImagesFolderInput(props) {
         Array.from(effectiveSelectedKeys).map(key => unset([{ _key: key }]))
       )
     );
-    setSelectedKeys(new Set());
+    dispatch({ type: 'SET_SELECTED_KEYS', keys: new Set() });
   }, [effectiveSelectedKeys, onChange]);
 
   const openEditModal = useCallback(image => {
-    setEditAlt({
-      fr: image?.alt?.fr ?? '',
-      en: image?.alt?.en ?? '',
-      de: image?.alt?.de ?? '',
-    });
-    setEditingImage(image);
+    dispatch({ type: 'OPEN_EDIT', image });
   }, []);
 
   const handleSaveEdit = useCallback(() => {
@@ -230,7 +270,7 @@ export default function ProjectImagesFolderInput(props) {
         makePatch('de', editAlt.de),
       ])
     );
-    setEditingImage(null);
+    dispatch({ type: 'CLOSE_EDIT' });
   }, [editingImage, editAlt, onChange]);
 
   const editingImagePreviewUrl = useMemo(
@@ -272,7 +312,6 @@ export default function ProjectImagesFolderInput(props) {
             type="file"
             multiple
             accept="image/*"
-            // Attributs non standard mais supportés par Chromium / Safari
             webkitdirectory="true"
             directory="true"
             className="hidden"
@@ -349,7 +388,6 @@ export default function ProjectImagesFolderInput(props) {
                     tone={isSelected ? 'critical' : 'default'}
                     style={{ position: 'relative', userSelect: 'none' }}
                   >
-                    {/* Clicking the image opens the edit modal */}
                     <button
                       type="button"
                       aria-label={`Modifier le texte alternatif de l'image ${image._key}`}
@@ -375,7 +413,6 @@ export default function ProjectImagesFolderInput(props) {
                         />
                       )}
                     </button>
-                    {/* Clicking the checkbox toggles selection — propagation stopped so image click doesn't fire */}
                     <div
                       style={{ position: 'absolute', top: 4, right: 4 }}
                       onClick={e => e.stopPropagation()}
@@ -415,7 +452,7 @@ export default function ProjectImagesFolderInput(props) {
         <Dialog
           id="edit-image-dialog"
           header="Modifier le texte alternatif"
-          onClose={() => setEditingImage(null)}
+          onClose={() => dispatch({ type: 'CLOSE_EDIT' })}
           width={1}
           footer={
             <Flex padding={3} gap={2} justify="space-between" wrap="wrap">
@@ -423,7 +460,7 @@ export default function ProjectImagesFolderInput(props) {
                 <Button
                   mode="ghost"
                   text="Annuler"
-                  onClick={() => setEditingImage(null)}
+                  onClick={() => dispatch({ type: 'CLOSE_EDIT' })}
                 />
                 <Button
                   mode="default"
@@ -447,7 +484,6 @@ export default function ProjectImagesFolderInput(props) {
               </Card>
             ) : null}
 
-            {/* Alt text fields */}
             <Stack space={1}>
               <Text size={2} weight="semibold">
                 Texte Alternatif (SEO)
@@ -464,7 +500,11 @@ export default function ProjectImagesFolderInput(props) {
               <TextInput
                 value={editAlt.fr}
                 onChange={e =>
-                  setEditAlt(prev => ({ ...prev, fr: e.currentTarget.value }))
+                  dispatch({
+                    type: 'UPDATE_EDIT_ALT',
+                    lang: 'fr',
+                    value: e.currentTarget.value,
+                  })
                 }
               />
             </Stack>
@@ -476,7 +516,11 @@ export default function ProjectImagesFolderInput(props) {
               <TextInput
                 value={editAlt.en}
                 onChange={e =>
-                  setEditAlt(prev => ({ ...prev, en: e.currentTarget.value }))
+                  dispatch({
+                    type: 'UPDATE_EDIT_ALT',
+                    lang: 'en',
+                    value: e.currentTarget.value,
+                  })
                 }
               />
             </Stack>
@@ -488,7 +532,11 @@ export default function ProjectImagesFolderInput(props) {
               <TextInput
                 value={editAlt.de}
                 onChange={e =>
-                  setEditAlt(prev => ({ ...prev, de: e.currentTarget.value }))
+                  dispatch({
+                    type: 'UPDATE_EDIT_ALT',
+                    lang: 'de',
+                    value: e.currentTarget.value,
+                  })
                 }
               />
             </Stack>

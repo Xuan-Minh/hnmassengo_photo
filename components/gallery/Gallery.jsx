@@ -1,6 +1,6 @@
 'use client';
 import { useTranslations } from 'next-intl';
-import { useState, useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useReducer } from 'react';
 import { useParams } from 'next/navigation';
 import client from '../../lib/sanity.client';
 import { getOptimizedImageParams } from '../../lib/hooks';
@@ -19,15 +19,32 @@ function getProjectDateMs(project) {
   return Number.isFinite(ms) ? ms : null;
 }
 
+// 1. Définition de l'état initial
+const initialState = {
+  projects: [],
+  view: 'grid',
+  selectedProject: null,
+  overlayOpen: false,
+  activeCoord: '',
+};
+
+// 2. Définition du Reducer unique
+function reducer(state, action) {
+  switch (action.type) {
+    case 'UPDATE_STATE':
+      return { ...state, ...action.payload };
+    default:
+      return state;
+  }
+}
+
 export default function Gallery() {
   const t = useTranslations('gallery');
   const { locale } = useParams();
 
-  const [projects, setProjects] = useState([]);
-  const [view, setView] = useState('grid');
-  const [selectedProject, setSelectedProject] = useState(null);
-  const [overlayOpen, setOverlayOpen] = useState(false);
-  const [activeCoord, setActiveCoord] = useState('');
+  // 3. Initialisation du reducer
+  const [state, dispatch] = useReducer(reducer, initialState);
+  const { projects, view, selectedProject, overlayOpen, activeCoord } = state;
 
   // Gérer le scroll quand un overlay est ouvert
   useEffect(() => {
@@ -78,7 +95,8 @@ export default function Gallery() {
           p[`description_${locale}`] ||
           p.description_fr,
       }));
-      setProjects(mapped);
+
+      dispatch({ type: 'UPDATE_STATE', payload: { projects: mapped } });
     };
     fetchProjects();
   }, [locale]);
@@ -86,7 +104,9 @@ export default function Gallery() {
   // Basculement automatique en vue liste sur mobile
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth < 768 && view !== 'list') setView('list');
+      if (window.innerWidth < 768 && view !== 'list') {
+        dispatch({ type: 'UPDATE_STATE', payload: { view: 'list' } });
+      }
     };
     handleResize();
     window.addEventListener('resize', handleResize);
@@ -123,18 +143,42 @@ export default function Gallery() {
                   key="grid"
                   projects={projectsRecentFirst}
                   view={view}
-                  onViewChange={setView}
-                  onProjectSelect={setSelectedProject}
-                  setActiveCoord={setActiveCoord}
+                  onViewChange={v =>
+                    dispatch({ type: 'UPDATE_STATE', payload: { view: v } })
+                  }
+                  onProjectSelect={p =>
+                    dispatch({
+                      type: 'UPDATE_STATE',
+                      payload: { selectedProject: p },
+                    })
+                  }
+                  setActiveCoord={coord =>
+                    dispatch({
+                      type: 'UPDATE_STATE',
+                      payload: { activeCoord: coord },
+                    })
+                  }
                 />
               ) : (
                 <GalleryList
                   key="list"
                   projects={projectsChrono}
                   view={view}
-                  onViewChange={setView}
-                  onProjectSelect={setSelectedProject}
-                  setActiveCoord={setActiveCoord}
+                  onViewChange={v =>
+                    dispatch({ type: 'UPDATE_STATE', payload: { view: v } })
+                  }
+                  onProjectSelect={p =>
+                    dispatch({
+                      type: 'UPDATE_STATE',
+                      payload: { selectedProject: p },
+                    })
+                  }
+                  setActiveCoord={coord =>
+                    dispatch({
+                      type: 'UPDATE_STATE',
+                      payload: { activeCoord: coord },
+                    })
+                  }
                 />
               )}
             </AnimatePresence>
@@ -143,7 +187,7 @@ export default function Gallery() {
           {/* Footer commun isolé des animations ! */}
           <div
             style={{ width: 'min(1100px, 90vw)' }}
-            className="hidden md:grid lg:grid lg:grid-cols-3  md:grid-cols-1 items-center mt-16 lg:mt-4"
+            className="hidden md:grid lg:grid lg:grid-cols-3 md:grid-cols-1 items-center mt-16 lg:mt-4"
           >
             <div className="text-xl font-liberation italic text-blackCustom h-8">
               {activeCoord}
@@ -152,7 +196,12 @@ export default function Gallery() {
               <button
                 type="button"
                 className="justify-self-center text-xl font-liberation italic text-blackCustom hover:text-accent transition-all duration-300 px-4 py-2 rounded animate-in fade-in hover:[--bg-size:100%_1px]"
-                onClick={() => setOverlayOpen(true)}
+                onClick={() =>
+                  dispatch({
+                    type: 'UPDATE_STATE',
+                    payload: { overlayOpen: true },
+                  })
+                }
               >
                 <span
                   className={`inline box-decoration-clone bg-[linear-gradient(currentColor,currentColor)] bg-no-repeat [background-position:0_100%] transition-[background-size,color] duration-300 ease-in-out`}
@@ -171,8 +220,18 @@ export default function Gallery() {
       <AnimatePresence>
         {overlayOpen && (
           <GalleryGridMore
-            onClose={() => setOverlayOpen(false)}
-            onProjectClick={setSelectedProject}
+            onClose={() =>
+              dispatch({
+                type: 'UPDATE_STATE',
+                payload: { overlayOpen: false },
+              })
+            }
+            onProjectClick={p =>
+              dispatch({
+                type: 'UPDATE_STATE',
+                payload: { selectedProject: p },
+              })
+            }
             projects={projects}
           />
         )}
@@ -181,7 +240,12 @@ export default function Gallery() {
         {selectedProject && (
           <GalleryProjetCartel
             project={selectedProject}
-            onClose={() => setSelectedProject(null)}
+            onClose={() =>
+              dispatch({
+                type: 'UPDATE_STATE',
+                payload: { selectedProject: null },
+              })
+            }
           />
         )}
       </AnimatePresence>
