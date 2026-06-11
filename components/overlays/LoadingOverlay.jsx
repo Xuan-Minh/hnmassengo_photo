@@ -1,4 +1,7 @@
 'use client';
+
+/* eslint-disable react-doctor/use-lazy-motion */
+
 import {
   useCallback,
   useEffect,
@@ -7,7 +10,7 @@ import {
   useReducer,
   useLayoutEffect,
 } from 'react';
-import { m, useMotionValue, useSpring } from 'framer-motion';
+import { motion, useMotionValue, useSpring } from 'framer-motion';
 import Image from 'next/image';
 import { EVENTS, emitEvent, addEventHandler } from '../../lib/events';
 import { buildSanityImageUrl } from '../../lib/imageUtils';
@@ -70,7 +73,6 @@ function NextButton({ isExiting, onClick }) {
   });
   const { hovered, clickCount } = state;
 
-  // CORRECTION : Retrait du useMemo inutile pour un simple calcul mathématique
   const rotateValue = (isExiting ? -90 : 0) + clickCount * 360;
 
   return (
@@ -85,7 +87,7 @@ function NextButton({ isExiting, onClick }) {
       onMouseLeave={() => dispatch({ hovered: false })}
       className={`px-6 py-3 text-xl text-whiteCustom lg:hidden font-medium font-liberation transition-colors duration-300 ${hovered ? 'opacity-100 backdrop-blur-[2px]' : 'text-greyCustom opacity-85'}`}
     >
-      <m.span
+      <motion.span
         className="inline-block mr-2"
         initial={false}
         animate={{ rotate: rotateValue }}
@@ -150,7 +152,7 @@ function SlideshowBackground({
 function AnimatedTitle({ titleX, titleY }) {
   return (
     <div className="absolute inset-0 z-20 pointer-events-none select-none">
-      <m.div
+      <motion.div
         className="absolute top-1/2 left-1/2"
         style={{ x: titleX, y: titleY }}
       >
@@ -164,7 +166,7 @@ function AnimatedTitle({ titleX, titleY }) {
             </span>
           </h2>
         </div>
-      </m.div>
+      </motion.div>
     </div>
   );
 }
@@ -342,7 +344,6 @@ function useSlideshowPreloader(
   allLoaded,
   dispatch
 ) {
-  // 1. Logique de préchargement
   useEffect(() => {
     if (activeSrcs.length <= 1) {
       dispatch({ type: 'UPDATE_STATE', payload: { allLoaded: true } });
@@ -373,7 +374,6 @@ function useSlideshowPreloader(
     return () => clearTimeout(timeout);
   }, [activeSrcs, dispatch]);
 
-  // 2. Diaporama automatique (avec la correction exhaustive-deps conservée)
   useEffect(() => {
     if (!visible || isExiting || !allLoaded) return;
     if (activeSrcs.length <= 1) return;
@@ -387,7 +387,7 @@ function useSlideshowPreloader(
 }
 
 // ==========================================
-// 4. COMPOSANT PRINCIPAL (Allégé)
+// 4. COMPOSANT PRINCIPAL
 // ==========================================
 
 export default function LoadingOverlay({ initialImages }) {
@@ -404,7 +404,6 @@ export default function LoadingOverlay({ initialImages }) {
     isMobileDevice,
   } = state;
 
-  // Détection Mobile Client-side
   useLayoutEffect(() => {
     dispatch({
       type: 'UPDATE_STATE',
@@ -419,10 +418,8 @@ export default function LoadingOverlay({ initialImages }) {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  // CORRECTION : Suppression de l'useMemo inutile pour un simple ternaire
   const activeSrcs = isMobileDevice ? mobileSrcs : desktopSrcs;
 
-  // Application des Hooks logiques
   useDOMManager(visible);
   const { titleX, titleY, onMouseMove, onMouseLeave } = useTitleMotion(
     visible,
@@ -431,7 +428,6 @@ export default function LoadingOverlay({ initialImages }) {
   );
   useSlideshowPreloader(activeSrcs, visible, isExiting, allLoaded, dispatch);
 
-  // Gestion de l'événement système de réouverture (menu contextuel)
   useEffect(() => {
     const handler = () => {
       dispatch({
@@ -457,7 +453,7 @@ export default function LoadingOverlay({ initialImages }) {
   const canDismiss = allLoaded;
 
   return (
-    <m.div
+    <motion.div
       className="fixed inset-0 z-[100]"
       suppressHydrationWarning
       style={{ background: elegantBackground, overflow: 'hidden' }}
@@ -530,6 +526,6 @@ export default function LoadingOverlay({ initialImages }) {
           />
         </div>
       </div>
-    </m.div>
+    </motion.div>
   );
 }
