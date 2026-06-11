@@ -44,7 +44,6 @@ const getProjectDateMs = project => {
   return Number.isFinite(ms) ? ms : null;
 };
 
-// 1. Définition de l'état initial
 const initialState = {
   gridFilter: 'all',
   hoveredId: null,
@@ -53,7 +52,6 @@ const initialState = {
   showCustomCursor: false,
 };
 
-// 2. Définition du Reducer unique
 function reducer(state, action) {
   switch (action.type) {
     case 'UPDATE_STATE':
@@ -71,13 +69,10 @@ export default function GalleryGrid({
   setActiveCoord,
 }) {
   const t = useTranslations('gallery');
-
-  // 3. Initialisation du reducer
   const [state, dispatch] = useReducer(reducer, initialState);
   const { gridFilter, hoveredId, maxImages, cursorPos, showCustomCursor } =
     state;
 
-  // Mouvement de souris pour le curseur personnalisé
   useEffect(() => {
     let rafId = null;
     const handleMouseMove = e => {
@@ -97,33 +92,21 @@ export default function GalleryGrid({
     };
   }, []);
 
-  // Gestion du nombre d'images (Responsive)
   useEffect(() => {
     const updateMaxImages = () => {
       if (window.innerWidth >= 1536)
-        dispatch({ type: 'UPDATE_STATE', payload: { maxImages: 135 } }); // 2xl: grille 12x12
+        dispatch({ type: 'UPDATE_STATE', payload: { maxImages: 135 } });
       else if (window.innerWidth >= 1024)
-        dispatch({ type: 'UPDATE_STATE', payload: { maxImages: 111 } }); // lg: grille 10x12
+        dispatch({ type: 'UPDATE_STATE', payload: { maxImages: 111 } });
       else if (window.innerWidth >= 768)
-        dispatch({ type: 'UPDATE_STATE', payload: { maxImages: 60 } }); // md: grille 8x8 avec bloc filtres 2x2
-      else dispatch({ type: 'UPDATE_STATE', payload: { maxImages: null } }); // Pas de grille sur mobile
+        dispatch({ type: 'UPDATE_STATE', payload: { maxImages: 60 } });
+      else dispatch({ type: 'UPDATE_STATE', payload: { maxImages: null } });
     };
     updateMaxImages();
     window.addEventListener('resize', updateMaxImages);
     return () => window.removeEventListener('resize', updateMaxImages);
   }, []);
 
-  // Transmettre les coordonnées au footer parent quand on survole
-  useEffect(() => {
-    if (hoveredId) {
-      const project = projects.find(p => p.id === hoveredId);
-      setActiveCoord(project?.coords || '');
-    } else {
-      setActiveCoord('');
-    }
-  }, [hoveredId, projects, setActiveCoord]);
-
-  // Filtrage
   const filteredProjectsGrid = useMemo(() => {
     return projects
       .filter(p => gridFilter === 'all' || p.type === gridFilter)
@@ -183,19 +166,13 @@ export default function GalleryGrid({
 
   const gridSlots = useMemo(() => {
     if (!maxImages) return [];
-
-    if (!allImages.length) {
-      return Array.from({ length: maxImages }, () => null);
-    }
-
+    if (!allImages.length) return Array.from({ length: maxImages }, () => null);
     return Array.from(
       { length: maxImages },
       (_, idx) => allImages[idx] || null
     );
   }, [allImages, maxImages]);
 
-  // Curseur custom logic : Uniquement la manipulation du DOM ici.
-  // L'état 'showCustomCursor' est maintenant mis à jour en même temps que 'hoveredId' dans les évènements de survol.
   useEffect(() => {
     if (hoveredId) {
       document.body.style.cursor = 'none';
@@ -217,10 +194,7 @@ export default function GalleryGrid({
         transition={{ duration: 0.5, ease: 'easeInOut' }}
         className="w-full h-full hidden md:grid md:grid-cols-8 lg:grid-cols-10 2xl:grid-cols-12 md:grid-rows-8 lg:grid-rows-12 2xl:grid-rows-12 gap-x-1 gap-y-1 overflow-hidden lg:pt-10"
       >
-        <div
-          key="filters"
-          className="flex items-center justify-center col-span-2 row-span-2 md:col-span-2 md:row-span-2 lg:col-span-3 lg:row-span-3 2xl:col-span-3 2xl:row-span-3"
-        >
+        <div className="flex items-center justify-center col-span-2 row-span-2 md:col-span-2 md:row-span-2 lg:col-span-3 lg:row-span-3 2xl:col-span-3 2xl:row-span-3">
           <div className="flex flex-col items-start p-4 md:p-6 md:mb-2 font-liberation md:h-full justify-center">
             <GalleryViewToggle view={view} onViewChange={onViewChange} />
             <div className="relative z-10 flex flex-col gap-1 items-start pointer-events-auto">
@@ -277,22 +251,28 @@ export default function GalleryGrid({
                     exit={{ opacity: 0, scale: 0.98 }}
                     transition={{ duration: 0.35, ease: 'easeInOut' }}
                     className="relative group cursor-pointer flex items-center justify-center w-full h-full"
-                    // Élimination du "render cascade" en groupant les deux états ici
-                    onMouseEnter={() =>
+                    onMouseEnter={() => {
+                      // Mettre à jour l'état du Grid
                       dispatch({
                         type: 'UPDATE_STATE',
                         payload: {
                           hoveredId: imgData.projectId,
                           showCustomCursor: true,
                         },
-                      })
-                    }
-                    onMouseLeave={() =>
+                      });
+                      // Transmettre explicitement au parent depuis l'événement (pas de useEffect)
+                      const proj = projects.find(
+                        p => p.id === imgData.projectId
+                      );
+                      setActiveCoord(proj?.coords || '');
+                    }}
+                    onMouseLeave={() => {
                       dispatch({
                         type: 'UPDATE_STATE',
                         payload: { hoveredId: null, showCustomCursor: false },
-                      })
-                    }
+                      });
+                      setActiveCoord('');
+                    }}
                     onClick={() => {
                       const projectData = projects.find(
                         p => p.id === imgData.projectId
@@ -318,10 +298,6 @@ export default function GalleryGrid({
                 ) : (
                   <m.div
                     key={contentKey}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 0.35, ease: 'easeInOut' }}
                     className="w-full h-full bg-transparent"
                   />
                 )}

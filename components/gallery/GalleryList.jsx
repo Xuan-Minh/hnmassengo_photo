@@ -5,7 +5,6 @@ import { buildSanityImageUrl } from '../../lib/imageUtils';
 import { getOptimizedImageParams } from '../../lib/hooks';
 import GalleryViewToggle from './GalleryViewToggle';
 
-// Icônes de navigation internes
 const ArrowLeft = () => (
   <svg
     width="32"
@@ -32,7 +31,6 @@ const ArrowRight = () => (
   </svg>
 );
 
-// 1. Définition de l'état initial groupé
 const initialState = {
   isMobile: false,
   currentProjectIndex: 0,
@@ -42,7 +40,6 @@ const initialState = {
   listImageError: false,
 };
 
-// 2. Définition du Reducer unique
 function reducer(state, action) {
   switch (action.type) {
     case 'UPDATE_STATE':
@@ -59,7 +56,6 @@ export default function GalleryList({
   onProjectSelect,
   setActiveCoord,
 }) {
-  // 3. Initialisation du reducer
   const [state, dispatch] = useReducer(reducer, initialState);
   const {
     isMobile,
@@ -89,14 +85,11 @@ export default function GalleryList({
     return () => window.removeEventListener('resize', updateMobile);
   }, []);
 
-  // --- 1. DÉFINITION DES FONCTIONS DE NAVIGATION ---
-
   const navigateToImage = useCallback(
     (projectIndex, imageIndex) => {
       const transitionDelay = isMobile ? 80 : 250;
       currentImageVersionRef.current += 1;
 
-      // Grouping 3 state updates into 1 render cycle
       dispatch({
         type: 'UPDATE_STATE',
         payload: {
@@ -107,7 +100,6 @@ export default function GalleryList({
       });
 
       setTimeout(() => {
-        // Grouping 3 state updates into 1 render cycle
         dispatch({
           type: 'UPDATE_STATE',
           payload: {
@@ -116,9 +108,11 @@ export default function GalleryList({
             isTransitioning: false,
           },
         });
+        // Éviter le useEffect : on met à jour l'info parent directement au changement !
+        setActiveCoord(projects[projectIndex]?.coords || '');
       }, transitionDelay);
     },
-    [isMobile]
+    [isMobile, projects, setActiveCoord]
   );
 
   const navigateListPrev = useCallback(() => {
@@ -143,7 +137,6 @@ export default function GalleryList({
     }
   }, [currentProjectIndex, currentImageIndex, projects, navigateToImage]);
 
-  // --- 2. LOGIQUE DE CENTRAGE (Mobile uniquement) ---
   const centerActiveProject = useCallback(index => {
     const container = mobileNavRef.current;
     const activeItem = itemsRef.current[index];
@@ -152,19 +145,14 @@ export default function GalleryList({
         activeItem.offsetLeft -
         container.offsetWidth / 2 +
         activeItem.offsetWidth / 2;
-
-      container.scrollTo({
-        left: scrollLeft,
-        behavior: 'smooth',
-      });
+      container.scrollTo({ left: scrollLeft, behavior: 'smooth' });
     }
   }, []);
 
+  // Le scroll se recentre de lui-même sans interagir avec le composant Parent
   useEffect(() => {
-    const project = projects[currentProjectIndex];
-    setActiveCoord(project?.coords || '');
     centerActiveProject(currentProjectIndex);
-  }, [currentProjectIndex, projects, setActiveCoord, centerActiveProject]);
+  }, [currentProjectIndex, centerActiveProject]);
 
   useEffect(() => {
     const container = mobileNavRef.current;
@@ -222,7 +210,6 @@ export default function GalleryList({
     };
   }, [currentProjectIndex, navigateToImage]);
 
-  // --- 3. TIMER AUTOMATIQUE ---
   useEffect(() => {
     const timers = listTimersRef.current;
     if (timers.tick) clearTimeout(timers.tick);
@@ -258,7 +245,6 @@ export default function GalleryList({
       timers.swap = setTimeout(() => {
         if (timers.cancelled !== token) return;
 
-        // Grouping 3 state updates into 1 render cycle
         dispatch({
           type: 'UPDATE_STATE',
           payload: {
@@ -267,6 +253,8 @@ export default function GalleryList({
             isTransitioning: false,
           },
         });
+        // Éviter le useEffect : on met à jour l'info parent directement au changement de timer !
+        setActiveCoord(projects[next.nextProjectIndex]?.coords || '');
       }, 250);
     }, 3000);
 
@@ -274,9 +262,8 @@ export default function GalleryList({
       if (timers.tick) clearTimeout(timers.tick);
       if (timers.swap) clearTimeout(timers.swap);
     };
-  }, [projects, currentProjectIndex, currentImageIndex]);
+  }, [projects, currentProjectIndex, currentImageIndex, setActiveCoord]);
 
-  // --- 4. ÉVÉNEMENTS CLAVIER ---
   useEffect(() => {
     const handleKeyDown = e => {
       if (e.key === 'ArrowRight') navigateListNext();
