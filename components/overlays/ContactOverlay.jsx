@@ -2,392 +2,10 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { AnimatePresence, m } from 'framer-motion';
-import { SITE_CONFIG } from '../../lib/constants';
 import { EVENTS, addEventHandler } from '../../lib/events';
-import { useParams } from 'next/navigation';
-import NewsletterSignup from '../ui/NewsletterSignup';
 import LegalOverlay from './LegalOverlay';
-import Link from 'next/link';
-import { routing } from '../../src/i18n/routing';
-
-// Composant pour le formulaire de contact réutilisable
-function ContactForm({ idSuffix = '', onSubmitSuccess, defaultSubject = '' }) {
-  const t = useTranslations('contact');
-  const [showSuccess, setShowSuccess] = useState(false);
-  const formRef = useRef(null);
-  const { locale } = useParams();
-
-  const handleSubmit = async e => {
-    e.preventDefault();
-    const form = formRef.current;
-    if (!form) return;
-
-    const formData = new FormData(form);
-    const data = {
-      fullName: formData.get('fullName'),
-      email: formData.get('email'),
-      subject: formData.get('subject'),
-      message: formData.get('message'),
-      newsletterOptIn: formData.get('newsletterOptIn') === 'on',
-      locale,
-    };
-
-    try {
-      const response = await fetch('/api/contact', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      });
-
-      const result = await response.json();
-
-      if (response.ok && result.success) {
-        // Validation API réussie, on déclenche maintenant l'envoi réel du mail via Netlify Forms
-        const encodedBody = new URLSearchParams(formData);
-        encodedBody.set('form-name', 'contact'); // Sécurité absolue pour Netlify
-
-        await fetch('/contact.html', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-          body: encodedBody.toString(),
-        });
-        setShowSuccess(true);
-        // Réinitialiser le formulaire
-        form.reset();
-        if (onSubmitSuccess) onSubmitSuccess();
-        // Redirection après 2 secondes (laisse le temps de voir le message)
-        setTimeout(() => {
-          window.location.href = '/success.html';
-        }, 2000);
-      } else {
-        const details = Array.isArray(result?.errors)
-          ? `\n\n${result.errors.join('\n')}`
-          : '';
-        alert((result?.message || t('form.validationError')) + details);
-      }
-    } catch {
-      alert(t('form.submissionError'));
-    }
-  };
-
-  return (
-    <form
-      ref={formRef}
-      className="space-y-4 md:space-y-6"
-      name="contact"
-      aria-label="Contact form"
-      data-netlify="true"
-      data-netlify-honeypot="bot-field"
-      onSubmit={handleSubmit}
-    >
-      <input
-        type="hidden"
-        aria-label="form name"
-        name="form-name"
-        value="contact"
-      />
-      <input
-        type="hidden"
-        aria-label="bot field"
-        name="bot-field"
-        style={{ display: 'none' }}
-      />
-      <input
-        type="hidden"
-        aria-label="locale"
-        name="locale"
-        value={locale || ''}
-      />
-
-      {showSuccess && (
-        <div className="bg-green-600/20 border border-green-500 text-green-300 p-3 md:p-4 rounded mb-4 md:mb-6">
-          <div className="flex items-center gap-3">
-            <span className="text-lg md:text-xl">✅</span>
-            <div>
-              <h3 className="font-semibold text-sm md:text-base">
-                {t('form.success.title')}
-              </h3>
-              <p className="text-xs md:text-sm opacity-90">
-                {t('form.success.message')}
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
-
-      <div>
-        <label
-          htmlFor={`fullName${idSuffix}`}
-          className="block text-whiteCustom/90 font-liberation text-sm mb-2"
-        >
-          {t('form.fullName')} *
-        </label>
-        <input
-          aria-label={`fullName${idSuffix}`}
-          id={`fullName${idSuffix}`}
-          name="fullName"
-          type="text"
-          required
-          minLength={2}
-          className="w-full bg-formBG text-whiteCustom placeholder-whiteCustom/40 border border-whiteCustom/60 focus:border-whiteCustom outline-none px-3 py-2 text-sm md:text-base"
-        />
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-        <div>
-          <label
-            htmlFor={`email${idSuffix}`}
-            className="block text-whiteCustom/90 font-liberation text-sm mb-2"
-          >
-            {t('form.email')} *
-          </label>
-          <input
-            aria-label={`email${idSuffix}`}
-            id={`email${idSuffix}`}
-            name="email"
-            type="email"
-            required
-            className="w-full bg-formBG text-whiteCustom placeholder-whiteCustom/40 border border-whiteCustom/60 focus:border-whiteCustom outline-none px-3 py-2 text-sm md:text-base"
-          />
-        </div>
-        <div>
-          <label
-            htmlFor={`subject${idSuffix}`}
-            className="block text-whiteCustom/90 font-liberation text-sm mb-2"
-          >
-            {t('form.subject')} *
-          </label>
-          <input
-            aria-label={`subject${idSuffix}`}
-            id={`subject${idSuffix}`}
-            name="subject"
-            type="text"
-            required
-            maxLength={100}
-            defaultValue={defaultSubject}
-            className="w-full bg-formBG text-whiteCustom placeholder-whiteCustom/40 border border-whiteCustom/60 focus:border-whiteCustom outline-none px-3 py-2 text-sm md:text-base"
-          />
-        </div>
-      </div>
-
-      <div>
-        <label
-          htmlFor={`message${idSuffix}`}
-          className="block text-whiteCustom/90 font-liberation text-sm mb-2"
-        >
-          {t('form.message')} *
-        </label>
-        <textarea
-          aria-label={`message${idSuffix}`}
-          id={`message${idSuffix}`}
-          name="message"
-          rows={5}
-          required
-          minLength={10}
-          className="w-full bg-formBG text-whiteCustom placeholder-whiteCustom/40 border border-whiteCustom/60 focus:border-whiteCustom outline-none px-3 py-2 resize-y text-sm md:text-base"
-        />
-      </div>
-
-      <div className="flex items-center justify-between gap-4 w-full">
-        <label className="inline-flex items-center gap-2 text-whiteCustom/80 font-liberation text-sm select-none">
-          <input
-            type="checkbox"
-            aria-label="newsletter opt-in"
-            name="newsletterOptIn"
-            className="accent-whiteCustom"
-          />
-          <span>{t('form.newsletterOptIn')}</span>
-        </label>
-
-        <button
-          type="submit"
-          className="px-4 py-2 text-sm font-medium font-liberation text-whiteCustom/85 hover:text-whiteCustom transition-all duration-300 border border-whiteCustom/60"
-        >
-          <span>{t('form.send')}</span>
-        </button>
-      </div>
-    </form>
-  );
-}
-
-function AnimatedUnderlineLink({
-  href,
-  onClick,
-  children,
-  className = '',
-  ...props
-}) {
-  return (
-    <Link
-      href={href}
-      onClick={onClick}
-      className={`group hover:[--bg-size:100%_1px] inline-block text-whiteCustom transition-colors ${className}`.trim()}
-      {...props}
-    >
-      <span
-        className={`font-liberation text-sm md:text-[16px] leading-relaxed inline box-decoration-clone bg-[linear-gradient(currentColor,currentColor)] bg-no-repeat [background-position:0_100%] transition-[background-size,color] duration-300 ease-in-out`}
-        style={{ backgroundSize: 'var(--bg-size, 0% 1px)' }}
-      >
-        {children}
-      </span>
-    </Link>
-  );
-}
-
-// Composant pour les informations de contact
-function ContactInfo({ onOpenLegal }) {
-  const t = useTranslations();
-  const contactT = useTranslations('contact');
-  const { locale } = useParams();
-
-  const handleLegalClick = useCallback(
-    e => {
-      if (typeof onOpenLegal !== 'function') return;
-      e.preventDefault();
-      onOpenLegal();
-    },
-    [onOpenLegal]
-  );
-
-  return (
-    <div className="text-whiteCustom/90 flex flex-col h-full">
-      {/* Titre aligné avec "Contact" */}
-      <h3 className="font-liberation italic text-xl md:text-2xl lg:text-3xl leading-tight mb-6 md:mb-8">
-        <a
-          href={SITE_CONFIG.instagram}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="hover:text-whiteCustom transition-colors"
-        >
-          Instagram
-        </a>
-        ,{' '}
-        <a
-          href={`mailto:${SITE_CONFIG.email}`}
-          className="hover:text-whiteCustom transition-colors"
-        >
-          Mail
-        </a>
-      </h3>
-
-      {/* Contenu aligné avec le formulaire */}
-      <div className="space-y-4 md:space-y-6">
-        <NewsletterSignup className="" />
-        <div className="font-liberation leading-relaxed">
-          <p className="text-3xl italic">© STUDIO 42 - 2026</p>
-          <p>14 Rue de Marignan, 75008 PARIS. FRANCE</p>
-        </div>
-        <div className="font-liberation leading-relaxed space-y-4">
-          <p className="font-liberation text-sm md:text-[16px] leading-relaxed">
-            {contactT('info.copyright', { author: SITE_CONFIG.author })}
-          </p>
-          <AnimatedUnderlineLink
-            href="mailto:naux.pro@gmail.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className=""
-          >
-            {contactT('info.credits', { developer: SITE_CONFIG.developer })}
-          </AnimatedUnderlineLink>
-        </div>
-
-        <p className="font-liberation text-sm md:text-[16px] leading-relaxed flex items-center gap-4">
-          <AnimatedUnderlineLink
-            href={`/${locale || routing.defaultLocale}/legal`}
-            onClick={handleLegalClick}
-            className="cursor-pointer"
-          >
-            {t('legal.link')}
-          </AnimatedUnderlineLink>
-        </p>
-      </div>
-    </div>
-  );
-}
-const MarqueeBlock = ({ ariaHidden = false } = {}) => (
-  <div
-    className="flex items-center gap-6 sm:gap-6 md:gap-6 lg:gap-6 pr-6 uppercase"
-    aria-hidden={ariaHidden}
-  >
-    <span className="inline-block font-bold">{SITE_CONFIG.copyright}</span>
-    <span className="inline-block">{SITE_CONFIG.copyright}</span>
-    <span className="inline-block font-bold">{SITE_CONFIG.copyright}</span>
-    <span className="inline-block">{SITE_CONFIG.copyright}</span>
-  </div>
-);
-// Composant pour le contenu principal (formulaire + informations)
-export function ContactContent({
-  idSuffix = '',
-  headingId,
-  variant: _variant = 'default',
-  defaultSubject = '',
-  onOpenLegal,
-}) {
-  const t = useTranslations('contact');
-  const handleCopyLink = useCallback(() => {
-    try {
-      const mail = 'contact@hnmassengo.com';
-      if (mail && navigator?.clipboard?.writeText) {
-        navigator.clipboard.writeText(mail);
-        alert('Contact email copied to clipboard');
-      } else if (mail) {
-        window.prompt('Copy this email', mail);
-      }
-    } catch {
-      alert('Unable to copy link');
-    }
-  }, []);
-  return (
-    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-8 lg:gap-10 xl:gap-14">
-      <div className="lg:col-span-7">
-        <button
-          type="button"
-          id={headingId}
-          onClick={handleCopyLink}
-          onKeyPress={e => {
-            if (e.key === 'Enter') handleCopyLink();
-          }}
-          className="cursor-pointer text-whiteCustom/90 hover:text-whiteCustom transition-colors font-liberation italic text-[32px] sm:text-[36px] md:text-[42px] lg:text-[46px] xl:text-[48px] leading-none mb-6 md:mb-8"
-        >
-          {t('title')}
-        </button>
-        <ContactForm idSuffix={idSuffix} defaultSubject={defaultSubject} />
-      </div>
-
-      <div className="lg:col-span-5 md:mt-6 lg:mt-0">
-        <ContactInfo onOpenLegal={onOpenLegal} />
-      </div>
-    </div>
-  );
-}
-
-// Composant séparé pour le marquee
-export function ContactMarquee({ mode = 'absolute' } = {}) {
-  const wrapperClassName =
-    mode === 'inline'
-      ? 'flex-shrink-0 border-t border-whiteCustom/60 overflow-hidden pointer-events-none '
-      : 'absolute inset-x-0 bottom-0 border-t border-whiteCustom/60 overflow-hidden pointer-events-none';
-
-  return (
-    <div className={wrapperClassName}>
-      <m.div
-        className="flex w-max whitespace-nowrap text-whiteCustom/90 font-liberation text-3xl md:text-[36px] lg:text-[40px] xl:text-[44px] py-1 sm:py-1.5 md:py-2 -tracking-normal"
-        animate={{ x: ['0%', '-50%'] }}
-        transition={{
-          duration: 30,
-          ease: 'linear',
-          repeat: Infinity,
-          repeatType: 'loop',
-        }}
-      >
-        <MarqueeBlock />
-        <MarqueeBlock ariaHidden />
-      </m.div>
-    </div>
-  );
-}
+import ContactContent from './ContactContent';
+import ContactMarquee from './ContactMarquee';
 
 export default function ContactOverlay({
   open: openProp,
@@ -399,24 +17,18 @@ export default function ContactOverlay({
   const panelRef = useRef(null);
   const t = useTranslations('contact');
 
-  // Utiliser la prop si fournie, sinon utiliser l'état interne
   const open = openProp !== undefined ? openProp : openState;
+
   const handleClose = useCallback(() => {
     if (typeof onCloseProp === 'function') return onCloseProp();
     setOpenState(false);
   }, [onCloseProp]);
 
-  const handleOpenLegal = useCallback(() => {
-    setLegalOpen(true);
-  }, []);
+  const handleOpenLegal = useCallback(() => setLegalOpen(true), []);
+  const handleCloseLegal = useCallback(() => setLegalOpen(false), []);
 
-  const handleCloseLegal = useCallback(() => {
-    setLegalOpen(false);
-  }, []);
-
-  // Ouvrir/fermer via les événements globaux (seulement si non contrôlé par les props)
   useEffect(() => {
-    if (openProp !== undefined) return; // Ignorer si contrôlé
+    if (openProp !== undefined) return;
     const onShow = () => setOpenState(true);
     const onHide = () => setOpenState(false);
     const cleanupShow = addEventHandler(EVENTS.CONTACT_SHOW, onShow);
@@ -427,7 +39,6 @@ export default function ContactOverlay({
     };
   }, [openProp]);
 
-  // Fermer avec Échap quand ouvert (seulement si le LegalOverlay n'est pas ouvert)
   useEffect(() => {
     if (!open) return;
     const onKey = e => {
@@ -437,7 +48,6 @@ export default function ContactOverlay({
     return () => window.removeEventListener('keydown', onKey);
   }, [open, legalOpen, handleClose]);
 
-  // Verrouillage du scroll, focus initial et piège de focus quand l'overlay est ouvert
   useEffect(() => {
     if (!open) return;
 
@@ -445,7 +55,6 @@ export default function ContactOverlay({
     const prevOverflow = root ? root.style.overflow : undefined;
     const prevPaddingRight = root ? root.style.paddingRight : undefined;
 
-    // Calculer la largeur de la barre de défilement pour éviter le décalage de mise en page
     if (root) {
       const scrollbarWidth = root.offsetWidth - root.clientWidth;
       root.style.overflow = 'hidden';
@@ -462,7 +71,6 @@ export default function ContactOverlay({
       '[tabindex]:not([tabindex="-1"])',
     ].join(',');
 
-    // Focus initial sur le premier élément focusable (préférer fullName-overlay)
     const raf = requestAnimationFrame(() => {
       const explicit = document.getElementById('fullName-overlay');
       if (explicit && typeof explicit.focus === 'function') {
@@ -478,7 +86,6 @@ export default function ContactOverlay({
       }
     });
 
-    // Piéger la touche Tab dans le panneau
     const onKeyDown = e => {
       if (e.key !== 'Tab') return;
       const panel = panelRef.current;
@@ -541,7 +148,6 @@ export default function ContactOverlay({
             onClick={e => e.stopPropagation()}
             ref={panelRef}
           >
-            {/* Contenu principal - prend l'espace disponible */}
             <div className="flex-1 overflow-y-auto min-h-0">
               <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12 pt-6 sm:pt-8 md:pt-10 lg:pt-12 pb-6 sm:pb-8 md:pb-10 lg:pb-12">
                 <ContactContent
@@ -553,12 +159,9 @@ export default function ContactOverlay({
                 />
               </div>
             </div>
-
-            {/* Marquee en position relative - fait partie du flux */}
             <ContactMarquee mode="inline" />
           </m.div>
 
-          {/* Legal Overlay */}
           <LegalOverlay open={legalOpen} onClose={handleCloseLegal} />
         </m.section>
       )}

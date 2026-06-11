@@ -1,9 +1,8 @@
 'use client';
 import { useParams } from 'next/navigation';
-import ContactOverlay, {
-  ContactContent,
-  ContactMarquee,
-} from '../../components/overlays/ContactOverlay';
+import ContactOverlay from '../../components/overlays/ContactOverlay';
+import ContactContent from '../../components/overlays/ContactContent';
+import ContactMarquee from '../../components/overlays/ContactMarquee';
 import HomeSection from '../../components/home/HomeSection';
 import { LazyMotion, m, domMax } from 'framer-motion';
 import { useFadeInOnScreen } from '../../lib/hooks';
