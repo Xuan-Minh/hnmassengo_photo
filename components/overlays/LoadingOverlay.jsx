@@ -110,13 +110,22 @@ export default function LoadingOverlay({ initialImages }) {
     [initialImages]
   );
 
+  // Remplacer les .map().filter(Boolean)
   const desktopSrcs = useMemo(
-    () => desktopData.map(img => getImageSource(img, 1920)).filter(Boolean),
+    () =>
+      desktopData.flatMap(img => {
+        const src = getImageSource(img, 1920);
+        return src ? [src] : [];
+      }),
     [desktopData]
   );
 
   const mobileSrcs = useMemo(
-    () => mobileData.map(img => getImageSource(img, 1080)).filter(Boolean),
+    () =>
+      mobileData.flatMap(img => {
+        const src = getImageSource(img, 1080);
+        return src ? [src] : [];
+      }),
     [mobileData]
   );
 

@@ -124,37 +124,37 @@ export default function GalleryGrid({
   }, [projects, gridFilter]);
 
   const projectBuckets = useMemo(() => {
-    return filteredProjectsGrid
-      .map(project => {
-        const projectImages = (project.images || []).filter(Boolean);
-        if (!projectImages.length) return null;
+    return filteredProjectsGrid.flatMap(project => {
+      const projectImages = (project.images || []).filter(Boolean);
+      if (!projectImages.length) return [];
 
-        const seed = hashString(`${project.id}-${gridFilter}`);
-        const random = createSeededRandom(seed);
+      const seed = hashString(`${project.id}-${gridFilter}`);
+      const random = createSeededRandom(seed);
 
-        const indexedImages = projectImages.map((img, originalIdx) => ({
-          img,
-          originalIdx,
-        }));
-        const selectedImages = shuffleWithSeed(indexedImages, random);
+      const indexedImages = projectImages.map((img, originalIdx) => ({
+        img,
+        originalIdx,
+      }));
+      const selectedImages = shuffleWithSeed(indexedImages, random);
 
-        return selectedImages
-          .map(({ img, originalIdx }) => {
-            const imgSrc = getSanityImageDeliveryUrl(img, { w: 640, q: 70 });
-            if (!imgSrc) return null;
+      const bucket = selectedImages.flatMap(({ img, originalIdx }) => {
+        const imgSrc = getSanityImageDeliveryUrl(img, { w: 640, q: 70 });
+        if (!imgSrc) return [];
 
-            return {
-              projectId: project.id,
-              uniqueKey: `${project.id}-${originalIdx}`,
-              name: project.name,
-              type: project.type,
-              imgSrc,
-              isSanityImage: isSanityCdnUrl(imgSrc),
-            };
-          })
-          .filter(Boolean);
-      })
-      .filter(Boolean);
+        return [
+          {
+            projectId: project.id,
+            uniqueKey: `${project.id}-${originalIdx}`,
+            name: project.name,
+            type: project.type,
+            imgSrc,
+            isSanityImage: isSanityCdnUrl(imgSrc),
+          },
+        ];
+      });
+
+      return bucket.length > 0 ? [bucket] : [];
+    });
   }, [filteredProjectsGrid, gridFilter]);
 
   const allImages = useMemo(() => {

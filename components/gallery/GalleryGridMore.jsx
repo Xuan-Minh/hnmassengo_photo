@@ -220,25 +220,26 @@ export default function GalleryGridMore({ onClose, onProjectClick, projects }) {
           });
           return acc;
         }, [])
-        .map((img, idx) => {
+        .flatMap((img, idx) => {
           const src = getSanityImageDeliveryUrl(img, { w: 640, q: 70 });
-          if (!src) return null;
+          if (!src) return [];
 
           const ratio = getAspectRatio(img);
 
-          return {
-            projectId: p.id,
-            project: p,
-            name: p.name,
-            type: p.type,
-            src,
-            ratio,
-            coords: p.coords,
-            isFirst: idx === 0,
-            isSanityImage: isSanityCdnUrl(src),
-          };
+          return [
+            {
+              projectId: p.id,
+              project: p,
+              name: p.name,
+              type: p.type,
+              src,
+              ratio,
+              coords: p.coords,
+              isFirst: idx === 0,
+              isSanityImage: isSanityCdnUrl(src),
+            },
+          ];
         })
-        .filter(Boolean)
     );
   }, [filteredProjects]);
 

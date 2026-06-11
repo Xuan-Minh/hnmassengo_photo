@@ -77,8 +77,7 @@ export default function Gallery() {
           p.name?.[locale] || p.name?.fr || p[`name_${locale}`] || p.name_fr,
         type: p.type,
         images: (p.images || [])
-          .map(img => img?.asset?.url)
-          .filter(Boolean)
+          .flatMap(img => (img?.asset?.url ? [img.asset.url] : []))
           .reduce((acc, url) => {
             const optimized = buildSanityImageUrl(url, {
               ...getOptimizedImageParams('gallery-grid', isMobileDevice),
