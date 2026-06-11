@@ -8,6 +8,10 @@ import {
   isSanityCdnUrl,
 } from '../../lib/imageUtils';
 
+// ==========================================
+// 1. CONSTANTES & UTILITAIRES
+// ==========================================
+
 function getProjectDateMs(project) {
   const raw = project?.date;
   if (!raw) return null;
@@ -16,8 +20,7 @@ function getProjectDateMs(project) {
 }
 
 function getInitialCols() {
-  if (typeof window === 'undefined') return 6; // Valeur par défaut pour le SSR (serveur)
-
+  if (typeof window === 'undefined') return 6;
   const width = window.innerWidth;
   if (width >= 1536) return 11;
   if (width >= 1280) return 13;
@@ -27,7 +30,6 @@ function getInitialCols() {
   return 2;
 }
 
-// Fonction pour deviner la taille exacte de l'image grâce à son URL Sanity (Masonry)
 function getAspectRatio(url) {
   if (!url) return 1;
   const match = url.match(/-(\d+)x(\d+)/);
@@ -46,7 +48,7 @@ const FILTERS = [
 function UnderlineLabel({ children }) {
   return (
     <span
-      className={`inline box-decoration-clone bg-[linear-gradient(currentColor,currentColor)] bg-no-repeat [background-position:0_100%] transition-[background-size,color] duration-300 ease-in-out`}
+      className="inline box-decoration-clone bg-[linear-gradient(currentColor,currentColor)] bg-no-repeat [background-position:0_100%] transition-[background-size,color] duration-300 ease-in-out"
       style={{
         backgroundSize: 'var(--bg-size, 0% 1px)',
         pointerEvents: 'none',
@@ -57,7 +59,10 @@ function UnderlineLabel({ children }) {
   );
 }
 
-// 1. Définition de l'état initial groupé
+// ==========================================
+// 2. ÉTAT ET REDUCER
+// ==========================================
+
 const initialState = {
   filter: 'all',
   hoveredId: null,
@@ -68,7 +73,6 @@ const initialState = {
   showCustomCursor: false,
 };
 
-// 2. Définition du Reducer unique
 function reducer(state, action) {
   switch (action.type) {
     case 'UPDATE_STATE':
@@ -78,47 +82,267 @@ function reducer(state, action) {
   }
 }
 
-export default function GalleryGridMore({ onClose, onProjectClick, projects }) {
-  const t = useTranslations('gallery');
-  const scrollContainerRef = useRef(null);
+// ==========================================
+// 3. SOUS-COMPOSANTS UI
+// ==========================================
 
-  // 3. Initialisation du reducer
-  const [state, dispatch] = useReducer(reducer, initialState);
-  const {
-    filter,
-    hoveredId,
-    gridHoveredProjectId,
-    isHoverSourceGrid,
-    colsCount,
-    cursorPos,
-    showCustomCursor,
-  } = state;
+function Sidebar({
+  filter,
+  filteredProjects,
+  gridHoveredProjectId,
+  dispatch,
+  t,
+  onSidebarHover,
+  onImageClick,
+}) {
+  return (
+    <div className="w-48 flex flex-col pt-8 shrink-0 overflow-y-auto no-scrollbar pb-16">
+      <div className="flex flex-col gap-2 mb-12">
+        {FILTERS.map(f => (
+          <button
+            type="button"
+            key={f.value}
+            className={`text-lg text-left font-liberation transition-opacity duration-300 relative group hover:[--bg-size:100%_1px] self-start ${
+              filter === f.value
+                ? 'font-bold opacity-100 text-blackCustom'
+                : 'opacity-60 hover:opacity-100 text-accent hover:text-blackCustom'
+            }`}
+            onClick={() =>
+              dispatch({ type: 'UPDATE_STATE', payload: { filter: f.value } })
+            }
+          >
+            <UnderlineLabel>{t(`filters.${f.value}`)}</UnderlineLabel>
+          </button>
+        ))}
+      </div>
 
-  // Remise à zéro du scroll quand on change de filtre pour ne pas se perdre
-  useEffect(() => {
-    if (scrollContainerRef.current) {
-      scrollContainerRef.current.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-  }, [filter]);
+      <ul className="flex flex-col gap-2">
+        {filteredProjects.map(p => (
+          <li key={p.id}>
+            <button
+              type="button"
+              className={`text-sm md:text-base text-left font-liberation transition-colors duration-300 relative group hover:[--bg-size:100%_1px] ${
+                gridHoveredProjectId === p.id
+                  ? 'text-blackCustom'
+                  : 'text-accent/30 hover:text-blackCustom'
+              }`}
+              onClick={() => onImageClick(p)}
+              onMouseEnter={() => onSidebarHover(p.id)}
+              onMouseLeave={() => {
+                dispatch(state => {
+                  if (!state.isHoverSourceGrid) {
+                    return {
+                      type: 'UPDATE_STATE',
+                      payload: { hoveredId: null },
+                    };
+                  }
+                  return { type: 'UPDATE_STATE', payload: {} }; // No-op if grid is hovered
+                });
+              }}
+            >
+              <UnderlineLabel>{p.name}</UnderlineLabel>
+            </button>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
 
+function MasonryGrid({
+  filter,
+  masonryCols,
+  hoveredId,
+  dispatch,
+  onImageClick,
+}) {
+  return (
+    <AnimatePresence mode="wait">
+      <m.div
+        key={`masonry-more-${filter}`}
+        initial={{ opacity: 0, scale: 0.98 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.98 }}
+        transition={{ duration: 0.4, ease: 'easeInOut' }}
+        className="flex w-full gap-2 pb-16 pr-8"
+      >
+        {masonryCols.map((col, colIdx) => (
+          <div key={`col-${colIdx}`} className="flex flex-col flex-1 gap-2">
+            {col.map(imgData => {
+              const isHovered = hoveredId === imgData.projectId;
+              return (
+                <button
+                  type="button"
+                  id={
+                    imgData.isFirst
+                      ? `project-start-${imgData.projectId}`
+                      : undefined
+                  }
+                  key={`${imgData.projectId}-${imgData.globalIndex}`}
+                  className="relative group cursor-pointer w-full overflow-hidden"
+                  style={{ aspectRatio: imgData.ratio }}
+                  onMouseEnter={() => {
+                    dispatch({
+                      type: 'UPDATE_STATE',
+                      payload: {
+                        gridHoveredProjectId: imgData.projectId,
+                        hoveredId: imgData.projectId,
+                        isHoverSourceGrid: true,
+                      },
+                    });
+                  }}
+                  onMouseLeave={() => {
+                    dispatch({
+                      type: 'UPDATE_STATE',
+                      payload: {
+                        gridHoveredProjectId: null,
+                        hoveredId: null,
+                        isHoverSourceGrid: false,
+                      },
+                    });
+                  }}
+                  onClick={() => onImageClick(imgData.project)}
+                  onKeyPress={e => {
+                    if (e.key === 'Enter') onImageClick(imgData.project);
+                  }}
+                  tabIndex={0}
+                >
+                  <Image
+                    src={imgData.src}
+                    alt={imgData.name}
+                    fill
+                    unoptimized={imgData.isSanityImage}
+                    className={`object-contain shadow transition-opacity duration-300 ${
+                      isHovered ? 'opacity-100' : 'opacity-40'
+                    }`}
+                    draggable={false}
+                    sizes="(max-width: 768px) 45vw, 128px"
+                    loading={imgData.globalIndex < 30 ? 'eager' : 'lazy'}
+                  />
+                </button>
+              );
+            })}
+          </div>
+        ))}
+      </m.div>
+    </AnimatePresence>
+  );
+}
+
+function CustomCursorOverlay({
+  showCustomCursor,
+  hoveredId,
+  cursorPos,
+  projectsRecentFirst,
+}) {
+  if (!showCustomCursor || !hoveredId) return null;
+  const projectName = projectsRecentFirst.find(p => p.id === hoveredId)?.name;
+
+  return (
+    <AnimatePresence>
+      <m.div
+        className="fixed pointer-events-none z-[200] text-whiteCustom font-liberation italic text-lg"
+        style={{
+          left: cursorPos.x + 10,
+          top: cursorPos.y + 10,
+          transform: 'translate(-50%, -50%)',
+        }}
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.8 }}
+        transition={{ duration: 0.2 }}
+      >
+        {projectName}
+      </m.div>
+    </AnimatePresence>
+  );
+}
+
+// ==========================================
+// 4. CUSTOM HOOKS (LOGIQUE MÉTIER)
+// ==========================================
+
+function useGalleryGridData(projects, filter, colsCount) {
   const projectsRecentFirst = useMemo(() => {
-    const arr = [...projects];
-    arr.sort((a, b) => {
+    return [...projects].sort((a, b) => {
       const am = getProjectDateMs(a);
       const bm = getProjectDateMs(b);
-
       if (am === null && bm === null)
         return (a?.name || '').localeCompare(b?.name || '');
       if (am === null) return 1;
       if (bm === null) return -1;
-
       return bm - am;
     });
-    return arr;
   }, [projects]);
 
+  const filteredProjects = useMemo(() => {
+    return projectsRecentFirst.filter(
+      p => filter === 'all' || p.type === filter
+    );
+  }, [projectsRecentFirst, filter]);
+
+  const allImages = useMemo(() => {
+    return filteredProjects.flatMap(p =>
+      (p.images || [])
+        .filter(Boolean)
+        .map((img, idx) => {
+          const src = getSanityImageDeliveryUrl(img, { w: 640, q: 70 });
+          if (!src) return null;
+          return {
+            projectId: p.id,
+            project: p,
+            name: p.name,
+            type: p.type,
+            src,
+            ratio: getAspectRatio(img),
+            coords: p.coords,
+            isFirst: idx === 0,
+            isSanityImage: isSanityCdnUrl(src),
+          };
+        })
+        .filter(Boolean)
+    );
+  }, [filteredProjects]);
+
+  const masonryCols = useMemo(() => {
+    const cols = Array.from({ length: colsCount }, () => []);
+    const colHeights = Array(colsCount).fill(0);
+
+    allImages.forEach((img, idx) => {
+      let shortestIdx = 0;
+      let minHeight = colHeights[0];
+      for (let i = 1; i < colsCount; i++) {
+        if (colHeights[i] < minHeight) {
+          minHeight = colHeights[i];
+          shortestIdx = i;
+        }
+      }
+      cols[shortestIdx].push({ ...img, globalIndex: idx });
+      colHeights[shortestIdx] += 1 / (img.ratio || 1);
+    });
+    return cols;
+  }, [allImages, colsCount]);
+
+  return { projectsRecentFirst, filteredProjects, masonryCols };
+}
+
+function useGalleryInteractions(
+  dispatch,
+  hoveredId,
+  isHoverSourceGrid,
+  filter,
+  scrollContainerRef,
+  projectsRecentFirst
+) {
+  // Reset scroll on filter change
+  useEffect(() => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, [filter, scrollContainerRef]);
+
+  // Handle sidebar hover sync to masonry grid
   const handleSidebarHover = projectId => {
-    // Grouping the hover states into a single render cycle
     dispatch({
       type: 'UPDATE_STATE',
       payload: {
@@ -136,20 +360,16 @@ export default function GalleryGridMore({ onClose, onProjectClick, projects }) {
     if (targetEl && container) {
       const containerRect = container.getBoundingClientRect();
       const targetRect = targetEl.getBoundingClientRect();
-
       const scrollPos =
         container.scrollTop +
         (targetRect.top - containerRect.top) -
         containerRect.height / 2 +
         targetRect.height / 2;
-
-      container.scrollTo({
-        top: scrollPos,
-        behavior: 'smooth',
-      });
+      container.scrollTo({ top: scrollPos, behavior: 'smooth' });
     }
   };
 
+  // Mouse move tracker for custom cursor
   useEffect(() => {
     let rafId = null;
     const handleMouseMove = e => {
@@ -167,8 +387,9 @@ export default function GalleryGridMore({ onClose, onProjectClick, projects }) {
       window.removeEventListener('mousemove', handleMouseMove);
       if (rafId) cancelAnimationFrame(rafId);
     };
-  }, []);
+  }, [dispatch]);
 
+  // Cursor visibility toggle
   useEffect(() => {
     if (!hoveredId || !isHoverSourceGrid) {
       document.body.style.cursor = 'default';
@@ -181,105 +402,57 @@ export default function GalleryGridMore({ onClose, onProjectClick, projects }) {
       document.body.style.cursor = 'none';
       dispatch({ type: 'UPDATE_STATE', payload: { showCustomCursor: true } });
     }
+
     return () => {
       document.body.style.cursor = 'default';
       dispatch({ type: 'UPDATE_STATE', payload: { showCustomCursor: false } });
     };
-  }, [hoveredId, projectsRecentFirst, isHoverSourceGrid]);
+  }, [hoveredId, projectsRecentFirst, isHoverSourceGrid, dispatch]);
 
-  const filteredProjects = useMemo(() => {
-    return projectsRecentFirst.filter(
-      p => filter === 'all' || p.type === filter
-    );
-  }, [projectsRecentFirst, filter]);
-
-  // Extraction des images avec calcul du ratio
-  const allImages = useMemo(() => {
-    return filteredProjects.flatMap(p =>
-      (p.images || [])
-        .filter(Boolean)
-        .reduce((acc, img) => {
-          const src = getSanityImageDeliveryUrl(img, {
-            w: 640,
-            q: 70,
-          });
-          if (!src) return acc;
-
-          const ratio = getAspectRatio(img);
-
-          acc.push({
-            projectId: p.id,
-            project: p,
-            name: p.name,
-            type: p.type,
-            src,
-            ratio,
-            coords: p.coords,
-            isFirst: acc.length === 0,
-            isSanityImage: isSanityCdnUrl(src),
-          });
-          return acc;
-        }, [])
-        .flatMap((img, idx) => {
-          const src = getSanityImageDeliveryUrl(img, { w: 640, q: 70 });
-          if (!src) return [];
-
-          const ratio = getAspectRatio(img);
-
-          return [
-            {
-              projectId: p.id,
-              project: p,
-              name: p.name,
-              type: p.type,
-              src,
-              ratio,
-              coords: p.coords,
-              isFirst: idx === 0,
-              isSanityImage: isSanityCdnUrl(src),
-            },
-          ];
-        })
-    );
-  }, [filteredProjects]);
-
-  // Définition responsive des colonnes de la cascade
+  // Responsive columns update
   useEffect(() => {
-    const updateCols = () => {
+    const updateCols = () =>
       dispatch({
         type: 'UPDATE_STATE',
         payload: { colsCount: getInitialCols() },
       });
-    };
-
     window.addEventListener('resize', updateCols);
     return () => window.removeEventListener('resize', updateCols);
-  }, []);
+  }, [dispatch]);
 
-  // Distribution des images dans les colonnes (Algorithme "Shortest Column First")
-  const masonryCols = useMemo(() => {
-    const cols = Array.from({ length: colsCount }, () => []);
-    const colHeights = Array(colsCount).fill(0);
+  return { handleSidebarHover };
+}
 
-    allImages.forEach((img, idx) => {
-      let shortestIdx = 0;
-      let minHeight = colHeights[0];
-      for (let i = 1; i < colsCount; i++) {
-        if (colHeights[i] < minHeight) {
-          minHeight = colHeights[i];
-          shortestIdx = i;
-        }
-      }
+// ==========================================
+// 5. COMPOSANT PRINCIPAL
+// ==========================================
 
-      cols[shortestIdx].push({ ...img, globalIndex: idx });
-      colHeights[shortestIdx] += 1 / (img.ratio || 1);
-    });
-    return cols;
-  }, [allImages, colsCount]);
+export default function GalleryGridMore({ onClose, onProjectClick, projects }) {
+  const t = useTranslations('gallery');
+  const scrollContainerRef = useRef(null);
 
-  const handleImageClick = project => {
-    onProjectClick(project);
-  };
+  const [state, dispatch] = useReducer(reducer, initialState);
+  const {
+    filter,
+    hoveredId,
+    gridHoveredProjectId,
+    isHoverSourceGrid,
+    colsCount,
+    cursorPos,
+    showCustomCursor,
+  } = state;
+
+  const { projectsRecentFirst, filteredProjects, masonryCols } =
+    useGalleryGridData(projects, filter, colsCount);
+
+  const { handleSidebarHover } = useGalleryInteractions(
+    dispatch,
+    hoveredId,
+    isHoverSourceGrid,
+    filter,
+    scrollContainerRef,
+    projectsRecentFirst
+  );
 
   const hoveredProject = projectsRecentFirst.find(p => p.id === hoveredId);
 
@@ -292,7 +465,6 @@ export default function GalleryGridMore({ onClose, onProjectClick, projects }) {
       exit={{ x: '100%' }}
       transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
     >
-      {/* Bouton Back */}
       <div className="absolute top-8 left-8 md:top-16 md:left-16 z-50">
         <button
           type="button"
@@ -303,169 +475,44 @@ export default function GalleryGridMore({ onClose, onProjectClick, projects }) {
         </button>
       </div>
 
-      {/* Header */}
       <div className="relative w-full h-24 flex items-center justify-center px-8 md:px-16 shrink-0">
         <h2 className="text-4xl font-liberation italic text-blackCustom/20">
           {t('title')}
         </h2>
       </div>
 
-      {/* Main Content */}
       <div className="flex-1 flex overflow-hidden px-8 md:px-16 pb-16">
-        {/* Sidebar Filters & Projects List */}
-        <div className="w-48 flex flex-col pt-8 shrink-0 overflow-y-auto no-scrollbar pb-16">
-          <div className="flex flex-col gap-2 mb-12">
-            {FILTERS.map(f => (
-              <button
-                type="button"
-                key={f.value}
-                className={`text-lg text-left font-liberation transition-opacity duration-300 relative group hover:[--bg-size:100%_1px] self-start ${
-                  filter === f.value
-                    ? 'font-bold opacity-100 text-blackCustom'
-                    : 'opacity-60 hover:opacity-100 text-accent hover:text-blackCustom'
-                }`}
-                onClick={() =>
-                  dispatch({
-                    type: 'UPDATE_STATE',
-                    payload: { filter: f.value },
-                  })
-                }
-              >
-                <UnderlineLabel>{t(`filters.${f.value}`)}</UnderlineLabel>
-              </button>
-            ))}
-          </div>
-
-          <ul className="flex flex-col gap-2">
-            {filteredProjects.map(p => (
-              <li key={p.id}>
-                <button
-                  type="button"
-                  className={`text-sm md:text-base text-left font-liberation transition-colors duration-300 relative group hover:[--bg-size:100%_1px] ${
-                    gridHoveredProjectId === p.id
-                      ? 'text-blackCustom'
-                      : 'text-accent/30 hover:text-blackCustom'
-                  }`}
-                  onClick={() => handleImageClick(p)}
-                  onMouseEnter={() => handleSidebarHover(p.id)}
-                  onMouseLeave={() => {
-                    if (!isHoverSourceGrid) {
-                      dispatch({
-                        type: 'UPDATE_STATE',
-                        payload: { hoveredId: null },
-                      });
-                    }
-                  }}
-                >
-                  <UnderlineLabel>{p.name}</UnderlineLabel>
-                </button>
-              </li>
-            ))}
-          </ul>
-        </div>
+        <Sidebar
+          filter={filter}
+          filteredProjects={filteredProjects}
+          gridHoveredProjectId={gridHoveredProjectId}
+          dispatch={dispatch}
+          t={t}
+          onSidebarHover={handleSidebarHover}
+          onImageClick={onProjectClick}
+        />
 
         <div className="flex-1 overflow-y-auto pl-8" ref={scrollContainerRef}>
-          <AnimatePresence mode="wait">
-            <m.div
-              key={`masonry-more-${filter}`}
-              initial={{ opacity: 0, scale: 0.98 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.98 }}
-              transition={{ duration: 0.4, ease: 'easeInOut' }}
-              className="flex w-full gap-2 pb-16 pr-8"
-            >
-              {masonryCols.map((col, colIdx) => (
-                <div
-                  key={`col-${colIdx}`}
-                  className="flex flex-col flex-1 gap-2"
-                >
-                  {col.map(imgData => {
-                    const isHovered = hoveredId === imgData.projectId;
-
-                    return (
-                      <button
-                        type="button"
-                        id={
-                          imgData.isFirst
-                            ? `project-start-${imgData.projectId}`
-                            : undefined
-                        }
-                        key={`${imgData.projectId}-${imgData.globalIndex}`}
-                        className="relative group cursor-pointer w-full overflow-hidden"
-                        style={{ aspectRatio: imgData.ratio }}
-                        onMouseEnter={() => {
-                          dispatch({
-                            type: 'UPDATE_STATE',
-                            payload: {
-                              gridHoveredProjectId: imgData.projectId,
-                              hoveredId: imgData.projectId,
-                              isHoverSourceGrid: true,
-                            },
-                          });
-                        }}
-                        onMouseLeave={() => {
-                          dispatch({
-                            type: 'UPDATE_STATE',
-                            payload: {
-                              gridHoveredProjectId: null,
-                              hoveredId: null,
-                              isHoverSourceGrid: false,
-                            },
-                          });
-                        }}
-                        onClick={() => handleImageClick(imgData.project)}
-                        onKeyPress={e => {
-                          if (e.key === 'Enter')
-                            handleImageClick(imgData.project);
-                        }}
-                        tabIndex={0}
-                      >
-                        <Image
-                          src={imgData.src}
-                          alt={imgData.name}
-                          fill
-                          unoptimized={imgData.isSanityImage}
-                          className={`object-contain shadow transition-opacity duration-300 ${
-                            isHovered ? 'opacity-100' : 'opacity-40'
-                          }`}
-                          draggable={false}
-                          sizes="(max-width: 768px) 45vw, 128px"
-                          loading={imgData.globalIndex < 30 ? 'eager' : 'lazy'}
-                        />
-                      </button>
-                    );
-                  })}
-                </div>
-              ))}
-            </m.div>
-          </AnimatePresence>
+          <MasonryGrid
+            filter={filter}
+            masonryCols={masonryCols}
+            hoveredId={hoveredId}
+            dispatch={dispatch}
+            onImageClick={onProjectClick}
+          />
         </div>
       </div>
 
-      {/* Footer Coords */}
       <div className="absolute bottom-8 left-8 md:left-16 text-xl font-liberation italic text-blackCustom pointer-events-none">
         {hoveredProject ? hoveredProject.coords : ''}
       </div>
 
-      {/* Custom cursor for project name */}
-      <AnimatePresence>
-        {showCustomCursor && hoveredId && (
-          <m.div
-            className="fixed pointer-events-none z-[200] text-whiteCustom font-liberation italic text-lg"
-            style={{
-              left: cursorPos.x + 10,
-              top: cursorPos.y + 10,
-              transform: 'translate(-50%, -50%)',
-            }}
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.8 }}
-            transition={{ duration: 0.2 }}
-          >
-            {projects.find(p => p.id === hoveredId)?.name}
-          </m.div>
-        )}
-      </AnimatePresence>
+      <CustomCursorOverlay
+        showCustomCursor={showCustomCursor}
+        hoveredId={hoveredId}
+        cursorPos={cursorPos}
+        projectsRecentFirst={projectsRecentFirst}
+      />
     </m.div>
   );
 }
