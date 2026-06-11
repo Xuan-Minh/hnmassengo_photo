@@ -70,8 +70,13 @@ export default function GalleryList({
   const itemsRef = useRef([]);
   const scrollEndTimeoutRef = useRef(null);
   const currentImageVersionRef = useRef(0);
-  const preloadedUrlsRef = useRef(new Set());
   const listTimersRef = useRef({ tick: null, swap: null, cancelled: 0 });
+
+  // CORRECTION : Initialisation paresseuse de la ref
+  const preloadedUrlsRef = useRef(null);
+  if (preloadedUrlsRef.current === null) {
+    preloadedUrlsRef.current = new Set();
+  }
 
   useEffect(() => {
     const updateMobile = () =>
@@ -108,11 +113,9 @@ export default function GalleryList({
             isTransitioning: false,
           },
         });
-        // Éviter le useEffect : on met à jour l'info parent directement au changement !
-        setActiveCoord(projects[projectIndex]?.coords || '');
       }, transitionDelay);
     },
-    [isMobile, projects, setActiveCoord]
+    [isMobile]
   );
 
   const navigateListPrev = useCallback(() => {
@@ -145,14 +148,19 @@ export default function GalleryList({
         activeItem.offsetLeft -
         container.offsetWidth / 2 +
         activeItem.offsetWidth / 2;
-      container.scrollTo({ left: scrollLeft, behavior: 'smooth' });
+
+      container.scrollTo({
+        left: scrollLeft,
+        behavior: 'smooth',
+      });
     }
   }, []);
 
-  // Le scroll se recentre de lui-même sans interagir avec le composant Parent
   useEffect(() => {
+    const project = projects[currentProjectIndex];
+    setActiveCoord(project?.coords || '');
     centerActiveProject(currentProjectIndex);
-  }, [currentProjectIndex, centerActiveProject]);
+  }, [currentProjectIndex, projects, setActiveCoord, centerActiveProject]);
 
   useEffect(() => {
     const container = mobileNavRef.current;
@@ -253,8 +261,6 @@ export default function GalleryList({
             isTransitioning: false,
           },
         });
-        // Éviter le useEffect : on met à jour l'info parent directement au changement de timer !
-        setActiveCoord(projects[next.nextProjectIndex]?.coords || '');
       }, 250);
     }, 3000);
 
@@ -262,7 +268,7 @@ export default function GalleryList({
       if (timers.tick) clearTimeout(timers.tick);
       if (timers.swap) clearTimeout(timers.swap);
     };
-  }, [projects, currentProjectIndex, currentImageIndex, setActiveCoord]);
+  }, [projects, currentProjectIndex, currentImageIndex]);
 
   useEffect(() => {
     const handleKeyDown = e => {

@@ -6,11 +6,11 @@ import { m } from 'framer-motion';
 import { buildSanityImageUrl } from '../../../lib/imageUtils';
 import { getOptimizedImageParams } from '../../../lib/hooks';
 
-// 1. État initial (touchStart retiré)
 const initialState = {
   currentIndex: 0,
   isCurrentLoaded: false,
   hasCurrentError: false,
+  touchStart: null,
 };
 
 function reducer(state, action) {
@@ -31,11 +31,13 @@ function reducer(state, action) {
 
 export default function CustomLightbox({ open, onClose, images, project }) {
   const [state, dispatch] = useReducer(reducer, initialState);
-  const { currentIndex, isCurrentLoaded, hasCurrentError } = state;
+  const { currentIndex, isCurrentLoaded, hasCurrentError, touchStart } = state;
 
-  const decodedSrcsRef = useRef(new Set());
-  // CORRECTION : On utilise useRef pour stocker la position du touch
-  const touchStartRef = useRef(null);
+  // CORRECTION : Initialisation paresseuse de la ref
+  const decodedSrcsRef = useRef(null);
+  if (decodedSrcsRef.current === null) {
+    decodedSrcsRef.current = new Set();
+  }
 
   const getDisplaySrcForIndex = useCallback(
     idx => {
@@ -150,21 +152,22 @@ export default function CustomLightbox({ open, onClose, images, project }) {
     if (!open || typeof window === 'undefined') return;
 
     const handleTouchStart = e => {
-      // CORRECTION : On met à jour directement la ref (0 rendu)
-      touchStartRef.current = e.touches[0].clientX;
+      dispatch({
+        type: 'UPDATE_STATE',
+        payload: { touchStart: e.touches[0].clientX },
+      });
     };
 
     const handleTouchEnd = e => {
-      if (touchStartRef.current === null) return;
+      if (touchStart === null) return;
       const touchEnd = e.changedTouches[0].clientX;
-      const diff = touchStartRef.current - touchEnd;
+      const diff = touchStart - touchEnd;
 
       if (Math.abs(diff) > 50) {
         if (diff > 0) goToIndex(currentIndex + 1);
         else goToIndex(currentIndex - 1);
       }
-      // CORRECTION : On réinitialise la ref (0 rendu)
-      touchStartRef.current = null;
+      dispatch({ type: 'UPDATE_STATE', payload: { touchStart: null } });
     };
 
     window.addEventListener('touchstart', handleTouchStart, false);
@@ -174,7 +177,7 @@ export default function CustomLightbox({ open, onClose, images, project }) {
       window.removeEventListener('touchstart', handleTouchStart, false);
       window.removeEventListener('touchend', handleTouchEnd, false);
     };
-  }, [open, currentIndex, goToIndex]);
+  }, [open, touchStart, currentIndex, goToIndex]);
 
   if (!open) return null;
 
@@ -186,6 +189,7 @@ export default function CustomLightbox({ open, onClose, images, project }) {
       exit={{ opacity: 0 }}
       transition={{ duration: 0.3 }}
     >
+      {/* Reste du composant inchangé... */}
       <div className="absolute top-8 landscape:top-2 left-8 z-40 md:hidden">
         <button
           type="button"
@@ -218,7 +222,13 @@ export default function CustomLightbox({ open, onClose, images, project }) {
           tabIndex={0}
         />
 
-        <div className="flex-1 min-h-0 flex items-center justify-center px-4 pt-14 landscape:pt-2 landscape:pb-1">
+        <div
+          className="flex-1 min-h-0 flex items-center justify-center px-4 pt-14 landscape:pt-2 landscape:pb-1"
+          style={{
+            paddingLeft: 'max(1rem, env(safe-area-inset-left, 0px))',
+            paddingRight: 'max(1rem, env(safe-area-inset-right, 0px))',
+          }}
+        >
           <m.div
             key={currentIndex}
             initial={{ opacity: 0, scale: 0.95 }}
@@ -253,7 +263,12 @@ export default function CustomLightbox({ open, onClose, images, project }) {
           </m.div>
         </div>
 
-        <div className="flex-shrink-0 text-center italic text-sm py-3 landscape:py-1">
+        <div
+          className="flex-shrink-0 text-center italic text-sm py-3 landscape:py-1"
+          style={{
+            paddingBottom: 'calc(env(safe-area-inset-bottom, 12px) + 14px)',
+          }}
+        >
           {currentIndex + 1} / {images.length}
         </div>
 
