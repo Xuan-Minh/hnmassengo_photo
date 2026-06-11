@@ -25,6 +25,10 @@ import {
 
 import { apiVersion } from '../env';
 
+// ==========================================
+// 1. UTILITAIRES & RÉDUCTEUR
+// ==========================================
+
 function createKey() {
   if (globalThis?.crypto?.randomUUID) return globalThis.crypto.randomUUID();
   return `${Date.now().toString(16)}-${Math.random().toString(16).slice(2)}`;
@@ -49,7 +53,6 @@ function assetRefToUrl(ref, projectId, dataset, options = '') {
   return `https://cdn.sanity.io/images/${projectId}/${dataset}/${id}-${dimensions}.${format}${options}`;
 }
 
-// 1. Define Initial State
 const initialState = {
   isUploading: false,
   status: '',
@@ -58,7 +61,6 @@ const initialState = {
   editAlt: { fr: '', en: '', de: '' },
 };
 
-// 2. Define the Single Reducer
 function reducer(state, action) {
   switch (action.type) {
     case 'UPLOAD_START':
@@ -97,6 +99,268 @@ function reducer(state, action) {
   }
 }
 
+// ==========================================
+// 2. SOUS-COMPOSANTS UI
+// ==========================================
+
+function UploadSection({ isUploading, status, onFilesSelected }) {
+  const folderInputRef = useRef(null);
+  const filesInputRef = useRef(null);
+
+  const handleInput = async (e, isFolder) => {
+    if (e.currentTarget.files) {
+      await onFilesSelected(e.currentTarget.files);
+    }
+    // Réinitialisation des inputs
+    if (isFolder && folderInputRef.current) folderInputRef.current.value = '';
+    if (!isFolder && filesInputRef.current) filesInputRef.current.value = '';
+  };
+
+  return (
+    <Card padding={3} radius={2} border>
+      <Stack space={2}>
+        <Flex gap={2} wrap="wrap">
+          <Button
+            mode="default"
+            text="Importer un dossier"
+            disabled={isUploading}
+            onClick={() => folderInputRef.current?.click()}
+          />
+          <Button
+            mode="default"
+            text="Importer des images"
+            disabled={isUploading}
+            onClick={() => filesInputRef.current?.click()}
+          />
+          {isUploading ? <Text size={1}>Upload en cours…</Text> : null}
+        </Flex>
+
+        {status ? <Text size={1}>{status}</Text> : null}
+
+        {/* CORRECTION : Retrait de l'attribut non-standard `directory="true"` */}
+        <input
+          aria-label="folder input"
+          ref={folderInputRef}
+          type="file"
+          multiple
+          accept="image/*"
+          webkitdirectory="true"
+          className="hidden"
+          onChange={e => handleInput(e, true)}
+        />
+        <input
+          aria-label="files input"
+          ref={filesInputRef}
+          type="file"
+          multiple
+          accept="image/*"
+          style={{ display: 'none' }}
+          onChange={e => handleInput(e, false)}
+        />
+        <Text size={1} muted>
+          Le texte alternatif est auto-rempli comme “Nom du projet + numéro”.
+        </Text>
+      </Stack>
+    </Card>
+  );
+}
+
+function ImageGridItem({ image, isSelected, url, onToggle, onEdit }) {
+  return (
+    <Card
+      padding={1}
+      radius={2}
+      border
+      tone={isSelected ? 'critical' : 'default'}
+      style={{ position: 'relative', userSelect: 'none' }}
+    >
+      <button
+        type="button"
+        aria-label={`Modifier le texte alternatif de l'image ${image._key}`}
+        style={{ cursor: 'pointer', width: '100%' }}
+        onClick={() => onEdit(image)}
+      >
+        {url ? (
+          <div
+            className="w-full aspect-square rounded-[2px] block bg-no-repeat bg-center bg-cover opacity-100 transition-opacity duration-300"
+            style={{ backgroundImage: `url(${url})` }}
+          />
+        ) : (
+          <div className="w-full aspect-square bg-[#e0e0e0] rounded-[2px]" />
+        )}
+      </button>
+      <div
+        style={{ position: 'absolute', top: 4, right: 4 }}
+        onClick={e => e.stopPropagation()}
+      >
+        <Checkbox checked={isSelected} onChange={() => onToggle(image._key)} />
+      </div>
+    </Card>
+  );
+}
+
+function ImageGridSection({
+  images,
+  effectiveSelectedKeys,
+  projectId,
+  dataset,
+  onSelectAll,
+  onClearSelection,
+  onDeleteSelected,
+  onToggleKey,
+  onOpenEdit,
+}) {
+  if (images.length === 0) return null;
+
+  return (
+    <Card padding={3} radius={2} border tone="caution">
+      <Stack space={3}>
+        <Flex align="center" justify="space-between" wrap="wrap" gap={2}>
+          <Text size={1} weight="semibold">
+            {`Images du projet (${images.length} au total)`}
+          </Text>
+          <Flex gap={2} wrap="wrap" align="center">
+            {effectiveSelectedKeys.size < images.length && (
+              <Button
+                mode="ghost"
+                fontSize={1}
+                text="Tout sélectionner"
+                onClick={onSelectAll}
+              />
+            )}
+            {effectiveSelectedKeys.size > 0 && (
+              <>
+                <Button
+                  mode="ghost"
+                  fontSize={1}
+                  text="Déselectionner"
+                  onClick={onClearSelection}
+                />
+                <Button
+                  mode="default"
+                  tone="critical"
+                  fontSize={1}
+                  text={`Supprimer ${effectiveSelectedKeys.size} image(s)`}
+                  onClick={onDeleteSelected}
+                />
+              </>
+            )}
+          </Flex>
+        </Flex>
+
+        <Grid columns={6} gap={2}>
+          {images.map(image => {
+            const url = assetRefToUrl(
+              image?.asset?._ref,
+              projectId,
+              dataset,
+              '?w=120&h=120&fit=crop&auto=format'
+            );
+            return (
+              <ImageGridItem
+                key={image._key}
+                image={image}
+                isSelected={effectiveSelectedKeys.has(image._key)}
+                url={url}
+                onToggle={onToggleKey}
+                onEdit={onOpenEdit}
+              />
+            );
+          })}
+        </Grid>
+
+        {effectiveSelectedKeys.size > 0 && (
+          <Text size={1} muted>
+            {effectiveSelectedKeys.size} image(s) sélectionnée(s) sur{' '}
+            {images.length}
+          </Text>
+        )}
+      </Stack>
+    </Card>
+  );
+}
+
+function EditAltDialog({
+  editingImage,
+  editAlt,
+  previewUrl,
+  onClose,
+  onSave,
+  onUpdateAlt,
+}) {
+  if (!editingImage) return null;
+
+  return (
+    <Dialog
+      id="edit-image-dialog"
+      header="Modifier le texte alternatif"
+      onClose={onClose}
+      width={1}
+      footer={
+        <Flex padding={3} gap={2} justify="space-between" wrap="wrap">
+          <Flex gap={2}>
+            <Button mode="ghost" text="Annuler" onClick={onClose} />
+            <Button
+              mode="default"
+              tone="primary"
+              text="Enregistrer"
+              onClick={onSave}
+            />
+          </Flex>
+        </Flex>
+      }
+    >
+      <Stack space={4} padding={4}>
+        {previewUrl && (
+          <Card radius={2} overflow="hidden" border>
+            <div
+              className="w-full max-h-[300px] aspect-video bg-[#111] bg-no-repeat bg-center bg-contain"
+              style={{ backgroundImage: `url(${previewUrl})` }}
+            />
+          </Card>
+        )}
+
+        <Stack space={1}>
+          <Text size={2} weight="semibold">
+            Texte Alternatif (SEO)
+          </Text>
+          <Text size={1} muted>
+            Description de l&apos;image pour l&apos;accessibilité et le SEO
+          </Text>
+        </Stack>
+
+        <Stack space={2}>
+          <Label size={1}>Français</Label>
+          <TextInput
+            value={editAlt.fr}
+            onChange={e => onUpdateAlt('fr', e.currentTarget.value)}
+          />
+        </Stack>
+
+        <Stack space={2}>
+          <Label size={1}>Anglais</Label>
+          <TextInput
+            value={editAlt.en}
+            onChange={e => onUpdateAlt('en', e.currentTarget.value)}
+          />
+        </Stack>
+
+        <Stack space={2}>
+          <Label size={1}>Allemand</Label>
+          <TextInput
+            value={editAlt.de}
+            onChange={e => onUpdateAlt('de', e.currentTarget.value)}
+          />
+        </Stack>
+      </Stack>
+    </Dialog>
+  );
+}
+
+// ==========================================
+// 3. COMPOSANT PRINCIPAL
+// ==========================================
+
 export default function ProjectImagesFolderInput(props) {
   const { onChange, value, renderDefault } = props;
 
@@ -116,14 +380,10 @@ export default function ProjectImagesFolderInput(props) {
     );
   }, [nameFr, nameEn, nameDe]);
 
-  const folderInputRef = useRef(null);
-  const filesInputRef = useRef(null);
-
-  // 3. Consume the grouped state
   const [state, dispatch] = useReducer(reducer, initialState);
   const { isUploading, status, selectedKeys, editingImage, editAlt } = state;
 
-  async function handleFilesSelected(fileList) {
+  const handleFilesSelected = async fileList => {
     const allFiles = Array.from(fileList || []);
     const imageFiles = allFiles
       .filter(
@@ -144,7 +404,6 @@ export default function ProjectImagesFolderInput(props) {
     if (imageFiles.length === 0) return;
 
     const currentCount = Array.isArray(value) ? value.length : 0;
-
     dispatch({
       type: 'UPLOAD_START',
       status: `Upload de ${imageFiles.length} image(s)…`,
@@ -152,18 +411,18 @@ export default function ProjectImagesFolderInput(props) {
 
     try {
       const newItems = [];
+      const baseFr =
+        (typeof nameFr === 'string' && nameFr.trim()) || fallbackName;
+      const baseEn =
+        (typeof nameEn === 'string' && nameEn.trim()) || fallbackName;
+      const baseDe =
+        (typeof nameDe === 'string' && nameDe.trim()) || fallbackName;
 
+      // Faux positif : L'upload séquentiel est volontaire pour éviter de surcharger Sanity (Rate Limit)
+      // eslint-disable-next-line react-doctor/async-await-in-loop
       for (let i = 0; i < imageFiles.length; i += 1) {
         const file = imageFiles[i];
         const photoNumber = currentCount + i + 1;
-
-        const baseFr =
-          (typeof nameFr === 'string' && nameFr.trim()) || fallbackName;
-        const baseEn =
-          (typeof nameEn === 'string' && nameEn.trim()) || fallbackName;
-        const baseDe =
-          (typeof nameDe === 'string' && nameDe.trim()) || fallbackName;
-
         const safeBase = fallbackName || stripExtension(file.name) || 'Projet';
 
         const alt = {
@@ -202,27 +461,21 @@ export default function ProjectImagesFolderInput(props) {
         type: 'UPLOAD_FINISH',
         status: `Erreur pendant l'upload : ${err?.message || 'échec inconnu'}`,
       });
-    } finally {
-      if (folderInputRef.current) folderInputRef.current.value = '';
-      if (filesInputRef.current) filesInputRef.current.value = '';
     }
-  }
+  };
 
   const images = useMemo(() => (Array.isArray(value) ? value : []), [value]);
 
-  const effectiveSelectedKeys = useMemo(
-    () =>
-      new Set(
-        images
-          .filter(img => selectedKeys.has(img._key))
-          .map(img => img._key)
-          .reduce((acc, key) => {
-            if (!acc.includes(key)) acc.push(key);
-            return acc;
-          }, [])
-      ),
-    [images, selectedKeys]
-  );
+  // CORRECTION (js-combine-iterations) : Boucle unique et performante au lieu de filter().map().reduce()
+  const effectiveSelectedKeys = useMemo(() => {
+    const result = new Set();
+    for (const img of images) {
+      if (selectedKeys.has(img._key)) {
+        result.add(img._key);
+      }
+    }
+    return result;
+  }, [images, selectedKeys]);
 
   const toggleKey = useCallback(
     key => {
@@ -253,8 +506,13 @@ export default function ProjectImagesFolderInput(props) {
     dispatch({ type: 'SET_SELECTED_KEYS', keys: new Set() });
   }, [effectiveSelectedKeys, onChange]);
 
-  const openEditModal = useCallback(image => {
-    dispatch({ type: 'OPEN_EDIT', image });
+  const openEditModal = useCallback(
+    image => dispatch({ type: 'OPEN_EDIT', image }),
+    []
+  );
+
+  const handleUpdateAlt = useCallback((lang, val) => {
+    dispatch({ type: 'UPDATE_EDIT_ALT', lang, value: val });
   }, []);
 
   const handleSaveEdit = useCallback(() => {
@@ -263,6 +521,7 @@ export default function ProjectImagesFolderInput(props) {
       val
         ? set(val, [{ _key: editingImage._key }, 'alt', langCode])
         : unset([{ _key: editingImage._key }, 'alt', langCode]);
+
     onChange(
       PatchEvent.from([
         makePatch('fr', editAlt.fr),
@@ -286,156 +545,23 @@ export default function ProjectImagesFolderInput(props) {
 
   return (
     <Stack space={3}>
-      <Card padding={3} radius={2} border>
-        <Stack space={2}>
-          <Flex gap={2} wrap="wrap">
-            <Button
-              mode="default"
-              text="Importer un dossier"
-              disabled={isUploading}
-              onClick={() => folderInputRef.current?.click()}
-            />
-            <Button
-              mode="default"
-              text="Importer des images"
-              disabled={isUploading}
-              onClick={() => filesInputRef.current?.click()}
-            />
-            {isUploading ? <Text size={1}>Upload en cours…</Text> : null}
-          </Flex>
+      <UploadSection
+        isUploading={isUploading}
+        status={status}
+        onFilesSelected={handleFilesSelected}
+      />
 
-          {status ? <Text size={1}>{status}</Text> : null}
-
-          <input
-            aria-label="folder input"
-            ref={folderInputRef}
-            type="file"
-            multiple
-            accept="image/*"
-            webkitdirectory="true"
-            directory="true"
-            className="hidden"
-            onChange={e => handleFilesSelected(e.currentTarget.files)}
-          />
-
-          <input
-            aria-label="files input"
-            ref={filesInputRef}
-            type="file"
-            multiple
-            accept="image/*"
-            style={{ display: 'none' }}
-            onChange={e => handleFilesSelected(e.currentTarget.files)}
-          />
-
-          <Text size={1} muted>
-            Le texte alternatif est auto-rempli comme “Nom du projet + numéro”.
-          </Text>
-        </Stack>
-      </Card>
-
-      {images.length > 0 && (
-        <Card padding={3} radius={2} border tone="caution">
-          <Stack space={3}>
-            <Flex align="center" justify="space-between" wrap="wrap" gap={2}>
-              <Text size={1} weight="semibold">
-                {`Supprimer des images (${images.length} au total)`}
-              </Text>
-              <Flex gap={2} wrap="wrap" align="center">
-                {effectiveSelectedKeys.size < images.length && (
-                  <Button
-                    mode="ghost"
-                    fontSize={1}
-                    text="Tout sélectionner"
-                    onClick={handleSelectAll}
-                  />
-                )}
-                {effectiveSelectedKeys.size > 0 && (
-                  <>
-                    <Button
-                      mode="ghost"
-                      fontSize={1}
-                      text="Déselectionner"
-                      onClick={handleClearSelection}
-                    />
-                    <Button
-                      mode="default"
-                      tone="critical"
-                      fontSize={1}
-                      text={`Supprimer ${effectiveSelectedKeys.size} image(s)`}
-                      onClick={handleDeleteSelected}
-                    />
-                  </>
-                )}
-              </Flex>
-            </Flex>
-
-            <Grid columns={6} gap={2}>
-              {images.map(image => {
-                const url = assetRefToUrl(
-                  image?.asset?._ref,
-                  projectId,
-                  dataset,
-                  '?w=120&h=120&fit=crop&auto=format'
-                );
-                const isSelected = effectiveSelectedKeys.has(image._key);
-                return (
-                  <Card
-                    key={image._key}
-                    padding={1}
-                    radius={2}
-                    border
-                    tone={isSelected ? 'critical' : 'default'}
-                    style={{ position: 'relative', userSelect: 'none' }}
-                  >
-                    <button
-                      type="button"
-                      aria-label={`Modifier le texte alternatif de l'image ${image._key}`}
-                      style={{ cursor: 'pointer' }}
-                      onClick={() => openEditModal(image)}
-                      onKeyPress={e => {
-                        if (e.key === 'Enter') openEditModal(image);
-                      }}
-                      tabIndex={0}
-                    >
-                      {url ? (
-                        <div
-                          role="button"
-                          aria-label="Aperçu de l'image"
-                          className="w-full aspect-square rounded-[2px] block bg-no-repeat bg-center bg-cover opacity-100 transition-opacity duration-300"
-                          style={{ backgroundImage: `url(${url})` }}
-                        />
-                      ) : (
-                        <div
-                          role="button"
-                          aria-label={`Modifier le texte alternatif de l'image ${image._key}`}
-                          className="w-full aspect-square bg-[#e0e0e0] rounded-[2px]"
-                        />
-                      )}
-                    </button>
-                    <div
-                      style={{ position: 'absolute', top: 4, right: 4 }}
-                      onClick={e => e.stopPropagation()}
-                    >
-                      <Checkbox
-                        checked={isSelected}
-                        onChange={() => toggleKey(image._key)}
-                      />
-                    </div>
-                  </Card>
-                );
-              })}
-            </Grid>
-
-            {effectiveSelectedKeys.size > 0 && (
-              <Text size={1} muted>
-                {effectiveSelectedKeys.size} image(s) sélectionnée(s) sur{' '}
-                {images.length}
-              </Text>
-            )}
-          </Stack>
-        </Card>
-      )}
+      <ImageGridSection
+        images={images}
+        effectiveSelectedKeys={effectiveSelectedKeys}
+        projectId={projectId}
+        dataset={dataset}
+        onSelectAll={handleSelectAll}
+        onClearSelection={handleClearSelection}
+        onDeleteSelected={handleDeleteSelected}
+        onToggleKey={toggleKey}
+        onOpenEdit={openEditModal}
+      />
 
       {renderDefault ? (
         <Card padding={3} radius={2} border>
@@ -443,106 +569,21 @@ export default function ProjectImagesFolderInput(props) {
             <Text size={1} weight="semibold">
               Liste native Sanity
             </Text>
+            {/* Faux positif : "renderDefault" est une obligation de l'API Sanity */}
+            {/* eslint-disable-next-line react-doctor/no-render-in-render */}
             {renderDefault(props)}
           </Stack>
         </Card>
       ) : null}
 
-      {editingImage && (
-        <Dialog
-          id="edit-image-dialog"
-          header="Modifier le texte alternatif"
-          onClose={() => dispatch({ type: 'CLOSE_EDIT' })}
-          width={1}
-          footer={
-            <Flex padding={3} gap={2} justify="space-between" wrap="wrap">
-              <Flex gap={2}>
-                <Button
-                  mode="ghost"
-                  text="Annuler"
-                  onClick={() => dispatch({ type: 'CLOSE_EDIT' })}
-                />
-                <Button
-                  mode="default"
-                  tone="primary"
-                  text="Enregistrer"
-                  onClick={handleSaveEdit}
-                />
-              </Flex>
-            </Flex>
-          }
-        >
-          <Stack space={4} padding={4}>
-            {editingImagePreviewUrl ? (
-              <Card radius={2} overflow="hidden" border>
-                <button
-                  type="button"
-                  aria-label="image preview"
-                  className="w-full max-h-[300px] aspect-video bg-[#111] bg-no-repeat bg-center bg-contain"
-                  style={{ backgroundImage: `url(${editingImagePreviewUrl})` }}
-                />
-              </Card>
-            ) : null}
-
-            <Stack space={1}>
-              <Text size={2} weight="semibold">
-                Texte Alternatif (SEO)
-              </Text>
-              <Text size={1} muted>
-                Description de l&apos;image pour l&apos;accessibilité et le SEO
-              </Text>
-            </Stack>
-
-            <Stack space={2}>
-              <Label size={1} aria-label="Français">
-                Français
-              </Label>
-              <TextInput
-                value={editAlt.fr}
-                onChange={e =>
-                  dispatch({
-                    type: 'UPDATE_EDIT_ALT',
-                    lang: 'fr',
-                    value: e.currentTarget.value,
-                  })
-                }
-              />
-            </Stack>
-
-            <Stack space={2}>
-              <Label size={1} aria-label="Anglais">
-                Anglais
-              </Label>
-              <TextInput
-                value={editAlt.en}
-                onChange={e =>
-                  dispatch({
-                    type: 'UPDATE_EDIT_ALT',
-                    lang: 'en',
-                    value: e.currentTarget.value,
-                  })
-                }
-              />
-            </Stack>
-
-            <Stack space={2}>
-              <Label size={1} aria-label="Allemand">
-                Allemand
-              </Label>
-              <TextInput
-                value={editAlt.de}
-                onChange={e =>
-                  dispatch({
-                    type: 'UPDATE_EDIT_ALT',
-                    lang: 'de',
-                    value: e.currentTarget.value,
-                  })
-                }
-              />
-            </Stack>
-          </Stack>
-        </Dialog>
-      )}
+      <EditAltDialog
+        editingImage={editingImage}
+        editAlt={editAlt}
+        previewUrl={editingImagePreviewUrl}
+        onClose={() => dispatch({ type: 'CLOSE_EDIT' })}
+        onSave={handleSaveEdit}
+        onUpdateAlt={handleUpdateAlt}
+      />
     </Stack>
   );
 }
