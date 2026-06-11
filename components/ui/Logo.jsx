@@ -1,16 +1,18 @@
 'use client';
-import { useRouter, usePathname } from '../../src/i18n/navigation';
+import { useRouter } from '../../src/i18n/navigation';
 import { useTranslations } from 'next-intl';
 import { EVENTS, emitEvent } from '../../lib/events';
 
 export default function Logo({ visible = true }) {
   const t = useTranslations('logo');
   const router = useRouter();
-  const pathname = usePathname();
 
   const handleLogoClick = () => {
+    const currentPath = window.location.pathname;
+    const isHome = currentPath === '/' || /^\/(fr|en|de)\/?$/.test(currentPath);
+
     // Si on n'est pas sur la page d'accueil, on y retourne
-    if (pathname !== '/') {
+    if (!isHome) {
       router.push('/');
     }
 
@@ -21,7 +23,7 @@ export default function Logo({ visible = true }) {
   return (
     <div
       data-layer="HAN-NOAH MASSENGO"
-      className={`absolute top-0 left-1/2 transform -translate-x-1/2 justify-center gap-2 m-4 items-center space-x-2  bg-transparent pointer-events-none hidden lg:flex lg:text-[36px] transition-opacity duration-300 ${visible ? 'opacity-100' : 'opacity-0'}`}
+      className={`absolute top-0 left-1/2 transform -translate-x-1/2 justify-center gap-2 m-4 items-center space-x-2 bg-transparent pointer-events-none hidden lg:flex lg:text-[36px] transition-opacity duration-300 ${visible ? 'opacity-100' : 'opacity-0'}`}
     >
       <button
         type="button"
@@ -41,7 +43,7 @@ export default function Logo({ visible = true }) {
         onKeyPress={e => {
           if (e.key === 'Enter') handleLogoClick();
         }}
-        className="text-accent  font-bold font-liberation pointer-events-auto cursor-pointer"
+        className="text-accent font-bold font-liberation pointer-events-auto cursor-pointer"
         title={t('title')}
         tabIndex={0}
       >
