@@ -445,8 +445,8 @@ function useLightboxLogic(open, onClose, images) {
 // ==========================================
 
 export default function CustomLightbox({ open, onClose, images, project }) {
-  if (!open) return null;
-
+  // CORRECTION : Appel des hooks TOUJOURS au niveau racine.
+  // Peu importe que l'on affiche ou non, l'ordre des hooks reste identique.
   const {
     currentIndex,
     isCurrentLoaded,
@@ -456,6 +456,9 @@ export default function CustomLightbox({ open, onClose, images, project }) {
     currentDisplaySrc,
     getDisplaySrcForIndex,
   } = useLightboxLogic(open, onClose, images);
+
+  // Maintenant seulement, on peut quitter prématurément si besoin
+  if (!open) return null;
 
   return (
     <m.div
