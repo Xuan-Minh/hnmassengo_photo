@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useParams } from 'next/navigation';
 import { useRouter } from '../../src/i18n/navigation';
 import { AnimatePresence } from 'framer-motion';
@@ -37,10 +37,14 @@ export default function Blog() {
   const router = useRouter();
   const [posts, setPosts] = useState([]);
   const [archiveOpen, setArchiveOpen] = useState(false);
-  const [selectedPost, setSelectedPost] = useState(null);
+  const [selectedPostId, setSelectedPostId] = useState(null);
   const isMobile = useIsMobile();
 
-  // Remplacement de l'état "requestedPostId" par une simple Ref de contrôle interne
+  const selectedPost = useMemo(() => {
+    if (!selectedPostId || posts.length === 0) return null;
+    return posts.find(p => p.id === selectedPostId) || null;
+  }, [posts, selectedPostId]);
+
   const initialCheckDone = useRef(false);
 
   const replacePostParam = postId => {
@@ -50,16 +54,14 @@ export default function Blog() {
     else sp.delete('post');
 
     const qs = sp.toString();
-    // next-intl router adds locale prefix automatically
     router.replace(qs ? `/?${qs}#blog` : `/#blog`);
   };
 
-  // Gérer le scroll quand un archive ou un post overlay est ouvert
   useEffect(() => {
     const scrollRoot = document.getElementById('scroll-root');
     if (!scrollRoot) return;
 
-    if (archiveOpen || selectedPost) {
+    if (archiveOpen || selectedPostId) {
       scrollRoot.style.overflow = 'hidden';
     } else {
       scrollRoot.style.overflow = '';
@@ -68,7 +70,7 @@ export default function Blog() {
     return () => {
       scrollRoot.style.overflow = '';
     };
-  }, [archiveOpen, selectedPost]);
+  }, [archiveOpen, selectedPostId]);
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -104,56 +106,46 @@ export default function Blog() {
         extrasPosition: p.extrasPosition || 'end',
       }));
       setPosts(mapped);
+
+      // PLUTOT QU'UN USE-EFFECT QUI SURVEILLE [posts] A POSTERIORI :
+      // On le gère directement ici (l'événement "réception des données")
+      if (!initialCheckDone.current && typeof window !== 'undefined') {
+        initialCheckDone.current = true;
+        const isReload = isReloadNavigation();
+        if (isReload) {
+          const url = new URL(window.location.href);
+          if (url.searchParams.has('post')) {
+            url.searchParams.delete('post');
+            window.history.replaceState(
+              null,
+              '',
+              `${url.pathname}${url.search}${url.hash}`
+            );
+          }
+        } else {
+          const initialId = readRequestedPostId();
+          if (initialId) {
+            setSelectedPostId(initialId);
+          }
+        }
+      }
     };
     fetchPosts();
   }, [locale]);
 
-  // Gérer l'ouverture du post initial APRÈS le chargement des posts (sans état temporaire)
-  useEffect(() => {
-    if (posts.length === 0) return;
-    if (initialCheckDone.current) return;
-    if (typeof window === 'undefined') return;
+  // SUPPRESSION DU SECOND USEEFFECT QUI TOURNAIT SUR [posts]
 
-    initialCheckDone.current = true;
-
-    const isReload = isReloadNavigation();
-    if (isReload) {
-      const url = new URL(window.location.href);
-      if (url.searchParams.has('post')) {
-        url.searchParams.delete('post');
-        window.history.replaceState(
-          null,
-          '',
-          `${url.pathname}${url.search}${url.hash}`
-        );
-      }
-      return;
-    }
-
-    const initialId = readRequestedPostId();
-    if (initialId) {
-      const match = posts.find(p => p.id === initialId);
-      if (match) setSelectedPost(match);
-    }
-  }, [posts]);
-
-  // Gérer la navigation via les boutons Précédent/Suivant du navigateur
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
     const handlePopState = () => {
       const currentId = readRequestedPostId();
-      if (currentId) {
-        const match = posts.find(p => p.id === currentId);
-        setSelectedPost(match || null);
-      } else {
-        setSelectedPost(null);
-      }
+      setSelectedPostId(currentId || null);
     };
 
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
-  }, [posts]);
+  }, []);
 
   const latestPosts = posts.slice(0, isMobile ? 1 : CONTENT.BLOG_PREVIEW_COUNT);
 
@@ -168,8 +160,6 @@ export default function Blog() {
           style={{ width: 'min(1000px, 85vw)' }}
           className="flex flex-col justify-around h-full max-h-full 2xl:max-w-5xl"
         >
-          {/* Posts List */}
-
           {latestPosts.map(post => (
             <BlogPostItem
               key={post.id}
@@ -178,7 +168,7 @@ export default function Blog() {
               isMobile={isMobile}
               onClick={() => {
                 replacePostParam(post.id);
-                setSelectedPost(post);
+                setSelectedPostId(post.id);
               }}
             />
           ))}
@@ -205,7 +195,7 @@ export default function Blog() {
             key="blog-archives-modal"
             posts={posts}
             onClose={() => setArchiveOpen(false)}
-            onPostClick={post => setSelectedPost(post)}
+            onPostClick={post => setSelectedPostId(post.id)}
           />
         )}
       </AnimatePresence>
@@ -216,27 +206,27 @@ export default function Blog() {
             key={`blog-post-${selectedPost.id}`}
             post={selectedPost}
             onClose={() => {
-              setSelectedPost(null);
+              setSelectedPostId(null);
               replacePostParam(null);
             }}
             onPrevious={() => {
               const currentIndex = posts.findIndex(
-                p => p.id === selectedPost.id
+                p => p.id === selectedPostId
               );
               if (currentIndex > 0) {
                 const prev = posts[currentIndex - 1];
                 replacePostParam(prev.id);
-                setSelectedPost(prev);
+                setSelectedPostId(prev.id);
               }
             }}
             onNext={() => {
               const currentIndex = posts.findIndex(
-                p => p.id === selectedPost.id
+                p => p.id === selectedPostId
               );
               if (currentIndex < posts.length - 1) {
                 const next = posts[currentIndex + 1];
                 replacePostParam(next.id);
-                setSelectedPost(next);
+                setSelectedPostId(next.id);
               }
             }}
           />
