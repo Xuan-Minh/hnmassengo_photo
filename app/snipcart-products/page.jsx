@@ -1,6 +1,15 @@
 import { headers } from 'next/headers';
 import client from '../../lib/sanity.client';
 
+export const metadata = {
+  title: 'Snipcart Validation',
+  description: 'Internal Snipcart product validation page',
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
+
 function getOriginFromHeaders() {
   const hdrs = headers();
   const forwardedProto = hdrs.get('x-forwarded-proto');
