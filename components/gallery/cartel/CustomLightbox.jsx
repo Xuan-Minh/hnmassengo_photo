@@ -6,11 +6,11 @@ import { m } from 'framer-motion';
 import { buildSanityImageUrl } from '../../../lib/imageUtils';
 import { getOptimizedImageParams } from '../../../lib/hooks';
 
+// 1. État initial (touchStart retiré)
 const initialState = {
   currentIndex: 0,
   isCurrentLoaded: false,
   hasCurrentError: false,
-  touchStart: null,
 };
 
 function reducer(state, action) {
@@ -31,8 +31,11 @@ function reducer(state, action) {
 
 export default function CustomLightbox({ open, onClose, images, project }) {
   const [state, dispatch] = useReducer(reducer, initialState);
-  const { currentIndex, isCurrentLoaded, hasCurrentError, touchStart } = state;
+  const { currentIndex, isCurrentLoaded, hasCurrentError } = state;
+
   const decodedSrcsRef = useRef(new Set());
+  // CORRECTION : On utilise useRef pour stocker la position du touch
+  const touchStartRef = useRef(null);
 
   const getDisplaySrcForIndex = useCallback(
     idx => {
@@ -54,7 +57,6 @@ export default function CustomLightbox({ open, onClose, images, project }) {
 
       dispatch({ type: 'SET_INDEX', payload: safeIndex });
 
-      // On vérifie immédiatement si la nouvelle image est déjà en cache
       if (decodedSrcsRef.current.has(nextSrc)) {
         dispatch({ type: 'UPDATE_STATE', payload: { isCurrentLoaded: true } });
       }
@@ -148,22 +150,21 @@ export default function CustomLightbox({ open, onClose, images, project }) {
     if (!open || typeof window === 'undefined') return;
 
     const handleTouchStart = e => {
-      dispatch({
-        type: 'UPDATE_STATE',
-        payload: { touchStart: e.touches[0].clientX },
-      });
+      // CORRECTION : On met à jour directement la ref (0 rendu)
+      touchStartRef.current = e.touches[0].clientX;
     };
 
     const handleTouchEnd = e => {
-      if (touchStart === null) return;
+      if (touchStartRef.current === null) return;
       const touchEnd = e.changedTouches[0].clientX;
-      const diff = touchStart - touchEnd;
+      const diff = touchStartRef.current - touchEnd;
 
       if (Math.abs(diff) > 50) {
         if (diff > 0) goToIndex(currentIndex + 1);
         else goToIndex(currentIndex - 1);
       }
-      dispatch({ type: 'UPDATE_STATE', payload: { touchStart: null } });
+      // CORRECTION : On réinitialise la ref (0 rendu)
+      touchStartRef.current = null;
     };
 
     window.addEventListener('touchstart', handleTouchStart, false);
@@ -173,7 +174,7 @@ export default function CustomLightbox({ open, onClose, images, project }) {
       window.removeEventListener('touchstart', handleTouchStart, false);
       window.removeEventListener('touchend', handleTouchEnd, false);
     };
-  }, [open, touchStart, currentIndex, goToIndex]);
+  }, [open, currentIndex, goToIndex]);
 
   if (!open) return null;
 
