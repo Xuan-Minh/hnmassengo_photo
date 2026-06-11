@@ -1,6 +1,6 @@
 'use client';
 import { useTranslations } from 'next-intl';
-import { useEffect, useMemo, useReducer } from 'react';
+import { useEffect, useMemo, useReducer, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import client from '../../lib/sanity.client';
 import { getOptimizedImageParams } from '../../lib/hooks';
@@ -132,6 +132,19 @@ export default function Gallery() {
     return [...projectsChrono].reverse();
   }, [projectsChrono]);
 
+  // Mémorisation des callbacks pour éviter les boucles de rendu infinies
+  const handleViewChange = useCallback(v => {
+    dispatch({ type: 'UPDATE_STATE', payload: { view: v } });
+  }, []);
+
+  const handleProjectSelect = useCallback(p => {
+    dispatch({ type: 'UPDATE_STATE', payload: { selectedProject: p } });
+  }, []);
+
+  const handleSetActiveCoord = useCallback(coord => {
+    dispatch({ type: 'UPDATE_STATE', payload: { activeCoord: coord } });
+  }, []);
+
   return (
     <>
       <section className="relative w-full h-screen overflow-hidden">
@@ -143,42 +156,18 @@ export default function Gallery() {
                   key="grid"
                   projects={projectsRecentFirst}
                   view={view}
-                  onViewChange={v =>
-                    dispatch({ type: 'UPDATE_STATE', payload: { view: v } })
-                  }
-                  onProjectSelect={p =>
-                    dispatch({
-                      type: 'UPDATE_STATE',
-                      payload: { selectedProject: p },
-                    })
-                  }
-                  setActiveCoord={coord =>
-                    dispatch({
-                      type: 'UPDATE_STATE',
-                      payload: { activeCoord: coord },
-                    })
-                  }
+                  onViewChange={handleViewChange}
+                  onProjectSelect={handleProjectSelect}
+                  setActiveCoord={handleSetActiveCoord}
                 />
               ) : (
                 <GalleryList
                   key="list"
                   projects={projectsChrono}
                   view={view}
-                  onViewChange={v =>
-                    dispatch({ type: 'UPDATE_STATE', payload: { view: v } })
-                  }
-                  onProjectSelect={p =>
-                    dispatch({
-                      type: 'UPDATE_STATE',
-                      payload: { selectedProject: p },
-                    })
-                  }
-                  setActiveCoord={coord =>
-                    dispatch({
-                      type: 'UPDATE_STATE',
-                      payload: { activeCoord: coord },
-                    })
-                  }
+                  onViewChange={handleViewChange}
+                  onProjectSelect={handleProjectSelect}
+                  setActiveCoord={handleSetActiveCoord}
                 />
               )}
             </AnimatePresence>
@@ -226,12 +215,7 @@ export default function Gallery() {
                 payload: { overlayOpen: false },
               })
             }
-            onProjectClick={p =>
-              dispatch({
-                type: 'UPDATE_STATE',
-                payload: { selectedProject: p },
-              })
-            }
+            onProjectClick={handleProjectSelect}
             projects={projects}
           />
         )}
