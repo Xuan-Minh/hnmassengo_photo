@@ -304,11 +304,12 @@ export default function LoadingOverlay({ initialImages }) {
     if (!visible || isExiting || !allLoaded) return;
     if (activeSrcs.length <= 1) return;
 
-    rotateInterval.current = setInterval(() => {
+    const intervalId = setInterval(() => {
       dispatch({ type: 'NEXT_FRAME', payload: activeSrcs.length });
     }, 800);
 
-    return () => clearInterval(rotateInterval.current);
+    rotateInterval.current = intervalId;
+    return () => clearInterval(intervalId);
   }, [visible, isExiting, allLoaded, activeSrcs.length]);
 
   const dismiss = () => {
