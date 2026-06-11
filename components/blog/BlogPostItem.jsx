@@ -83,17 +83,15 @@ export default function BlogPostItem({
       ? '[-webkit-line-clamp:2] lg:[-webkit-line-clamp:2]'
       : '[-webkit-line-clamp:3] lg:[-webkit-line-clamp:3]';
 
-  const renderTextPreview = () => {
-    if (postCount === 1) {
-      const visible = paragraphs.slice(
-        0,
-        Math.min(visibleCount, paragraphs.length)
-      );
-      return (
-        <div
-          className={`font-liberation text-whiteCustom/80 leading-loose space-y-2`}
-        >
-          {visible.map((para, i) => (
+  // SOLUTION: Remplacer la fonction renderTextPreview() par une simple variable JSX
+  const textPreviewNode =
+    postCount === 1 ? (
+      <div
+        className={`font-liberation text-whiteCustom/80 leading-loose space-y-2`}
+      >
+        {paragraphs
+          .slice(0, Math.min(visibleCount, paragraphs.length))
+          .map((para, i) => (
             <p
               key={post.id + '-' + i}
               ref={el => (paragraphsRef.current[i] = el)}
@@ -102,17 +100,14 @@ export default function BlogPostItem({
               {para}
             </p>
           ))}
-        </div>
-      );
-    }
-    return (
+      </div>
+    ) : (
       <p
         className={`sm:text-lg lg:text-base font-liberation text-whiteCustom/80 leading-loose overflow-hidden text-ellipsis [display:-webkit-box] [-webkit-box-orient:vertical] ${clampClass} max-w-3xl`}
       >
         {displayText}
       </p>
     );
-  };
 
   return (
     <button
@@ -150,7 +145,7 @@ export default function BlogPostItem({
             >
               - {post.date}
             </div>
-            {renderTextPreview()}
+            {textPreviewNode}
           </div>
         </div>
       )}
@@ -170,7 +165,7 @@ export default function BlogPostItem({
             >
               - {post.date}
             </div>
-            {renderTextPreview()}
+            {textPreviewNode}
           </div>
           <div className="w-full lg:w-1/3 flex items-center justify-center order-1 lg:order-2">
             <Image
@@ -202,7 +197,7 @@ export default function BlogPostItem({
               - {post.date}
             </span>
           </div>
-          {renderTextPreview()}
+          {textPreviewNode}
         </div>
       )}
     </button>
@@ -211,6 +206,7 @@ export default function BlogPostItem({
 
 BlogPostItem.propTypes = {
   post: PropTypes.shape({
+    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
     title: PropTypes.oneOfType([
       PropTypes.string,
       PropTypes.shape({
