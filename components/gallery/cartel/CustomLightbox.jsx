@@ -4,7 +4,11 @@ import { useEffect, useMemo, useRef, useCallback, useReducer } from 'react';
 import Image from 'next/image';
 import { m } from 'framer-motion';
 import { buildSanityImageUrl } from '../../../lib/imageUtils';
-import { getOptimizedImageParams } from '../../../lib/hooks';
+import { getOptimizedImageParams, useEffectEvent } from '../../../lib/hooks';
+
+// ==========================================
+// 1. ÉTAT & RÉDUCTEUR
+// ==========================================
 
 const initialState = {
   currentIndex: 0,
@@ -29,167 +33,23 @@ function reducer(state, action) {
   }
 }
 
-export default function CustomLightbox({ open, onClose, images, project }) {
-  const [state, dispatch] = useReducer(reducer, initialState);
-  const { currentIndex, isCurrentLoaded, hasCurrentError, touchStart } = state;
+// ==========================================
+// 2. SOUS-COMPOSANTS UI
+// ==========================================
 
-  // CORRECTION : Initialisation paresseuse de la ref
-  const decodedSrcsRef = useRef(null);
-  if (decodedSrcsRef.current === null) {
-    decodedSrcsRef.current = new Set();
-  }
-
-  const getDisplaySrcForIndex = useCallback(
-    idx => {
-      const raw = images?.[idx];
-      return buildSanityImageUrl(raw, {
-        ...getOptimizedImageParams('gallery'),
-        auto: 'format',
-      });
-    },
-    [images]
-  );
-
-  const goToIndex = useCallback(
-    nextIndex => {
-      if (!images?.length) return;
-      const safeIndex =
-        ((nextIndex % images.length) + images.length) % images.length;
-      const nextSrc = getDisplaySrcForIndex(safeIndex);
-
-      dispatch({ type: 'SET_INDEX', payload: safeIndex });
-
-      if (decodedSrcsRef.current.has(nextSrc)) {
-        dispatch({ type: 'UPDATE_STATE', payload: { isCurrentLoaded: true } });
-      }
-    },
-    [images, getDisplaySrcForIndex]
-  );
-
-  const currentDisplaySrc = useMemo(() => {
-    const raw = images?.[currentIndex];
-    return buildSanityImageUrl(raw, {
-      ...getOptimizedImageParams('gallery'),
-      auto: 'format',
-    });
-  }, [images, currentIndex]);
-
-  useEffect(() => {
-    if (open) {
-      goToIndex(0);
-    }
-  }, [open, goToIndex]);
-
-  useEffect(() => {
-    if (!open) return;
-    dispatch({
-      type: 'UPDATE_STATE',
-      payload: {
-        hasCurrentError: false,
-        isCurrentLoaded: decodedSrcsRef.current.has(currentDisplaySrc),
-      },
-    });
-  }, [open, currentIndex, currentDisplaySrc]);
-
-  useEffect(() => {
-    if (!open || typeof window === 'undefined' || !images?.length) return;
-
-    let cancelled = false;
-
-    const preload = src => {
-      if (!src) return;
-      const img = new window.Image();
-      img.src = src;
-
-      const markReady = () => {
-        decodedSrcsRef.current.add(src);
-        if (!cancelled && src === currentDisplaySrc) {
-          dispatch({
-            type: 'UPDATE_STATE',
-            payload: { isCurrentLoaded: true },
-          });
-        }
-      };
-
-      if (typeof img.decode === 'function') {
-        img
-          .decode()
-          .then(markReady)
-          .catch(() => {});
-      } else {
-        img.onload = markReady;
-      }
-    };
-
-    preload(currentDisplaySrc);
-
-    if (images.length > 1) {
-      for (let i = 1; i <= 3; i++) {
-        const nextIndex = (currentIndex + i) % images.length;
-        preload(getDisplaySrcForIndex(nextIndex));
-      }
-      const prevIndex = (currentIndex - 1 + images.length) % images.length;
-      preload(getDisplaySrcForIndex(prevIndex));
-    }
-
-    return () => {
-      cancelled = true;
-    };
-  }, [open, images, currentIndex, currentDisplaySrc, getDisplaySrcForIndex]);
-
-  useEffect(() => {
-    const handleKeyDown = e => {
-      if (!open) return;
-      if (e.key === 'Escape') onClose();
-      if (e.key === 'ArrowRight') goToIndex(currentIndex + 1);
-      if (e.key === 'ArrowLeft') goToIndex(currentIndex - 1);
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [open, onClose, images.length, currentIndex, goToIndex]);
-
-  useEffect(() => {
-    if (!open || typeof window === 'undefined') return;
-
-    const handleTouchStart = e => {
-      dispatch({
-        type: 'UPDATE_STATE',
-        payload: { touchStart: e.touches[0].clientX },
-      });
-    };
-
-    const handleTouchEnd = e => {
-      if (touchStart === null) return;
-      const touchEnd = e.changedTouches[0].clientX;
-      const diff = touchStart - touchEnd;
-
-      if (Math.abs(diff) > 50) {
-        if (diff > 0) goToIndex(currentIndex + 1);
-        else goToIndex(currentIndex - 1);
-      }
-      dispatch({ type: 'UPDATE_STATE', payload: { touchStart: null } });
-    };
-
-    window.addEventListener('touchstart', handleTouchStart, false);
-    window.addEventListener('touchend', handleTouchEnd, false);
-
-    return () => {
-      window.removeEventListener('touchstart', handleTouchStart, false);
-      window.removeEventListener('touchend', handleTouchEnd, false);
-    };
-  }, [open, touchStart, currentIndex, goToIndex]);
-
-  if (!open) return null;
-
+function MobileLightbox({
+  onClose,
+  goToIndex,
+  currentIndex,
+  images,
+  project,
+  currentDisplaySrc,
+  isCurrentLoaded,
+  hasCurrentError,
+  dispatch,
+}) {
   return (
-    <m.div
-      className="fixed inset-0 h-[100dvh] w-full z-[200] bg-blackCustom text-[#e5e5e5] font-liberation flex flex-col overflow-hidden"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.3 }}
-    >
-      {/* Reste du composant inchangé... */}
+    <>
       <div className="absolute top-8 landscape:top-2 left-8 z-40 md:hidden">
         <button
           type="button"
@@ -206,9 +66,6 @@ export default function CustomLightbox({ open, onClose, images, project }) {
           type="button"
           className="absolute left-0 top-14 bottom-12 w-[20%] z-30"
           onClick={() => goToIndex(currentIndex - 1)}
-          onKeyPress={e => {
-            if (e.key === 'Left') goToIndex(currentIndex - 1);
-          }}
           tabIndex={0}
         />
         <button
@@ -216,9 +73,6 @@ export default function CustomLightbox({ open, onClose, images, project }) {
           type="button"
           className="absolute right-0 top-14 bottom-12 w-[20%] z-30"
           onClick={() => goToIndex(currentIndex + 1)}
-          onKeyPress={e => {
-            if (e.key === 'Right') goToIndex(currentIndex + 1);
-          }}
           tabIndex={0}
         />
 
@@ -281,7 +135,24 @@ export default function CustomLightbox({ open, onClose, images, project }) {
           </div>
         )}
       </div>
+    </>
+  );
+}
 
+function DesktopLightbox({
+  onClose,
+  goToIndex,
+  currentIndex,
+  images,
+  project,
+  currentDisplaySrc,
+  getDisplaySrcForIndex,
+  isCurrentLoaded,
+  hasCurrentError,
+  dispatch,
+}) {
+  return (
+    <>
       <div className="hidden md:flex flex-col flex-1 min-h-0 w-full pt-16 pr-16 pl-16">
         <div>
           <button
@@ -292,13 +163,15 @@ export default function CustomLightbox({ open, onClose, images, project }) {
             back
           </button>
         </div>
+
         <div className="flex-1 relative flex items-center justify-center overflow-hidden">
+          {/* Image précédente (floutée) */}
           <div className="absolute left-0 top-1/2 -translate-y-1/2 h-[50%] w-[15%] opacity-40 blur-[2px] pointer-events-none">
             <Image
               src={getDisplaySrcForIndex(
                 (currentIndex - 1 + images.length) % images.length
               )}
-              alt={`${project.name} - Image précédente`}
+              alt="précédente"
               width={300}
               height={200}
               className="w-full h-full object-contain"
@@ -308,6 +181,7 @@ export default function CustomLightbox({ open, onClose, images, project }) {
             />
           </div>
 
+          {/* Image centrale */}
           <div className="relative z-10 h-[60%] w-full max-w-[60%] flex items-center justify-center">
             <m.div
               key={currentIndex}
@@ -329,7 +203,11 @@ export default function CustomLightbox({ open, onClose, images, project }) {
                   alt={`${project.name} - Image ${currentIndex + 1} sur ${images.length}`}
                   width={1100}
                   height={800}
-                  className={`max-h-[75vh] max-w-[60vw] object-contain transition-opacity duration-300 ${isCurrentLoaded && !hasCurrentError ? 'opacity-100' : 'opacity-0'}`}
+                  className={`max-h-[75vh] max-w-[60vw] object-contain transition-opacity duration-300 ${
+                    isCurrentLoaded && !hasCurrentError
+                      ? 'opacity-100'
+                      : 'opacity-0'
+                  }`}
                   sizes="(max-width: 1200px) 70vw, 1100px"
                   unoptimized
                   fetchPriority="high"
@@ -352,6 +230,7 @@ export default function CustomLightbox({ open, onClose, images, project }) {
             </m.div>
           </div>
 
+          {/* Image suivante (floutée) */}
           <div className="absolute right-0 top-1/2 -translate-y-1/2 h-[50%] w-[15%] opacity-40 blur-[2px] pointer-events-none">
             <Image
               src={getDisplaySrcForIndex((currentIndex + 1) % images.length)}
@@ -368,9 +247,6 @@ export default function CustomLightbox({ open, onClose, images, project }) {
           <button
             className="absolute left-0 top-0 h-full w-[20%] z-30 flex items-center justify-start pl-8 md:pl-0 group cursor-pointer"
             onClick={() => goToIndex(currentIndex - 1)}
-            onKeyPress={e => {
-              if (e.key === 'Left') goToIndex(currentIndex - 1);
-            }}
             tabIndex={0}
             type="button"
           >
@@ -383,9 +259,6 @@ export default function CustomLightbox({ open, onClose, images, project }) {
             type="button"
             className="absolute right-0 top-0 h-full w-[20%] z-30 flex items-center justify-end pr-8 md:pr-0 group cursor-pointer"
             onClick={() => goToIndex(currentIndex + 1)}
-            onKeyPress={e => {
-              if (e.key === 'Right') goToIndex(currentIndex + 1);
-            }}
             tabIndex={0}
           >
             <span className="text-xl italic text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
@@ -399,6 +272,223 @@ export default function CustomLightbox({ open, onClose, images, project }) {
         <div className="text-xl italic">{project.coords}</div>
         <div className="text-xl">{project.name}</div>
       </footer>
+    </>
+  );
+}
+
+// ==========================================
+// 3. CUSTOM HOOKS (LOGIQUE MÉTIER)
+// ==========================================
+
+function useLightboxLogic(open, onClose, images) {
+  const [state, dispatch] = useReducer(reducer, initialState);
+  const { currentIndex, isCurrentLoaded, hasCurrentError, touchStart } = state;
+
+  const decodedSrcsRef = useRef(null);
+  if (decodedSrcsRef.current === null) {
+    decodedSrcsRef.current = new Set();
+  }
+
+  const getDisplaySrcForIndex = useCallback(
+    idx => {
+      const raw = images?.[idx];
+      return buildSanityImageUrl(raw, {
+        ...getOptimizedImageParams('gallery'),
+        auto: 'format',
+      });
+    },
+    [images]
+  );
+
+  const currentDisplaySrc = useMemo(() => {
+    return getDisplaySrcForIndex(currentIndex);
+  }, [currentIndex, getDisplaySrcForIndex]);
+
+  const goToIndex = useCallback(
+    nextIndex => {
+      if (!images?.length) return;
+      const safeIndex =
+        ((nextIndex % images.length) + images.length) % images.length;
+      const nextSrc = getDisplaySrcForIndex(safeIndex);
+
+      dispatch({ type: 'SET_INDEX', payload: safeIndex });
+
+      if (decodedSrcsRef.current.has(nextSrc)) {
+        dispatch({ type: 'UPDATE_STATE', payload: { isCurrentLoaded: true } });
+      }
+    },
+    [images, getDisplaySrcForIndex]
+  );
+
+  // Initialisation à l'ouverture
+  useEffect(() => {
+    if (open) goToIndex(0);
+  }, [open, goToIndex]);
+
+  useEffect(() => {
+    if (!open) return;
+    dispatch({
+      type: 'UPDATE_STATE',
+      payload: {
+        hasCurrentError: false,
+        isCurrentLoaded: decodedSrcsRef.current.has(currentDisplaySrc),
+      },
+    });
+  }, [open, currentIndex, currentDisplaySrc]);
+
+  // Préchargement des images
+  useEffect(() => {
+    if (!open || typeof window === 'undefined' || !images?.length) return;
+
+    let cancelled = false;
+
+    const preload = src => {
+      if (!src) return;
+      const img = new window.Image();
+      img.src = src;
+
+      const markReady = () => {
+        decodedSrcsRef.current.add(src);
+        if (!cancelled && src === currentDisplaySrc) {
+          dispatch({
+            type: 'UPDATE_STATE',
+            payload: { isCurrentLoaded: true },
+          });
+        }
+      };
+
+      if (typeof img.decode === 'function') {
+        img
+          .decode()
+          .then(markReady)
+          .catch(() => {});
+      } else {
+        img.onload = markReady;
+      }
+    };
+
+    preload(currentDisplaySrc);
+    if (images.length > 1) {
+      for (let i = 1; i <= 3; i++) {
+        preload(getDisplaySrcForIndex((currentIndex + i) % images.length));
+      }
+      preload(
+        getDisplaySrcForIndex(
+          (currentIndex - 1 + images.length) % images.length
+        )
+      );
+    }
+
+    return () => {
+      cancelled = true;
+    };
+  }, [open, images, currentIndex, currentDisplaySrc, getDisplaySrcForIndex]);
+
+  // Événements Clavier (Optimisés avec useEffectEvent)
+  const onKeyDown = useEffectEvent(e => {
+    if (!open) return;
+    if (e.key === 'Escape') onClose();
+    if (e.key === 'ArrowRight') goToIndex(currentIndex + 1);
+    if (e.key === 'ArrowLeft') goToIndex(currentIndex - 1);
+  });
+
+  useEffect(() => {
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, []); // <-- Dépendances vides pour éviter les doubles rendus !
+
+  // Événements Tactiles (Optimisés avec useEffectEvent)
+  const onTouchStart = useEffectEvent(e => {
+    dispatch({
+      type: 'UPDATE_STATE',
+      payload: { touchStart: e.touches[0].clientX },
+    });
+  });
+
+  const onTouchEnd = useEffectEvent(e => {
+    if (touchStart === null) return;
+    const touchEnd = e.changedTouches[0].clientX;
+    const diff = touchStart - touchEnd;
+
+    if (Math.abs(diff) > 50) {
+      if (diff > 0) goToIndex(currentIndex + 1);
+      else goToIndex(currentIndex - 1);
+    }
+    dispatch({ type: 'UPDATE_STATE', payload: { touchStart: null } });
+  });
+
+  useEffect(() => {
+    if (!open || typeof window === 'undefined') return;
+
+    window.addEventListener('touchstart', onTouchStart, false);
+    window.addEventListener('touchend', onTouchEnd, false);
+
+    return () => {
+      window.removeEventListener('touchstart', onTouchStart, false);
+      window.removeEventListener('touchend', onTouchEnd, false);
+    };
+  }, [open]); // <-- Le re-render est évité grâce aux Event hooks
+
+  return {
+    currentIndex,
+    isCurrentLoaded,
+    hasCurrentError,
+    dispatch,
+    goToIndex,
+    currentDisplaySrc,
+    getDisplaySrcForIndex,
+  };
+}
+
+// ==========================================
+// 4. COMPOSANT PRINCIPAL
+// ==========================================
+
+export default function CustomLightbox({ open, onClose, images, project }) {
+  if (!open) return null;
+
+  const {
+    currentIndex,
+    isCurrentLoaded,
+    hasCurrentError,
+    dispatch,
+    goToIndex,
+    currentDisplaySrc,
+    getDisplaySrcForIndex,
+  } = useLightboxLogic(open, onClose, images);
+
+  return (
+    <m.div
+      className="fixed inset-0 h-[100dvh] w-full z-[200] bg-blackCustom text-[#e5e5e5] font-liberation flex flex-col overflow-hidden"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.3 }}
+    >
+      <MobileLightbox
+        onClose={onClose}
+        goToIndex={goToIndex}
+        currentIndex={currentIndex}
+        images={images}
+        project={project}
+        currentDisplaySrc={currentDisplaySrc}
+        isCurrentLoaded={isCurrentLoaded}
+        hasCurrentError={hasCurrentError}
+        dispatch={dispatch}
+      />
+
+      <DesktopLightbox
+        onClose={onClose}
+        goToIndex={goToIndex}
+        currentIndex={currentIndex}
+        images={images}
+        project={project}
+        currentDisplaySrc={currentDisplaySrc}
+        getDisplaySrcForIndex={getDisplaySrcForIndex}
+        isCurrentLoaded={isCurrentLoaded}
+        hasCurrentError={hasCurrentError}
+        dispatch={dispatch}
+      />
     </m.div>
   );
 }
