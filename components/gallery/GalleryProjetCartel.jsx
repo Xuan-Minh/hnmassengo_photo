@@ -4,6 +4,7 @@ import { useEffect, useRef, useCallback, useReducer } from 'react';
 import PropTypes from 'prop-types';
 import { AnimatePresence, m } from 'framer-motion';
 import { useTranslations } from 'next-intl';
+import { useEffectEvent } from '../../lib/hooks';
 
 import CustomLightbox from './cartel/CustomLightbox';
 import ImageMarqueeHorizontal from './cartel/ImageMarqueeHorizontal';
@@ -56,11 +57,16 @@ export default function GalleryProjetCartel({ project, onClose }) {
     });
   }, [project?.id]);
 
+  // 1. Création de l'Event pour le Timer
+  const onFinalizeClose = useEffectEvent(() => {
+    finalizeClose();
+  });
+
   useEffect(() => {
     if (!isClosing) return;
 
     closeTimerRef.current = setTimeout(() => {
-      finalizeClose();
+      onFinalizeClose(); // Appel de l'Event
     }, 1150);
 
     return () => {
@@ -69,19 +75,21 @@ export default function GalleryProjetCartel({ project, onClose }) {
         closeTimerRef.current = null;
       }
     };
-  }, [isClosing, finalizeClose]);
+  }, [isClosing]); // <-- Le tableau de dépendances est propre
+
+  // 2. Création de l'Event pour le clavier
+  const onKeyDown = useEffectEvent(event => {
+    if (event.key === 'Escape' && !lightboxOpen) {
+      handleRequestClose();
+    }
+  });
 
   useEffect(() => {
-    const handleKeyDown = event => {
-      if (event.key === 'Escape' && !lightboxOpen) {
-        handleRequestClose();
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('keydown', onKeyDown); // Appel de l'Event
     return () => {
-      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keydown', onKeyDown);
     };
-  }, [lightboxOpen, handleRequestClose]);
+  }, []); // <-- Le tableau de dépendances est 100% vide !
 
   if (!project) return null;
 
@@ -149,8 +157,8 @@ export default function GalleryProjetCartel({ project, onClose }) {
               {project.name}
             </h2>
             <div className="font-liberation text-base leading-relaxed space-y-4">
-              {paragraphs.map((p, i, item) => (
-                <p key={item.id + '-' + i}>{p}</p>
+              {paragraphs.map((p, i) => (
+                <p key={`paragraph-${i}`}>{p}</p>
               ))}
             </div>
           </div>
@@ -174,8 +182,8 @@ export default function GalleryProjetCartel({ project, onClose }) {
               {project.name}
             </h2>
             <div className="font-liberation text-lg 2xl:text-xl max-w-2xl 2xl:max-w-6xl  leading-relaxed space-y-4">
-              {paragraphs.map((p, i, item) => (
-                <p key={item.id + '-' + i}>{p}</p>
+              {paragraphs.map((p, i) => (
+                <p key={`paragraph-${i}`}>{p}</p>
               ))}
             </div>
           </section>
