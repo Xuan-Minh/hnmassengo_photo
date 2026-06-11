@@ -72,7 +72,7 @@ export default function GalleryList({
   const currentImageVersionRef = useRef(0);
   const listTimersRef = useRef({ tick: null, swap: null, cancelled: 0 });
 
-  // CORRECTION : Initialisation paresseuse de la ref
+  // Initialisation paresseuse de la ref
   const preloadedUrlsRef = useRef(null);
   if (preloadedUrlsRef.current === null) {
     preloadedUrlsRef.current = new Set();
@@ -113,9 +113,11 @@ export default function GalleryList({
             isTransitioning: false,
           },
         });
+        // CORRECTION : On met à jour le parent en même temps que le state local (pas de useEffect)
+        setActiveCoord(projects[projectIndex]?.coords || '');
       }, transitionDelay);
     },
-    [isMobile]
+    [isMobile, projects, setActiveCoord]
   );
 
   const navigateListPrev = useCallback(() => {
@@ -156,13 +158,12 @@ export default function GalleryList({
     }
   }, []);
 
+  // CORRECTION : Ce useEffect ne fait plus appel à setActiveCoord.
+  // Il se contente uniquement de son rôle de manipulation de l'UI (le scroll DOM).
   useEffect(() => {
-    const project = projects[currentProjectIndex];
-    setActiveCoord(project?.coords || '');
     centerActiveProject(currentProjectIndex);
-  }, [currentProjectIndex, projects, setActiveCoord, centerActiveProject]);
+  }, [currentProjectIndex, centerActiveProject]);
 
-  // CORRECTION : On encapsule la logique métier du scroll dans un useEffectEvent
   const handleScrollEnd = useEffectEvent(() => {
     const container = mobileNavRef.current;
     if (!container) return;
@@ -220,7 +221,7 @@ export default function GalleryList({
       if (scrollEndTimeoutRef.current)
         clearTimeout(scrollEndTimeoutRef.current);
     };
-  }, []); // <-- Dépendances vides : la logique scrollEvent gère les variables fraîches
+  }, []);
 
   useEffect(() => {
     const timers = listTimersRef.current;
@@ -265,6 +266,8 @@ export default function GalleryList({
             isTransitioning: false,
           },
         });
+        // CORRECTION : On met à jour le parent en même temps que le timer (pas de useEffect)
+        setActiveCoord(projects[next.nextProjectIndex]?.coords || '');
       }, 250);
     }, 3000);
 
@@ -272,9 +275,8 @@ export default function GalleryList({
       if (timers.tick) clearTimeout(timers.tick);
       if (timers.swap) clearTimeout(timers.swap);
     };
-  }, [projects, currentProjectIndex, currentImageIndex]);
+  }, [projects, currentProjectIndex, currentImageIndex, setActiveCoord]);
 
-  // CORRECTION : On encapsule la logique d'appui clavier dans un useEffectEvent
   const handleKeyDown = useEffectEvent(e => {
     if (e.key === 'ArrowRight') navigateListNext();
     if (e.key === 'ArrowLeft') navigateListPrev();
@@ -283,7 +285,7 @@ export default function GalleryList({
   useEffect(() => {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []); // <-- Dépendances vides pour le clavier
+  }, []);
 
   const galleryParams = getOptimizedImageParams('gallery', isMobile);
   const imageParams = useMemo(
