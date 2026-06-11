@@ -1,7 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { useMemo, useEffect, useCallback, useReducer } from 'react';
+import { useMemo, useEffect, useCallback, useReducer, useRef } from 'react';
 import { useParams } from 'next/navigation';
 import { AnimatePresence, m } from 'framer-motion';
 import ShopItem from './ShopItem';
@@ -284,20 +284,27 @@ export default function Shop() {
     [syncWithSnipcart]
   );
 
+  const syncWithSnipcartRef = useRef(syncWithSnipcart);
+  useEffect(() => {
+    syncWithSnipcartRef.current = syncWithSnipcart;
+  }, [syncWithSnipcart]);
+
   // Initialiser Snipcart et écouter les événements
   useEffect(() => {
+    const handleSync = (...args) => syncWithSnipcartRef.current?.(...args);
+
     const initSnipcart = () => {
       if (typeof window === 'undefined' || !window.Snipcart) return;
       try {
-        syncWithSnipcart();
+        handleSync();
         if (
           window.Snipcart.events &&
           typeof window.Snipcart.events.on === 'function'
         ) {
-          window.Snipcart.events.on('item.added', syncWithSnipcart);
-          window.Snipcart.events.on('item.removed', syncWithSnipcart);
-          window.Snipcart.events.on('item.updated', syncWithSnipcart);
-          window.Snipcart.events.on('cart.confirmed', syncWithSnipcart);
+          window.Snipcart.events.on('item.added', handleSync);
+          window.Snipcart.events.on('item.removed', handleSync);
+          window.Snipcart.events.on('item.updated', handleSync);
+          window.Snipcart.events.on('cart.confirmed', handleSync);
         }
       } catch (e) {
         if (logger && typeof logger.error === 'function')
@@ -321,10 +328,10 @@ export default function Shop() {
         typeof window.Snipcart.events.off === 'function'
       ) {
         try {
-          window.Snipcart.events.off('item.added', syncWithSnipcart);
-          window.Snipcart.events.off('item.removed', syncWithSnipcart);
-          window.Snipcart.events.off('item.updated', syncWithSnipcart);
-          window.Snipcart.events.off('cart.confirmed', syncWithSnipcart);
+          window.Snipcart.events.off('item.added', handleSync);
+          window.Snipcart.events.off('item.removed', handleSync);
+          window.Snipcart.events.off('item.updated', handleSync);
+          window.Snipcart.events.off('cart.confirmed', handleSync);
         } catch (e) {
           if (logger && typeof logger.error === 'function')
             logger.error('Snipcart cleanup error', e);
@@ -334,7 +341,7 @@ export default function Shop() {
         window.removeEventListener('load', loadHandler);
       }
     };
-  }, [syncWithSnipcart]);
+  }, []);
 
   // Fonction pour ajouter directement à Snipcart
   const addToCart = useCallback(
