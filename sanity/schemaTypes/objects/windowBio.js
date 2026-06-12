@@ -50,6 +50,18 @@ export default {
       type: 'string',
       initialValue: 'Han-Noah MASSENGO',
     },
+    {
+      name: 'occupation',
+      title: 'Occupation',
+      type: 'string',
+      initialValue: 'Soccer / Photographer',
+    },
+    {
+      name: 'location',
+      title: 'Localisation',
+      type: 'string',
+      initialValue: 'Augsbourg / Paris 📌',
+    },
   ],
   preview: {
     select: {

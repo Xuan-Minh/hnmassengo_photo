@@ -60,6 +60,26 @@ export default {
           of: [{ type: 'block' }],
         },
       ],
+      preview: {
+        select: {
+          fr: 'content.fr',
+          en: 'content.en',
+          de: 'content.de',
+        },
+        prepare(selection) {
+          const { fr, en, de } = selection;
+          const text = fr || en || de || '';
+          const firstBlock = Array.isArray(text) ? text[0] : null;
+          const firstSentence = firstBlock?.children?.[0]?.text || '';
+          return {
+            title:
+              firstSentence.length > 50
+                ? firstSentence.slice(0, 50) + '...'
+                : firstSentence,
+            subtitle: 'Fenêtre Texte',
+          };
+        },
+      },
     },
   ],
 };
