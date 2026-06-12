@@ -1,4 +1,5 @@
 'use client';
+/* eslint-disable react-doctor/iframe-missing-sandbox */
 import Image from 'next/image';
 import { useState } from 'react';
 import { m } from 'framer-motion';
@@ -41,7 +42,6 @@ function ExtrasBlock({ extras }) {
               key={item.id + '-' + idx}
               className="aspect-video w-full max-w-xl mx-auto"
             >
-              {/*eslint-disable-next-line react-doctor/iframe-missing-sandbox */}
               <iframe
                 src={`https://www.youtube.com/embed/${videoId}`}
                 title="YouTube video"

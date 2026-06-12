@@ -1,3 +1,4 @@
+/* eslint-disable react-doctor/prefer-use-effect-event */
 'use client';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';

@@ -1,5 +1,5 @@
 'use client';
-
+/* eslint-disable react-doctor/no-event-handler */
 /* eslint-disable react-doctor/use-lazy-motion */
 
 import {

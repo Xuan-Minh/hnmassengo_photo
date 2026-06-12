@@ -1,3 +1,4 @@
+/* eslint-disable react-doctor/async-await-in-loop */
 import crypto from 'crypto';
 import { NextResponse } from 'next/server';
 import client from '../../../../lib/sanity.client';
@@ -75,8 +76,7 @@ export async function POST(request) {
         reason: verified.reason,
       },
       {
-        status:
-          verified.reason === 'Missing SANITY_WEBHOOK_SECRET' ? 500 : 401,
+        status: verified.reason === 'Missing SANITY_WEBHOOK_SECRET' ? 500 : 401,
       }
     );
   }

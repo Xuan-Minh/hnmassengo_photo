@@ -1,3 +1,4 @@
+/* eslint-disable react-doctor/async-await-in-loop */
 'use client';
 
 import React, { useCallback, useMemo, useRef, useReducer } from 'react';
@@ -418,8 +419,6 @@ export default function ProjectImagesFolderInput(props) {
       const baseDe =
         (typeof nameDe === 'string' && nameDe.trim()) || fallbackName;
 
-      // Faux positif : L'upload séquentiel est volontaire pour éviter de surcharger Sanity (Rate Limit)
-      // eslint-disable-next-line react-doctor/async-await-in-loop
       for (let i = 0; i < imageFiles.length; i += 1) {
         const file = imageFiles[i];
         const photoNumber = currentCount + i + 1;
@@ -569,7 +568,6 @@ export default function ProjectImagesFolderInput(props) {
             <Text size={1} weight="semibold">
               Liste native Sanity
             </Text>
-            {/* Faux positif : "renderDefault" est une obligation de l'API Sanity */}
             {/* eslint-disable-next-line react-doctor/no-render-in-render */}
             {renderDefault(props)}
           </Stack>

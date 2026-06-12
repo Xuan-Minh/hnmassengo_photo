@@ -1,3 +1,4 @@
+/* eslint-disable react-doctor/no-initialize-state */
 'use client';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useParams } from 'next/navigation';

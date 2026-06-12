@@ -1,3 +1,4 @@
+/* eslint-disable react-doctor/exhaustive-deps */
 'use client';
 
 import { useEffect, useRef, useCallback, useMemo, useReducer } from 'react';

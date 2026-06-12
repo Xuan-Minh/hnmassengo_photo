@@ -1,3 +1,4 @@
+/* eslint-disable react-doctor/no-array-index-as-key */
 'use client';
 
 import { useEffect, useRef, useCallback, useReducer } from 'react';

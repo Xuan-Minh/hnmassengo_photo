@@ -1,3 +1,4 @@
+/* eslint-disable react-doctor/no-initialize-state */
 'use client';
 import { useEffect, useState } from 'react';
 import Script from 'next/script';

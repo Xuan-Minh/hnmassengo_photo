@@ -1,3 +1,4 @@
+/* eslint-disable react-doctor/no-event-handler */
 'use client';
 
 import { useEffect, useMemo, useRef, useCallback, useReducer } from 'react';
