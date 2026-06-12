@@ -10,38 +10,66 @@ import { HOME_FALLBACK_IMAGES } from '../../../lib/constants';
 import client from '../../../lib/sanity.client';
 import { useSanityImages } from '../../../lib/hooks';
 
+// Fonction extraite pour récupérer la date
+export async function getGlobalLastUpdate() {
+  try {
+    const query = `*[!(_id in path("_.**"))] | order(_updatedAt desc)[0]._updatedAt`;
+    const lastUpdateDate = await client.fetch(query);
+
+    if (!lastUpdateDate) return null;
+
+    const date = new Date(lastUpdateDate);
+    return new Intl.DateTimeFormat('fr-FR', {
+      dateStyle: 'medium',
+      timeStyle: 'short',
+    }).format(date);
+  } catch (error) {
+    console.error('Erreur lors de la récupération de la date:', error);
+    return null;
+  }
+}
+
 function localizeField(value, locale, fallback = '') {
   if (!value) return fallback;
   if (typeof value === 'string') return value;
   return value?.[locale] || value?.fr || value?.en || value?.de || fallback;
 }
+
 export default function TestPage() {
   const { locale = 'fr' } = useParams();
   const t = useTranslations();
+
   const [bioDoc, setBioDoc] = useState(null);
+  const [lastSeen, setLastSeen] = useState('...'); // Nouvel état pour la date
 
   useEffect(() => {
     let cancelled = false;
 
-    const fetchHomeBio = async () => {
+    const fetchData = async () => {
+      // 1. Récupération de la Bio
       try {
-        const data = await client.fetch(
+        const bioData = await client.fetch(
           'coalesce(*[_type == "homeBio" && _id in ["homeBio", "drafts.homeBio"]][0]{ title, bio }, *[_type == "homeBio"] | order(_updatedAt desc)[0]{ title, bio })'
         );
-        if (!cancelled) setBioDoc(data || null);
+        if (!cancelled) setBioDoc(bioData || null);
       } catch {
         if (!cancelled) setBioDoc(null);
       }
+
+      // 2. Récupération de la Date de dernière modification
+      const dateFormatee = await getGlobalLastUpdate();
+      if (!cancelled && dateFormatee) {
+        setLastSeen(dateFormatee);
+      }
     };
 
-    fetchHomeBio();
+    fetchData();
 
     return () => {
       cancelled = true;
     };
   }, []);
 
-  // On garde les images du schema homeSectionImage et on affiche la premiere.
   const isProduction = process.env.NODE_ENV === 'production';
   const homeImages = useSanityImages('homeSectionImage', HOME_FALLBACK_IMAGES, {
     width: isProduction ? 900 : 1200,
@@ -56,6 +84,7 @@ export default function TestPage() {
   );
 
   const teamColorsFALLBACK = ['#BB3430', '#44724B', '#FED52A', '#FFFFFF'];
+
   return (
     <WindowsManager>
       <WindowsTab
@@ -88,7 +117,8 @@ export default function TestPage() {
                 <li>Age : 23 ans</li>
                 <li>Location : Augsbourg / Paris 📌</li>
                 <li>Occupation : Soccer / Photographer</li>
-                <li>Last seen : 2 hours ago</li>
+                {/* On affiche la variable d'état ici ! */}
+                <li>Last seen : {lastSeen}</li>
               </ul>
             </div>
           </div>
