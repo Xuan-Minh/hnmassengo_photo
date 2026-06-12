@@ -19,7 +19,7 @@ export default {
         { type: 'windowMusic' },
         { type: 'windowRecommendation' },
         { type: 'windowText' },
-        { type: 'windowCustom' },
+        { type: 'windowVideo' },
         { type: 'windowImage' },
       ],
     },

@@ -6,7 +6,7 @@ import { loadingImageMobileType } from './loadingImageMobileType';
 import { homeBioType } from './homeBioType';
 import { newsletterSubscriber } from './newsletterSubscriber';
 import { newsletterCampaign } from './newsletterCampaign';
-import homeSection from './homeSection';
+import homePage from './homePage';
 import windowBio from './objects/windowBio';
 import windowMusic from './objects/windowMusic';
 import windowRecommendation from './objects/windowRecommendation';
@@ -23,7 +23,7 @@ export const schema = {
     loadingImageType,
     loadingImageMobileType,
     homeBioType,
-    homeSection,
+    homePage,
     windowBio,
     windowMusic,
     windowRecommendation,
