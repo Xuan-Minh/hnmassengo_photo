@@ -100,11 +100,7 @@ export default function TestPage() {
         titre="in my ears."
         contenu={
           <iframe
-            style={{
-              borderRadius: '0.375rem (6px)', // arrondir les coins de l'iframe
-              width: '30vw',
-              height: '152px',
-            }}
+            className="w-[30vw] h-[152px] rounded-md"
             src="https://open.spotify.com/embed/track/0vJxo7x6jnFKbtFgtihMvJ?utm_source=generator&theme=0"
             frameBorder="0"
             allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"

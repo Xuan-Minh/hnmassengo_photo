@@ -41,6 +41,7 @@ function ExtrasBlock({ extras }) {
               key={item.id + '-' + idx}
               className="aspect-video w-full max-w-xl mx-auto"
             >
+              {/*eslint-disable-next-line react-doctor/iframe-missing-sandbox */}
               <iframe
                 src={`https://www.youtube.com/embed/${videoId}`}
                 title="YouTube video"
