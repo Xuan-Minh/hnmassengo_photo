@@ -6,11 +6,6 @@ import ContactMarquee from '../../components/overlays/ContactMarquee';
 import HomeSection from '../../components/home/HomeSection';
 import { LazyMotion, m, domMax } from 'framer-motion';
 import { useFadeInOnScreen } from '../../lib/hooks';
-import { StructureData } from '../../lib/metadata';
-
-export const generateMetadata = () => {
-  return { StructureData };
-};
 
 import Gallery from '../../components/gallery/Gallery';
 import Blog from '../../components/blog/Blog';

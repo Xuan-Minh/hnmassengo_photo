@@ -4,12 +4,6 @@ import { Link } from '../../../src/i18n/navigation';
 import { LegalContent } from '../../../components/overlays/LegalOverlay';
 import { SITE_CONFIG } from '../../../lib/constants';
 import metadata from '../../../lib/metadata';
-export const generateMetadata = () => {
-  return {
-    title: metadata.legal.title,
-    description: metadata.legal.description,
-  };
-};
 
 export default function LegalPage() {
   const t = useTranslations('legal');
