@@ -110,6 +110,7 @@ export default function TestPage() {
             allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
             loading="lazy"
             title="Spotify music player"
+            sandbox="allow-scripts allow-same-origin allow-presentation allow-popups allow-popups-to-escape-sandbox"
           ></iframe>
         }
         couleur={teamColorsFALLBACK[1]}
@@ -127,6 +128,7 @@ export default function TestPage() {
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
             referrerPolicy="strict-origin-when-cross-origin"
             allowFullScreen
+            sandbox="allow-scripts allow-same-origin allow-presentation allow-popups allow-popups-to-escape-sandbox"
           ></iframe>
         }
         couleur={teamColorsFALLBACK[2]}
