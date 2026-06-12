@@ -2,7 +2,8 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useState } from 'react';
-import { Minimize } from 'lucide-react'; // Import de l'icône
+import { Minimize } from 'lucide-react';
+import { fontColorTab } from '../../lib/utils';
 
 const childrenVariants = {
   idle: {
@@ -25,9 +26,12 @@ export default function WindowsTab({
   style,
 }) {
   const color = couleur || 'bg-gray-300';
-  const fontcolor = fontColor || '#000000';
+
+  // 1. On calcule la couleur exacte ici, une bonne fois pour toutes
+  const textColor = fontColor || fontColorTab(couleur);
+
   const [isDragging, setIsDragging] = useState(false);
-  const [isMinimized, setIsMinimized] = useState(false); // État pour la réduction
+  const [isMinimized, setIsMinimized] = useState(false);
 
   return (
     <motion.div
@@ -43,19 +47,28 @@ export default function WindowsTab({
       className={`windowsTab absolute flex flex-col flex-nowrap gap-1 bg-transparent`}
     >
       <motion.div
-        style={{ backgroundColor: color, color: fontcolor }}
+        style={{
+          backgroundColor: color,
+        }}
         variants={childrenVariants}
         animate={isDragging ? 'dragging' : 'idle'}
         className={`flex items-center justify-between w-full border border-black gap-2 p-2 ${
           isMinimized ? 'rounded-md' : 'rounded-t-md'
         }`}
       >
-        <h3 className="text-lg text-center font-bold px-2">{titre}</h3>
+        <h3
+          className="text-lg text-center font-bold px-2"
+          style={{ color: textColor }}
+        >
+          {titre}
+        </h3>
+
         <button
           onClick={() => setIsMinimized(!isMinimized)}
           className="p-1 hover:bg-white/20 rounded-sm"
           aria-label="Réduire la fenêtre"
           type="button"
+          style={{ color: textColor }}
         >
           <Minimize size={16} />
         </button>

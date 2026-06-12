@@ -9,8 +9,8 @@ import WindowsManager from '../../../components/ui/WindowsManager';
 import { HOME_FALLBACK_IMAGES } from '../../../lib/constants';
 import client from '../../../lib/sanity.client';
 import { useSanityImages } from '../../../lib/hooks';
-import { extractIdYoutube } from '../../../lib/utils';
-import { calculateAge } from '../../../lib/utils'; // <-- Ajout pour les vidéos
+import { extractIdYoutube, calculateAge } from '../../../lib/utils';
+import { buildSanityImageUrl } from '../../../lib/imageUtils'; // Importation de la fonction utilitaire pour construire l'URL de l'image
 
 export async function getGlobalLastUpdate() {
   try {
@@ -114,7 +114,6 @@ export default function TestPage() {
             id={id}
             titre={titre}
             couleur={couleur}
-            fontColor="#F4F3F2"
             contenu={
               <div
                 style={{
@@ -126,22 +125,36 @@ export default function TestPage() {
                 }}
               >
                 <div className="w-[38%] h-auto inline-block">
-                  {heroImage && (
+                  {/* On utilise win.photo avec votre fonction utilitaire */}
+                  {win.photo ? (
                     <Image
-                      src={heroImage}
-                      alt="Portrait"
+                      src={buildSanityImageUrl(win.photo)}
+                      alt="Portrait Bio"
                       width={400}
                       height={400}
-                      className="w-full h-auto object-fill rounded-md"
+                      className="w-full h-auto object-cover rounded-md"
                     />
+                  ) : (
+                    /* Si le client n'a pas encore mis de photo dans Sanity, on affiche heroImage en secours */
+                    heroImage && (
+                      <Image
+                        src={heroImage}
+                        alt="Portrait par défaut"
+                        width={400}
+                        height={400}
+                        className="w-full h-auto object-cover rounded-md"
+                      />
+                    )
                   )}
                 </div>
                 <div className="p-4 w-[60%] h-auto flex">
                   <ul className="list-disc list-inside flex justify-around flex-col text-[18px] md:text-[16px] lg:text-[16px] xl:text-[18px] 2xl:text-[20px] font-bold">
-                    <li>Name : {win.name}</li>
-                    <li>Age : {calculateAge()} </li>
-                    <li>Location : {win.location} 📌</li>
-                    <li>Occupation : {win.occupation}</li>
+                    <li>Name : {win.name || 'Han-Noah MASSENGO'}</li>
+                    <li>Age : {calculateAge()} ans</li>
+                    <li>Location : {win.location || 'Augsbourg / Paris 📌'}</li>
+                    <li>
+                      Occupation : {win.occupation || 'Soccer / Photographer'}
+                    </li>
                     <li>Last seen : {lastSeen}</li>
                   </ul>
                 </div>
@@ -157,7 +170,6 @@ export default function TestPage() {
             id={id}
             titre={titre}
             couleur={couleur}
-            fontColor="#F4F3F2"
             contenu={
               <iframe
                 className="w-[30vw] h-[152px] rounded-md"
@@ -183,7 +195,6 @@ export default function TestPage() {
             id={id}
             titre={titre}
             couleur={couleur}
-            fontColor="#0A0A0A"
             contenu={
               videoId ? (
                 <iframe
@@ -215,7 +226,6 @@ export default function TestPage() {
             id={id}
             titre={titre}
             couleur={couleur}
-            fontColor="#0A0A0A"
             contenu={
               <p className="w-[30vw] h-[20vw] bg-current/15 overflow-scroll-y whitespace-pre-line font-liberation italic leading-[1.3] text-blackCustom text-[18px] md:text-[16px] lg:text-[16px] xl:text-[18px] 2xl:text-[20px]">
                 {localizeField(win.textContent, locale, bioText)}
