@@ -50,11 +50,6 @@ export default {
       type: 'string',
       initialValue: 'Han-Noah MASSENGO',
     },
-    {
-      name: 'lastConnexion',
-      title: 'Dernière connexion',
-      type: 'string',
-    },
   ],
   preview: {
     select: {
