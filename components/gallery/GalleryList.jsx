@@ -223,7 +223,7 @@ function useGalleryLogic(projects, setActiveCoord) {
     updateMobile();
     window.addEventListener('resize', updateMobile);
     return () => window.removeEventListener('resize', updateMobile);
-  }, []);
+  }, [dispatch]); // <-- CORRECTION : dispatch ajouté
 
   // Navigation logic
   const navigateToImage = useCallback(
@@ -252,7 +252,7 @@ function useGalleryLogic(projects, setActiveCoord) {
         setActiveCoord(projects[projectIndex]?.coords || '');
       }, transitionDelay);
     },
-    [isMobile, projects, setActiveCoord]
+    [isMobile, projects, setActiveCoord, dispatch] // <-- CORRECTION : dispatch ajouté
   );
 
   const navigateListPrev = useCallback(() => {
@@ -403,7 +403,13 @@ function useGalleryLogic(projects, setActiveCoord) {
       if (timers.tick) clearTimeout(timers.tick);
       if (timers.swap) clearTimeout(timers.swap);
     };
-  }, [projects, currentProjectIndex, currentImageIndex, setActiveCoord]);
+  }, [
+    projects,
+    currentProjectIndex,
+    currentImageIndex,
+    setActiveCoord,
+    dispatch,
+  ]); // <-- CORRECTION : dispatch ajouté
 
   // Keyboard navigation
   const handleKeyDown = useEffectEvent(e => {

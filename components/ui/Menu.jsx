@@ -120,7 +120,7 @@ function useMenuScrollTracking(dispatch, desktopItems, active, isDarkBg) {
 
     allSections.forEach(sec => io.observe(sec));
     return () => io.disconnect();
-  }, [desktopItems]); // Le tableau de dépendance est purgé grâce à useEffectEvent !
+  }, [desktopItems]);
 }
 
 function useMenuVisibility(dispatch) {
@@ -186,7 +186,6 @@ function useMenuVisibility(dispatch) {
 function useMobileGestures(mobileMenuOpen, touchStart, dispatch) {
   const overlayRef = useRef(null);
 
-  // 1. Trap focus dans le menu mobile
   useEffect(() => {
     if (!mobileMenuOpen || !overlayRef.current) return;
     const overlay = overlayRef.current;
@@ -214,7 +213,6 @@ function useMobileGestures(mobileMenuOpen, touchStart, dispatch) {
     return () => overlay.removeEventListener('keydown', handleTabKey);
   }, [mobileMenuOpen]);
 
-  // 2. Swipe up pour fermer le menu mobile
   const handleTouchMove = useEffectEvent(e => {
     if (!touchStart) return;
     const diff = touchStart - e.touches[0].clientY;
@@ -248,7 +246,7 @@ function useMobileGestures(mobileMenuOpen, touchStart, dispatch) {
       overlay.removeEventListener('touchmove', onTouchMove);
       overlay.removeEventListener('touchend', onTouchEnd);
     };
-  }, [mobileMenuOpen]);
+  }, [mobileMenuOpen, dispatch]); // <-- CORRECTION : dispatch est maintenant inclus dans le tableau !
 
   return overlayRef;
 }
