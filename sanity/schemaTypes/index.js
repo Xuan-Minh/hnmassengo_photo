@@ -11,7 +11,7 @@ import windowBio from './objects/windowBio';
 import windowMusic from './objects/windowMusic';
 import windowRecommendation from './objects/windowRecommendation';
 import windowText from './objects/windowText';
-import windowCustom from './objects/windowCustom';
+import windowVideo from './objects/windowVideo';
 import teamColor from './teamColor';
 import windowImage from './objects/windowImage';
 
@@ -28,7 +28,7 @@ export const schema = {
     windowMusic,
     windowRecommendation,
     windowText,
-    windowCustom,
+    windowVideo,
     newsletterSubscriber,
     newsletterCampaign,
     teamColor,

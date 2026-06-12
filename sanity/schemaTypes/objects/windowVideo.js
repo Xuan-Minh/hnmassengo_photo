@@ -1,6 +1,6 @@
 export default {
-  name: 'windowCustom',
-  title: 'Fenêtre Personnalisée',
+  name: 'windowVideo',
+  title: 'Fenêtre Video',
   type: 'object',
   fields: [
     {
@@ -35,9 +35,14 @@ export default {
     },
     {
       name: 'content',
-      title: 'Contenu',
-      type: 'array',
-      of: [{ type: 'block' }],
+      title: 'Contenu de la fenêtre (URL de la vidéo)',
+      type: 'url',
+      validation: Rule =>
+        Rule.uri({
+          scheme: ['http', 'https'],
+        }).error(
+          'Veuillez entrer une URL valide commençant par http:// ou https://'
+        ),
     },
   ],
   preview: {
@@ -47,7 +52,7 @@ export default {
     prepare(selection) {
       const { title } = selection;
       return {
-        title: title || 'Fenêtre Personnalisée',
+        title: title || 'Fenêtre Video',
       };
     },
   },
