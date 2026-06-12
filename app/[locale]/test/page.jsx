@@ -9,8 +9,9 @@ import WindowsManager from '../../../components/ui/WindowsManager';
 import { HOME_FALLBACK_IMAGES } from '../../../lib/constants';
 import client from '../../../lib/sanity.client';
 import { useSanityImages } from '../../../lib/hooks';
+import { extractIdYoutube } from '../../../lib/utils';
+import { calculateAge } from '../../../lib/utils'; // <-- Ajout pour les vidéos
 
-// Fonction extraite pour récupérer la date
 export async function getGlobalLastUpdate() {
   try {
     const query = `*[!(_id in path("_.**"))] | order(_updatedAt desc)[0]._updatedAt`;
@@ -40,23 +41,37 @@ export default function TestPage() {
   const t = useTranslations();
 
   const [bioDoc, setBioDoc] = useState(null);
-  const [lastSeen, setLastSeen] = useState('...'); // Nouvel état pour la date
+  const [lastSeen, setLastSeen] = useState('...');
+  const [windows, setWindows] = useState([]); // <-- Nouvel état pour les fenêtres
 
   useEffect(() => {
     let cancelled = false;
 
     const fetchData = async () => {
-      // 1. Récupération de la Bio
       try {
+        // 1. Fetch de la Bio (si toujours nécessaire séparément)
         const bioData = await client.fetch(
           'coalesce(*[_type == "homeBio" && _id in ["homeBio", "drafts.homeBio"]][0]{ title, bio }, *[_type == "homeBio"] | order(_updatedAt desc)[0]{ title, bio })'
         );
         if (!cancelled) setBioDoc(bioData || null);
-      } catch {
-        if (!cancelled) setBioDoc(null);
+
+        // 2. Fetch dynamique de TOUTES les fenêtres depuis le document principal
+        const windowsData = await client.fetch(`
+          *[_type == "homePage"][0].windows[]{
+            ...,
+            windowColor->{
+              hex // On résout la référence pour récupérer le code couleur
+            }
+          }
+        `);
+        if (!cancelled && windowsData) {
+          setWindows(windowsData);
+        }
+      } catch (err) {
+        console.error('Erreur de fetch', err);
       }
 
-      // 2. Récupération de la Date de dernière modification
+      // 3. Fetch de la date
       const dateFormatee = await getGlobalLastUpdate();
       if (!cancelled && dateFormatee) {
         setLastSeen(dateFormatee);
@@ -85,131 +100,148 @@ export default function TestPage() {
 
   const teamColorsFALLBACK = ['#BB3430', '#44724B', '#FED52A', '#FFFFFF'];
 
+  // Fonction de rendu dynamique
+  const renderWindow = (win, index) => {
+    const titre = localizeField(win.title, locale, 'Fenêtre');
+    const couleur = win.windowColor?.hex || teamColorsFALLBACK[index % 4];
+    const id = win._key || `tab${index}`;
+
+    switch (win._type) {
+      case 'windowBio':
+        return (
+          <WindowsTab
+            key={id}
+            id={id}
+            titre={titre}
+            couleur={couleur}
+            fontColor="#F4F3F2"
+            contenu={
+              <div
+                style={{
+                  display: 'flex',
+                  flexWrap: 'nowrap',
+                  justifyContent: 'between',
+                  gap: '1rem',
+                  width: '45vw',
+                }}
+              >
+                <div className="w-[38%] h-auto inline-block">
+                  {heroImage && (
+                    <Image
+                      src={heroImage}
+                      alt="Portrait"
+                      width={400}
+                      height={400}
+                      className="w-full h-auto object-fill rounded-md"
+                    />
+                  )}
+                </div>
+                <div className="p-4 w-[60%] h-auto flex">
+                  <ul className="list-disc list-inside flex justify-around flex-col text-[18px] md:text-[16px] lg:text-[16px] xl:text-[18px] 2xl:text-[20px] font-bold">
+                    <li>Name : {win.name}</li>
+                    <li>Age : {calculateAge()} </li>
+                    <li>Location : {win.location} 📌</li>
+                    <li>Occupation : {win.occupation}</li>
+                    <li>Last seen : {lastSeen}</li>
+                  </ul>
+                </div>
+              </div>
+            }
+          />
+        );
+
+      case 'windowMusic': // Exemple pour Spotify
+        return (
+          <WindowsTab
+            key={id}
+            id={id}
+            titre={titre}
+            couleur={couleur}
+            fontColor="#F4F3F2"
+            contenu={
+              <iframe
+                className="w-[30vw] h-[152px] rounded-md"
+                src={
+                  win.content ||
+                  'https://open.spotify.com/embed/track/0vJxo7x6jnFKbtFgtihMvJ?utm_source=generator&theme=0'
+                }
+                frameBorder="0"
+                allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                loading="lazy"
+                title="Spotify music player"
+                sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"
+              ></iframe>
+            }
+          />
+        );
+
+      case 'windowVideo': // Notre composant YouTube
+        const videoId = extractIdYoutube(win.content);
+        return (
+          <WindowsTab
+            key={id}
+            id={id}
+            titre={titre}
+            couleur={couleur}
+            fontColor="#0A0A0A"
+            contenu={
+              videoId ? (
+                <iframe
+                  src={`https://www.youtube.com/embed/${videoId}`}
+                  title="YouTube video player"
+                  style={{
+                    width: '26vw',
+                    height: '15vw',
+                    borderRadius: '0.375rem ',
+                  }}
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowFullScreen
+                  sandbox="allow-scripts allow-same-origin allow-presentation allow-popups allow-popups-to-escape-sandbox"
+                ></iframe>
+              ) : (
+                <div className="w-[26vw] h-[15vw] flex items-center justify-center bg-gray-200">
+                  Vidéo indisponible
+                </div>
+              )
+            }
+          />
+        );
+
+      case 'windowText': // Exemple pour du texte simple
+        return (
+          <WindowsTab
+            key={id}
+            id={id}
+            titre={titre}
+            couleur={couleur}
+            fontColor="#0A0A0A"
+            contenu={
+              <p className="w-[30vw] h-[20vw] bg-current/15 overflow-scroll-y whitespace-pre-line font-liberation italic leading-[1.3] text-blackCustom text-[18px] md:text-[16px] lg:text-[16px] xl:text-[18px] 2xl:text-[20px]">
+                {localizeField(win.textContent, locale, bioText)}
+              </p>
+            }
+          />
+        );
+
+      default:
+        // Si le type n'est pas reconnu, on peut retourner null ou un template par défaut
+        return null;
+    }
+  };
+
+  if (!windows || windows.length === 0) {
+    return (
+      <div className="flex h-screen w-screen items-center justify-center text-white bg-blackCustom">
+        Chargement des fenêtres...
+      </div>
+    );
+  }
+
+  // 2. Si on a des fenêtres, on rend le manager qui ne contiendra QUE des WindowsTab
   return (
     <WindowsManager>
-      <WindowsTab
-        id="tab1"
-        titre="about me."
-        contenu={
-          <div
-            style={{
-              display: 'flex',
-              flexWrap: 'nowrap',
-              justifyContent: 'between',
-              gap: '1rem',
-              width: '45vw',
-            }}
-          >
-            <div className="w-[38%] h-auto inline-block">
-              {heroImage && (
-                <Image
-                  src={heroImage}
-                  alt="Portrait"
-                  width={400}
-                  height={400}
-                  className="w-full h-auto object-fill rounded-md"
-                />
-              )}
-            </div>
-            <div className="p-4 w-[60%] h-auto flex">
-              <ul className="list-disc list-inside flex justify-around flex-col text-[18px] md:text-[16px] lg:text-[16px] xl:text-[18px] 2xl:text-[20px] font-bold">
-                <li>Name : Han-Noah MASSENGO</li>
-                <li>Age : 23 ans</li>
-                <li>Location : Augsbourg / Paris 📌</li>
-                <li>Occupation : Soccer / Photographer</li>
-                {/* On affiche la variable d'état ici ! */}
-                <li>Last seen : {lastSeen}</li>
-              </ul>
-            </div>
-          </div>
-        }
-        couleur={teamColorsFALLBACK[0]}
-        fontColor="#F4F3F2"
-      />
-      <WindowsTab
-        id="tab2"
-        titre="in my ears."
-        contenu={
-          <iframe
-            className="w-[30vw] h-[152px] rounded-md"
-            src="https://open.spotify.com/embed/track/0vJxo7x6jnFKbtFgtihMvJ?utm_source=generator&theme=0"
-            frameBorder="0"
-            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-            loading="lazy"
-            title="Spotify music player"
-            sandbox="allow-scripts allow-same-origin allow-presentation allow-popups allow-popups-to-escape-sandbox"
-          ></iframe>
-        }
-        couleur={teamColorsFALLBACK[1]}
-        fontColor="#F4F3F2"
-      />
-      <WindowsTab
-        id="tab3"
-        titre="and in my eyes."
-        contenu={
-          <iframe
-            src="https://www.youtube.com/embed/ZIdBrvu7buE"
-            title="YouTube video player"
-            style={{ width: '26vw', height: '15vw', borderRadius: '0.375rem ' }}
-            frameBorder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-            referrerPolicy="strict-origin-when-cross-origin"
-            allowFullScreen
-            sandbox="allow-scripts allow-same-origin allow-presentation allow-popups allow-popups-to-escape-sandbox"
-          ></iframe>
-        }
-        couleur={teamColorsFALLBACK[2]}
-        fontColor="#0A0A0A"
-      />
-      <WindowsTab
-        id="tab4"
-        titre="and in my heart."
-        contenu={
-          <p className="w-[30vw] h-[20vw] bg-current/15 overflow-scroll-y whitespace-pre-line font-liberation italic leading-[1.3] text-blackCustom text-[18px] md:text-[16px] lg:text-[16px] xl:text-[18px] 2xl:text-[20px]">
-            {bioText}
-          </p>
-        }
-        couleur={teamColorsFALLBACK[3]}
-        fontColor="#0A0A0A"
-      />
-      <WindowsTab
-        id="tab5"
-        titre="picture1.jpg"
-        contenu={
-          <div className="w-full h-auto inline-block">
-            {heroImage && (
-              <Image
-                src={heroImage}
-                alt="Portrait"
-                width={200}
-                height={200}
-                className="w-full h-auto object-fill"
-              />
-            )}
-          </div>
-        }
-        couleur={teamColorsFALLBACK[2]}
-        fontColor="#0A0A0A"
-      />
-      <WindowsTab
-        id="tab6"
-        titre="picture2.jpg"
-        contenu={
-          <div className="w-full h-auto inline-block">
-            {heroImage && (
-              <Image
-                src={heroImage}
-                alt="Portrait"
-                width={300}
-                height={300}
-                className="w-full h-auto object-fill rounded-md"
-              />
-            )}
-          </div>
-        }
-        couleur={teamColorsFALLBACK[0]}
-        fontColor="#F4F3F2"
-      />
+      {windows.map((win, index) => renderWindow(win, index))}
     </WindowsManager>
   );
 }
