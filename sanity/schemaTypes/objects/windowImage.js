@@ -43,6 +43,17 @@ export default {
       validation: Rule =>
         Rule.required().error('Vous devez choisir une couleur.'),
     },
+    {
+      name: 'externalLink',
+      title: 'Lien externe',
+      type: 'url',
+      validation: Rule =>
+        Rule.uri({
+          scheme: ['http', 'https', 'mailto', 'tel'],
+        }).error(
+          'Veuillez entrer une URL valide commençant par http://, https://, mailto: ou tel:'
+        ),
+    },
   ],
   preview: {
     select: {
