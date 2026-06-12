@@ -264,7 +264,7 @@ function CustomCursorOverlay({
 
 function useGalleryGridData(projects, filter, colsCount) {
   const projectsRecentFirst = useMemo(() => {
-    return [...projects].sort((a, b) => {
+    return projects.toSorted((a, b) => {
       const am = getProjectDateMs(a);
       const bm = getProjectDateMs(b);
       if (am === null && bm === null)
@@ -282,13 +282,17 @@ function useGalleryGridData(projects, filter, colsCount) {
   }, [projectsRecentFirst, filter]);
 
   const allImages = useMemo(() => {
-    return filteredProjects.flatMap(p =>
-      (p.images || [])
-        .filter(Boolean)
-        .map((img, idx) => {
-          const src = getSanityImageDeliveryUrl(img, { w: 640, q: 70 });
-          if (!src) return null;
-          return {
+    return filteredProjects.flatMap(p => {
+      if (!p.images) return [];
+
+      return p.images.flatMap((img, idx) => {
+        if (!img) return [];
+
+        const src = getSanityImageDeliveryUrl(img, { w: 640, q: 70 });
+        if (!src) return [];
+
+        return [
+          {
             projectId: p.id,
             project: p,
             name: p.name,
@@ -298,10 +302,10 @@ function useGalleryGridData(projects, filter, colsCount) {
             coords: p.coords,
             isFirst: idx === 0,
             isSanityImage: isSanityCdnUrl(src),
-          };
-        })
-        .filter(Boolean)
-    );
+          },
+        ];
+      });
+    });
   }, [filteredProjects]);
 
   const masonryCols = useMemo(() => {
