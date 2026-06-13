@@ -9,7 +9,11 @@ import WindowsManager from '../../../components/ui/WindowsManager';
 import { HOME_FALLBACK_IMAGES } from '../../../lib/constants';
 import client from '../../../lib/sanity.client';
 import { useSanityImages } from '../../../lib/hooks';
-import { extractIdYoutube, calculateAge } from '../../../lib/utils';
+import {
+  extractIdYoutube,
+  calculateAge,
+  portableTextToPlain,
+} from '../../../lib/utils';
 import { buildSanityImageUrl } from '../../../lib/imageUtils'; // Importation de la fonction utilitaire pour construire l'URL de l'image
 
 export async function getGlobalLastUpdate() {
@@ -39,8 +43,6 @@ function localizeField(value, locale, fallback = '') {
 export default function TestPage() {
   const { locale = 'fr' } = useParams();
   const t = useTranslations();
-
-  const [bioDoc, setBioDoc] = useState(null);
   const [lastSeen, setLastSeen] = useState('...');
   const [windows, setWindows] = useState([]); // <-- Nouvel état pour les fenêtres
 
@@ -49,12 +51,6 @@ export default function TestPage() {
 
     const fetchData = async () => {
       try {
-        // 1. Fetch de la Bio (si toujours nécessaire séparément)
-        const bioData = await client.fetch(
-          'coalesce(*[_type == "homeBio" && _id in ["homeBio", "drafts.homeBio"]][0]{ title, bio }, *[_type == "homeBio"] | order(_updatedAt desc)[0]{ title, bio })'
-        );
-        if (!cancelled) setBioDoc(bioData || null);
-
         // 2. Fetch dynamique de TOUTES les fenêtres depuis le document principal
         const windowsData = await client.fetch(`
           *[_type == "homePage"][0].windows[]{
@@ -93,21 +89,22 @@ export default function TestPage() {
   });
   const heroImage = homeImages[0] || '';
 
-  const bioText = useMemo(
-    () => localizeField(bioDoc?.bio, locale, t('home.welcome')),
-    [bioDoc, locale, t]
-  );
-
   const teamColorsFALLBACK = ['#BB3430', '#44724B', '#FED52A', '#FFFFFF'];
 
   // Fonction de rendu dynamique
   const renderWindow = (win, index) => {
     const titre = localizeField(win.title, locale, 'Fenêtre');
+
     const couleur = win.windowColor?.hex || teamColorsFALLBACK[index % 4];
     const id = win._key || `tab${index}`;
 
     switch (win._type) {
-      case 'windowBio':
+      case 'windowBio': {
+        const occupation = localizeField(
+          win.occupation,
+          locale,
+          'Augsbourg / Paris 📌'
+        );
         return (
           <WindowsTab
             key={id}
@@ -151,10 +148,8 @@ export default function TestPage() {
                   <ul className="list-disc list-inside flex justify-around flex-col text-[18px] md:text-[16px] lg:text-[16px] xl:text-[18px] 2xl:text-[20px] font-bold">
                     <li>Name : {win.name || 'Han-Noah MASSENGO'}</li>
                     <li>Age : {calculateAge()} ans</li>
-                    <li>Location : {win.location || 'Augsbourg / Paris 📌'}</li>
-                    <li>
-                      Occupation : {win.occupation || 'Soccer / Photographer'}
-                    </li>
+                    <li>Location : {win.location || 'Augsbourg / Paris '}</li>
+                    <li>Occupation : {occupation}</li>
                     <li>Last seen : {lastSeen}</li>
                   </ul>
                 </div>
@@ -162,6 +157,7 @@ export default function TestPage() {
             }
           />
         );
+      }
 
       case 'windowMusic': // Exemple pour Spotify
         return (
@@ -187,8 +183,9 @@ export default function TestPage() {
           />
         );
 
-      case 'windowVideo': // Notre composant YouTube
+      case 'windowVideo': {
         const videoId = extractIdYoutube(win.content);
+
         return (
           <WindowsTab
             key={id}
@@ -218,8 +215,14 @@ export default function TestPage() {
             }
           />
         );
+      }
 
-      case 'windowText': // Exemple pour du texte simple
+      case 'windowText': {
+        // 1. On récupère les blocs dans la bonne langue (fr, en, ou de)
+        const rawBlocks = localizeField(win.content, locale, []);
+        // 2. On transforme ces blocs complexes en texte simple
+        const plainText = portableTextToPlain(rawBlocks);
+
         return (
           <WindowsTab
             key={id}
@@ -228,12 +231,12 @@ export default function TestPage() {
             couleur={couleur}
             contenu={
               <p className="w-[30vw] h-[20vw] bg-current/15 overflow-scroll-y whitespace-pre-line font-liberation italic leading-[1.3] text-blackCustom text-[18px] md:text-[16px] lg:text-[16px] xl:text-[18px] 2xl:text-[20px]">
-                {localizeField(win.textContent, locale, bioText)}
+                {plainText}
               </p>
             }
           />
         );
-
+      }
       default:
         // Si le type n'est pas reconnu, on peut retourner null ou un template par défaut
         return null;
