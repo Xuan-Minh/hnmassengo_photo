@@ -60,17 +60,34 @@ export default {
           of: [{ type: 'block' }],
         },
       ],
-      preview: {
-        select: {
-          title: 'title.fr',
-        },
-        prepare(selection) {
-          const { title } = selection;
-          return {
-            title: title || 'Fenêtre Texte',
-          };
-        },
-      },
     },
   ],
+  preview: {
+    select: {
+      windowTitle: 'title.fr',
+      fr: 'content.fr',
+      en: 'content.en',
+      de: 'content.de',
+    },
+    prepare(selection) {
+      const { windowTitle, fr, en, de } = selection;
+
+      // On récupère le premier bloc de texte disponible selon la langue
+      const textBlocks = fr || en || de || '';
+      const firstBlock = Array.isArray(textBlocks) ? textBlocks[0] : null;
+      const firstSentence = firstBlock?.children?.[0]?.text || '';
+
+      // Si un texte existe, on prend les 50 premiers caractères, sinon on affiche le titre de la fenêtre
+      const displayTitle = firstSentence
+        ? firstSentence.length > 50
+          ? firstSentence.slice(0, 50) + '...'
+          : firstSentence
+        : windowTitle || 'Fenêtre Texte';
+
+      return {
+        title: displayTitle,
+        subtitle: 'Fenêtre Texte',
+      };
+    },
+  },
 };
