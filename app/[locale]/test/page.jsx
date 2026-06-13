@@ -159,7 +159,21 @@ export default function TestPage() {
         );
       }
 
-      case 'windowMusic': // Exemple pour Spotify
+      case 'windowMusic': {
+        let embedUrl =
+          win.spotifyUrl ||
+          'https://open.spotify.com/embed/track/4uLU6hMCjMI75M1A2tKUQC';
+
+        if (
+          embedUrl.includes('open.spotify.com') &&
+          !embedUrl.includes('/embed/')
+        ) {
+          embedUrl = embedUrl.replace(
+            'open.spotify.com/',
+            'open.spotify.com/embed/'
+          );
+        }
+
         return (
           <WindowsTab
             key={id}
@@ -169,10 +183,7 @@ export default function TestPage() {
             contenu={
               <iframe
                 className="w-[30vw] h-[152px] rounded-md"
-                src={
-                  win.content ||
-                  'https://open.spotify.com/embed/track/0vJxo7x6jnFKbtFgtihMvJ?utm_source=generator&theme=0'
-                }
+                src={embedUrl}
                 frameBorder="0"
                 allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
                 loading="lazy"
@@ -182,6 +193,7 @@ export default function TestPage() {
             }
           />
         );
+      }
 
       case 'windowVideo': {
         const videoId = extractIdYoutube(win.content);

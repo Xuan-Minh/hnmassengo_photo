@@ -45,13 +45,12 @@ export default {
   preview: {
     select: {
       title: 'title.fr',
-      media: 'spotifyUrl',
     },
     prepare(selection) {
-      const { title, media } = selection;
+      const { title } = selection;
       return {
         title: title || 'Fenêtre Musique',
-        media,
+        media: () => '🎵', // Affiche une note de musique dans le Studio !
       };
     },
   },
