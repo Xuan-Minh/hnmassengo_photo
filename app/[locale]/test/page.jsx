@@ -279,8 +279,7 @@ export default function TestPage() {
             titre={titre}
             couleur={couleur}
             contenu={
-              <div className="w-[30vw] h-[20vw] flex items-center justify-center">
-                {/* 3. On rend l'image cliquable SI le client a mis un lien dans Sanity */}
+              <div className="w-[20vw] h-[30vw] flex items-center justify-center">
                 {win.externalLink ? (
                   <a
                     href={win.externalLink}
