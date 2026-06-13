@@ -62,21 +62,12 @@ export default {
       ],
       preview: {
         select: {
-          fr: 'content.fr',
-          en: 'content.en',
-          de: 'content.de',
+          title: 'content.fr',
         },
         prepare(selection) {
-          const { fr, en, de } = selection;
-          const text = fr || en || de || '';
-          const firstBlock = Array.isArray(text) ? text[0] : null;
-          const firstSentence = firstBlock?.children?.[0]?.text || '';
+          const { title } = selection;
           return {
-            title:
-              firstSentence.length > 50
-                ? firstSentence.slice(0, 50) + '...'
-                : firstSentence,
-            subtitle: 'Fenêtre Texte',
+            title: title.fr || 'Fenêtre Texte',
           };
         },
       },
