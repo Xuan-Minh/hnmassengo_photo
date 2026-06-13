@@ -1,9 +1,8 @@
 'use client';
 /* eslint-disable react-doctor/iframe-missing-sandbox */
-import { useMemo, useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import Image from 'next/image';
-import { useTranslations } from 'next-intl';
 import WindowsTab from '../../../components/ui/WindowsTab';
 import WindowsManager from '../../../components/ui/WindowsManager';
 import { HOME_FALLBACK_IMAGES } from '../../../lib/constants';
@@ -14,7 +13,7 @@ import {
   calculateAge,
   portableTextToPlain,
 } from '../../../lib/utils';
-import { buildSanityImageUrl } from '../../../lib/imageUtils'; // Importation de la fonction utilitaire pour construire l'URL de l'image
+import { buildSanityImageUrl } from '../../../lib/imageUtils';
 
 export async function getGlobalLastUpdate() {
   try {
@@ -42,20 +41,18 @@ function localizeField(value, locale, fallback = '') {
 
 export default function TestPage() {
   const { locale = 'fr' } = useParams();
-  const t = useTranslations();
   const [lastSeen, setLastSeen] = useState('...');
-  const [windows, setWindows] = useState([]); // <-- Nouvel état pour les fenêtres
+  const [windows, setWindows] = useState([]);
 
   useEffect(() => {
     let cancelled = false;
-
     const fetchData = async () => {
       try {
         const windowsData = await client.fetch(`
           *[_type == "homePage"][0].windows[]{
             ...,
             windowColor->{
-              hex // On résout la référence pour récupérer le code couleur
+              hex 
             }
           }
         `);
@@ -89,10 +86,8 @@ export default function TestPage() {
 
   const teamColorsFALLBACK = ['#BB3430', '#44724B', '#FED52A', '#FFFFFF'];
 
-  // Fonction de rendu dynamique
   const renderWindow = (win, index) => {
     const titre = localizeField(win.title, locale, 'Fenêtre');
-
     const couleur = win.windowColor?.hex || teamColorsFALLBACK[index % 4];
     const id = win._key || `tab${index}`;
 
@@ -101,7 +96,7 @@ export default function TestPage() {
         const occupation = localizeField(
           win.occupation,
           locale,
-          'Augsbourg / Paris 📌'
+          'Soccer / Photographer'
         );
         return (
           <WindowsTab
@@ -160,7 +155,7 @@ export default function TestPage() {
       case 'windowMusic': {
         const rawUrl =
           win.spotifyUrl ||
-          'https://open.spotify.com/track/4cOdK2wGLETKBW3PvgPWqT';
+          'https://open.spotify.com/track/11dFghVXANMlKmJXsNCbNl';
         let finalUrl = rawUrl;
 
         try {
@@ -172,6 +167,7 @@ export default function TestPage() {
           if (match && !rawUrl.includes('/embed/')) {
             const type = match[1];
             const id = match[2];
+            // Format d'URL corrigé avec le $ manquant pour l'intégration
             finalUrl = `https://open.spotify.com/embed/${type}/${id}`;
           }
         } catch (e) {
@@ -198,6 +194,7 @@ export default function TestPage() {
           />
         );
       }
+
       case 'windowVideo': {
         const videoId = extractIdYoutube(win.content);
 
@@ -250,6 +247,7 @@ export default function TestPage() {
           />
         );
       }
+
       case 'windowImage': {
         const imageUrl = win.photo ? buildSanityImageUrl(win.photo) : heroImage;
         const imageComponent = imageUrl ? (
@@ -258,10 +256,10 @@ export default function TestPage() {
             alt={titre}
             width={600}
             height={600}
-            className="w-full h-full object-cover rounded-sm"
+            className="w-full h-full object-cover rounded-md"
           />
         ) : (
-          <div className="w-full h-full bg-gray-200 flex items-center justify-center text-black">
+          <div className="w-full h-full bg-gray-200 flex items-center justify-center text-black rounded-md">
             Image indisponible
           </div>
         );
@@ -291,8 +289,8 @@ export default function TestPage() {
           />
         );
       }
+
       default:
-        // Si le type n'est pas reconnu, on peut retourner null ou un template par défaut
         return null;
     }
   };
@@ -305,7 +303,6 @@ export default function TestPage() {
     );
   }
 
-  // 2. Si on a des fenêtres, on rend le manager qui ne contiendra QUE des WindowsTab
   return (
     <WindowsManager>
       {windows.map((win, index) => renderWindow(win, index))}
