@@ -62,12 +62,12 @@ export default {
       ],
       preview: {
         select: {
-          title: 'content.fr',
+          title: 'title.fr',
         },
         prepare(selection) {
           const { title } = selection;
           return {
-            title: title.fr && ' || Fenêtre Texte',
+            title: title || 'Fenêtre Texte',
           };
         },
       },
