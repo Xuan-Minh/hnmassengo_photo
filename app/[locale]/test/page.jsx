@@ -148,7 +148,9 @@ export default function TestPage() {
                   <ul className="list-disc list-inside flex justify-around flex-col text-[18px] md:text-[16px] lg:text-[16px] xl:text-[18px] 2xl:text-[20px] font-bold">
                     <li>Name : {win.name || 'Han-Noah MASSENGO'}</li>
                     <li>Age : {calculateAge()} ans</li>
-                    <li>Location : {win.location || 'Augsbourg / Paris '}</li>
+                    <li>
+                      Location : {win.location || 'Augsbourg / Paris '} 📌
+                    </li>
                     <li>Occupation : {occupation}</li>
                     <li>Last seen : {lastSeen}</li>
                   </ul>
@@ -160,18 +162,24 @@ export default function TestPage() {
       }
 
       case 'windowMusic': {
-        let embedUrl =
+        const rawUrl =
           win.spotifyUrl ||
-          'https://open.spotify.com/embed/track/4uLU6hMCjMI75M1A2tKUQC';
+          'https://open.spotify.com/track/4cOdK2wGLETKBW3PvgPWqT';
+        let finalUrl = rawUrl;
 
-        if (
-          embedUrl.includes('open.spotify.com') &&
-          !embedUrl.includes('/embed/')
-        ) {
-          embedUrl = embedUrl.replace(
-            'open.spotify.com/',
-            'open.spotify.com/embed/'
+        try {
+          const parsed = new URL(rawUrl);
+          const match = parsed.pathname.match(
+            /(track|album|playlist|artist|show|episode)\/([a-zA-Z0-9]+)/
           );
+
+          if (match && !rawUrl.includes('/embed/')) {
+            const type = match[1];
+            const id = match[2];
+            finalUrl = `https://open.spotify.com/embed/${type}/${id}`;
+          }
+        } catch (e) {
+          console.error('Lien Spotify invalide');
         }
 
         return (
@@ -183,7 +191,7 @@ export default function TestPage() {
             contenu={
               <iframe
                 className="w-[30vw] h-[152px] rounded-md"
-                src={embedUrl}
+                src={finalUrl}
                 frameBorder="0"
                 allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
                 loading="lazy"
@@ -194,7 +202,6 @@ export default function TestPage() {
           />
         );
       }
-
       case 'windowVideo': {
         const videoId = extractIdYoutube(win.content);
 
@@ -245,6 +252,48 @@ export default function TestPage() {
               <p className="w-[30vw] h-[20vw] bg-current/15 overflow-scroll-y whitespace-pre-line font-liberation italic leading-[1.3] text-blackCustom text-[18px] md:text-[16px] lg:text-[16px] xl:text-[18px] 2xl:text-[20px]">
                 {plainText}
               </p>
+            }
+          />
+        );
+      }
+      case 'windowImage': {
+        const imageUrl = win.photo ? buildSanityImageUrl(win.photo) : heroImage;
+        const imageComponent = imageUrl ? (
+          <Image
+            src={imageUrl}
+            alt={titre}
+            width={600}
+            height={600}
+            className="w-full h-full object-cover rounded-sm"
+          />
+        ) : (
+          <div className="w-full h-full bg-gray-200 flex items-center justify-center text-black">
+            Image indisponible
+          </div>
+        );
+
+        return (
+          <WindowsTab
+            key={id}
+            id={id}
+            titre={titre}
+            couleur={couleur}
+            contenu={
+              <div className="w-[30vw] h-[20vw] flex items-center justify-center">
+                {/* 3. On rend l'image cliquable SI le client a mis un lien dans Sanity */}
+                {win.externalLink ? (
+                  <a
+                    href={win.externalLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full h-full block hover:opacity-90 transition-opacity"
+                  >
+                    {imageComponent}
+                  </a>
+                ) : (
+                  <div className="w-full h-full block">{imageComponent}</div>
+                )}
+              </div>
             }
           />
         );
