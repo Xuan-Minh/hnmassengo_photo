@@ -51,7 +51,6 @@ export default function TestPage() {
 
     const fetchData = async () => {
       try {
-        // 2. Fetch dynamique de TOUTES les fenêtres depuis le document principal
         const windowsData = await client.fetch(`
           *[_type == "homePage"][0].windows[]{
             ...,
@@ -67,7 +66,6 @@ export default function TestPage() {
         console.error('Erreur de fetch', err);
       }
 
-      // 3. Fetch de la date
       const dateFormatee = await getGlobalLastUpdate();
       if (!cancelled && dateFormatee) {
         setLastSeen(dateFormatee);
@@ -122,7 +120,6 @@ export default function TestPage() {
                 }}
               >
                 <div className="w-[38%] h-auto inline-block">
-                  {/* On utilise win.photo avec votre fonction utilitaire */}
                   {win.photo ? (
                     <Image
                       src={buildSanityImageUrl(win.photo)}
@@ -132,7 +129,6 @@ export default function TestPage() {
                       className="w-full h-auto object-cover rounded-md"
                     />
                   ) : (
-                    /* Si le client n'a pas encore mis de photo dans Sanity, on affiche heroImage en secours */
                     heroImage && (
                       <Image
                         src={heroImage}
@@ -237,9 +233,7 @@ export default function TestPage() {
       }
 
       case 'windowText': {
-        // 1. On récupère les blocs dans la bonne langue (fr, en, ou de)
         const rawBlocks = localizeField(win.content, locale, []);
-        // 2. On transforme ces blocs complexes en texte simple
         const plainText = portableTextToPlain(rawBlocks);
 
         return (

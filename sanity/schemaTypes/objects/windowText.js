@@ -62,6 +62,7 @@ export default {
       ],
     },
   ],
+  // LE BLOC PREVIEW DOIT ÊTRE ICI (À LA RACINE)
   preview: {
     select: {
       windowTitle: 'title.fr',
@@ -85,8 +86,8 @@ export default {
         : windowTitle || 'Fenêtre Texte';
 
       return {
-        title: displayTitle,
-        subtitle: 'Fenêtre Texte',
+        title: windowTitle || 'Fenêtre Texte',
+        subtitle: `${displayTitle}`,
       };
     },
   },
