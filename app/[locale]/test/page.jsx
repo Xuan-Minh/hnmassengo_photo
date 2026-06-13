@@ -24,8 +24,8 @@ export async function getGlobalLastUpdate() {
     if (!lastUpdateDate) return null;
 
     const date = new Date(lastUpdateDate);
-    return new Intl.DateTimeFormat('fr-FR', {
-      dateStyle: 'medium',
+    return new Intl.DateTimeFormat('en-EN', {
+      dateStyle: 'short',
       timeStyle: 'short',
     }).format(date);
   } catch (error) {

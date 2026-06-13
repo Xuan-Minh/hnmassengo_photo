@@ -67,7 +67,7 @@ export default {
         prepare(selection) {
           const { title } = selection;
           return {
-            title: title.fr || 'Fenêtre Texte',
+            title: title.fr && ' || Fenêtre Texte',
           };
         },
       },
