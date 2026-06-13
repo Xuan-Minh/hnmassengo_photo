@@ -44,6 +44,35 @@ export default {
         Rule.required().error('Vous devez choisir une couleur.'),
     },
     {
+      name: 'windowSize',
+      title: 'Taille de la fenêtre',
+      type: 'string',
+      options: {
+        list: [
+          { title: 'Petite', value: 'small' },
+          { title: 'Moyenne', value: 'medium' },
+          { title: 'Grande', value: 'large' },
+        ],
+        layout: 'radio',
+      },
+      initialValue: 'medium',
+    },
+    {
+      name: 'windowOrientation',
+      title: 'Format de la fenêtre',
+      type: 'string',
+      options: {
+        list: [
+          { title: 'Paysage (Horizontal)', value: 'landscape' },
+          { title: 'Portrait (Vertical)', value: 'portrait' },
+          { title: 'Carré', value: 'square' },
+        ],
+        layout: 'radio',
+        direction: 'horizontal', // Affiche les boutons côte à côte dans le Studio
+      },
+      initialValue: 'landscape',
+    },
+    {
       name: 'externalLink',
       title: 'Lien externe',
       type: 'url',
