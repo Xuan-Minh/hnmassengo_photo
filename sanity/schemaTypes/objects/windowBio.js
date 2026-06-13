@@ -53,8 +53,27 @@ export default {
     {
       name: 'occupation',
       title: 'Occupation',
-      type: 'string',
-      initialValue: 'Soccer / Photographer',
+      type: 'object',
+      fields: [
+        {
+          name: 'fr',
+          title: 'Français',
+          type: 'string',
+          initialValue: 'Soccer / Photographer',
+        },
+        {
+          name: 'en',
+          title: 'Anglais',
+          type: 'string',
+          initialValue: 'Soccer / Photographer',
+        },
+        {
+          name: 'de',
+          title: 'Allemand',
+          type: 'string',
+          initialValue: 'Soccer / Photographer',
+        },
+      ],
     },
     {
       name: 'location',
