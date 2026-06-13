@@ -91,6 +91,47 @@ export default function TestPage() {
     const couleur = win.windowColor?.hex || teamColorsFALLBACK[index % 4];
     const id = win._key || `tab${index}`;
 
+    // ==========================================
+    // 📍 CALCUL DE LA POSITION (GRILLE AUTO-ADAPTATIVE)
+    // ==========================================
+    const totalWindows = windows.length;
+
+    // 1. Calcul du nombre de colonnes et lignes idéal (ex: 4 fenêtres = 2x2, 6 = 3x2)
+    const cols = Math.ceil(Math.sqrt(totalWindows));
+    const rows = Math.ceil(totalWindows / cols);
+
+    // 2. On trouve la position de la fenêtre actuelle dans cette grille
+    const col = index % cols;
+    const row = Math.floor(index / cols);
+
+    // 3. On répartit sur 90vw et 80vh (pour laisser 5% de marge sur les bords)
+    const leftPos = `${col * (90 / cols) + 5}vw`;
+    const topPos = `${row * (80 / rows) + 5}vh`;
+
+    const initialPosition = { top: topPos, left: leftPos };
+    // ==========================================
+
+    // 1. Définir une valeur de base selon la taille
+    let baseWidth = 30; // Valeur par défaut pour 'medium'
+
+    if (win.windowSize === 'small') baseWidth = 20;
+    if (win.windowSize === 'large') baseWidth = 40;
+
+    // 2. Calculer la largeur et la hauteur finales selon l'orientation
+    let width = `${baseWidth}vw`;
+    let height = `${baseWidth * 0.66}vw`; // Par défaut: paysage (ratio 3:2)
+
+    if (win.windowOrientation === 'portrait') {
+      width = `${baseWidth * 0.66}vw`;
+      height = `${baseWidth}vw`;
+    } else if (win.windowOrientation === 'square') {
+      width = `${baseWidth * 0.8}vw`;
+      height = `${baseWidth * 0.8}vw`;
+    }
+
+    // On passe ces dimensions via la balise style à l'intérieur de WindowsTab
+    const customDimensions = { width, height };
+
     switch (win._type) {
       case 'windowBio': {
         const occupation = localizeField(
@@ -104,6 +145,7 @@ export default function TestPage() {
             id={id}
             titre={titre}
             couleur={couleur}
+            style={initialPosition}
             contenu={
               <div
                 style={{
@@ -112,6 +154,7 @@ export default function TestPage() {
                   justifyContent: 'between',
                   gap: '1rem',
                   width: '45vw',
+                  zIndex: '100  !important',
                 }}
               >
                 <div className="w-[38%] h-auto inline-block">
@@ -180,6 +223,7 @@ export default function TestPage() {
             id={id}
             titre={titre}
             couleur={couleur}
+            style={initialPosition}
             contenu={
               <iframe
                 className="w-[30vw] h-[152px] rounded-md"
@@ -204,6 +248,7 @@ export default function TestPage() {
             id={id}
             titre={titre}
             couleur={couleur}
+            style={initialPosition}
             contenu={
               videoId ? (
                 <iframe
@@ -239,6 +284,7 @@ export default function TestPage() {
             id={id}
             titre={titre}
             couleur={couleur}
+            style={initialPosition}
             contenu={
               <p className="w-[30vw] h-[20vw] bg-current/15 overflow-scroll-y whitespace-pre-line font-liberation italic leading-[1.3] text-blackCustom text-[18px] md:text-[16px] lg:text-[16px] xl:text-[18px] 2xl:text-[20px]">
                 {plainText}
@@ -256,7 +302,8 @@ export default function TestPage() {
             alt={titre}
             width={600}
             height={600}
-            className="w-full h-full object-cover rounded-md"
+            className="object-cover rounded-md"
+            style={{ width, height }}
           />
         ) : (
           <div className="w-full h-full bg-gray-200 flex items-center justify-center text-black rounded-md">
@@ -270,6 +317,7 @@ export default function TestPage() {
             id={id}
             titre={titre}
             couleur={couleur}
+            style={initialPosition}
             contenu={
               <div className="w-[20vw] h-[30vw] flex items-center justify-center">
                 {win.externalLink ? (
