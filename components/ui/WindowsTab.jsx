@@ -24,6 +24,7 @@ export default function WindowsTab({
   bringToFront,
   fontColor,
   style,
+  constraintsRef,
 }) {
   const color = couleur || 'bg-gray-300';
 
@@ -37,6 +38,7 @@ export default function WindowsTab({
     <motion.div
       drag
       dragMomentum={false}
+      dragConstraints={constraintsRef}
       onDragStart={() => {
         bringToFront();
         setIsDragging(true);

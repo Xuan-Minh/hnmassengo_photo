@@ -10,6 +10,7 @@ import {
 } from 'react';
 
 const WindowsManager = ({ children }) => {
+  const constraintsRef = useRef(null);
   const { windowEntries, initialWindowZIndexes } = useMemo(() => {
     const entries = Children.toArray(children).filter(Boolean);
     const zIndexes = {};
@@ -32,7 +33,10 @@ const WindowsManager = ({ children }) => {
   }, []);
 
   return (
-    <>
+    <div
+      ref={constraintsRef}
+      className="relative w-screen h-screen overflow-hidden bg-transparent"
+    >
       {windowEntries.map((child, index) => {
         const id = child.props.id ?? `window-${index}`;
         const zIndex = windowZIndexes[id] ?? index + 1;
@@ -41,9 +45,10 @@ const WindowsManager = ({ children }) => {
           key: id,
           zIndex,
           bringToFront: () => bringToFront(id),
+          constraintsRef,
         });
       })}
-    </>
+    </div>
   );
 };
 

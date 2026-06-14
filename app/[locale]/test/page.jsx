@@ -129,9 +129,10 @@ export default function TestPage() {
       height = `${baseWidth * 0.8}vw`;
     }
 
-    // On passe ces dimensions via la balise style à l'intérieur de WindowsTab
-    const customDimensions = { width, height };
-
+    const windowStyle = {
+      top: topPos,
+      left: leftPos,
+    };
     switch (win._type) {
       case 'windowBio': {
         const occupation = localizeField(
@@ -145,7 +146,7 @@ export default function TestPage() {
             id={id}
             titre={titre}
             couleur={couleur}
-            style={initialPosition}
+            style={windowStyle}
             contenu={
               <div
                 style={{
@@ -223,7 +224,7 @@ export default function TestPage() {
             id={id}
             titre={titre}
             couleur={couleur}
-            style={initialPosition}
+            style={windowStyle}
             contenu={
               <iframe
                 className="w-[30vw] h-[152px] rounded-md"
@@ -248,7 +249,7 @@ export default function TestPage() {
             id={id}
             titre={titre}
             couleur={couleur}
-            style={initialPosition}
+            style={windowStyle} // <-- Ici c'est parfait
             contenu={
               videoId ? (
                 <iframe
@@ -284,7 +285,7 @@ export default function TestPage() {
             id={id}
             titre={titre}
             couleur={couleur}
-            style={initialPosition}
+            style={windowStyle}
             contenu={
               <p className="w-[30vw] h-[20vw] bg-current/15 overflow-scroll-y whitespace-pre-line font-liberation italic leading-[1.3] text-blackCustom text-[18px] md:text-[16px] lg:text-[16px] xl:text-[18px] 2xl:text-[20px]">
                 {plainText}
@@ -300,10 +301,10 @@ export default function TestPage() {
           <Image
             src={imageUrl}
             alt={titre}
-            width={600}
-            height={600}
-            className="object-cover rounded-md"
-            style={{ width, height }}
+            width={800} // Grande taille pour éviter le pixelisé
+            height={800}
+            // L'image prend 100% de la div parente (qui elle, a la taille dynamique)
+            className="w-full h-full object-cover rounded-md block"
           />
         ) : (
           <div className="w-full h-full bg-gray-200 flex items-center justify-center text-black rounded-md">
@@ -317,9 +318,13 @@ export default function TestPage() {
             id={id}
             titre={titre}
             couleur={couleur}
-            style={initialPosition}
+            style={windowStyle} // 👈 On utilise le style fusionné !
             contenu={
-              <div className="w-[20vw] h-[30vw] flex items-center justify-center">
+              // ICI LA MAGIE : La div prend les dimensions dynamiques calculées !
+              <div
+                className="flex items-center justify-center p-0 m-0"
+                style={{ width, height }}
+              >
                 {win.externalLink ? (
                   <a
                     href={win.externalLink}
@@ -337,7 +342,6 @@ export default function TestPage() {
           />
         );
       }
-
       default:
         return null;
     }
