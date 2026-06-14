@@ -163,7 +163,7 @@ export default function TestPage() {
                   justifyContent: 'between',
                   gap: '1rem',
                   width: '45vw',
-                  zIndex: '100  !important',
+                  zIndex: '50',
                 }}
               >
                 <div className="w-[38%] h-auto inline-block">
