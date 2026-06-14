@@ -35,7 +35,7 @@ const WindowsManager = ({ children }) => {
   return (
     <div
       ref={constraintsRef}
-      className="relative w-screen h-screen overflow-hidden bg-transparent"
+      className="relative w-[110vw] h-[110vh] overflow-hidden bg-transparent"
     >
       {windowEntries.map((child, index) => {
         const id = child.props.id ?? `window-${index}`;
