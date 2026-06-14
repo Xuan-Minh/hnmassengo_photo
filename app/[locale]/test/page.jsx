@@ -86,38 +86,50 @@ export default function TestPage() {
 
   const teamColorsFALLBACK = ['#BB3430', '#44724B', '#FED52A', '#FFFFFF'];
 
+  // 1. TRI DES FENÊTRES : Les fenêtres "startsOnTop" sont rendues en dernier
+  const orderedWindows = [...windows].sort((a, b) => {
+    const aPriority = a.startsOnTop ? 1 : 0;
+    const bPriority = b.startsOnTop ? 1 : 0;
+    return aPriority - bPriority;
+  });
+
   const renderWindow = (win, index) => {
     const titre = localizeField(win.title, locale, 'Fenêtre');
     const couleur = win.windowColor?.hex || teamColorsFALLBACK[index % 4];
     const id = win._key || `tab${index}`;
 
     // ==========================================
-    // 📍 CALCUL DE LA POSITION (GRILLE AUTO-ADAPTATIVE)
+    // 📍 CALCUL DU POSITIONNEMENT
     // ==========================================
     const totalWindows = windows.length;
-
-    // 1. Calcul du nombre de colonnes et lignes idéal (ex: 4 fenêtres = 2x2, 6 = 3x2)
     const cols = Math.ceil(Math.sqrt(totalWindows));
     const rows = Math.ceil(totalWindows / cols);
-
-    // 2. On trouve la position de la fenêtre actuelle dans cette grille
     const col = index % cols;
     const row = Math.floor(index / cols);
 
-    // 3. On répartit sur 90vw et 80vh (pour laisser 5% de marge sur les bords)
-    const leftPos = `${col * (90 / cols) + 5}vw`;
-    const topPos = `${row * (80 / rows) + 5}vh`;
+    const leftPos =
+      typeof win.positionX === 'number'
+        ? `${win.positionX}vw`
+        : `${col * (90 / cols) + 5}vw`;
 
-    const initialPosition = { top: topPos, left: leftPos };
+    const topPos =
+      typeof win.positionY === 'number'
+        ? `${win.positionY}vh`
+        : `${row * (80 / rows) + 5}vh`;
+
+    const windowStyle = {
+      top: topPos,
+      left: leftPos,
+    };
+
     // ==========================================
-
-    // 1. Définir une valeur de base selon la taille
+    // 📐 CALCUL DES DIMENSIONS (Principalement pour WindowImage)
+    // ==========================================
     let baseWidth = 30; // Valeur par défaut pour 'medium'
 
     if (win.windowSize === 'small') baseWidth = 20;
     if (win.windowSize === 'large') baseWidth = 40;
 
-    // 2. Calculer la largeur et la hauteur finales selon l'orientation
     let width = `${baseWidth}vw`;
     let height = `${baseWidth * 0.66}vw`; // Par défaut: paysage (ratio 3:2)
 
@@ -129,10 +141,6 @@ export default function TestPage() {
       height = `${baseWidth * 0.8}vw`;
     }
 
-    const windowStyle = {
-      top: topPos,
-      left: leftPos,
-    };
     switch (win._type) {
       case 'windowBio': {
         const occupation = localizeField(
@@ -211,7 +219,6 @@ export default function TestPage() {
           if (match && !rawUrl.includes('/embed/')) {
             const type = match[1];
             const id = match[2];
-            // Format d'URL corrigé avec le $ manquant pour l'intégration
             finalUrl = `https://open.spotify.com/embed/${type}/${id}`;
           }
         } catch (e) {
@@ -249,7 +256,7 @@ export default function TestPage() {
             id={id}
             titre={titre}
             couleur={couleur}
-            style={windowStyle} // <-- Ici c'est parfait
+            style={windowStyle}
             contenu={
               videoId ? (
                 <iframe
@@ -301,9 +308,8 @@ export default function TestPage() {
           <Image
             src={imageUrl}
             alt={titre}
-            width={800} // Grande taille pour éviter le pixelisé
+            width={800}
             height={800}
-            // L'image prend 100% de la div parente (qui elle, a la taille dynamique)
             className="w-full h-full object-cover rounded-md block"
           />
         ) : (
@@ -318,9 +324,8 @@ export default function TestPage() {
             id={id}
             titre={titre}
             couleur={couleur}
-            style={windowStyle} // 👈 On utilise le style fusionné !
+            style={windowStyle}
             contenu={
-              // ICI LA MAGIE : La div prend les dimensions dynamiques calculées !
               <div
                 className="flex items-center justify-center p-0 m-0"
                 style={{ width, height }}
@@ -357,7 +362,7 @@ export default function TestPage() {
 
   return (
     <WindowsManager>
-      {windows.map((win, index) => renderWindow(win, index))}
+      {orderedWindows.map((win, index) => renderWindow(win, index))}
     </WindowsManager>
   );
 }
