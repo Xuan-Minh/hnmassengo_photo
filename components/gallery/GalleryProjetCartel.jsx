@@ -76,7 +76,7 @@ export default function GalleryProjetCartel({ project, onClose }) {
         closeTimerRef.current = null;
       }
     };
-  }, [isClosing]); // <-- Le tableau de dépendances est propre
+  }, [isClosing]);
 
   // 2. Création de l'Event pour le clavier
   const onKeyDown = useEffectEvent(event => {

@@ -396,7 +396,7 @@ function useLightboxLogic(open, onClose, images) {
   useEffect(() => {
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
-  }, []); // <-- Dépendances vides pour éviter les doubles rendus !
+  }, []);
 
   // Événements Tactiles (Optimisés avec useEffectEvent)
   const onTouchStart = useEffectEvent(e => {
@@ -428,7 +428,7 @@ function useLightboxLogic(open, onClose, images) {
       window.removeEventListener('touchstart', onTouchStart, false);
       window.removeEventListener('touchend', onTouchEnd, false);
     };
-  }, [open]); // <-- Le re-render est évité grâce aux Event hooks
+  }, [open]);
 
   return {
     currentIndex,
@@ -446,8 +446,6 @@ function useLightboxLogic(open, onClose, images) {
 // ==========================================
 
 export default function CustomLightbox({ open, onClose, images, project }) {
-  // CORRECTION : Appel des hooks TOUJOURS au niveau racine.
-  // Peu importe que l'on affiche ou non, l'ordre des hooks reste identique.
   const {
     currentIndex,
     isCurrentLoaded,

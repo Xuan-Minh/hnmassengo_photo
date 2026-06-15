@@ -464,8 +464,6 @@ export default function ProjectImagesFolderInput(props) {
   };
 
   const images = useMemo(() => (Array.isArray(value) ? value : []), [value]);
-
-  // CORRECTION (js-combine-iterations) : Boucle unique et performante au lieu de filter().map().reduce()
   const effectiveSelectedKeys = useMemo(() => {
     const result = new Set();
     for (const img of images) {

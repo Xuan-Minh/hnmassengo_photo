@@ -4,7 +4,6 @@ import { verifyUnsubscribeToken } from '../../../../lib/newsletter/unsubscribe';
 import { logger } from '../../../../lib/logger';
 
 export const runtime = 'nodejs';
-// LA LIGNE MAGIQUE : Interdit la mise en cache de cette route API
 export const dynamic = 'force-dynamic';
 
 const EMAIL_RE =
@@ -16,7 +15,6 @@ function normalizeEmail(email) {
     .toLowerCase();
 }
 
-// 1. Le GET ne fait plus aucune mutation. Il affiche simplement une page de confirmation.
 // eslint-disable-next-line react-doctor/nextjs-no-side-effect-in-get-handler
 export async function GET(request) {
   const { searchParams } = new URL(request.url);
@@ -49,7 +47,6 @@ export async function GET(request) {
   );
 }
 
-// 2. Le POST gère l'effet secondaire (mutation Sanity)
 export async function POST(request) {
   let email = '';
   let token = '';
@@ -80,13 +77,11 @@ export async function POST(request) {
     );
 
     if (existing?._id) {
-      // On met à jour son statut
       await sanity
         .patch(existing._id)
         .set({ status: 'unsubscribed', updatedAt: new Date().toISOString() })
         .commit({ autoGenerateArrayKeys: true });
     } else {
-      // Pour le debug : si l'email n'est pas trouvé dans Sanity
       logger.error(
         `Désinscription échouée : l'email ${email} est introuvable dans Sanity.`
       );

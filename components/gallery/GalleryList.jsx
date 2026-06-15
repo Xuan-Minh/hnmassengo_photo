@@ -224,7 +224,7 @@ function useGalleryLogic(projects, setActiveCoord) {
     updateMobile();
     window.addEventListener('resize', updateMobile);
     return () => window.removeEventListener('resize', updateMobile);
-  }, [dispatch]); // <-- CORRECTION : dispatch ajouté
+  }, [dispatch]);
 
   // Navigation logic
   const navigateToImage = useCallback(
@@ -253,7 +253,7 @@ function useGalleryLogic(projects, setActiveCoord) {
         setActiveCoord(projects[projectIndex]?.coords || '');
       }, transitionDelay);
     },
-    [isMobile, projects, setActiveCoord, dispatch] // <-- CORRECTION : dispatch ajouté
+    [isMobile, projects, setActiveCoord, dispatch]
   );
 
   const navigateListPrev = useCallback(() => {
@@ -410,7 +410,7 @@ function useGalleryLogic(projects, setActiveCoord) {
     currentImageIndex,
     setActiveCoord,
     dispatch,
-  ]); // <-- CORRECTION : dispatch ajouté
+  ]);
 
   // Keyboard navigation
   const handleKeyDown = useEffectEvent(e => {

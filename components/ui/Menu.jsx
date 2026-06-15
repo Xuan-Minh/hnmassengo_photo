@@ -246,7 +246,7 @@ function useMobileGestures(mobileMenuOpen, touchStart, dispatch) {
       overlay.removeEventListener('touchmove', onTouchMove);
       overlay.removeEventListener('touchend', onTouchEnd);
     };
-  }, [mobileMenuOpen, dispatch]); // <-- CORRECTION : dispatch est maintenant inclus dans le tableau !
+  }, [mobileMenuOpen, dispatch]);
 
   return overlayRef;
 }

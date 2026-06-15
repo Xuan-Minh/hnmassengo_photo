@@ -19,7 +19,6 @@ function getProjectDateMs(project) {
   return Number.isFinite(ms) ? ms : null;
 }
 
-// 1. Définition de l'état initial
 const initialState = {
   projects: [],
   view: 'grid',
@@ -28,7 +27,6 @@ const initialState = {
   activeCoord: '',
 };
 
-// 2. Définition du Reducer unique
 function reducer(state, action) {
   switch (action.type) {
     case 'UPDATE_STATE':
@@ -42,7 +40,6 @@ export default function Gallery() {
   const t = useTranslations('gallery');
   const { locale } = useParams();
 
-  // 3. Initialisation du reducer
   const [state, dispatch] = useReducer(reducer, initialState);
   const { projects, view, selectedProject, overlayOpen, activeCoord } = state;
 

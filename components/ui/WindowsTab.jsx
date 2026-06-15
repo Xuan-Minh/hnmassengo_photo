@@ -28,7 +28,6 @@ export default function WindowsTab({
 }) {
   const color = couleur || 'bg-gray-300';
 
-  // 1. On calcule la couleur exacte ici, une bonne fois pour toutes
   const textColor = fontColor || fontColorTab(couleur);
 
   const [isDragging, setIsDragging] = useState(false);

@@ -22,7 +22,6 @@ export default function LanguageSwitcher() {
 
     const io = new IntersectionObserver(
       entries => {
-        // CORRECTION : On utilise reduce pour trouver le max au lieu de sort()[0]
         const visible = entries
           .filter(e => e.isIntersecting)
           .reduce(

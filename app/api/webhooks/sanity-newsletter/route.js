@@ -91,8 +91,6 @@ export async function POST(request) {
     );
   }
 
-  // CRITICAL: Only process blogPost documents, never process newsletterCampaign
-  // This prevents infinite loops when the webhook triggers on campaign creation
   const documentType = payload?._type || payload?.type;
   if (documentType !== 'blogPost') {
     return NextResponse.json({

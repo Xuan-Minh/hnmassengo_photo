@@ -16,7 +16,6 @@ export async function POST(request) {
       windowMs: WINDOW_MS,
     });
 
-    // Rate limit check
     if (!allowed) {
       const response = NextResponse.json(
         { success: false, message: 'Trop de requêtes, réessayez plus tard.' },

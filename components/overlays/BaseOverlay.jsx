@@ -18,12 +18,9 @@ export default function BaseOverlay({
   ariaLabelledBy,
   ariaLabel,
 }) {
-  // CORRECTION : Plus besoin de useRef ! Un seul useEffect suffit.
   useEffect(() => {
-    // 1. Capture l'élément actif au montage (variable locale)
     const elementToFocus = document.activeElement;
 
-    // 2. Rend le focus au démontage
     return () => {
       elementToFocus?.focus?.();
     };

@@ -84,7 +84,6 @@ export default function TestPage() {
 
   const teamColorsFALLBACK = ['#BB3430', '#44724B', '#FED52A', '#FFFFFF'];
 
-  // 1. TRI DES FENÊTRES : Les fenêtres "startsOnTop" sont rendues en dernier
   const orderedWindows = [...windows].sort((a, b) => {
     const aPriority = a.startsOnTop ? 1 : 0;
     const bPriority = b.startsOnTop ? 1 : 0;
@@ -92,13 +91,10 @@ export default function TestPage() {
   });
 
   const renderWindow = (win, index) => {
-    // 1. MAGIE : On retrouve l'index d'origine pour ne pas casser l'ordre des couleurs de secours
     const originalIndex = windows.indexOf(win);
 
     const titre = localizeField(win.title, locale, 'Fenêtre');
 
-    // 2. On récupère la couleur Sanity, sinon on utilise l'index ORIGINAL (et pas l'index trié !)
-    // 2. On récupère la couleur Sanity en ciblant bien le champ "colorValue", sinon on utilise le fallback
     const couleur =
       win.windowColor?.colorValue?.hex || teamColorsFALLBACK[originalIndex % 4];
 

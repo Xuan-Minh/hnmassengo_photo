@@ -107,8 +107,6 @@ export default function Blog() {
       }));
       setPosts(mapped);
 
-      // PLUTOT QU'UN USE-EFFECT QUI SURVEILLE [posts] A POSTERIORI :
-      // On le gère directement ici (l'événement "réception des données")
       if (!initialCheckDone.current && typeof window !== 'undefined') {
         initialCheckDone.current = true;
         const isReload = isReloadNavigation();
@@ -132,8 +130,6 @@ export default function Blog() {
     };
     fetchPosts();
   }, [locale]);
-
-  // SUPPRESSION DU SECOND USEEFFECT QUI TOURNAIT SUR [posts]
 
   useEffect(() => {
     if (typeof window === 'undefined') return;

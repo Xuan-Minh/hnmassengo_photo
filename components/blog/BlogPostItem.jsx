@@ -83,7 +83,6 @@ export default function BlogPostItem({
       ? '[-webkit-line-clamp:2] lg:[-webkit-line-clamp:2]'
       : '[-webkit-line-clamp:3] lg:[-webkit-line-clamp:3]';
 
-  // SOLUTION: Remplacer la fonction renderTextPreview() par une simple variable JSX
   const textPreviewNode =
     postCount === 1 ? (
       <div
