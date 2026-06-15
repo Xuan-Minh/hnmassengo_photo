@@ -3,8 +3,8 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import Image from 'next/image';
-import WindowsTab from '../../../components/ui/WindowsTab';
-import WindowsManager from '../../../components/ui/WindowsManager';
+import WindowsTab from '../../../components/home/WindowsTab';
+import WindowsManager from '../../../components/home/WindowsManager';
 import { HOME_FALLBACK_IMAGES } from '../../../lib/constants';
 import client from '../../../lib/sanity.client';
 import { useSanityImages } from '../../../lib/hooks';
@@ -39,7 +39,7 @@ function localizeField(value, locale, fallback = '') {
   return value?.[locale] || value?.fr || value?.en || value?.de || fallback;
 }
 
-export default function TestPage() {
+export default function HomePage() {
   const { locale = 'fr' } = useParams();
   const [lastSeen, setLastSeen] = useState('...');
   const [windows, setWindows] = useState([]);
