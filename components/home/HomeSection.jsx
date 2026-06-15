@@ -24,7 +24,6 @@ export default function HomeSection() {
   const [bioDoc, setBioDoc] = useState(null);
   const [showScrollCta, setShowScrollCta] = useState(true);
 
-  // On garde les images du schema homeSectionImage et on affiche la premiere.
   const isProduction = process.env.NODE_ENV === 'production';
   const homeImages = useSanityImages('homeSectionImage', HOME_FALLBACK_IMAGES, {
     width: isProduction ? 900 : 1200,
