@@ -51,9 +51,7 @@ export default function TestPage() {
         const windowsData = await client.fetch(`
           *[_type == "homePage"][0].windows[]{
             ...,
-            windowColor->{
-              hex 
-            }
+            windowColor->
           }
         `);
         if (!cancelled && windowsData) {
@@ -94,9 +92,17 @@ export default function TestPage() {
   });
 
   const renderWindow = (win, index) => {
+    // 1. MAGIE : On retrouve l'index d'origine pour ne pas casser l'ordre des couleurs de secours
+    const originalIndex = windows.indexOf(win);
+
     const titre = localizeField(win.title, locale, 'Fenêtre');
-    const couleur = win.windowColor?.hex || teamColorsFALLBACK[index % 4];
-    const id = win._key || `tab${index}`;
+
+    // 2. On récupère la couleur Sanity, sinon on utilise l'index ORIGINAL (et pas l'index trié !)
+    // 2. On récupère la couleur Sanity en ciblant bien le champ "colorValue", sinon on utilise le fallback
+    const couleur =
+      win.windowColor?.colorValue?.hex || teamColorsFALLBACK[originalIndex % 4];
+
+    const id = win._key || `tab${originalIndex}`;
 
     // ==========================================
     // 📍 CALCUL DU POSITIONNEMENT
@@ -104,6 +110,7 @@ export default function TestPage() {
     const totalWindows = windows.length;
     const cols = Math.ceil(Math.sqrt(totalWindows));
     const rows = Math.ceil(totalWindows / cols);
+
     const col = index % cols;
     const row = Math.floor(index / cols);
 
