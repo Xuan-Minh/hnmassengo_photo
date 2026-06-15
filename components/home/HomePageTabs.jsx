@@ -364,8 +364,13 @@ export default function HomePageTabs() {
   }
 
   return (
-    <WindowsManager>
-      {orderedWindows.map((win, index) => renderWindow(win, index))}
-    </WindowsManager>
+    <section
+      className="relative w-full min-h-screen overflow-hidden"
+      id="home-tabs"
+    >
+      <WindowsManager>
+        {orderedWindows.map((win, index) => renderWindow(win, index))}
+      </WindowsManager>
+    </section>
   );
 }
