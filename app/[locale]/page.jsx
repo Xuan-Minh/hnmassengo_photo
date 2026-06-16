@@ -3,7 +3,6 @@ import { useParams } from 'next/navigation';
 import ContactOverlay from '../../components/overlays/ContactOverlay';
 import ContactContent from '../../components/overlays/ContactContent';
 import ContactMarquee from '../../components/overlays/ContactMarquee';
-import HomeSection from '../../components/home/HomeSection';
 import HomePageTabs from '../../components/home/HomePageTabs';
 import { LazyMotion, domMax, m } from 'framer-motion';
 import { useFadeInOnScreen } from '../../lib/hooks';
