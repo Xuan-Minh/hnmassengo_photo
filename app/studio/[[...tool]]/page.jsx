@@ -14,6 +14,10 @@ export const dynamic = 'force-static';
 
 export { viewport } from 'next-sanity/studio';
 
+export const metadata = {
+  title: 'Sanity Studio',
+  description: 'Espace de gestion de contenu',
+};
 export default function StudioPage() {
   return <NextStudio config={config} />;
 }
