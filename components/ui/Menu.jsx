@@ -64,44 +64,84 @@ function useMenuInitialization(dispatch) {
   }, [dispatch]);
 }
 
-function useMenuScrollTracking(dispatch, desktopItems, active, isDarkBg) {
-  const handleIntersect = useEffectEvent((entries, ratioMap) => {
-    entries.forEach(e => ratioMap.set(e.target.id, e.intersectionRatio));
+function useMenuScrollAndVisibility(dispatch, state, desktopItems) {
+  const { active, isDarkBg, hideMenu } = state;
 
-    let bestMenuId = null;
-    let bestMenuRatio = -1;
-    let bestOverallId = null;
-    let bestOverallRatio = -1;
+  const handleScroll = useEffectEvent(() => {
+    const root = document.getElementById('scroll-root');
+    if (!root) return;
 
-    ratioMap.forEach((ratio, id) => {
-      if (ratio > bestOverallRatio) {
-        bestOverallRatio = ratio;
-        bestOverallId = id;
+    const rootRect = root.getBoundingClientRect();
+    const rootCenter = rootRect.top + rootRect.height / 2; // Le centre de l'écran
+
+    // 1. DÉTECTER LA SECTION ACTIVE (Celle qui traverse le centre de l'écran)
+    const allSections = Array.from(
+      root.querySelectorAll('section[id], #home, #info')
+    );
+    let newlyActiveId = active;
+
+    for (const sec of allSections) {
+      const rect = sec.getBoundingClientRect();
+      if (rect.top <= rootCenter && rect.bottom >= rootCenter) {
+        newlyActiveId = sec.id;
+        break;
       }
-      if (ratio > bestMenuRatio && desktopItems.some(i => i.id === id)) {
-        bestMenuRatio = ratio;
-        bestMenuId = id;
-      }
-    });
+    }
 
+    // 2. VISIBILITÉ DE HOME ET CONTACT (Pour cacher le menu en douceur)
+    const homeEl = document.getElementById('home');
+    const infoEl = document.getElementById('info');
+    let isHomeVisible = false;
+    let isInfoVisible = false;
+
+    if (homeEl) {
+      const rect = homeEl.getBoundingClientRect();
+      const visiblePixels =
+        Math.min(rect.bottom, rootRect.bottom) -
+        Math.max(rect.top, rootRect.top);
+      if (visiblePixels > 0) {
+        isHomeVisible = visiblePixels / rect.height > 0.3; // Home visible à > 30%
+      }
+    }
+
+    if (infoEl) {
+      const rect = infoEl.getBoundingClientRect();
+      const visiblePixels =
+        Math.min(rect.bottom, rootRect.bottom) -
+        Math.max(rect.top, rootRect.top);
+      if (visiblePixels > 0) {
+        isInfoVisible = visiblePixels / rect.height > 0.2; // Info visible à > 20%
+      }
+    }
+
+    const hash = window.location.hash;
+    const isSnipcart =
+      hash.includes('#/cart') ||
+      hash.includes('#/checkout') ||
+      hash.includes('#snipcart');
+    const shouldHide = isHomeVisible || isInfoVisible || isSnipcart;
+    const isDark = newlyActiveId === 'blog';
+
+    // 3. PRÉPARER LES MISES À JOUR
     const updates = {};
-    let shouldUpdate = false;
 
-    if (bestMenuId && bestMenuRatio > 0 && bestMenuId !== active) {
-      sessionStorage.setItem('menuActiveSection', bestMenuId);
-      updates.active = bestMenuId;
-      shouldUpdate = true;
+    if (
+      newlyActiveId !== active &&
+      (desktopItems.some(i => i.id === newlyActiveId) ||
+        newlyActiveId === 'home')
+    ) {
+      sessionStorage.setItem('menuActiveSection', newlyActiveId);
+      updates.active = newlyActiveId;
+    }
+    if (isDark !== isDarkBg) {
+      updates.isDarkBg = isDark;
+    }
+    if (shouldHide !== hideMenu) {
+      updates.hideMenu = shouldHide;
     }
 
-    if (bestOverallId) {
-      const dark = bestOverallId === 'blog';
-      if (dark !== isDarkBg) {
-        updates.isDarkBg = dark;
-        shouldUpdate = true;
-      }
-    }
-
-    if (shouldUpdate) {
+    // 4. ENVOYER LA MISE À JOUR (Seulement si nécessaire)
+    if (Object.keys(updates).length > 0) {
       dispatch({ type: 'UPDATE_STATE', payload: updates });
     }
   });
@@ -110,75 +150,29 @@ function useMenuScrollTracking(dispatch, desktopItems, active, isDarkBg) {
     const root = document.getElementById('scroll-root');
     if (!root) return;
 
-    const allSections = Array.from(root.querySelectorAll('section[id]'));
-    const ratioMap = new Map(allSections.map(s => [s.id, 0]));
+    let ticking = false;
 
-    const io = new IntersectionObserver(
-      entries => handleIntersect(entries, ratioMap),
-      { root, threshold: Array.from({ length: 21 }, (_, i) => i / 20) }
-    );
+    // Optimisation à 60fps
+    const onScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          handleScroll();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
 
-    allSections.forEach(sec => io.observe(sec));
-    return () => io.disconnect();
-  }, [desktopItems]);
-}
+    handleScroll();
 
-function useMenuVisibility(dispatch) {
-  const updateHideMenu = useEffectEvent(() => {
-    const root = document.getElementById('scroll-root');
-    const infoEl = document.getElementById('info');
-    if (!root || !infoEl) return;
-
-    const hash = window.location.hash;
-    const isSnipcartUrl =
-      hash.includes('#/cart') ||
-      hash.includes('#/checkout') ||
-      hash.includes('#snipcart');
-
-    if (isSnipcartUrl) {
-      dispatch({ type: 'UPDATE_STATE', payload: { hideMenu: true } });
-      return;
-    }
-
-    const rect = infoEl.getBoundingClientRect();
-    const rootRect = root.getBoundingClientRect();
-    const isInfoVisible =
-      rect.top < rootRect.bottom && rect.bottom > rootRect.top;
-
-    const intersectionRatio = Math.max(
-      0,
-      Math.min(
-        1,
-        (Math.min(rect.bottom, rootRect.bottom) -
-          Math.max(rect.top, rootRect.top)) /
-          rect.height
-      )
-    );
-
-    dispatch({
-      type: 'UPDATE_STATE',
-      payload: { hideMenu: isInfoVisible && intersectionRatio > 0.2 },
-    });
-  });
-
-  useEffect(() => {
-    const root = document.getElementById('scroll-root');
-    const infoEl = document.getElementById('info');
-    if (!root || !infoEl) return;
-
-    const io = new IntersectionObserver(() => updateHideMenu(), {
-      root,
-      threshold: [0, 0.2, 0.4, 0.6, 0.8, 1],
-    });
-    io.observe(infoEl);
-
-    const handleHashChange = () => updateHideMenu();
-    window.addEventListener('hashchange', handleHashChange);
-    updateHideMenu();
+    root.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll, { passive: true });
+    window.addEventListener('hashchange', onScroll, { passive: true });
 
     return () => {
-      io.disconnect();
-      window.removeEventListener('hashchange', handleHashChange);
+      root.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
+      window.removeEventListener('hashchange', onScroll);
     };
   }, []);
 }
@@ -448,8 +442,7 @@ export default function Menu() {
 
   // Activation des comportements globaux
   useMenuInitialization(dispatch);
-  useMenuScrollTracking(dispatch, desktopItems, active, isDarkBg);
-  useMenuVisibility(dispatch);
+  useMenuScrollAndVisibility(dispatch, state, desktopItems); // 👈 Le nouveau hook unique est ici !
 
   const scrollToId = useCallback(targetId => {
     const root = document.getElementById('scroll-root');
@@ -473,10 +466,13 @@ export default function Menu() {
   // Rendu de sécurité avant l'hydratation
   if (!hydrated || !active) return null;
 
+  // On s'assure que le menu disparaît complètement quand on est sur "home" (ou si hideMenu est vrai)
+  const isHiddenState = hideMenu || active === 'home';
+
   if (isMobile) {
     return (
       <MobileMenu
-        shouldHideMobileMenu={hideMenu}
+        shouldHideMobileMenu={isHiddenState}
         mobileMenuOpen={mobileMenuOpen}
         isDarkBg={isDarkBg}
         desktopItems={desktopItems}
@@ -491,7 +487,7 @@ export default function Menu() {
 
   return (
     <DesktopMenu
-      shouldHideDesktopMenu={hideMenu || active === 'home'}
+      shouldHideDesktopMenu={isHiddenState}
       desktopItems={desktopItems}
       active={active}
       isDarkBg={isDarkBg}
