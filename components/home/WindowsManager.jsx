@@ -34,6 +34,7 @@ const WindowsManager = ({ children }) => {
 
   return (
     <section
+      id="home"
       ref={constraintsRef}
       className="relative w-full h-full bg-transparent"
     >
