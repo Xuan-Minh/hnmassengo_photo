@@ -3,7 +3,6 @@ import { projectType } from './projectType';
 import shopItem from './shopItem';
 import { loadingImageType } from './loadingImageType';
 import { loadingImageMobileType } from './loadingImageMobileType';
-import { homeBioType } from './homeBioType';
 import { newsletterSubscriber } from './newsletterSubscriber';
 import { newsletterCampaign } from './newsletterCampaign';
 import homePage from './homePage';
@@ -21,7 +20,6 @@ export const schema = {
     shopItem,
     loadingImageType,
     loadingImageMobileType,
-    homeBioType,
     homePage,
     windowBio,
     windowMusic,
