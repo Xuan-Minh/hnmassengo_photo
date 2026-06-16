@@ -1,7 +1,7 @@
+'use client';
 /* eslint-disable react-doctor/use-lazy-motion */
-import React from 'react';
-import { motion } from 'framer-motion';
-import { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { m, useMotionValue } from 'framer-motion';
 import { Minimize } from 'lucide-react';
 import { fontColorTab } from '../../lib/utils';
 
@@ -23,37 +23,74 @@ export default function WindowsTab({
   zIndex,
   bringToFront,
   fontColor,
-  style,
+  style, // Contient toujours { top: '...', left: '...' } de HomePageTabs
   constraintsRef,
 }) {
   const color = couleur || 'bg-gray-300';
-
   const textColor = fontColor || fontColorTab(couleur);
 
   const [isDragging, setIsDragging] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
 
+  // 1. Valeurs de mouvement pur Framer Motion
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+  const [isReady, setIsReady] = useState(false);
+
+  // 2. Conversion des unités relatives (vw/vh) en pixels réels
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+
+      const parse = val => {
+        if (!val) return 0;
+        const num = parseFloat(val);
+        if (typeof val === 'string') {
+          if (val.includes('vw')) return (num / 100) * vw;
+          if (val.includes('vh')) return (num / 100) * vh;
+        }
+        return num;
+      };
+
+      // Assigne la position de départ en pixels
+      x.set(parse(style.left));
+      y.set(parse(style.top));
+
+      // Affiche la fenêtre une fois posée (évite le flash en haut à gauche)
+      setIsReady(true);
+    }
+  }, [style.left, style.top, x, y]);
+
   return (
-    <motion.div
+    <m.div
       drag
       dragMomentum={false}
+      dragElastic={0} // Stoppe net sur les bords de l'écran
       dragConstraints={constraintsRef}
       onDragStart={() => {
         bringToFront();
         setIsDragging(true);
       }}
       onDragEnd={() => setIsDragging(false)}
-      onMouseDown={bringToFront}
-      style={{ zIndex, ...style }}
-      className={`windowsTab absolute flex flex-col flex-nowrap gap-1 bg-transparent`}
+      onPointerDown={bringToFront}
+      // 3. On applique UNIQUEMENT les valeurs de position de Framer Motion
+      style={{
+        x,
+        y,
+        zIndex,
+        opacity: isReady ? 1 : 0,
+      }}
+      // 4. L'origine DOM est à 0,0 pour que les constraintsRef soient exactes !
+      className="windowsTab absolute top-0 left-0 flex flex-col flex-nowrap gap-1 bg-transparent"
     >
-      <motion.div
+      <m.div
         style={{
           backgroundColor: color,
         }}
         variants={childrenVariants}
         animate={isDragging ? 'dragging' : 'idle'}
-        className={`flex items-center justify-between w-full border border-black gap-2 p-2 ${
+        className={`flex items-center justify-between w-full border border-black gap-2 p-2 cursor-grab active:cursor-grabbing ${
           isMinimized ? 'rounded-md' : 'rounded-t-md'
         }`}
       >
@@ -65,7 +102,10 @@ export default function WindowsTab({
         </h3>
 
         <button
-          onClick={() => setIsMinimized(!isMinimized)}
+          onClick={e => {
+            e.stopPropagation();
+            setIsMinimized(!isMinimized);
+          }}
           className="p-1 hover:bg-white/20 rounded-sm"
           aria-label="Réduire la fenêtre"
           type="button"
@@ -73,18 +113,22 @@ export default function WindowsTab({
         >
           <Minimize size={16} />
         </button>
-      </motion.div>
+      </m.div>
 
       {!isMinimized && (
-        <motion.div
+        <m.div
           variants={childrenVariants}
           animate={isDragging ? 'dragging' : 'idle'}
-          className="flex-1 p-4 border border-black bg-background flex rounded-b-md overflow-auto"
+          className={`flex-1 p-4 border border-black bg-background flex rounded-b-md overflow-auto ${
+            isDragging
+              ? 'pointer-events-none select-none'
+              : 'pointer-events-auto'
+          }`}
           {...(typeof contenu === 'string'
             ? { dangerouslySetInnerHTML: { __html: contenu } }
             : { children: contenu })}
-        ></motion.div>
+        ></m.div>
       )}
-    </motion.div>
+    </m.div>
   );
 }

@@ -4,7 +4,8 @@ import ContactOverlay from '../../components/overlays/ContactOverlay';
 import ContactContent from '../../components/overlays/ContactContent';
 import ContactMarquee from '../../components/overlays/ContactMarquee';
 import HomeSection from '../../components/home/HomeSection';
-import { LazyMotion, m, domMax } from 'framer-motion';
+import HomePageTabs from '../../components/home/HomePageTabs';
+import { LazyMotion, domMax, m } from 'framer-motion';
 import { useFadeInOnScreen } from '../../lib/hooks';
 
 import Gallery from '../../components/gallery/Gallery';
@@ -23,7 +24,7 @@ export default function HomePage() {
     <>
       <LazyMotion features={domMax} strict>
         <ContactOverlay />
-        <HomeSection />
+        <HomePageTabs />
         <m.section
           ref={galleryRef}
           id="works"

@@ -33,7 +33,10 @@ const WindowsManager = ({ children }) => {
   }, []);
 
   return (
-    <div ref={constraintsRef} className="relative w-full h-full bg-transparent">
+    <section
+      ref={constraintsRef}
+      className="relative w-full h-full bg-transparent"
+    >
       {windowEntries.map((child, index) => {
         const id = child.props.id ?? `window-${index}`;
         const zIndex = windowZIndexes[id] ?? index + 1;
@@ -45,7 +48,7 @@ const WindowsManager = ({ children }) => {
           constraintsRef,
         });
       })}
-    </div>
+    </section>
   );
 };
 
