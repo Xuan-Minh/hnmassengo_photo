@@ -1,4 +1,9 @@
 /* Accessibilité : focus visible sur tous les boutons et liens */
+@media (refers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+  }
+}
 @font-face {
   font-family: 'Liberation Mono';
   src:

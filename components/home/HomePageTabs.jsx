@@ -15,7 +15,7 @@ import {
 } from '../../lib/utils';
 import { buildSanityImageUrl } from '../../lib/imageUtils';
 
-export async function getGlobalLastUpdate() {
+async function getGlobalLastUpdate() {
   try {
     const query = `*[!(_id in path("_.**"))] | order(_updatedAt desc)[0]._updatedAt`;
     const lastUpdateDate = await client.fetch(query);
