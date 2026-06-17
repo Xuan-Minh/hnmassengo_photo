@@ -1,19 +1,17 @@
-/* eslint-disable react-doctor/no-initialize-state */
 'use client';
 import React from 'react';
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { usePathname } from '../../src/i18n/navigation';
+
 const langs = ['fr', 'en', 'de'];
 
-// Sélecteur de langue avec adaptation de couleur + disparition sur la section contact
+// Sélecteur de langue avec adaptation de couleur (la disparition globale est gérée par UIControlBar)
 export default function LanguageSwitcher() {
   const params = useParams();
   const pathname = usePathname();
   const locale = params.locale;
   const [isDarkBg, setIsDarkBg] = useState(false);
-  // activeSection n'est plus nécessaire (uniquement adaptation colorimétrique)
-  const [hideSelector, setHideSelector] = useState(false);
 
   useEffect(() => {
     const root = document.getElementById('scroll-root');
@@ -32,35 +30,17 @@ export default function LanguageSwitcher() {
 
         if (visible?.target) {
           const sectionId = visible.target.id;
-          // Synchronisation stricte avec Menu : blanc uniquement sur blog
+          // Synchronisation stricte : blanc uniquement sur blog
           setIsDarkBg(sectionId === 'blog');
         }
       },
       { root, threshold: [0.4, 0.6, 0.8] }
     );
+
     sections.forEach(sec => io.observe(sec));
     return () => io.disconnect();
   }, []);
 
-  // Masquer le sélecteur de langue quand la section contact du bas (#info) est visible dans le viewport
-  useEffect(() => {
-    const root = document.getElementById('scroll-root');
-    const infoEl = document.getElementById('info');
-    if (!root || !infoEl) return;
-
-    const io = new IntersectionObserver(
-      entries => {
-        const entry = entries[0];
-        // Masquer quand au moins ~20% visible
-        setHideSelector(entry.isIntersecting && entry.intersectionRatio > 0.2);
-      },
-      { root, threshold: [0, 0.2, 0.4, 0.6, 0.8, 1] }
-    );
-    io.observe(infoEl);
-    return () => io.disconnect();
-  }, []);
-
-  // Utilisation directe de autoDark calculé par l'observer
   const activeClass = isDarkBg ? 'text-whiteCustom' : 'text-blackCustom';
   const inactiveClass = isDarkBg ? 'text-whiteCustom/60' : 'text-accent ';
   const hoverClass = isDarkBg
@@ -73,16 +53,11 @@ export default function LanguageSwitcher() {
   };
 
   return (
-    <div
-      className={`hidden lg:flex fixed text-[20px] bottom-10 right-20 z-50 items-center space-x-2 transition-opacity duration-300 ${
-        hideSelector ? 'opacity-0 pointer-events-none' : 'opacity-100'
-      }`}
-    >
+    <div className="hidden lg:flex fixed text-[20px] bottom-10 right-20 z-50 items-center space-x-2">
       {langs.map((lang, i) => (
         <React.Fragment key={'frag-' + lang}>
           <button
             type="button"
-            key={lang}
             className={`uppercase font-bold transition-all duration-300 ease-in-out relative ${hoverClass} ${
               locale === lang ? activeClass : inactiveClass
             }`}

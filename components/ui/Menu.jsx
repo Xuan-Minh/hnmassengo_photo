@@ -20,7 +20,6 @@ const initialState = {
   active: null,
   hydrated: false,
   isDarkBg: false,
-  hideMenu: false,
   isMobile: false,
   mobileMenuOpen: false,
   touchStart: null,
@@ -64,8 +63,9 @@ function useMenuInitialization(dispatch) {
   }, [dispatch]);
 }
 
-function useMenuScrollAndVisibility(dispatch, state, desktopItems) {
-  const { active, isDarkBg, hideMenu } = state;
+// Renommé car on ne gère plus la visibilité globale ici, juste le scroll tracking !
+function useMenuScrollTracking(dispatch, state, desktopItems) {
+  const { active, isDarkBg } = state;
 
   const handleScroll = useEffectEvent(() => {
     const root = document.getElementById('scroll-root');
@@ -88,41 +88,9 @@ function useMenuScrollAndVisibility(dispatch, state, desktopItems) {
       }
     }
 
-    // 2. VISIBILITÉ DE HOME ET CONTACT (Pour cacher le menu en douceur)
-    const homeEl = document.getElementById('home');
-    const infoEl = document.getElementById('info');
-    let isHomeVisible = false;
-    let isInfoVisible = false;
-
-    if (homeEl) {
-      const rect = homeEl.getBoundingClientRect();
-      const visiblePixels =
-        Math.min(rect.bottom, rootRect.bottom) -
-        Math.max(rect.top, rootRect.top);
-      if (visiblePixels > 0) {
-        isHomeVisible = visiblePixels / rect.height > 0.3; // Home visible à > 30%
-      }
-    }
-
-    if (infoEl) {
-      const rect = infoEl.getBoundingClientRect();
-      const visiblePixels =
-        Math.min(rect.bottom, rootRect.bottom) -
-        Math.max(rect.top, rootRect.top);
-      if (visiblePixels > 0) {
-        isInfoVisible = visiblePixels / rect.height > 0.2; // Info visible à > 20%
-      }
-    }
-
-    const hash = window.location.hash;
-    const isSnipcart =
-      hash.includes('#/cart') ||
-      hash.includes('#/checkout') ||
-      hash.includes('#snipcart');
-    const shouldHide = isHomeVisible || isInfoVisible || isSnipcart;
     const isDark = newlyActiveId === 'blog';
 
-    // 3. PRÉPARER LES MISES À JOUR
+    // 2. PRÉPARER LES MISES À JOUR
     const updates = {};
 
     if (
@@ -136,11 +104,8 @@ function useMenuScrollAndVisibility(dispatch, state, desktopItems) {
     if (isDark !== isDarkBg) {
       updates.isDarkBg = isDark;
     }
-    if (shouldHide !== hideMenu) {
-      updates.hideMenu = shouldHide;
-    }
 
-    // 4. ENVOYER LA MISE À JOUR (Seulement si nécessaire)
+    // 3. ENVOYER LA MISE À JOUR (Seulement si nécessaire)
     if (Object.keys(updates).length > 0) {
       dispatch({ type: 'UPDATE_STATE', payload: updates });
     }
@@ -167,12 +132,10 @@ function useMenuScrollAndVisibility(dispatch, state, desktopItems) {
 
     root.addEventListener('scroll', onScroll, { passive: true });
     window.addEventListener('resize', onScroll, { passive: true });
-    window.addEventListener('hashchange', onScroll, { passive: true });
 
     return () => {
       root.removeEventListener('scroll', onScroll);
       window.removeEventListener('resize', onScroll);
-      window.removeEventListener('hashchange', onScroll);
     };
   }, []);
 }
@@ -426,15 +389,8 @@ export default function Menu() {
   const desktopItems = useMemo(() => MENU_ITEMS, []);
 
   const [state, dispatch] = useReducer(reducer, initialState);
-  const {
-    active,
-    hydrated,
-    isDarkBg,
-    hideMenu,
-    isMobile,
-    mobileMenuOpen,
-    touchStart,
-  } = state;
+  const { active, hydrated, isDarkBg, isMobile, mobileMenuOpen, touchStart } =
+    state;
 
   const params = useParams();
   const pathname = usePathname();
@@ -442,7 +398,7 @@ export default function Menu() {
 
   // Activation des comportements globaux
   useMenuInitialization(dispatch);
-  useMenuScrollAndVisibility(dispatch, state, desktopItems); // 👈 Le nouveau hook unique est ici !
+  useMenuScrollTracking(dispatch, state, desktopItems);
 
   const scrollToId = useCallback(targetId => {
     const root = document.getElementById('scroll-root');
@@ -466,8 +422,8 @@ export default function Menu() {
   // Rendu de sécurité avant l'hydratation
   if (!hydrated || !active) return null;
 
-  // On s'assure que le menu disparaît complètement quand on est sur "home" (ou si hideMenu est vrai)
-  const isHiddenState = hideMenu || active === 'home';
+  // La seule raison de se cacher par soi-même est si on est sur la section "home"
+  const isHiddenState = active === 'home';
 
   if (isMobile) {
     return (
