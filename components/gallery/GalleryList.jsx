@@ -113,18 +113,20 @@ const MainViewer = ({
   if (!currentListDisplaySrc) return null;
 
   return (
-    <div className="relative w-full h-full flex items-center justify-center gap-4 px-4">
+    <div className="relative w-full h-full flex items-center justify-center gap-2 md:gap-4 px-4">
       <button
         type="button"
         onClick={navigateListPrev}
-        className="z-10 opacity-40 hover:opacity-100 transition-opacity"
+        className="z-10 opacity-40 hover:opacity-100 transition-opacity p-2"
       >
         <ArrowLeft />
       </button>
-      <button
-        type="button"
+
+      <div
         onClick={() => onProjectSelect(project)}
-        className="relative w-[94%] h-[80vh] lg:w-[70%] lg:h-[70vh] xl:w-[80%] xl:h-[80vh] cursor-pointer"
+        className="relative w-full h-full cursor-pointer flex items-center justify-center"
+        role="button"
+        tabIndex={0}
         onKeyPress={e => {
           if (e.key === 'Enter') onProjectSelect(project);
         }}
@@ -148,11 +150,12 @@ const MainViewer = ({
           }
           priority={!isMobile}
         />
-      </button>
+      </div>
+
       <button
         type="button"
         onClick={navigateListNext}
-        className="z-10 opacity-40 hover:opacity-100 transition-opacity"
+        className="z-10 opacity-40 hover:opacity-100 transition-opacity p-2"
       >
         <ArrowRight />
       </button>
@@ -164,7 +167,7 @@ const MobileNavTop = ({ projects, currentProjectIndex, navigateToImage }) => {
   const midIndex = Math.ceil(projects.length / 2);
 
   return (
-    <div className="lg:hidden w-full px-4 mt-6 mb-2">
+    <div className="lg:hidden w-full mt-10 mb-2">
       <div className="flex flex-wrap justify-center gap-x-6 gap-y-3">
         {projects.map((p, idx) => {
           if (idx >= midIndex) return null;
@@ -475,7 +478,7 @@ export default function GalleryList({
     <m.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="w-full h-full flex flex-col justify-center"
+      className="w-full h-full flex flex-col justify-between py-6"
     >
       <DesktopNav
         view={view}
@@ -484,15 +487,12 @@ export default function GalleryList({
         currentProjectIndex={currentProjectIndex}
         navigateToImage={navigateToImage}
       />
-
-      {/* Rendu conditionnel mobile : Barre du Haut (Statique et wrapping) */}
       <MobileNavTop
         projects={projects}
         currentProjectIndex={currentProjectIndex}
         navigateToImage={navigateToImage}
-      />
-
-      <div className="flex-1 relative w-full h-[100vh] lg:h-full flex items-center justify-center overflow-hidden">
+      />{' '}
+      <div className="flex-1  relative w-full h-full flex items-center justify-center overflow-hidden">
         <MainViewer
           currentListDisplaySrc={currentListDisplaySrc}
           project={projects[currentProjectIndex]}
@@ -507,7 +507,6 @@ export default function GalleryList({
           onProjectSelect={onProjectSelect}
         />
       </div>
-
       <MobileNavBottom
         projects={projects}
         currentProjectIndex={currentProjectIndex}

@@ -336,7 +336,7 @@ export default function HomePageTabs() {
   }
   if (isMobile) {
     return (
-      <section className="w-full h-full flex flex-col gap-4 p-4 mt-20 bg-red-900"></section> // {orderedWindows.map(win => (<MobileWindowCard key={win._id} win={win} ))}/>
+      <section className="w-full h-full flex flex-col gap-4 p-4 bg-red-900"></section> // {orderedWindows.map(win => (<MobileWindowCard key={win._id} win={win} ))}/>
     );
   }
 

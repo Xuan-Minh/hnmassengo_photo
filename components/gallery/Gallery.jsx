@@ -3,7 +3,7 @@ import { useTranslations } from 'next-intl';
 import { useEffect, useMemo, useReducer, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import client from '../../lib/sanity.client';
-import { getOptimizedImageParams } from '../../lib/hooks';
+import { getOptimizedImageParams, useIsMobile } from '../../lib/hooks';
 import { buildSanityImageUrl } from '../../lib/imageUtils';
 import { AnimatePresence } from 'framer-motion';
 
@@ -43,6 +43,9 @@ export default function Gallery() {
   const [state, dispatch] = useReducer(reducer, initialState);
   const { projects, view, selectedProject, overlayOpen, activeCoord } = state;
 
+  // 👇 2. On utilise notre hook (768px car c'était la valeur utilisée avant pour la galerie)
+  const isMobile = useIsMobile(768);
+
   // Gérer le scroll quand un overlay est ouvert
   useEffect(() => {
     const scrollRoot = document.getElementById('scroll-root');
@@ -63,8 +66,7 @@ export default function Gallery() {
   // Charger les projets depuis Sanity
   useEffect(() => {
     const fetchProjects = async () => {
-      const isMobileDevice =
-        typeof window !== 'undefined' ? window.innerWidth < 768 : false;
+      // 👇 3. Plus besoin du vieux test "typeof window", on utilise direct isMobile !
       const data = await client.fetch(
         '*[_type == "project"] { ..., images[]{ asset->{ url } } }'
       );
@@ -77,7 +79,7 @@ export default function Gallery() {
           .flatMap(img => (img?.asset?.url ? [img.asset.url] : []))
           .reduce((acc, url) => {
             const optimized = buildSanityImageUrl(url, {
-              ...getOptimizedImageParams('gallery-grid', isMobileDevice),
+              ...getOptimizedImageParams('gallery-grid', isMobile),
               auto: 'format',
             });
             if (!acc.includes(optimized)) acc.push(optimized);
@@ -95,21 +97,15 @@ export default function Gallery() {
       dispatch({ type: 'UPDATE_STATE', payload: { projects: mapped } });
     };
     fetchProjects();
-  }, [locale]);
+  }, [locale, isMobile]);
 
-  // Basculement automatique en vue liste sur mobile
   useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth < 768 && view !== 'list') {
-        dispatch({ type: 'UPDATE_STATE', payload: { view: 'list' } });
-      }
-    };
-    handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, [view]);
+    if (isMobile && view !== 'list') {
+      dispatch({ type: 'UPDATE_STATE', payload: { view: 'list' } });
+    }
+  }, [isMobile, view]);
 
-  // Tri global des données (Calculé une seule fois ici)
+  // Tri global des données
   const projectsChrono = useMemo(() => {
     const arr = [...projects];
     arr.sort((a, b) => {
@@ -128,7 +124,7 @@ export default function Gallery() {
     return [...projectsChrono].reverse();
   }, [projectsChrono]);
 
-  // Mémorisation des callbacks pour éviter les boucles de rendu infinies
+  // Mémorisation des callbacks
   const handleViewChange = useCallback(v => {
     dispatch({ type: 'UPDATE_STATE', payload: { view: v } });
   }, []);
@@ -143,65 +139,58 @@ export default function Gallery() {
 
   return (
     <>
-      <section className="relative w-full h-screen overflow-hidden">
-        <div className="w-full h-full flex flex-col bg-background justify-center items-center">
-          <div className="relative flex flex-col justify-center items-start h-[75vh] lg:h-[90vh] w-[min(1100px,90vw)] 2xl:w-[min(1800px,90vw)]">
-            <AnimatePresence mode="wait">
-              {view === 'grid' ? (
-                <GalleryGrid
-                  key="grid"
-                  projects={projectsRecentFirst}
-                  view={view}
-                  onViewChange={handleViewChange}
-                  onProjectSelect={handleProjectSelect}
-                  setActiveCoord={handleSetActiveCoord}
-                />
-              ) : (
-                <GalleryList
-                  key="list"
-                  projects={projectsChrono}
-                  view={view}
-                  onViewChange={handleViewChange}
-                  onProjectSelect={handleProjectSelect}
-                  setActiveCoord={handleSetActiveCoord}
-                />
-              )}
-            </AnimatePresence>
-          </div>
-
-          {/* Footer commun isolé des animations ! */}
-          <div
-            style={{ width: 'min(1100px, 90vw)' }}
-            className="hidden md:grid lg:grid lg:grid-cols-3 md:grid-cols-1 items-center mt-16 lg:mt-4"
-          >
-            <div className="text-xl font-liberation italic text-blackCustom h-8">
-              {activeCoord}
-            </div>
-            {view === 'grid' && (
-              <button
-                type="button"
-                className="justify-self-center text-xl font-liberation italic text-blackCustom hover:text-accent transition-all duration-300 px-4 py-2 rounded animate-in fade-in hover:[--bg-size:100%_1px]"
-                onClick={() =>
-                  dispatch({
-                    type: 'UPDATE_STATE',
-                    payload: { overlayOpen: true },
-                  })
-                }
-              >
-                <span
-                  className={`inline box-decoration-clone bg-[linear-gradient(currentColor,currentColor)] bg-no-repeat [background-position:0_100%] transition-[background-size,color] duration-300 ease-in-out`}
-                  style={{ backgroundSize: 'var(--bg-size, 0% 1px)' }}
-                >
-                  {t('seeMore')}
-                </span>
-              </button>
+      <div className="relative w-full h-[100dvh] lg:h-screen overflow-hidden flex flex-col bg-background">
+        <div className="relative flex-1 w-full max-w-[1800px] mx-auto px-4 lg:px-8">
+          <AnimatePresence mode="wait">
+            {view === 'grid' ? (
+              <GalleryGrid
+                key="grid"
+                projects={projectsRecentFirst}
+                view={view}
+                onViewChange={handleViewChange}
+                onProjectSelect={handleProjectSelect}
+                setActiveCoord={handleSetActiveCoord}
+              />
+            ) : (
+              <GalleryList
+                key="list"
+                projects={projectsChrono}
+                view={view}
+                onViewChange={handleViewChange}
+                onProjectSelect={handleProjectSelect}
+                setActiveCoord={handleSetActiveCoord}
+              />
             )}
-            <div></div>
-          </div>
+          </AnimatePresence>
         </div>
-      </section>
 
-      {/* Overlays Globaux */}
+        <div className="hidden lg:grid grid-cols-3 items-center w-full max-w-[1800px] mx-auto px-8 pb-6 pt-2">
+          <div className="text-xl font-liberation italic text-blackCustom h-8">
+            {activeCoord}
+          </div>
+          {view === 'grid' && (
+            <button
+              type="button"
+              className="justify-self-center text-xl font-liberation italic text-blackCustom hover:text-accent transition-all duration-300 px-4 py-2 rounded animate-in fade-in hover:[--bg-size:100%_1px]"
+              onClick={() =>
+                dispatch({
+                  type: 'UPDATE_STATE',
+                  payload: { overlayOpen: true },
+                })
+              }
+            >
+              <span
+                className={`inline box-decoration-clone bg-[linear-gradient(currentColor,currentColor)] bg-no-repeat [background-position:0_100%] transition-[background-size,color] duration-300 ease-in-out`}
+                style={{ backgroundSize: 'var(--bg-size, 0% 1px)' }}
+              >
+                {t('seeMore')}
+              </span>
+            </button>
+          )}
+          <div></div>
+        </div>
+      </div>
+
       <AnimatePresence>
         {overlayOpen && (
           <GalleryGridMore
