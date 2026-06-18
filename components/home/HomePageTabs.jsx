@@ -7,7 +7,7 @@ import WindowsTab from './WindowsTab';
 import WindowsManager from './WindowsManager';
 import { HOME_FALLBACK_IMAGES } from '../../lib/constants';
 import client from '../../lib/sanity.client';
-import { useSanityImages } from '../../lib/hooks';
+import { useSanityImages, useIsMobile } from '../../lib/hooks';
 import {
   extractIdYoutube,
   calculateAge,
@@ -273,6 +273,7 @@ export default function HomePageTabs() {
   const { locale = 'fr' } = useParams();
   const [lastSeen, setLastSeen] = useState('...');
   const [windows, setWindows] = useState([]);
+  const isMobile = useIsMobile(1024);
 
   useEffect(() => {
     let cancelled = false;
@@ -331,6 +332,11 @@ export default function HomePageTabs() {
       <div className="flex h-screen w-screen items-center justify-center text-white bg-blackCustom">
         Chargement des fenêtres...
       </div>
+    );
+  }
+  if (isMobile) {
+    return (
+      <section className="w-full h-full flex flex-col gap-4 p-4 mt-20 bg-red-900"></section> // {orderedWindows.map(win => (<MobileWindowCard key={win._id} win={win} ))}/>
     );
   }
 

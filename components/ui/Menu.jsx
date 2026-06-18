@@ -10,7 +10,7 @@ import { useParams } from 'next/navigation';
 import { usePathname } from '../../src/i18n/navigation';
 import { MENU_ITEMS, LANGUAGES } from '../../lib/constants';
 import { EVENTS, emitEvent } from '../../lib/events';
-import { useEffectEvent } from '../../lib/hooks';
+import { useEffectEvent, useIsMobile } from '../../lib/hooks';
 
 // ==========================================
 // 1. ÉTAT & RÉDUCTEUR
@@ -41,25 +41,13 @@ function reducer(state, action) {
 function useMenuInitialization(dispatch) {
   useEffect(() => {
     if (typeof window === 'undefined') return;
-
     dispatch({
       type: 'UPDATE_STATE',
       payload: {
         active: sessionStorage.getItem('menuActiveSection') || 'home',
         hydrated: true,
-        isMobile: window.innerWidth < 1024,
       },
     });
-
-    const handleResize = () => {
-      dispatch({
-        type: 'UPDATE_STATE',
-        payload: { isMobile: window.innerWidth < 1024 },
-      });
-    };
-
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
   }, [dispatch]);
 }
 
@@ -389,8 +377,9 @@ export default function Menu() {
   const desktopItems = useMemo(() => MENU_ITEMS, []);
 
   const [state, dispatch] = useReducer(reducer, initialState);
-  const { active, hydrated, isDarkBg, isMobile, mobileMenuOpen, touchStart } =
-    state;
+  const { active, hydrated, isDarkBg, mobileMenuOpen, touchStart } = state;
+
+  const isMobile = useIsMobile(1024);
 
   const params = useParams();
   const pathname = usePathname();
