@@ -113,18 +113,21 @@ const MainViewer = ({
   if (!currentListDisplaySrc) return null;
 
   return (
-    <div className="relative w-full h-full flex items-center justify-center gap-2 md:gap-4 px-4">
+    // On utilise justify-between pour repousser les flèches sur les bords
+    <div className="relative w-full h-full flex items-center justify-between px-2 md:px-8">
+      {/* shrink-0 empêche la flèche de se faire écraser */}
       <button
         type="button"
         onClick={navigateListPrev}
-        className="z-10 opacity-40 hover:opacity-100 transition-opacity p-2"
+        className="z-10 opacity-40 hover:opacity-100 transition-opacity p-2 shrink-0"
       >
         <ArrowLeft />
       </button>
 
+      {/* 👇 LE SECRET EST ICI : flex-1 force cette div à s'étirer au maximum entre les flèches 👇 */}
       <div
         onClick={() => onProjectSelect(project)}
-        className="relative w-full h-full cursor-pointer flex items-center justify-center"
+        className="relative flex-1 h-full cursor-pointer mx-2 md:mx-8"
         role="button"
         tabIndex={0}
         onKeyPress={e => {
@@ -137,6 +140,7 @@ const MainViewer = ({
           alt={project?.name || ''}
           fill
           sizes="(max-width: 1024px) 94vw, 70vw"
+          // object-contain s'assure que l'image ne sera jamais rognée
           className={`object-contain transition-opacity ${isMobile ? 'duration-150' : 'duration-300'} ${
             isTransitioning || (!isListImageLoaded && !listImageError)
               ? 'opacity-0'
@@ -152,10 +156,11 @@ const MainViewer = ({
         />
       </div>
 
+      {/* shrink-0 empêche la flèche de se faire écraser */}
       <button
         type="button"
         onClick={navigateListNext}
-        className="z-10 opacity-40 hover:opacity-100 transition-opacity p-2"
+        className="z-10 opacity-40 hover:opacity-100 transition-opacity p-2 shrink-0"
       >
         <ArrowRight />
       </button>
