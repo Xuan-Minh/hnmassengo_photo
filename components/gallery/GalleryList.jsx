@@ -5,7 +5,11 @@ import { useEffect, useRef, useCallback, useMemo, useReducer } from 'react';
 import { m } from 'framer-motion';
 import Image from 'next/image';
 import { buildSanityImageUrl } from '../../lib/imageUtils';
-import { getOptimizedImageParams, useEffectEvent } from '../../lib/hooks';
+import {
+  getOptimizedImageParams,
+  useEffectEvent,
+  useIsMobile,
+} from '../../lib/hooks';
 import GalleryViewToggle from './GalleryViewToggle';
 
 // ==========================================
@@ -13,7 +17,6 @@ import GalleryViewToggle from './GalleryViewToggle';
 // ==========================================
 
 const initialState = {
-  isMobile: false,
   currentProjectIndex: 0,
   currentImageIndex: 0,
   isTransitioning: false,
@@ -121,7 +124,7 @@ const MainViewer = ({
       <button
         type="button"
         onClick={() => onProjectSelect(project)}
-        className="relative w-[94%] h-[62vh] lg:w-[70%] lg:h-[70vh] xl:w-[80%] xl:h-[80vh] cursor-pointer"
+        className="relative w-[94%] h-[80vh] lg:w-[70%] lg:h-[70vh] xl:w-[80%] xl:h-[80vh] cursor-pointer"
         onKeyPress={e => {
           if (e.key === 'Enter') onProjectSelect(project);
         }}
@@ -157,76 +160,82 @@ const MainViewer = ({
   );
 };
 
-const MobileNav = ({
+const MobileNavTop = ({ projects, currentProjectIndex, navigateToImage }) => {
+  const midIndex = Math.ceil(projects.length / 2);
+
+  return (
+    <div className="lg:hidden w-full px-4 mt-6 mb-2">
+      <div className="flex flex-wrap justify-center gap-x-6 gap-y-3">
+        {projects.map((p, idx) => {
+          if (idx >= midIndex) return null;
+          return (
+            <button
+              type="button"
+              key={p.id}
+              onClick={() => navigateToImage(idx, 0)}
+              className={`text-[13px] font-liberation whitespace-nowrap transition-all ${
+                idx === currentProjectIndex
+                  ? 'font-bold opacity-100 scale-105'
+                  : 'opacity-40'
+              }`}
+            >
+              {p.name}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
+
+// 👇 NOUVEAU : La barre du bas (Plus de scroll, juste un flex-wrap)
+const MobileNavBottom = ({
   projects,
   currentProjectIndex,
   navigateToImage,
-  mobileNavRef,
-  itemsRef,
-}) => (
-  <div className="lg:hidden w-full overflow-hidden mask-fade-edges mb-8">
-    <div
-      ref={mobileNavRef}
-      className="flex flex-row flex-nowrap overflow-x-auto no-scrollbar gap-x-10 px-[10%] scroll-smooth"
-    >
-      {projects.map((p, idx) => (
-        <button
-          type="button"
-          key={p.id}
-          ref={el => (itemsRef.current[idx] = el)}
-          onClick={() => navigateToImage(idx, 0)}
-          className={`text-[20px] font-liberation whitespace-nowrap transition-all ${
-            idx === currentProjectIndex
-              ? 'font-bold opacity-100 scale-105'
-              : 'opacity-30'
-          }`}
-        >
-          {p.name}
-        </button>
-      ))}
+}) => {
+  const midIndex = Math.ceil(projects.length / 2);
+
+  return (
+    <div className="lg:hidden w-full px-4 mt-2 mb-8">
+      <div className="flex flex-wrap justify-center gap-x-6 gap-y-3">
+        {projects.map((p, idx) => {
+          if (idx < midIndex) return null;
+          return (
+            <button
+              type="button"
+              key={p.id}
+              onClick={() => navigateToImage(idx, 0)}
+              className={`text-[13px] font-liberation whitespace-nowrap transition-all ${
+                idx === currentProjectIndex
+                  ? 'font-bold opacity-100 scale-105'
+                  : 'opacity-40'
+              }`}
+            >
+              {p.name}
+            </button>
+          );
+        })}
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 // ==========================================
 // 3. CUSTOM HOOK : LOGIQUE DE GALERIE
 // ==========================================
 
 function useGalleryLogic(projects, setActiveCoord) {
+  const isMobile = useIsMobile(1024);
   const [state, dispatch] = useReducer(reducer, initialState);
-  const {
-    isMobile,
-    currentProjectIndex,
-    currentImageIndex,
-    isTransitioning,
-    isListImageLoaded,
-    listImageError,
-  } = state;
+  const { currentProjectIndex, currentImageIndex } = state;
 
-  const mobileNavRef = useRef(null);
-  const itemsRef = useRef([]);
-  const scrollEndTimeoutRef = useRef(null);
   const currentImageVersionRef = useRef(0);
   const listTimersRef = useRef({ tick: null, swap: null, cancelled: 0 });
 
   const preloadedUrlsRef = useRef(null);
-  if (preloadedUrlsRef.current === null) {
-    preloadedUrlsRef.current = new Set();
-  }
+  if (preloadedUrlsRef.current === null) preloadedUrlsRef.current = new Set();
 
-  // Responsive
-  useEffect(() => {
-    const updateMobile = () =>
-      dispatch({
-        type: 'UPDATE_STATE',
-        payload: { isMobile: window.innerWidth < 1024 },
-      });
-    updateMobile();
-    window.addEventListener('resize', updateMobile);
-    return () => window.removeEventListener('resize', updateMobile);
-  }, [dispatch]);
-
-  // Navigation logic
   const navigateToImage = useCallback(
     (projectIndex, imageIndex) => {
       const transitionDelay = isMobile ? 80 : 250;
@@ -278,82 +287,7 @@ function useGalleryLogic(projects, setActiveCoord) {
     }
   }, [currentProjectIndex, currentImageIndex, projects, navigateToImage]);
 
-  // Center active item in mobile scroll
-  const centerActiveProject = useCallback(index => {
-    const container = mobileNavRef.current;
-    const activeItem = itemsRef.current[index];
-    if (container && activeItem) {
-      const scrollLeft =
-        activeItem.offsetLeft -
-        container.offsetWidth / 2 +
-        activeItem.offsetWidth / 2;
-      container.scrollTo({ left: scrollLeft, behavior: 'smooth' });
-    }
-  }, []);
-
-  useEffect(() => {
-    centerActiveProject(currentProjectIndex);
-  }, [currentProjectIndex, centerActiveProject]);
-
-  // Handle mobile scroll sync
-  const handleScrollEnd = useEffectEvent(() => {
-    const container = mobileNavRef.current;
-    if (!container) return;
-    const children = itemsRef.current || [];
-    if (children.length === 0) return;
-
-    const scrollLeft = container.scrollLeft;
-    const maxScrollLeft = container.scrollWidth - container.clientWidth;
-    const edgeThreshold = 20;
-
-    let closestIndex = 0;
-    if (scrollLeft <= edgeThreshold) {
-      closestIndex = 0;
-    } else if (scrollLeft >= maxScrollLeft - edgeThreshold) {
-      closestIndex = children.length - 1;
-    } else {
-      const containerCenter =
-        container.getBoundingClientRect().left +
-        container.getBoundingClientRect().width / 2;
-      let minDist = Infinity;
-      children.forEach((el, idx) => {
-        if (!el) return;
-        const center =
-          el.getBoundingClientRect().left +
-          el.getBoundingClientRect().width / 2;
-        const d = Math.abs(center - containerCenter);
-        if (d < minDist) {
-          minDist = d;
-          closestIndex = idx;
-        }
-      });
-    }
-
-    if (closestIndex !== currentProjectIndex) navigateToImage(closestIndex, 0);
-  });
-
-  useEffect(() => {
-    const container = mobileNavRef.current;
-    if (!container) return;
-
-    const onScroll = () => {
-      if (scrollEndTimeoutRef.current)
-        clearTimeout(scrollEndTimeoutRef.current);
-      scrollEndTimeoutRef.current = setTimeout(handleScrollEnd, 150);
-    };
-
-    container.addEventListener('scroll', onScroll, { passive: true });
-    container.addEventListener('touchend', handleScrollEnd, { passive: true });
-
-    return () => {
-      container.removeEventListener('scroll', onScroll);
-      container.removeEventListener('touchend', handleScrollEnd);
-      if (scrollEndTimeoutRef.current)
-        clearTimeout(scrollEndTimeoutRef.current);
-    };
-  }, []);
-
-  // Slideshow / Autoplay timers
+  // Slideshow
   useEffect(() => {
     const timers = listTimersRef.current;
     if (timers.tick) clearTimeout(timers.tick);
@@ -383,7 +317,6 @@ function useGalleryLogic(projects, setActiveCoord) {
     timers.tick = setTimeout(() => {
       const next = computeNext();
       if (!next || timers.cancelled !== token) return;
-
       dispatch({ type: 'UPDATE_STATE', payload: { isTransitioning: true } });
 
       timers.swap = setTimeout(() => {
@@ -412,7 +345,6 @@ function useGalleryLogic(projects, setActiveCoord) {
     dispatch,
   ]);
 
-  // Keyboard navigation
   const handleKeyDown = useEffectEvent(e => {
     if (e.key === 'ArrowRight') navigateListNext();
     if (e.key === 'ArrowLeft') navigateListPrev();
@@ -423,7 +355,7 @@ function useGalleryLogic(projects, setActiveCoord) {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
-  // Image formatting & preloading
+  // Image formatting
   const galleryParams = getOptimizedImageParams('gallery', isMobile);
   const imageParams = useMemo(
     () => ({
@@ -448,6 +380,7 @@ function useGalleryLogic(projects, setActiveCoord) {
     currentImageIndex
   );
 
+  // Preloading
   useEffect(() => {
     if (projects.length === 0 || typeof window === 'undefined') return;
     const currentImages = projects[currentProjectIndex]?.images || [];
@@ -501,12 +434,11 @@ function useGalleryLogic(projects, setActiveCoord) {
   return {
     state,
     dispatch,
-    mobileNavRef,
-    itemsRef,
     navigateToImage,
     navigateListPrev,
     navigateListNext,
     currentListDisplaySrc,
+    isMobile,
   };
 }
 
@@ -524,16 +456,14 @@ export default function GalleryList({
   const {
     state,
     dispatch,
-    mobileNavRef,
-    itemsRef,
     navigateToImage,
     navigateListPrev,
     navigateListNext,
     currentListDisplaySrc,
+    isMobile,
   } = useGalleryLogic(projects, setActiveCoord);
 
   const {
-    isMobile,
     currentProjectIndex,
     currentImageIndex,
     isTransitioning,
@@ -545,7 +475,7 @@ export default function GalleryList({
     <m.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="w-full h-full flex flex-col"
+      className="w-full h-full flex flex-col justify-center"
     >
       <DesktopNav
         view={view}
@@ -555,7 +485,14 @@ export default function GalleryList({
         navigateToImage={navigateToImage}
       />
 
-      <div className="flex-1 relative w-full h-[100vh] flex items-center justify-center overflow-hidden">
+      {/* Rendu conditionnel mobile : Barre du Haut (Statique et wrapping) */}
+      <MobileNavTop
+        projects={projects}
+        currentProjectIndex={currentProjectIndex}
+        navigateToImage={navigateToImage}
+      />
+
+      <div className="flex-1 relative w-full h-[100vh] lg:h-full flex items-center justify-center overflow-hidden">
         <MainViewer
           currentListDisplaySrc={currentListDisplaySrc}
           project={projects[currentProjectIndex]}
@@ -571,12 +508,10 @@ export default function GalleryList({
         />
       </div>
 
-      <MobileNav
+      <MobileNavBottom
         projects={projects}
         currentProjectIndex={currentProjectIndex}
         navigateToImage={navigateToImage}
-        mobileNavRef={mobileNavRef}
-        itemsRef={itemsRef}
       />
     </m.div>
   );
