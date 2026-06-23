@@ -188,10 +188,8 @@ export default function GalleryGrid({
     <>
       <m.div
         key="grid"
-        initial={{ opacity: 0, x: -50 }}
-        animate={{ opacity: 1, x: 0 }}
-        exit={{ opacity: 0, x: 50 }}
-        transition={{ duration: 0.5, ease: 'easeInOut' }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
         className="w-full h-full hidden md:grid md:grid-cols-8 lg:grid-cols-10 2xl:grid-cols-12 md:grid-rows-8 lg:grid-rows-12 2xl:grid-rows-12 gap-x-1 gap-y-1 overflow-hidden lg:pt-10"
       >
         <div className="flex items-center justify-center col-span-2 row-span-2 md:col-span-2 md:row-span-2 lg:col-span-3 lg:row-span-3 2xl:col-span-3 2xl:row-span-3">
@@ -246,9 +244,8 @@ export default function GalleryGrid({
                 {imgData ? (
                   <m.div
                     key={contentKey}
-                    initial={{ opacity: 0, scale: 0.98 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.98 }}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
                     transition={{ duration: 0.35, ease: 'easeInOut' }}
                     className="relative group cursor-pointer flex items-center justify-center w-full h-full"
                     onMouseEnter={() => {
@@ -316,10 +313,8 @@ export default function GalleryGrid({
               top: cursorPos.y + 10,
               transform: 'translate(-50%, -50%)',
             }}
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.8 }}
-            transition={{ duration: 0.2 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
           >
             {projects.find(p => p.id === hoveredId)?.name}
           </m.div>

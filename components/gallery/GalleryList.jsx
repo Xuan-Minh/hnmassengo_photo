@@ -480,7 +480,7 @@ export default function GalleryList({
     <m.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="w-full h-full flex flex-col justify-between py-6"
+      className="w-full h-full flex flex-col justify-between"
     >
       <DesktopNav
         view={view}
