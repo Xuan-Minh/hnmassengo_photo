@@ -155,8 +155,6 @@ const MainViewer = ({
           priority={!isMobile}
         />
       </div>
-
-      {/* shrink-0 empêche la flèche de se faire écraser */}
       <button
         type="button"
         onClick={navigateListNext}
@@ -196,7 +194,6 @@ const MobileNavTop = ({ projects, currentProjectIndex, navigateToImage }) => {
   );
 };
 
-// 👇 NOUVEAU : La barre du bas (Plus de scroll, juste un flex-wrap)
 const MobileNavBottom = ({
   projects,
   currentProjectIndex,
