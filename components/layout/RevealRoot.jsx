@@ -5,7 +5,7 @@ export default function RevealRoot({ children }) {
   return (
     <div
       id="scroll-root"
-      className="h-screen overflow-y-scroll scroll-smooth"
+      className="h-screen overflow-y-scroll overflow-x-hidden scroll-smooth"
       style={{ scrollbarGutter: 'stable' }}
       suppressHydrationWarning
     >
