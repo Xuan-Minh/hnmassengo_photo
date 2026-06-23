@@ -51,13 +51,20 @@ function localizeField(value, locale, fallback = '') {
 // SOUS-COMPOSANT : GESTION D'UNE FENÊTRE
 // ==========================================
 
-function WindowItem({ win, index, totalWindows, locale, lastSeen, heroImage }) {
+function WindowItem({
+  win,
+  index,
+  totalWindows,
+  locale,
+  lastSeen,
+  heroImage,
+  ...props
+}) {
   const originalIndex = win._originalIndex;
   const titre = localizeField(win.title, locale, 'Fenêtre');
   const couleur =
     win.windowColor?.colorValue?.hex || teamColorsFALLBACK[originalIndex % 4];
   const id = win._key || `tab${originalIndex}`;
-
   // -- Calcul des Positions --
   const cols = Math.ceil(Math.sqrt(totalWindows));
   const rows = Math.ceil(totalWindows / cols);
@@ -261,6 +268,7 @@ function WindowItem({ win, index, totalWindows, locale, lastSeen, heroImage }) {
       couleur={couleur}
       style={windowStyle}
       contenu={windowContent}
+      {...props}
     />
   );
 }

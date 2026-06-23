@@ -42,7 +42,6 @@ export default function WindowsTab({
     if (typeof window !== 'undefined') {
       const vw = window.innerWidth;
       const vh = window.innerHeight;
-
       const parse = val => {
         if (!val) return 0;
         const num = parseFloat(val);
@@ -53,11 +52,9 @@ export default function WindowsTab({
         return num;
       };
 
-      // Assigne la position de départ en pixels
       x.set(parse(style.left));
       y.set(parse(style.top));
 
-      // Affiche la fenêtre une fois posée (évite le flash en haut à gauche)
       setIsReady(true);
     }
   }, [style.left, style.top, x, y]);
@@ -74,7 +71,6 @@ export default function WindowsTab({
       }}
       onDragEnd={() => setIsDragging(false)}
       onPointerDown={bringToFront}
-      // 3. On applique UNIQUEMENT les valeurs de position de Framer Motion
       style={{
         x,
         y,
