@@ -22,6 +22,7 @@
     "description": "Find here articles and news from the photographer.",
     "morePosts": "more posts",
     "ariaLabel": "Blog section",
+    "suite": "read the article",
     "archives": {
       "title": "Archives"
     },

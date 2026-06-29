@@ -22,6 +22,7 @@
     "description": "Retrouvez ici les articles et actualités du photographe.",
     "morePosts": "plus d'articles",
     "ariaLabel": "Section blog",
+    "suite": "lire la suite",
     "archives": {
       "title": "Archives"
     },

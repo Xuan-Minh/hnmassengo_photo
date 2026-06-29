@@ -201,7 +201,7 @@ export default function Blog() {
                   className={`inline box-decoration-clone bg-[linear-gradient(currentColor,currentColor)] bg-no-repeat [background-position:0_100%] transition-[background-size,color] duration-300 ease-in-out`}
                   style={{ backgroundSize: 'var(--bg-size, 0% 1px)' }}
                 >
-                  {'read more'}
+                  {t('suite')}
                 </span>
               </button>
             </div>
