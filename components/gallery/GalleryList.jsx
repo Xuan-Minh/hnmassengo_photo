@@ -70,7 +70,7 @@ const DesktopNav = ({
   currentProjectIndex,
   navigateToImage,
 }) => (
-  <div className="hidden lg:flex items-center justify-between gap-8 mb-12 mt-8 md:mt-12 w-full">
+  <div className="hidden lg:flex items-center justify-between gap-8 mb-12 mt-8 w-full">
     <GalleryViewToggle view={view} onViewChange={onViewChange} />
     <div className="flex flex-wrap justify-center gap-x-8 gap-y-2 flex-1">
       {projects.map((p, idx) => (
