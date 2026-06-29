@@ -117,7 +117,7 @@ const CartSidebar = ({
           }
         }}
       >
-        @{t('cart.title')}
+        {t('cart.title')}
       </button>
       <span className="hidden md:block text-xs text-black/40">
         ({cartCount})
