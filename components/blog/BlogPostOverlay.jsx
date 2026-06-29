@@ -7,6 +7,7 @@ import ContactOverlay from '../overlays/ContactOverlay';
 import BaseOverlay from '../overlays/BaseOverlay';
 import { useTranslations, useLocale } from 'next-intl';
 import { extractFirstSentence } from '../../lib/utils';
+import AnimatedUnderlineLink from '../ui/AnimatedUnderlineLink';
 
 function ExtrasBlock({ extras }) {
   if (!Array.isArray(extras) || extras.length === 0) return null;
@@ -186,13 +187,15 @@ export default function BlogPostOverlay({ post, onClose, onPrevious, onNext }) {
 
               {/* Contact Button */}
               <div className="mt-8 flex justify-end max-w-2xl mx-auto">
-                <button
-                  type="button"
-                  onClick={() => setContactOpen(true)}
-                  className="text-sm text-whiteCustom/60 hover:text-whiteCustom transition-colors italic"
-                >
-                  {t('contact')}
-                </button>
+                <AnimatedUnderlineLink>
+                  <button
+                    type="button"
+                    onClick={() => setContactOpen(true)}
+                    className="text-sm text-whiteCustom/60 hover:text-whiteCustom transition-colors italic"
+                  >
+                    {t('contact')}
+                  </button>
+                </AnimatedUnderlineLink>
               </div>
             </div>
           </div>

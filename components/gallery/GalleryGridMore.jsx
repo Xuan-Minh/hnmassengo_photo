@@ -7,7 +7,7 @@ import {
   getSanityImageDeliveryUrl,
   isSanityCdnUrl,
 } from '../../lib/imageUtils';
-
+import AnimatedUnderlineLink from '../ui/AnimatedUnderlineLink';
 // ==========================================
 // 1. CONSTANTES & UTILITAIRES
 // ==========================================
@@ -44,20 +44,6 @@ const FILTERS = [
   { label: 'artworks', value: 'artwork' },
   { label: 'commissions', value: 'commission' },
 ];
-
-function UnderlineLabel({ children }) {
-  return (
-    <span
-      className="inline box-decoration-clone bg-[linear-gradient(currentColor,currentColor)] bg-no-repeat [background-position:0_100%] transition-[background-size,color] duration-300 ease-in-out"
-      style={{
-        backgroundSize: 'var(--bg-size, 0% 1px)',
-        pointerEvents: 'none',
-      }}
-    >
-      {children}
-    </span>
-  );
-}
 
 // ==========================================
 // 2. ÉTAT ET REDUCER
@@ -111,7 +97,9 @@ function Sidebar({
               dispatch({ type: 'UPDATE_STATE', payload: { filter: f.value } })
             }
           >
-            <UnderlineLabel>{t(`filters.${f.value}`)}</UnderlineLabel>
+            <AnimatedUnderlineLink>
+              {t(`filters.${f.value}`)}
+            </AnimatedUnderlineLink>
           </button>
         ))}
       </div>
@@ -140,7 +128,7 @@ function Sidebar({
                 });
               }}
             >
-              <UnderlineLabel>{p.name}</UnderlineLabel>
+              <AnimatedUnderlineLink>{p.name}</AnimatedUnderlineLink>
             </button>
           </li>
         ))}
