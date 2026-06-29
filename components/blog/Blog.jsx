@@ -145,6 +145,13 @@ export default function Blog() {
 
   const latestPosts = posts.slice(0, isMobile ? 1 : CONTENT.BLOG_PREVIEW_COUNT);
 
+  const handleOpenPost = () => {
+    if (latestPosts.length > 0) {
+      const currentPost = latestPosts[0];
+      replacePostParam(currentPost.id);
+      setSelectedPostId(currentPost.id);
+    }
+  };
   return (
     <>
       <section
@@ -182,6 +189,23 @@ export default function Blog() {
               </span>
             </button>
           </div>
+          {isMobile && (
+            <div className="w-full flex justify-center mt-6 lg:hidden">
+              <button
+                type="button"
+                // 2. THIS NOW CALLS THE CORRECT FUNCTION
+                onClick={handleOpenPost}
+                className="text-lg font-liberation italic text-whiteCustom/60 hover:text-whiteCustom transition-colors hover:[--bg-size:100%_1px]"
+              >
+                <span
+                  className={`inline box-decoration-clone bg-[linear-gradient(currentColor,currentColor)] bg-no-repeat [background-position:0_100%] transition-[background-size,color] duration-300 ease-in-out`}
+                  style={{ backgroundSize: 'var(--bg-size, 0% 1px)' }}
+                >
+                  {'read more'}
+                </span>
+              </button>
+            </div>
+          )}
         </div>
       </section>
 

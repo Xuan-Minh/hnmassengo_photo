@@ -93,9 +93,6 @@ export default function BlogPostOverlay({ post, onClose, onPrevious, onNext }) {
       ? post.title[locale]
       : post.title;
 
-  // Fonctionnement originel :
-  // Si pas de titre, on extrait la première phrase pour l'afficher comme titre,
-  // mais on garde le texte complet dans le paragraphe (pas de découpe)
   const autoHeadline = !postTitle
     ? extractFirstSentence(postText).headline
     : null;
@@ -120,15 +117,12 @@ export default function BlogPostOverlay({ post, onClose, onPrevious, onNext }) {
       >
         {/* Contenu principal - Deux mises en page */}
         {hasImage ? (
-          // Mise en page AVEC Image (image avant ou après le texte selon imagePosition)
           <div className="flex-1 flex items-start justify-center w-full h-full px-16 md:px-24 py-20 overflow-y-auto">
             <div className="max-w-5xl w-full">
               <div className="mb-8 flex flex-col items-start">
-                {/* Date on 2 lines */}
                 <div className="text-4xl md:text-5xl lg:text-6xl font-normal text-whiteCustom/60 leading-[0.85]">
                   {post.date}
                 </div>
-                {/* Title separate */}
                 <h1
                   className="text-3xl md:text-4xl lg:text-5xl italic font-normal leading-[0.85] mt-2"
                   id="blog-post-title"
@@ -200,10 +194,8 @@ export default function BlogPostOverlay({ post, onClose, onPrevious, onNext }) {
             </div>
           </div>
         ) : (
-          // Mise en page SANS Image (même structure que avec image, contenu centré)
           <div className="flex-1 flex items-start justify-center w-full h-full px-16 md:px-24 py-20 overflow-y-auto">
             <div className="max-w-5xl w-full h-full flex flex-col justify-between">
-              {/* Date + Title - Left aligned */}
               <div className="mb-8 flex flex-col items-start">
                 <div className="text-4xl md:text-5xl lg:text-6xl font-normal text-whiteCustom/60 leading-[0.85]">
                   {post.date}
@@ -220,7 +212,6 @@ export default function BlogPostOverlay({ post, onClose, onPrevious, onNext }) {
               {/* Extras au début */}
               {extrasPosition === 'start' && <ExtrasBlock extras={extras} />}
 
-              {/* Content - Left aligned and justified */}
               <div className="text-base md:text-lg leading-relaxed text-whiteCustom space-y-4 max-w-2xl mx-auto">
                 {displayText?.split('\n\n').map((paragraph, idx, item) => (
                   <p

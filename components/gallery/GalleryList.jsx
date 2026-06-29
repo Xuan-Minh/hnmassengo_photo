@@ -176,18 +176,26 @@ const MobileNavTop = ({ projects, currentProjectIndex, navigateToImage }) => {
       <div className="flex flex-wrap justify-center gap-x-6 gap-y-3">
         {projects.map((p, idx) => {
           if (idx >= midIndex) return null;
+
+          const isActive = idx === currentProjectIndex;
+
           return (
             <button
               type="button"
               key={p.id}
               onClick={() => navigateToImage(idx, 0)}
+              // On retire le `underline` natif de Tailwind, et on garde juste l'opacité/graisse
               className={`text-[13px] font-liberation whitespace-nowrap transition-all ${
-                idx === currentProjectIndex
-                  ? 'font-bold opacity-100 underline  '
-                  : 'opacity-40'
+                isActive ? 'font-bold opacity-100' : 'opacity-40'
               }`}
             >
-              {p.name}
+              <span
+                className="inline box-decoration-clone bg-[linear-gradient(currentColor,currentColor)] bg-no-repeat [background-position:0_100%] transition-[background-size,color] duration-300 ease-in-out"
+                // La magie opère ici : si le projet est actif, la ligne passe à 100%, sinon 0%
+                style={{ backgroundSize: isActive ? '100% 1px' : '0% 1px' }}
+              >
+                {p.name}
+              </span>
             </button>
           );
         })}
@@ -208,18 +216,24 @@ const MobileNavBottom = ({
       <div className="flex flex-wrap justify-center gap-x-6 gap-y-3">
         {projects.map((p, idx) => {
           if (idx < midIndex) return null;
+
+          const isActive = idx === currentProjectIndex;
+
           return (
             <button
               type="button"
               key={p.id}
               onClick={() => navigateToImage(idx, 0)}
               className={`text-[13px] font-liberation whitespace-nowrap transition-all ${
-                idx === currentProjectIndex
-                  ? 'font-bold opacity-100 underline'
-                  : 'opacity-40'
+                isActive ? 'font-bold opacity-100' : 'opacity-40'
               }`}
             >
-              {p.name}
+              <span
+                className="inline box-decoration-clone bg-[linear-gradient(currentColor,currentColor)] bg-no-repeat [background-position:0_100%] transition-[background-size,color] duration-300 ease-in-out"
+                style={{ backgroundSize: isActive ? '100% 1px' : '0% 1px' }}
+              >
+                {p.name}
+              </span>
             </button>
           );
         })}
