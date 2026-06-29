@@ -143,64 +143,63 @@ export default function Gallery() {
 
   return (
     <>
-      <section className="relative w-full h-screen overflow-hidden">
-        <div className="w-full h-full flex flex-col bg-background justify-center items-center">
-          <div className="relative flex flex-col justify-center items-start h-[75vh] lg:h-[90vh] w-[min(1100px,90vw)] 2xl:w-[min(1800px,90vw)]">
-            <AnimatePresence mode="wait">
-              {view === 'grid' ? (
-                <GalleryGrid
-                  key="grid"
-                  projects={projectsRecentFirst}
-                  view={view}
-                  onViewChange={handleViewChange}
-                  onProjectSelect={handleProjectSelect}
-                  setActiveCoord={handleSetActiveCoord}
-                />
-              ) : (
-                <GalleryList
-                  key="list"
-                  projects={projectsChrono}
-                  view={view}
-                  onViewChange={handleViewChange}
-                  onProjectSelect={handleProjectSelect}
-                  setActiveCoord={handleSetActiveCoord}
-                />
-              )}
-            </AnimatePresence>
-          </div>
-
-          {/* Footer commun isolé des animations ! */}
-          <div
-            style={{ width: 'min(1024px, 90vw)' }}
-            className="hidden lg:grid lg:grid-cols-3 md:grid-cols-1 items-center mt-16 lg:mt-4"
-          >
-            <div className=" text-xl font-liberation italic text-blackCustom h-8">
-              {activeCoord}
-            </div>
-            {view === 'grid' && (
-              <button
-                type="button"
-                className="justify-self-center text-xl font-liberation italic text-blackCustom hover:text-accent transition-all duration-300 px-4 py-2 rounded animate-in fade-in hover:[--bg-size:100%_1px]"
-                onClick={() =>
-                  dispatch({
-                    type: 'UPDATE_STATE',
-                    payload: { overlayOpen: true },
-                  })
-                }
-              >
-                <span
-                  className={`inline box-decoration-clone bg-[linear-gradient(currentColor,currentColor)] bg-no-repeat [background-position:0_100%] transition-[background-size,color] duration-300 ease-in-out`}
-                  style={{ backgroundSize: 'var(--bg-size, 0% 1px)' }}
-                >
-                  {t('seeMore')}
-                </span>
-              </button>
+      <section className="relative flex flex-col items-center justify-center w-full h-screen overflow-hidden bg-background">
+        <div
+          className={`relative flex flex-col justify-center items-start  ${
+            view === 'grid'
+              ? 'h-[75vh] lg:h-[90vh] w-[min(1100px,90vw)] 2xl:w-[min(1800px,90vw)]'
+              : 'h-full w-[min(1100px,90vw)] 2xl:w-[min(1800px,90vw)]p-6'
+          }`}
+        >
+          <AnimatePresence mode="wait">
+            {view === 'grid' ? (
+              <GalleryGrid
+                key="grid"
+                projects={projectsRecentFirst}
+                view={view}
+                onViewChange={handleViewChange}
+                onProjectSelect={handleProjectSelect}
+                setActiveCoord={handleSetActiveCoord}
+              />
+            ) : (
+              <GalleryList
+                key="list"
+                projects={projectsChrono}
+                view={view}
+                onViewChange={handleViewChange}
+                onProjectSelect={handleProjectSelect}
+                setActiveCoord={handleSetActiveCoord}
+              />
             )}
-            <div></div>
+          </AnimatePresence>
+        </div>
+
+        {/* Footer */}
+        <div className="hidden lg:grid lg:grid-cols-3 md:grid-cols-1 items-center mt-16 lg:mt-4 w-[min(1024px,90vw)]">
+          <div className="h-8 text-xl italic font-liberation text-blackCustom">
+            {activeCoord}
           </div>
+          {view === 'grid' && (
+            <button
+              type="button"
+              className="justify-self-center px-4 py-2 text-xl italic font-liberation text-blackCustom hover:text-accent  fade-in hover:[--bg-size:100%_1px]"
+              onClick={() =>
+                dispatch({
+                  type: 'UPDATE_STATE',
+                  payload: { overlayOpen: true },
+                })
+              }
+            >
+              <span
+                className="inline box-decoration-clone bg-[linear-gradient(currentColor,currentColor)] bg-no-repeat [background-position:0_100%] transition-[background-size,color] duration-300 ease-in-out"
+                style={{ backgroundSize: 'var(--bg-size, 0% 1px)' }}
+              >
+                {t('seeMore')}
+              </span>
+            </button>
+          )}
         </div>
       </section>
-
       {/* Overlays Globaux */}
       <AnimatePresence>
         {overlayOpen && (

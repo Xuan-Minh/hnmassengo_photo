@@ -113,21 +113,20 @@ const MainViewer = ({
   if (!currentListDisplaySrc) return null;
 
   return (
-    // On utilise justify-between pour repousser les flèches sur les bords
-    <div className="relative w-full h-full flex items-center justify-between px-2 md:px-8">
-      {/* shrink-0 empêche la flèche de se faire écraser */}
+    <div className="relative w-full h-full flex items-center justify-center">
+      {/* Flèche gauche en absolute */}
       <button
         type="button"
         onClick={navigateListPrev}
-        className="z-10 opacity-40 hover:opacity-100 transition-opacity p-2 shrink-0"
+        className="absolute left-2 md:left-8 z-20 opacity-60 hover:opacity-100 transition-opacity p-2 shrink-0 drop-shadow-[0_0_8px_rgba(0,0,0,0.8)] text-white"
       >
         <ArrowLeft />
       </button>
 
-      {/* 👇 LE SECRET EST ICI : flex-1 force cette div à s'étirer au maximum entre les flèches 👇 */}
+      {/* Le conteneur de l'image prend toute la largeur (w-full) */}
       <div
         onClick={() => onProjectSelect(project)}
-        className="relative flex-1 h-full cursor-pointer mx-2 md:mx-8"
+        className="relative w-full aspect-[4/5] md:aspect-auto md:h-full cursor-pointer px-10 md:px-24"
         role="button"
         tabIndex={0}
         onKeyPress={e => {
@@ -139,9 +138,10 @@ const MainViewer = ({
           src={currentListDisplaySrc}
           alt={project?.name || ''}
           fill
-          sizes="(max-width: 1024px) 94vw, 70vw"
-          // object-contain s'assure que l'image ne sera jamais rognée
-          className={`object-contain transition-opacity ${isMobile ? 'duration-150' : 'duration-300'} ${
+          sizes="(max-width: 1024px) 100vw, 70vw"
+          className={`object-contain transition-opacity ${
+            isMobile ? 'duration-150' : 'duration-300'
+          } ${
             isTransitioning || (!isListImageLoaded && !listImageError)
               ? 'opacity-0'
               : 'opacity-100'
@@ -155,10 +155,12 @@ const MainViewer = ({
           priority={!isMobile}
         />
       </div>
+
+      {/* Flèche droite en absolute */}
       <button
         type="button"
         onClick={navigateListNext}
-        className="z-10 opacity-40 hover:opacity-100 transition-opacity p-2 shrink-0"
+        className="absolute right-2 md:right-8 z-20 opacity-60 hover:opacity-100 transition-opacity p-2 shrink-0 drop-shadow-[0_0_8px_rgba(0,0,0,0.8)] text-white"
       >
         <ArrowRight />
       </button>
@@ -181,7 +183,7 @@ const MobileNavTop = ({ projects, currentProjectIndex, navigateToImage }) => {
               onClick={() => navigateToImage(idx, 0)}
               className={`text-[13px] font-liberation whitespace-nowrap transition-all ${
                 idx === currentProjectIndex
-                  ? 'font-bold opacity-100 scale-105'
+                  ? 'font-bold opacity-100 underline  '
                   : 'opacity-40'
               }`}
             >
@@ -213,7 +215,7 @@ const MobileNavBottom = ({
               onClick={() => navigateToImage(idx, 0)}
               className={`text-[13px] font-liberation whitespace-nowrap transition-all ${
                 idx === currentProjectIndex
-                  ? 'font-bold opacity-100 scale-105'
+                  ? 'font-bold opacity-100 underline'
                   : 'opacity-40'
               }`}
             >
@@ -336,7 +338,7 @@ function useGalleryLogic(projects, setActiveCoord) {
         });
         setActiveCoord(projects[next.nextProjectIndex]?.coords || '');
       }, 250);
-    }, 3000);
+    }, 5000);
 
     return () => {
       if (timers.tick) clearTimeout(timers.tick);
