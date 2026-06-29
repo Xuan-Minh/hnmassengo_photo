@@ -231,9 +231,9 @@ export default function BlogPostOverlay({ post, onClose, onPrevious, onNext }) {
                 <button
                   type="button"
                   onClick={() => setContactOpen(true)}
-                  className="text-sm text-whiteCustom/60 hover:text-whiteCustom transition-colors italic ml-4"
+                  className="text-sm text-whiteCustom/60 hover:text-whiteCustom transition-colors italic md:ml-4"
                 >
-                  {t('contact')}
+                  {t('contact.discuss')}
                 </button>
               </div>
             </div>

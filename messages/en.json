@@ -48,6 +48,7 @@
   },
   "contact": {
     "title": "Contact",
+    "discuss": "wanna discuss",
     "form": {
       "fullName": "Full name",
       "email": "Email",
