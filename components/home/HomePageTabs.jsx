@@ -246,7 +246,7 @@ function WindowItem({
                 href={win.externalLink}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full h-full block hover:opacity-90 transition-opacity"
+                className="w-full h-full block hover:opacity-90 transition-opacity cursor-pointer active:cursor-pointing"
               >
                 {imageComponent}
               </a>
