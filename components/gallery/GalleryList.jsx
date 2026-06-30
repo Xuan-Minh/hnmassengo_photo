@@ -154,7 +154,6 @@ const MainViewer = ({
           }
           priority={!isMobile}
         />
-        <button className="md:hidden z-50 justify-end items-end"> TEST</button>
       </div>
 
       {/* Flèche droite en absolute */}
