@@ -46,17 +46,20 @@ export default function Gallery() {
   // Gérer le scroll quand un overlay est ouvert
   useEffect(() => {
     const scrollRoot = document.getElementById('scroll-root');
-    if (!scrollRoot) return;
+
     if (overlayOpen || selectedProject) {
-      scrollRoot.style.overflow = 'hidden';
+      if (scrollRoot) scrollRoot.style.overflow = 'hidden';
+      document.body.style.overflow = 'hidden';
     } else {
       const timer = setTimeout(() => {
-        scrollRoot.style.overflow = '';
+        if (scrollRoot) scrollRoot.style.overflow = '';
+        document.body.style.overflow = '';
       }, 50);
       return () => clearTimeout(timer);
     }
     return () => {
-      scrollRoot.style.overflow = '';
+      if (scrollRoot) scrollRoot.style.overflow = '';
+      document.body.style.overflow = '';
     };
   }, [overlayOpen, selectedProject]);
 
