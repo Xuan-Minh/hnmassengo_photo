@@ -44,20 +44,16 @@ export default function ImageMarquee({ images, onClick }) {
   }, [images, y]);
 
   return (
-    <button
-      type="button"
-      className="hidden md:flex flex-col w-[45%] h-full relative bg-background cursor-pointer"
-      onClick={onClick}
-      onKeyPress={e => {
-        if (e.key === 'Enter' && onClick) onClick();
-      }}
-    >
+    <div className="hidden md:flex flex-col w-[45%] h-full relative bg-background">
       <div className="w-full h-full overflow-hidden relative">
         <m.div ref={trackRef} className="flex flex-col" style={{ y }}>
           {allImages.map((img, index, item) => (
-            <div
+            // On ajoute le bouton ici, autour de chaque image
+            <button
+              type="button"
               key={item.id + '-' + index}
-              className="w-full pb-16 flex-shrink-0 flex justify-center items-center"
+              className="w-full pb-16 flex-shrink-0 flex justify-center items-center cursor-pointer hover:opacity-80 transition-opacity"
+              onClick={() => onClick && onClick(index % images.length)} // <-- Modulo important !
             >
               <Image
                 src={buildSanityImageUrl(img, {
@@ -65,23 +61,18 @@ export default function ImageMarquee({ images, onClick }) {
                   q: 60,
                   auto: 'format',
                 })}
-                alt={`Project image ${index + 1}`}
+                alt={`Project image ${(index % images.length) + 1}`}
                 width={400}
                 height={300}
                 className="w-3/5 h-auto object-contain"
                 draggable={false}
                 sizes="(max-width: 1200px) 100vw, 400px"
                 priority={false}
-                tabIndex={0}
-                onKeyPress={e => {
-                  if (e.key === 'Enter' && onClick) onClick();
-                }}
-                role="button"
               />
-            </div>
+            </button>
           ))}
         </m.div>
       </div>
-    </button>
+    </div>
   );
 }

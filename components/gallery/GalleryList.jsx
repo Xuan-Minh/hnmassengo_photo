@@ -70,7 +70,7 @@ const DesktopNav = ({
   currentProjectIndex,
   navigateToImage,
 }) => (
-  <div className="hidden lg:flex items-center justify-between gap-8 mb-12 mt-8 w-full">
+  <div className="hidden lg:flex items-center justify-between gap-8 my-8 w-full">
     <GalleryViewToggle view={view} onViewChange={onViewChange} />
     <div className="flex flex-wrap justify-center gap-x-8 gap-y-2 flex-1">
       {projects.map((p, idx) => (
@@ -126,7 +126,7 @@ const MainViewer = ({
       {/* Le conteneur de l'image prend toute la largeur (w-full) */}
       <div
         onClick={() => onProjectSelect(project)}
-        className="relative w-full aspect-[4/5] md:aspect-auto md:h-full cursor-pointer px-10 md:px-24"
+        className="relative w-full aspect-[4/5] md:aspect-auto md:h-full cursor-pointer px-10 md:px-24 flex-row"
         role="button"
         tabIndex={0}
         onKeyPress={e => {
@@ -154,6 +154,7 @@ const MainViewer = ({
           }
           priority={!isMobile}
         />
+        <button className="md:hidden z-50 justify-end items-end"> TEST</button>
       </div>
 
       {/* Flèche droite en absolute */}
@@ -191,7 +192,6 @@ const MobileNavTop = ({ projects, currentProjectIndex, navigateToImage }) => {
             >
               <span
                 className="inline box-decoration-clone bg-[linear-gradient(currentColor,currentColor)] bg-no-repeat [background-position:0_100%] transition-[background-size,color] duration-300 ease-in-out"
-                // La magie opère ici : si le projet est actif, la ligne passe à 100%, sinon 0%
                 style={{ backgroundSize: isActive ? '100% 1px' : '0% 1px' }}
               >
                 {p.name}

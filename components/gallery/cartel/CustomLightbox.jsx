@@ -281,7 +281,7 @@ function DesktopLightbox({
 // 3. CUSTOM HOOKS (LOGIQUE MÉTIER)
 // ==========================================
 
-function useLightboxLogic(open, onClose, images) {
+function useLightboxLogic(open, onClose, images, initialIndex) {
   const [state, dispatch] = useReducer(reducer, initialState);
   const { currentIndex, isCurrentLoaded, hasCurrentError, touchStart } = state;
 
@@ -323,8 +323,8 @@ function useLightboxLogic(open, onClose, images) {
 
   // Initialisation à l'ouverture
   useEffect(() => {
-    if (open) goToIndex(0);
-  }, [open, goToIndex]);
+    if (open) goToIndex(initialIndex);
+  }, [open, goToIndex, initialIndex]);
 
   useEffect(() => {
     if (!open) return;
@@ -445,7 +445,13 @@ function useLightboxLogic(open, onClose, images) {
 // 4. COMPOSANT PRINCIPAL
 // ==========================================
 
-export default function CustomLightbox({ open, onClose, images, project }) {
+export default function CustomLightbox({
+  open,
+  onClose,
+  images,
+  project,
+  initialIndex,
+}) {
   const {
     currentIndex,
     isCurrentLoaded,
@@ -454,7 +460,7 @@ export default function CustomLightbox({ open, onClose, images, project }) {
     goToIndex,
     currentDisplaySrc,
     getDisplaySrcForIndex,
-  } = useLightboxLogic(open, onClose, images);
+  } = useLightboxLogic(open, onClose, images, initialIndex);
 
   // Maintenant seulement, on peut quitter prématurément si besoin
   if (!open) return null;

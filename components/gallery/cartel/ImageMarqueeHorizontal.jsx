@@ -16,9 +16,9 @@ export default function ImageMarqueeHorizontal({ images, onClick }) {
             type="button"
             key={img + index}
             className="flex-shrink-0 flex justify-center items-center snap-center cursor-pointer hover:opacity-80 transition-opacity duration-200"
-            onClick={onClick}
+            onClick={() => onClick && onClick(index)}
             onKeyPress={e => {
-              if (e.key === 'Enter' && onClick) onClick();
+              if (e.key === 'Enter' && onClick) onClick(index);
             }}
             tabIndex={0}
           >

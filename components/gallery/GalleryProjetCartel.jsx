@@ -13,6 +13,7 @@ import ImageMarquee from './cartel/ImageMarquee';
 
 const initialState = {
   lightboxOpen: false,
+  lightboxIndex: 0,
   isClosing: false,
 };
 
@@ -29,7 +30,7 @@ export default function GalleryProjetCartel({ project, onClose }) {
   const t = useTranslations('gallery');
 
   const [state, dispatch] = useReducer(reducer, initialState);
-  const { lightboxOpen, isClosing } = state;
+  const { lightboxOpen, lightboxIndex, isClosing } = state;
 
   const closeTimerRef = useRef(null);
   const hasFinalizedCloseRef = useRef(false);
@@ -136,10 +137,10 @@ export default function GalleryProjetCartel({ project, onClose }) {
           <div className="h-[50vh] flex-shrink-0 flex items-center">
             <ImageMarqueeHorizontal
               images={project.images}
-              onClick={() =>
+              onClick={idx =>
                 dispatch({
                   type: 'UPDATE_STATE',
-                  payload: { lightboxOpen: true },
+                  payload: { lightboxOpen: true, lightboxIndex: idx },
                 })
               }
             />
@@ -197,8 +198,11 @@ export default function GalleryProjetCartel({ project, onClose }) {
         {/* Colonne de droite : Carrousel (desktop uniquement) */}
         <ImageMarquee
           images={project.images}
-          onClick={() =>
-            dispatch({ type: 'UPDATE_STATE', payload: { lightboxOpen: true } })
+          onClick={idx =>
+            dispatch({
+              type: 'UPDATE_STATE',
+              payload: { lightboxOpen: true, lightboxIndex: idx },
+            })
           }
         />
       </m.section>
@@ -208,6 +212,7 @@ export default function GalleryProjetCartel({ project, onClose }) {
         {lightboxOpen && (
           <CustomLightbox
             open={lightboxOpen}
+            initialIndex={lightboxIndex}
             onClose={() =>
               dispatch({
                 type: 'UPDATE_STATE',
