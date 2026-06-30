@@ -118,7 +118,7 @@ const MainViewer = ({
       <button
         type="button"
         onClick={navigateListPrev}
-        className="absolute left-2 md:left-8 z-20 opacity-60 hover:opacity-100 transition-opacity p-2 shrink-0 drop-shadow-[0_0_8px_rgba(0,0,0,0.8)] text-white"
+        className="absolute left-2 md:left-12 z-20 opacity-60 hover:opacity-100 transition-opacity p-2 shrink-0 text-blackCustom "
       >
         <ArrowLeft />
       </button>
@@ -160,7 +160,7 @@ const MainViewer = ({
       <button
         type="button"
         onClick={navigateListNext}
-        className="absolute right-2 md:right-8 z-20 opacity-60 hover:opacity-100 transition-opacity p-2 shrink-0 drop-shadow-[0_0_8px_rgba(0,0,0,0.8)] text-white"
+        className="absolute right-2 md:right-12 z-20 opacity-60 hover:opacity-100 transition-opacity p-2 shrink-0 drop-shadow-[0_0_8px_rgba(0,0,0,0.8)] text-white"
       >
         <ArrowRight />
       </button>

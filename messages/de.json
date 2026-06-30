@@ -27,6 +27,7 @@
       "title": "Archiv"
     },
     "post": {
+      "discuss": "wanna discuss",
       "contact": "kontakt",
       "reply": "Antwort"
     }
@@ -48,7 +49,7 @@
   },
   "contact": {
     "title": "Kontakt",
-    "discuss": "wanna to discuss",
+
     "form": {
       "fullName": "Vollständiger Name",
       "email": "E-Mail",
