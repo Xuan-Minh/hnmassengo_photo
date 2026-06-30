@@ -1,15 +1,18 @@
-// https://www.sanity.io/docs/structure-builder-cheat-sheet
+// sanity/structure.js
 export const structure = S =>
   S.list()
     .title('Content')
     .items([
       S.listItem()
-        .title('Home - Bio')
-        .id('homeBio')
+        .title("Page d'accueil")
+        .id('homePage')
         .child(
-          S.editor().id('homeBio').schemaType('homeBio').documentId('homeBio')
+          S.editor()
+            .id('homePage')
+            .schemaType('homePage')
+            .documentId('homePage')
         ),
       ...S.documentTypeListItems().filter(
-        listItem => listItem.getId() !== 'homeBio'
+        listItem => listItem.getId() !== 'homePage'
       ),
     ]);
