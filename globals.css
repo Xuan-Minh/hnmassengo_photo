@@ -97,6 +97,9 @@ a:focus-visible,
   .windowsTab:active {
     cursor: url('/cursor/Move.cur'), grabbing !important;
   }
+  .windowsTab * {
+    cursor: inherit !important;
+  }
   a,
   button,
   [role='button'],
@@ -106,6 +109,16 @@ a:focus-visible,
   input[type='button'],
   input[type='checkbox'] {
     cursor: url('/cursor/Select Light.cur'), pointer !important;
+  }
+
+  a:active,
+  button:active,
+  [role='button']:active,
+  .cursor-pointer:active,
+  input[type='submit']:active,
+  input[type='button']:active,
+  input[type='checkbox']:active {
+    cursor: url('/cursor/Select.cur'), pointer !important;
   }
 
   input[type='text'],

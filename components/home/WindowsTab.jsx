@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { m, useMotionValue } from 'framer-motion';
 import { Minimize } from 'lucide-react';
 import { fontColorTab } from '../../lib/utils';
-
+import { useIsMobile } from '../../lib/hooks';
 const childrenVariants = {
   idle: {
     scale: 1,
@@ -28,6 +28,7 @@ export default function WindowsTab({
 }) {
   const color = couleur || 'bg-gray-300';
   const textColor = fontColor || fontColorTab(couleur);
+  const isMobile = useIsMobile();
 
   const [isDragging, setIsDragging] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
@@ -59,6 +60,9 @@ export default function WindowsTab({
     }
   }, [style.left, style.top, x, y]);
 
+  if (isMobile) {
+    return null; // On ne rend pas les fenêtres sur mobile
+  }
   return (
     <m.div
       drag
@@ -77,7 +81,6 @@ export default function WindowsTab({
         zIndex,
         opacity: isReady ? 1 : 0,
       }}
-      // 4. L'origine DOM est à 0,0 pour que les constraintsRef soient exactes !
       className="windowsTab absolute top-0 left-0 flex flex-col flex-nowrap gap-1 bg-transparent"
     >
       <m.div
@@ -86,12 +89,12 @@ export default function WindowsTab({
         }}
         variants={childrenVariants}
         animate={isDragging ? 'dragging' : 'idle'}
-        className={`flex items-center justify-between w-full border border-black gap-2 p-2 cursor-grab active:cursor-grabbing ${
+        className={`flex items-center justify-between w-full border border-black gap-2 p-2 ${
           isMinimized ? 'rounded-md' : 'rounded-t-md'
         }`}
       >
         <h3
-          className="text-lg text-center font-bold px-2"
+          className="text-lg text-center font-bold px-2 pointer-events-none"
           style={{ color: textColor }}
         >
           {titre}
@@ -102,7 +105,7 @@ export default function WindowsTab({
             e.stopPropagation();
             setIsMinimized(!isMinimized);
           }}
-          className="p-1 hover:bg-white/20 rounded-sm"
+          className="p-1 hover:bg-white/20 rounded-sm pointer-events-auto cursor-pointer"
           aria-label="Réduire la fenêtre"
           type="button"
           style={{ color: textColor }}
