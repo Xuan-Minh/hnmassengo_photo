@@ -83,6 +83,7 @@ function Sidebar({
 }) {
   return (
     <div className="w-48 flex flex-col pt-8 shrink-0 overflow-y-auto no-scrollbar pb-16">
+      {/* --- SECTION FILTRES --- */}
       <div className="flex flex-col gap-2 mb-12">
         {FILTERS.map(f => (
           <button
@@ -97,13 +98,18 @@ function Sidebar({
               dispatch({ type: 'UPDATE_STATE', payload: { filter: f.value } })
             }
           >
-            <AnimatedUnderlineLink>
+            {/* Remplacement du lien par un span stylisé */}
+            <span
+              className="inline box-decoration-clone bg-[linear-gradient(currentColor,currentColor)] bg-no-repeat [background-position:0_100%] transition-[background-size,color] duration-300 ease-in-out"
+              style={{ backgroundSize: 'var(--bg-size, 0% 1px)' }}
+            >
               {t(`filters.${f.value}`)}
-            </AnimatedUnderlineLink>
+            </span>
           </button>
         ))}
       </div>
 
+      {/* --- SECTION LISTE DES PROJETS --- */}
       <ul className="flex flex-col gap-2">
         {filteredProjects.map(p => (
           <li key={p.id}>
@@ -124,11 +130,17 @@ function Sidebar({
                       payload: { hoveredId: null },
                     };
                   }
-                  return { type: 'UPDATE_STATE', payload: {} }; // No-op if grid is hovered
+                  return { type: 'UPDATE_STATE', payload: {} };
                 });
               }}
             >
-              <AnimatedUnderlineLink>{p.name}</AnimatedUnderlineLink>
+              {/* Remplacement du lien par un span stylisé */}
+              <span
+                className="inline box-decoration-clone bg-[linear-gradient(currentColor,currentColor)] bg-no-repeat [background-position:0_100%] transition-[background-size,color] duration-300 ease-in-out"
+                style={{ backgroundSize: 'var(--bg-size, 0% 1px)' }}
+              >
+                {p.name}
+              </span>
             </button>
           </li>
         ))}
