@@ -156,12 +156,12 @@ export default function Blog() {
     <>
       <section
         id="blog"
-        className="h-[100dvh] md:h-screen snap-start flex items-center justify-center lg:justify-start  2xl:items-center 2xl:justify-center bg-blackCustom relative py-10 px-6 sm:px-10 lg:pl-20 lg:pr-16"
+        className="h-[75dvh] md:h-screen snap-start flex items-center justify-center lg:justify-start  2xl:items-center 2xl:justify-center bg-blackCustom relative py-10 px-6 sm:px-10 lg:pl-20 lg:pr-16"
         aria-label={t('ariaLabel')}
       >
         <div
           style={{ width: 'min(1000px, 85vw)' }}
-          className="flex flex-col justify-around h-full max-h-full 2xl:max-w-5xl"
+          className="flex flex-col justify-center h-full max-h-full 2xl:max-w-5xl"
         >
           {latestPosts.map(post => (
             <BlogPostItem

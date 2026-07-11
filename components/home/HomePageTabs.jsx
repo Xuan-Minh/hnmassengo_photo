@@ -222,13 +222,16 @@ function WindowItem({
 
       case 'windowImage': {
         const imageUrl = win.photo ? buildSanityImageUrl(win.photo) : heroImage;
+        const interactiveImageClasses = win.externalLink
+          ? 'cursor-pointer hover:opacity-90 transition-opacity active:cursor-pointer'
+          : '';
         const imageComponent = imageUrl ? (
           <Image
             src={imageUrl}
             alt={titre}
             width={800}
             height={800}
-            className="w-full h-full object-cover rounded-md block"
+            className={`w-full h-full object-cover rounded-md block ${interactiveImageClasses}`}
           />
         ) : (
           <div className="w-full h-full bg-gray-200 flex items-center justify-center text-black rounded-md">
@@ -246,7 +249,7 @@ function WindowItem({
                 href={win.externalLink}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full h-full block hover:opacity-90 transition-opacity cursor-pointer active:cursor-pointing"
+                className="w-full h-full block hover:opacity-90 transition-opacity cursor-pointer active:cursor-pointer"
               >
                 {imageComponent}
               </a>
@@ -337,14 +340,151 @@ export default function HomePageTabs() {
 
   if (!windows || windows.length === 0) {
     return (
-      <div className="flex h-screen w-screen items-center justify-center text-white bg-blackCustom">
+      <div className="flex h-screen w-screen items-center justify-center text-whiteCustom bg-blackCustom">
         Chargement des fenêtres...
       </div>
     );
   }
   if (isMobile) {
+    // 1. Extraction des fenêtres spécifiques
+    const bioWin = orderedWindows.find(w => w._type === 'windowBio');
+    const textWin = orderedWindows.find(w => w._type === 'windowText');
+    const imageWin = orderedWindows.find(w => w._type === 'windowImage');
+    const videoWin = orderedWindows.find(w => w._type === 'windowVideo'); // <-- Remplacement ici
+
+    // 2. Fonction utilitaire pour récupérer la bonne couleur (Sanity ou Fallback)
+    const getTabColor = win => {
+      if (!win) return '#000000';
+      return (
+        win.windowColor?.colorValue?.hex ||
+        teamColorsFALLBACK[win._originalIndex % 4]
+      );
+    };
+
     return (
-      <section className="w-full h-full flex flex-col gap-4 p-4 bg-red-900"></section> // {orderedWindows.map(win => (<MobileWindowCard key={win._id} win={win} ))}/>
+      <section
+        id="home"
+        className="grid grid-cols-2 place-content-center h-screen p-2 gap-4"
+      >
+        {/* --- CARTE 1 : BIO --- */}
+        {bioWin && (
+          <div className="flex col-span-2 w-full h-fit flex-col text-white gap-1">
+            <div
+              className="flex items-center justify-between border border-black gap-2 p-2 cursor-grab active:cursor-grabbing rounded-t-md"
+              style={{ backgroundColor: getTabColor(bioWin) }}
+            >
+              <h3 className="text-md font-bold px-2">
+                {bioWin.name || 'Han-Noah MASSENGO'}
+              </h3>
+            </div>
+
+            <div className="border border-black bg-background flex rounded-b-md overflow-hidden">
+              <div className="w-[40%] flex-shrink-0 border-r border-blackCustom/20 flex items-center">
+                <Image
+                  src={
+                    bioWin.photo ? buildSanityImageUrl(bioWin.photo) : heroImage
+                  }
+                  alt="Portrait"
+                  width={400}
+                  height={400}
+                  className="w-full h-auto rounded-bl-md"
+                />
+              </div>
+
+              {/* Colonne Texte */}
+              <div className="text-blackCustom p-3 flex flex-col justify-center w-[60%]">
+                <ul className="list-disc list-inside flex flex-col gap-2 text-[14px] font-bold">
+                  <li>Age : {calculateAge()} ans</li>
+                  <li className="truncate">{bioWin.location || 'Paris'} 📌</li>
+                  <li className="break-words leading-snug">
+                    {' '}
+                    {localizeField(bioWin.occupation, locale, 'Soccer')}
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* --- CARTE 2 : TEXTE --- */}
+        {textWin && (
+          <div className="flex col-span-2 w-full h-[25vh] flex-col text-white gap-1">
+            <div
+              className="flex items-center justify-between border border-black gap-2 p-2 cursor-grab active:cursor-grabbing rounded-t-md"
+              style={{ backgroundColor: getTabColor(textWin) }}
+            >
+              <h3 className="text-md font-bold px-2">
+                {localizeField(textWin.title, locale, 'Histoire')}
+              </h3>
+            </div>
+            <div className="p-2 border border-black bg-background flex rounded-b-md overflow-scroll preserve-lines whitespace-pre-line">
+              <p className="text-blackCustom text-sm">
+                {portableTextToPlain(
+                  localizeField(textWin.content, locale, [])
+                )}
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* --- CARTE 3 : IMAGE --- */}
+        {imageWin && (
+          <div className="flex col-span-1 w-full h-full flex-col text-white gap-1">
+            <div
+              className="flex items-center justify-between border border-black gap-2 p-2 cursor-grab active:cursor-grabbing rounded-t-md"
+              style={{ backgroundColor: getTabColor(imageWin) }}
+            >
+              <h3 className="text-sm font-bold px-2 truncate">
+                {localizeField(imageWin.title, locale, 'Galerie')}
+              </h3>
+            </div>
+            <div className="p-2 border border-black bg-background flex rounded-b-md h-full">
+              <Image
+                src={
+                  imageWin.photo
+                    ? buildSanityImageUrl(imageWin.photo)
+                    : heroImage
+                }
+                alt="Image mobile"
+                width={400}
+                height={400}
+                className="w-full h-full object-cover aspect-square"
+              />
+            </div>
+          </div>
+        )}
+
+        {/* --- CARTE 4 : VIDEO (YOUTUBE) --- */}
+        {videoWin && (
+          <div className="flex col-span-1 w-full h-full flex-col text-white gap-1">
+            <div
+              className="flex items-center justify-between border border-black gap-2 p-2 cursor-grab active:cursor-grabbing rounded-t-md"
+              style={{ backgroundColor: getTabColor(videoWin) }}
+            >
+              <h3 className="text-sm font-bold px-2 truncate">
+                {localizeField(videoWin.title, locale, 'Vidéo')}
+              </h3>
+            </div>
+            <div className="p-2 border border-black bg-background flex rounded-b-md h-full items-center justify-center aspect-square">
+              {extractIdYoutube(videoWin.content) ? (
+                <iframe
+                  className="w-full aspect-square rounded-sm"
+                  src={`https://www.youtube.com/embed/${extractIdYoutube(videoWin.content)}`}
+                  title="YouTube video player"
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowFullScreen
+                  sandbox="allow-scripts allow-same-origin allow-presentation allow-popups allow-popups-to-escape-sandbox"
+                ></iframe>
+              ) : (
+                <div className="text-blackCustom text-xs text-center w-full">
+                  Vidéo indisponible
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+      </section>
     );
   }
 
