@@ -364,7 +364,7 @@ export default function HomePageTabs() {
     return (
       <section
         id="home"
-        className="grid grid-cols-2 place-content-center h-screen p-2 gap-4"
+        className="grid grid-cols-2 place-content-around h-screen p-2 gap-4"
       >
         {/* --- CARTE 1 : BIO --- */}
         {bioWin && (
