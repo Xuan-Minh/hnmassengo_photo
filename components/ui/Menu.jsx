@@ -20,7 +20,6 @@ const initialState = {
   active: null,
   hydrated: false,
   isDarkBg: false,
-  isMobile: false,
   mobileMenuOpen: false,
   touchStart: null,
 };
@@ -51,7 +50,6 @@ function useMenuInitialization(dispatch) {
   }, [dispatch]);
 }
 
-// Renommé car on ne gère plus la visibilité globale ici, juste le scroll tracking !
 function useMenuScrollTracking(dispatch, state, desktopItems) {
   const { active, isDarkBg } = state;
 
@@ -60,9 +58,8 @@ function useMenuScrollTracking(dispatch, state, desktopItems) {
     if (!root) return;
 
     const rootRect = root.getBoundingClientRect();
-    const rootCenter = rootRect.top + rootRect.height / 2; // Le centre de l'écran
+    const rootCenter = rootRect.top + rootRect.height / 2;
 
-    // 1. DÉTECTER LA SECTION ACTIVE (Celle qui traverse le centre de l'écran)
     const allSections = Array.from(
       root.querySelectorAll('section[id], #home, #info')
     );
@@ -78,7 +75,6 @@ function useMenuScrollTracking(dispatch, state, desktopItems) {
 
     const isDark = newlyActiveId === 'blog';
 
-    // 2. PRÉPARER LES MISES À JOUR
     const updates = {};
 
     if (
@@ -93,7 +89,6 @@ function useMenuScrollTracking(dispatch, state, desktopItems) {
       updates.isDarkBg = isDark;
     }
 
-    // 3. ENVOYER LA MISE À JOUR (Seulement si nécessaire)
     if (Object.keys(updates).length > 0) {
       dispatch({ type: 'UPDATE_STATE', payload: updates });
     }
@@ -105,7 +100,6 @@ function useMenuScrollTracking(dispatch, state, desktopItems) {
 
     let ticking = false;
 
-    // Optimisation à 60fps
     const onScroll = () => {
       if (!ticking) {
         window.requestAnimationFrame(() => {
@@ -201,7 +195,6 @@ function useMobileGestures(mobileMenuOpen, touchStart, dispatch) {
 // ==========================================
 
 function MobileMenu({
-  shouldHideMobileMenu,
   mobileMenuOpen,
   isDarkBg,
   desktopItems,
@@ -219,13 +212,12 @@ function MobileMenu({
 
   return (
     <>
+      {/* Bouton Menu (Volant)*/}
       <button
         type="button"
-        className={`fixed top-8 right-8 z-50 text-xl font-liberation italic tracking-wider transition-opacity duration-300 ${
-          shouldHideMobileMenu && !mobileMenuOpen
-            ? 'opacity-0 pointer-events-none'
-            : 'opacity-100'
-        } ${isDarkBg ? 'text-whiteCustom' : 'text-blackCustom'}`}
+        className={`fixed top-4 right-8 z-50 text-xl font-liberation italic tracking-wider transition-opacity duration-300 opacity-100 ${
+          isDarkBg ? 'text-whiteCustom' : 'text-blackCustom'
+        }`}
         onClick={() =>
           dispatch({ type: 'UPDATE_STATE', payload: { mobileMenuOpen: true } })
         }
@@ -233,6 +225,7 @@ function MobileMenu({
         menu
       </button>
 
+      {/* Overlay Plein Écran */}
       <div
         ref={mobileOverlayRef}
         className={`fixed inset-0 z-[60] bg-blackCustom text-whiteCustom flex flex-col items-center justify-center transition-transform duration-500 ease-in-out ${
@@ -385,7 +378,6 @@ export default function Menu() {
   const pathname = usePathname();
   const locale = params.locale;
 
-  // Activation des comportements globaux
   useMenuInitialization(dispatch);
   useMenuScrollTracking(dispatch, state, desktopItems);
 
@@ -408,16 +400,15 @@ export default function Menu() {
     [locale, pathname]
   );
 
-  // Rendu de sécurité avant l'hydratation
   if (!hydrated || !active) return null;
 
-  // La seule raison de se cacher par soi-même est si on est sur la section "home"
+  // On garde la logique de disparition UNIQUEMENT pour le desktop
   const isHiddenState = active === 'home';
 
   if (isMobile) {
     return (
       <MobileMenu
-        shouldHideMobileMenu={isHiddenState}
+        // Plus besoin de lui passer shouldHideMobileMenu
         mobileMenuOpen={mobileMenuOpen}
         isDarkBg={isDarkBg}
         desktopItems={desktopItems}
