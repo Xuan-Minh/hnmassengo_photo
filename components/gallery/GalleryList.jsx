@@ -114,19 +114,18 @@ const MainViewer = ({
 
   return (
     <div className="relative w-full h-full flex items-center justify-center">
-      {/* Flèche gauche en absolute */}
+      {/* Flèche gauche */}
       <button
         type="button"
         onClick={navigateListPrev}
-        className="absolute left-2 md:left-12 z-20 opacity-60 hover:opacity-100 transition-opacity p-2 shrink-0 text-blackCustom "
+        className="absolute left-2 md:left-12 z-20 opacity-60 hover:opacity-100 transition-opacity p-2 shrink-0 text-blackCustom"
       >
         <ArrowLeft />
       </button>
 
-      {/* Le conteneur de l'image prend toute la largeur (w-full) */}
       <div
         onClick={() => onProjectSelect(project)}
-        className="relative w-full aspect-[4/5] md:aspect-auto md:h-full cursor-pointer px-10 md:px-24 flex-row"
+        className="relative w-full aspect-[4/5] md:aspect-auto md:h-full cursor-pointer px-10 md:px-24 flex-row group"
         role="button"
         tabIndex={0}
         onKeyPress={e => {
@@ -139,7 +138,7 @@ const MainViewer = ({
           alt={project?.name || ''}
           fill
           sizes="(max-width: 1024px) 100vw, 70vw"
-          className={`object-contain transition-opacity ${
+          className={`object-contain transition-all group-hover:scale-[1.02] ${
             isMobile ? 'duration-150' : 'duration-300'
           } ${
             isTransitioning || (!isListImageLoaded && !listImageError)
@@ -154,9 +153,12 @@ const MainViewer = ({
           }
           priority={!isMobile}
         />
+        <div className="absolute bottom-8 right-2 z-10 bg-whiteCustom backdrop-blur-md text-blackCustom px-3 py-1.5 rounded-sm shadow-sm text-[10px] font-bold uppercase tracking-widest pointer-events-none transition-all duration-300 opacity-100 md:opacity-0 md:group-hover:opacity-100">
+          See more
+        </div>
       </div>
 
-      {/* Flèche droite en absolute */}
+      {/* Flèche droite */}
       <button
         type="button"
         onClick={navigateListNext}
