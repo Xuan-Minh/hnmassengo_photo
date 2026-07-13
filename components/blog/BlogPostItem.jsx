@@ -44,8 +44,10 @@ export default function BlogPostItem({
       const sectionH = section.clientHeight || window.innerHeight;
       const titleH = titleRef.current ? titleRef.current.offsetHeight : 0;
       const metaH = metaRef.current ? metaRef.current.offsetHeight : 0;
-      const padding = 48; // safety margin
-      const available = Math.max(0, sectionH - titleH - metaH - padding);
+      const padding = 48; // margin de sécurité
+
+      // LIGNE MODIFIÉE : On divise par 2 l'espace disponible pour couper le texte de moitié
+      const available = Math.max(0, (sectionH - titleH - metaH - padding) / 2);
 
       const paras = (displayText || '').split('\n\n').filter(Boolean);
       if (paras.length === 0) return setVisibleCount(0);
@@ -64,6 +66,7 @@ export default function BlogPostItem({
         }
       }
 
+      // Affiche le nombre de paragraphes qui rentrent (au minimum 1)
       setVisibleCount(Math.max(1, Math.min(fit || 1, paras.length)));
     };
 

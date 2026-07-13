@@ -156,7 +156,7 @@ export default function Blog() {
     <>
       <section
         id="blog"
-        className="h-[75dvh] md:h-screen snap-start flex items-center justify-center lg:justify-start  2xl:items-center 2xl:justify-center bg-blackCustom relative py-10 px-6 sm:px-10 lg:pl-20 lg:pr-16"
+        className="h-screen md:h-screen snap-start flex items-center justify-center lg:justify-start  2xl:items-center 2xl:justify-center bg-blackCustom relative py-10 px-6 sm:px-10 lg:pl-20 lg:pr-16"
         aria-label={t('ariaLabel')}
       >
         <div
@@ -193,7 +193,6 @@ export default function Blog() {
             <div className="w-full flex justify-center mt-6 lg:hidden">
               <button
                 type="button"
-                // 2. THIS NOW CALLS THE CORRECT FUNCTION
                 onClick={handleOpenPost}
                 className="text-lg font-liberation italic text-whiteCustom/60 hover:text-whiteCustom transition-colors hover:[--bg-size:100%_1px]"
               >
