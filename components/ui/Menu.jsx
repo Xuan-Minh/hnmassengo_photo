@@ -203,6 +203,7 @@ function MobileMenu({
   scrollToId,
   handleChangeLang,
   touchStart,
+  active,
 }) {
   const mobileOverlayRef = useMobileGestures(
     mobileMenuOpen,
@@ -254,28 +255,39 @@ function MobileMenu({
           </span>
         </div>
 
-        <ul className="flex flex-col items-center gap-2 mb-12">
-          {desktopItems.map(it => (
-            <li key={it.id}>
-              <button
-                type="button"
-                onClick={() => {
-                  if (it.id === 'info') {
-                    emitEvent(EVENTS.CONTACT_SHOW);
-                    dispatch({
-                      type: 'UPDATE_STATE',
-                      payload: { mobileMenuOpen: false },
-                    });
-                  } else {
-                    scrollToId(it.id);
-                  }
-                }}
-                className="text-4xl font-liberation font-normal uppercase tracking-wide hover:text-gray-400 transition-colors"
-              >
-                {it.label}
-              </button>
-            </li>
-          ))}
+        <ul className="flex flex-col items-center gap-6 mb-12">
+          {desktopItems.map(it => {
+            const isActive = active === it.id;
+            return (
+              <li key={it.id}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (it.id === 'info') {
+                      emitEvent(EVENTS.CONTACT_SHOW);
+                      dispatch({
+                        type: 'UPDATE_STATE',
+                        payload: { mobileMenuOpen: false },
+                      });
+                    } else {
+                      scrollToId(it.id);
+                    }
+                  }}
+                  className={`
+                    relative inline-block pb-1 text-4xl font-liberation font-normal uppercase tracking-wide transition-colors duration-300
+                    after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-[2px] after:bg-current after:transition-transform after:duration-300 after:ease-out
+                    ${
+                      isActive
+                        ? 'text-whiteCustom after:scale-x-100 after:origin-bottom-left'
+                        : 'text-whiteCustom/70 hover:text-whiteCustom after:scale-x-0 after:origin-bottom-right hover:after:scale-x-100 hover:after:origin-bottom-left'
+                    }
+                  `}
+                >
+                  {it.label}
+                </button>
+              </li>
+            );
+          })}
         </ul>
 
         <div className="flex items-center gap-2 text-[20px]">
@@ -408,7 +420,6 @@ export default function Menu() {
   if (isMobile) {
     return (
       <MobileMenu
-        // Plus besoin de lui passer shouldHideMobileMenu
         mobileMenuOpen={mobileMenuOpen}
         isDarkBg={isDarkBg}
         desktopItems={desktopItems}
@@ -417,6 +428,7 @@ export default function Menu() {
         scrollToId={scrollToId}
         handleChangeLang={handleChangeLang}
         touchStart={touchStart}
+        active={active}
       />
     );
   }
