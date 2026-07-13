@@ -3,7 +3,7 @@ import ProjectImagesFolderInput from '../components/ProjectImagesFolderInput';
 
 export const projectType = defineType({
   name: 'project',
-  title: 'Projet Galerie',
+  title: 'Projet - Galerie',
   type: 'document',
   preview: {
     select: {

@@ -13,7 +13,6 @@ function normalizeProjectId(value) {
   const raw = stripWrappingQuotes(value);
   if (!raw) return '';
 
-  // Cas fréquent: on colle une URL ou un hostname (ex: https://xxxx.api.sanity.io)
   try {
     const url = new URL(raw);
     return (url.hostname.split('.')[0] || '').trim();
@@ -21,7 +20,6 @@ function normalizeProjectId(value) {
     // Pas une URL
   }
 
-  // Cas fréquent: hostname direct (ex: xxxx.apicdn.sanity.io)
   const hostLike = raw.split('/')[0];
   if (hostLike.includes('.')) return hostLike.split('.')[0].trim();
 

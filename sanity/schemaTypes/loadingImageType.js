@@ -2,7 +2,7 @@ import { defineField, defineType } from 'sanity';
 
 export const loadingImageType = defineType({
   name: 'loadingImageDesktop',
-  title: 'Image de Chargement DESKTOP',
+  title: 'Image de Chargement - DESKTOP',
   type: 'document',
   fields: [
     defineField({
@@ -10,7 +10,7 @@ export const loadingImageType = defineType({
       title: 'Image',
       type: 'image',
       options: {
-        hotspot: true, // Permet de définir le point focal
+        hotspot: true,
       },
       validation: Rule => Rule.required(),
     }),

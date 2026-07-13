@@ -46,13 +46,11 @@ export default function BlogPostItem({
       const metaH = metaRef.current ? metaRef.current.offsetHeight : 0;
       const padding = 48; // margin de sécurité
 
-      // LIGNE MODIFIÉE : On divise par 2 l'espace disponible pour couper le texte de moitié
       const available = Math.max(0, (sectionH - titleH - metaH - padding) / 2);
 
       const paras = (displayText || '').split('\n\n').filter(Boolean);
       if (paras.length === 0) return setVisibleCount(0);
 
-      // Measure actual paragraph heights if rendered
       let total = 0;
       let fit = 0;
       for (let i = 0; i < paras.length; i++) {
@@ -66,11 +64,9 @@ export default function BlogPostItem({
         }
       }
 
-      // Affiche le nombre de paragraphes qui rentrent (au minimum 1)
       setVisibleCount(Math.max(1, Math.min(fit || 1, paras.length)));
     };
 
-    // Run after a tick to allow DOM to render paragraphs
     const id = setTimeout(compute, 50);
     window.addEventListener('resize', compute);
     return () => {

@@ -2,7 +2,7 @@ import { defineField, defineType } from 'sanity';
 
 export const loadingImageMobileType = defineType({
   name: 'loadingImageMobile',
-  title: 'Image de Chargement MOBILE',
+  title: 'Image de Chargement - MOBILE',
   type: 'document',
   fields: [
     defineField({

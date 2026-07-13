@@ -14,7 +14,6 @@ import Shop from '../../components/shop/Shop';
 export default function HomePage() {
   const { locale } = useParams();
 
-  // Fading refs pour chaque section
   const [galleryRef, galleryVisible] = useFadeInOnScreen(locale);
   const [blogRef, blogVisible] = useFadeInOnScreen(locale);
   const [shopRef, shopVisible] = useFadeInOnScreen(locale);
@@ -54,13 +53,11 @@ export default function HomePage() {
         >
           <Shop />
         </m.section>
-        {/* Section Contact - Pas de fade in, toujours visible */}
         <section
           id="info"
           className="relative snap-start bg-blackCustom border-t-2 border-whiteCustom min-h-[clamp(600px,75vh,900px)]"
           aria-label="Contact"
         >
-          {/* Contenu principal avec padding pour éviter le marquee */}
           <div className="relative max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12 pt-8 md:pt-12 lg:pt-16 pb-20 sm:pb-24 md:pb-32 lg:pb-36 xl:pb-40">
             <ContactContent
               idSuffix="-inline"

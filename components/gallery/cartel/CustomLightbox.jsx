@@ -166,7 +166,7 @@ function DesktopLightbox({
         </div>
 
         <div className="flex-1 relative flex items-center justify-center overflow-hidden">
-          {/* Image précédente (floutée) */}
+          {/* Image précédente */}
           <div className="absolute left-0 top-1/2 -translate-y-1/2 h-[50%] w-[15%] opacity-40 blur-[2px] pointer-events-none">
             <Image
               src={getDisplaySrcForIndex(
@@ -321,7 +321,6 @@ function useLightboxLogic(open, onClose, images, initialIndex) {
     [images, getDisplaySrcForIndex]
   );
 
-  // Initialisation à l'ouverture
   useEffect(() => {
     if (open) goToIndex(initialIndex);
   }, [open, goToIndex, initialIndex]);

@@ -1,6 +1,6 @@
 export default {
   name: 'homePage',
-  title: "Page d'accueil",
+  title: "Onglets - Page d'accueil",
   type: 'document',
   fields: [
     {

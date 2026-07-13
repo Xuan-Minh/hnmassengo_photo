@@ -1,6 +1,6 @@
 export default {
   name: 'teamColor',
-  title: 'Catalogue des Couleurs',
+  title: "Couleur d'équipe",
   type: 'document',
   fields: [
     {
