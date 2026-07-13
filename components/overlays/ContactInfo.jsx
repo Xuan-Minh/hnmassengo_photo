@@ -1,25 +1,26 @@
 'use client';
 import { useCallback } from 'react';
 import { useTranslations } from 'next-intl';
-import { useParams } from 'next/navigation';
 import { SITE_CONFIG } from '../../lib/constants';
-import { routing } from '../../src/i18n/routing';
 import NewsletterSignup from '../ui/NewsletterSignup';
 import AnimatedUnderlineLink from '../ui/AnimatedUnderlineLink';
+import LegalOverlay from './LegalOverlay';
+import { useState } from 'react';
 
 export default function ContactInfo({ onOpenLegal }) {
+  const [legalOpen, setLegalOpen] = useState(false);
+  const handleOpenLegal = useCallback(() => setLegalOpen(true), []);
+  const handleCloseLegal = useCallback(() => setLegalOpen(false), []);
   const t = useTranslations();
   const contactT = useTranslations('contact');
-  const { locale } = useParams();
 
-  const handleLegalClick = useCallback(
-    e => {
-      if (typeof onOpenLegal !== 'function') return;
-      e.preventDefault();
+  const handleLegalClick = useCallback(() => {
+    if (typeof onOpenLegal === 'function') {
       onOpenLegal();
-    },
-    [onOpenLegal]
-  );
+      return;
+    }
+    handleOpenLegal();
+  }, [handleOpenLegal, onOpenLegal]);
 
   return (
     <div className="text-whiteCustom/90 flex flex-col h-full">
@@ -61,14 +62,21 @@ export default function ContactInfo({ onOpenLegal }) {
         </div>
 
         <p className="font-liberation text-sm md:text-[16px] leading-relaxed flex items-center gap-4">
-          <AnimatedUnderlineLink
-            href={`/${locale || routing.defaultLocale}/legal`}
+          <button
+            type="button"
             onClick={handleLegalClick}
-            className="cursor-pointer"
+            className="group hover:[--bg-size:100%_1px] inline-block text-whiteCustom transition-colors cursor-pointer"
           >
-            {t('legal.link')}
-          </AnimatedUnderlineLink>
+            <span
+              className="font-liberation text-sm md:text-[16px] leading-relaxed inline box-decoration-clone bg-[linear-gradient(currentColor,currentColor)] bg-no-repeat [background-position:0_100%] transition-[background-size,color] duration-300 ease-in-out"
+              style={{ backgroundSize: 'var(--bg-size, 0% 1px)' }}
+            >
+              {t('legal.link')}
+            </span>
+          </button>
         </p>
+
+        <LegalOverlay open={legalOpen} onClose={handleCloseLegal} />
       </div>
     </div>
   );
