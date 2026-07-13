@@ -38,7 +38,7 @@ export default function Blog() {
   const [posts, setPosts] = useState([]);
   const [archiveOpen, setArchiveOpen] = useState(false);
   const [selectedPostId, setSelectedPostId] = useState(null);
-  const isMobile = useIsMobile();
+  const isMobile = useIsMobile(1024);
 
   const selectedPost = useMemo(() => {
     if (!selectedPostId || posts.length === 0) return null;

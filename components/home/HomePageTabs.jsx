@@ -111,7 +111,7 @@ function WindowItem({
           'Soccer / Photographer'
         );
         return (
-          <div className="z-50 flex flex-nowrap justify-between gap-4 w-[90vw] md:w-[75vw] lg:w-[45vw]">
+          <div className="z-50 flex flex-nowrap justify-between gap-4 w-[90vw] md:w-[50vw] lg:w-[45vw]">
             <div className="w-[38%] h-auto inline-block">
               {win.photo ? (
                 <Image
@@ -205,7 +205,7 @@ function WindowItem({
         const plainText = portableTextToPlain(rawBlocks);
 
         return (
-          <p className="bg-current/15 overflow-scroll-y whitespace-pre-line font-liberation italic leading-[1.3] text-blackCustom text-[18px] 2xl:text-[20px] w-[85vw] md:w-[40vw] lg:w-[30vw] h-[30vh] lg:h-[20vw]">
+          <p className="bg-current/15 overflow-scroll-y whitespace-pre-line font-liberation italic leading-[1.3] text-blackCustom text-[18px] 2xl:text-[20px] w-[85vw] md:w-[35vw] lg:w-[30vw] h-[30vh] lg:h-[20vw]">
             {plainText}
           </p>
         );

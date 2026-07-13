@@ -153,7 +153,7 @@ const MainViewer = ({
           }
           priority={!isMobile}
         />
-        <div className="absolute bottom-8 right-2 z-10 bg-whiteCustom backdrop-blur-md text-blackCustom px-3 py-1.5 rounded-sm shadow-sm text-[10px] font-bold uppercase tracking-widest pointer-events-none transition-all duration-300 opacity-100 md:opacity-0 md:group-hover:opacity-100">
+        <div className="absolute bottom-8 right-2 z-10 bg-whiteCustom backdrop-blur-md text-blackCustom px-3 py-1.5 rounded-sm shadow-sm text-[10px] font-bold uppercase tracking-widest pointer-events-none transition-all duration-300 opacity-100 lg:opacity-0 md:group-hover:opacity-100">
           See more
         </div>
       </div>
