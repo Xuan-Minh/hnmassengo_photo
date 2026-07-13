@@ -59,7 +59,6 @@ export default function GalleryProjetCartel({ project, onClose }) {
     });
   }, [project?.id]);
 
-  // 1. Création de l'Event pour le Timer
   const onFinalizeClose = useEffectEvent(() => {
     finalizeClose();
   });
@@ -68,7 +67,7 @@ export default function GalleryProjetCartel({ project, onClose }) {
     if (!isClosing) return;
 
     closeTimerRef.current = setTimeout(() => {
-      onFinalizeClose(); // Appel de l'Event
+      onFinalizeClose();
     }, 1150);
 
     return () => {
@@ -79,7 +78,6 @@ export default function GalleryProjetCartel({ project, onClose }) {
     };
   }, [isClosing]);
 
-  // 2. Création de l'Event pour le clavier
   const onKeyDown = useEffectEvent(event => {
     if (event.key === 'Escape' && !lightboxOpen) {
       handleRequestClose();
@@ -87,11 +85,11 @@ export default function GalleryProjetCartel({ project, onClose }) {
   });
 
   useEffect(() => {
-    window.addEventListener('keydown', onKeyDown); // Appel de l'Event
+    window.addEventListener('keydown', onKeyDown);
     return () => {
       window.removeEventListener('keydown', onKeyDown);
     };
-  }, []); // <-- Le tableau de dépendances est 100% vide !
+  }, []);
 
   if (!project) return null;
 
@@ -124,7 +122,7 @@ export default function GalleryProjetCartel({ project, onClose }) {
         aria-labelledby="project-title"
       >
         {/* Version Mobile */}
-        <div className="md:hidden w-full h-full flex flex-col relative">
+        <div className="lg:hidden w-full h-full flex flex-col relative">
           <button
             type="button"
             onClick={handleRequestClose}
@@ -167,7 +165,7 @@ export default function GalleryProjetCartel({ project, onClose }) {
         </div>
 
         {/* Version Desktop */}
-        <main className="hidden md:flex w-[55%] h-full border-r border-blackCustom p-16 flex-col justify-between overflow-y-auto">
+        <main className="hidden lg:flex w-[55%] h-full border-r border-blackCustom p-16 flex-col justify-between overflow-y-auto">
           <div>
             <button
               type="button"

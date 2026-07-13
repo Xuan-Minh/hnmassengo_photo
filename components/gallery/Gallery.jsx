@@ -103,7 +103,7 @@ export default function Gallery() {
   // Basculement automatique en vue liste sur mobile
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth < 768 && view !== 'list') {
+      if (window.innerWidth < 1024 && view !== 'list') {
         dispatch({ type: 'UPDATE_STATE', payload: { view: 'list' } });
       }
     };

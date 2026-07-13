@@ -336,7 +336,6 @@ function useLightboxLogic(open, onClose, images, initialIndex) {
     });
   }, [open, currentIndex, currentDisplaySrc]);
 
-  // Préchargement des images
   useEffect(() => {
     if (!open || typeof window === 'undefined' || !images?.length) return;
 
@@ -384,7 +383,6 @@ function useLightboxLogic(open, onClose, images, initialIndex) {
     };
   }, [open, images, currentIndex, currentDisplaySrc, getDisplaySrcForIndex]);
 
-  // Événements Clavier (Optimisés avec useEffectEvent)
   const onKeyDown = useEffectEvent(e => {
     if (!open) return;
     if (e.key === 'Escape') onClose();
@@ -397,7 +395,6 @@ function useLightboxLogic(open, onClose, images, initialIndex) {
     return () => window.removeEventListener('keydown', onKeyDown);
   }, []);
 
-  // Événements Tactiles (Optimisés avec useEffectEvent)
   const onTouchStart = useEffectEvent(e => {
     dispatch({
       type: 'UPDATE_STATE',
@@ -461,7 +458,6 @@ export default function CustomLightbox({
     getDisplaySrcForIndex,
   } = useLightboxLogic(open, onClose, images, initialIndex);
 
-  // Maintenant seulement, on peut quitter prématurément si besoin
   if (!open) return null;
 
   return (

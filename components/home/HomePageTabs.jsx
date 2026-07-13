@@ -87,22 +87,21 @@ function WindowItem({
   );
 
   // -- Calcul des Dimensions --
-  let baseWidth = 30;
-  if (win.windowSize === 'small') baseWidth = 20;
-  if (win.windowSize === 'large') baseWidth = 40;
+  let baseWidth = 25;
+  if (win.windowSize === 'small') baseWidth = 18;
+  if (win.windowSize === 'large') baseWidth = 35;
 
-  let width = `${baseWidth}vw`;
-  let height = `${baseWidth * 0.66}vw`;
+  let width = `clamp(180px, ${baseWidth}vw, 500px)`;
+  let aspectRatio = '1 / 0.66'; // Ratio Paysage par défaut
 
   if (win.windowOrientation === 'portrait') {
-    width = `${baseWidth * 0.66}vw`;
-    height = `${baseWidth}vw`;
+    width = `clamp(140px, ${baseWidth * 0.66}vw, 350px)`;
+    aspectRatio = '0.66 / 1'; // Ratio Portrait
   } else if (win.windowOrientation === 'square') {
-    width = `${baseWidth * 0.8}vw`;
-    height = `${baseWidth * 0.8}vw`;
+    width = `clamp(200px, ${baseWidth * 0.8}vw, 400px)`;
+    aspectRatio = '1 / 1'; // Ratio Carré parfait
   }
 
-  // -- Rendu du contenu via useMemo (corrige le re-render massif des props JSX) --
   const windowContent = useMemo(() => {
     switch (win._type) {
       case 'windowBio': {
@@ -112,16 +111,7 @@ function WindowItem({
           'Soccer / Photographer'
         );
         return (
-          <div
-            style={{
-              display: 'flex',
-              flexWrap: 'nowrap',
-              justifyContent: 'space-between',
-              gap: '1rem',
-              width: '45vw',
-              zIndex: '50',
-            }}
-          >
+          <div className="z-50 flex flex-nowrap justify-between gap-4 w-[90vw] md:w-[75vw] lg:w-[45vw]">
             <div className="w-[38%] h-auto inline-block">
               {win.photo ? (
                 <Image
@@ -179,7 +169,7 @@ function WindowItem({
 
         return (
           <iframe
-            className="w-[30vw] h-[152px] rounded-md"
+            className="h-[152px] rounded-md w-[35vw] md:w-[40vw] lg:w-[30vw]"
             src={finalUrl}
             frameBorder="0"
             allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
@@ -196,7 +186,8 @@ function WindowItem({
           <iframe
             src={`https://www.youtube.com/embed/${videoId}`}
             title="YouTube video player"
-            style={{ width: '26vw', height: '15vw', borderRadius: '0.375rem' }}
+            style={{ borderRadius: '0.375rem' }}
+            className="rounded-md w-[85vw] md:w-[40vw] lg:w-[26vw] aspect-video"
             frameBorder="0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
             allowFullScreen
@@ -214,7 +205,7 @@ function WindowItem({
         const plainText = portableTextToPlain(rawBlocks);
 
         return (
-          <p className="w-[30vw] h-[20vw] bg-current/15 overflow-scroll-y whitespace-pre-line font-liberation italic leading-[1.3] text-blackCustom text-[18px] md:text-[16px] lg:text-[16px] xl:text-[18px] 2xl:text-[20px]">
+          <p className="bg-current/15 overflow-scroll-y whitespace-pre-line font-liberation italic leading-[1.3] text-blackCustom text-[18px] 2xl:text-[20px] w-[85vw] md:w-[40vw] lg:w-[30vw] h-[30vh] lg:h-[20vw]">
             {plainText}
           </p>
         );
@@ -241,8 +232,13 @@ function WindowItem({
 
         return (
           <div
-            className="flex items-center justify-center p-0 m-0"
-            style={{ width, height }}
+            className="flex items-center justify-center p-0 m-0 w-full"
+            style={{
+              width: width,
+              height: 'auto', // Laisse le ratio calculer la hauteur
+              aspectRatio: aspectRatio, // Maintient la forme (carré, portrait, etc.)
+              minWidth: '100%', // Force l'image à remplir l'espace si le titre est très long
+            }}
           >
             {win.externalLink ? (
               <a
@@ -262,7 +258,7 @@ function WindowItem({
       default:
         return null;
     }
-  }, [win, locale, lastSeen, heroImage, width, height, titre]);
+  }, [win, locale, lastSeen, heroImage, width, aspectRatio, titre]);
 
   return (
     <WindowsTab
@@ -284,7 +280,7 @@ export default function HomePageTabs() {
   const { locale = 'fr' } = useParams();
   const [lastSeen, setLastSeen] = useState('...');
   const [windows, setWindows] = useState([]);
-  const isMobile = useIsMobile(1024);
+  const isMobile = useIsMobile(768);
 
   useEffect(() => {
     let cancelled = false;
