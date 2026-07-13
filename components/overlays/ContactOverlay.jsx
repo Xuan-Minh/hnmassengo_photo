@@ -158,9 +158,9 @@ export default function ContactOverlay({
                   defaultSubject={defaultSubject}
                   onOpenLegal={handleOpenLegal}
                 />
+                <ContactMarquee mode="inline" />
               </div>
             </div>
-            <ContactMarquee mode="inline" />
           </m.div>
 
           <LegalOverlay open={legalOpen} onClose={handleCloseLegal} />
