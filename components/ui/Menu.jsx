@@ -311,10 +311,10 @@ function DesktopMenu({
   return (
     <nav
       className={[
-        'fixed right-8 top-1/2 -translate-y-1/2 z-50 select-none transition-opacity duration-300',
+        'fixed right-8 top-1/2 -translate-y-1/2 z-50 select-none transition-opacity transition-visibility duration-300',
         shouldHideDesktopMenu
-          ? 'opacity-0 pointer-events-none'
-          : 'opacity-100 pointer-events-auto',
+          ? 'invisible opacity-0 pointer-events-none'
+          : 'visible opacity-100 pointer-events-auto',
       ].join(' ')}
       aria-hidden={shouldHideDesktopMenu ? 'true' : undefined}
     >
