@@ -81,7 +81,7 @@ export default function WindowsTab({
         zIndex,
         opacity: isReady ? 1 : 0,
       }}
-      className="windowsTab absolute top-0 left-0 flex flex-col flex-nowrap gap-1 bg-transparent"
+      className="windowsTab absolute top-0 left-0 flex flex-col flex-nowrap gap-1 bg-transparent drop-shadow-lg"
     >
       <m.div
         style={{

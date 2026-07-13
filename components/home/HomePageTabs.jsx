@@ -364,7 +364,7 @@ export default function HomePageTabs() {
       >
         {/* --- CARTE 1 : BIO --- */}
         {bioWin && (
-          <div className="flex col-span-2 w-full h-fit flex-col text-white gap-1">
+          <div className="flex col-span-2 w-full h-fit flex-col text-white gap-1 shadow-lg">
             <div
               className="flex items-center justify-between border border-black gap-2 p-2 cursor-grab active:cursor-grabbing rounded-t-md"
               style={{ backgroundColor: getTabColor(bioWin) }}
@@ -404,7 +404,7 @@ export default function HomePageTabs() {
 
         {/* --- CARTE 2 : TEXTE --- */}
         {textWin && (
-          <div className="flex col-span-2 w-full h-[25vh] flex-col text-white gap-1">
+          <div className="flex col-span-2 w-full h-[25vh] flex-col text-white gap-1 shadow-lg">
             <div
               className="flex items-center justify-between border border-black gap-2 p-2 cursor-grab active:cursor-grabbing rounded-t-md"
               style={{ backgroundColor: getTabColor(textWin) }}
@@ -425,7 +425,7 @@ export default function HomePageTabs() {
 
         {/* --- CARTE 3 : IMAGE --- */}
         {imageWin && (
-          <div className="flex col-span-1 w-full h-full flex-col text-white gap-1">
+          <div className="flex col-span-1 w-full h-full flex-col text-white gap-1 shadow-lg">
             <div
               className="flex items-center justify-between border border-black gap-2 p-2 cursor-grab active:cursor-grabbing rounded-t-md"
               style={{ backgroundColor: getTabColor(imageWin) }}
@@ -452,7 +452,7 @@ export default function HomePageTabs() {
 
         {/* --- CARTE 4 : VIDEO (YOUTUBE) --- */}
         {videoWin && (
-          <div className="flex col-span-1 w-full h-full flex-col text-white gap-1">
+          <div className="flex col-span-1 w-full h-full flex-col text-white gap-1 shadow-lg">
             <div
               className="flex items-center justify-between border border-black gap-2 p-2 cursor-grab active:cursor-grabbing rounded-t-md"
               style={{ backgroundColor: getTabColor(videoWin) }}
