@@ -152,13 +152,15 @@ export default function GalleryProjetCartel({ project, onClose }) {
             </div>
             <h2
               id="project-title"
-              className="text-3xl font-liberation italic mb-6"
+              className="text-2xl md:text-3xl font-liberation italic mb-6"
             >
               {project.name}
             </h2>
-            <div className="font-liberation text-base leading-relaxed space-y-4">
+            <div className="font-liberation leading-relaxed space-y-4">
               {paragraphs.map((p, i) => (
-                <p key={`paragraph-${i}`}>{p}</p>
+                <p className="text-sm md:text-lg" key={`paragraph-${i}`}>
+                  {p}
+                </p>
               ))}
             </div>
           </div>
@@ -183,7 +185,9 @@ export default function GalleryProjetCartel({ project, onClose }) {
             </h2>
             <div className="font-liberation text-lg 2xl:text-xl max-w-2xl 2xl:max-w-6xl  leading-relaxed space-y-4">
               {paragraphs.map((p, i) => (
-                <p key={`paragraph-${i}`}>{p}</p>
+                <p className="text-sm md:text-lg" key={`paragraph-${i}`}>
+                  {p}
+                </p>
               ))}
             </div>
           </section>

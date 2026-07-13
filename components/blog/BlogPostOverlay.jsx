@@ -150,7 +150,7 @@ export default function BlogPostOverlay({ post, onClose, onPrevious, onNext }) {
               {extrasPosition === 'start' && <ExtrasBlock extras={extras} />}
 
               {/* Content - Left aligned and justified */}
-              <div className="text-base md:text-lg leading-relaxed text-whiteCustom space-y-4 max-w-2xl mx-auto">
+              <div className="text-sm md:text-lg leading-relaxed text-whiteCustom space-y-4 max-w-2xl mx-auto">
                 {displayText?.split('\n\n').map((paragraph, idx, item) => (
                   <p
                     key={item.id + '-' + idx}
@@ -194,7 +194,7 @@ export default function BlogPostOverlay({ post, onClose, onPrevious, onNext }) {
             </div>
           </div>
         ) : (
-          <div className="flex-1 flex items-start justify-center w-full h-full px-16 md:px-24 py-20 overflow-y-auto">
+          <div className="flex-1 flex items-start justify-center w-full h-full px-8 md:px-24 py-20 overflow-y-auto">
             <div className="max-w-5xl w-full h-full flex flex-col justify-between">
               <div className="mb-8 flex flex-col items-start">
                 <div className="text-4xl md:text-5xl lg:text-6xl font-normal text-whiteCustom/60 leading-[0.85]">
