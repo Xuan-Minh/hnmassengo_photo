@@ -2,7 +2,7 @@ import { defineField, defineType } from 'sanity';
 
 export const eventType = defineType({
   name: 'blogPost',
-  title: 'Article de Blog',
+  title: 'Article - Blog',
   type: 'document',
   orderings: [
     {
