@@ -123,7 +123,8 @@ export default function ShopOverlay({
       {/* Footer */}
       <div className="w-full border-t border-whiteCustom/20 p-8 text-center relative">
         <span className="text-xl italic">
-          {(displayTitle || '').toLowerCase()} - 20XX
+          {(displayTitle || '').toLowerCase()} -{' '}
+          {product.date || new Date().getFullYear()}
         </span>
       </div>
     </BaseOverlay>

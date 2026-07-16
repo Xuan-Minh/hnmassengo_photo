@@ -48,6 +48,14 @@ export default defineType({
       validation: Rule => Rule.required(),
     }),
     defineField({
+      name: 'date',
+      title: 'Date',
+      type: 'date',
+      initialValue: () => new Date().toISOString().slice(0, 10),
+      validation: Rule => Rule.required(),
+      description: 'Date du jour automatiquement à la création',
+    }),
+    defineField({
       name: 'slug',
       title: 'Identifiant URL',
       description: 'Généré automatiquement à partir du nom français',
