@@ -389,13 +389,14 @@ export default function HomePageTabs() {
 
               {/* Colonne Texte */}
               <div className="text-blackCustom p-3 flex flex-col justify-center w-[60%]">
-                <ul className="list-disc list-inside flex flex-col gap-2 text-[14px] font-bold">
+                <ul className="flex flex-col gap-2 text-[14px] ">
                   <li>Age : {calculateAge()} ans</li>
                   <li className="truncate">{bioWin.location || 'Paris'} 📌</li>
                   <li className="break-words leading-snug">
                     {' '}
                     {localizeField(bioWin.occupation, locale, 'Soccer')}
                   </li>
+                  <li>Last seen : {lastSeen}</li>
                 </ul>
               </div>
             </div>
