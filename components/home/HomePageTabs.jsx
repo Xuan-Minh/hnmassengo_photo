@@ -219,7 +219,7 @@ function WindowItem({
                     href={rec.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="underline hover:no-underline underline-offset-2 break-all"
+                    className="underline hover:no-underline underline-offset-2 break-all cursor-pointer active:cursor-pointing"
                   >
                     <li>{rec.title || rec.url}</li>
                   </a>
