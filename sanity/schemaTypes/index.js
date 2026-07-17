@@ -12,6 +12,7 @@ import windowText from './objects/windowText';
 import windowVideo from './objects/windowVideo';
 import teamColor from './teamColor';
 import windowImage from './objects/windowImage';
+import windowImageFolder from './objects/windowImageFolder';
 
 export const schema = {
   types: [
@@ -29,5 +30,6 @@ export const schema = {
     newsletterCampaign,
     teamColor,
     windowImage,
+    windowImageFolder,
   ],
 };

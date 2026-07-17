@@ -20,6 +20,7 @@ export default {
         { type: 'windowText' },
         { type: 'windowVideo' },
         { type: 'windowImage' },
+        { type: 'windowImageFolder' },
       ],
     },
   ],
