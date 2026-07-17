@@ -166,7 +166,7 @@ function WindowItem({
 
         return (
           <iframe
-            className="h-[152px] rounded-md w-[35vw] md:w-[40vw] lg:w-[30vw]"
+            className="h-[152px] rounded-md w-[35vw] md:w-[40vw] lg:w-[35vw]"
             src={finalUrl}
             frameBorder="0"
             allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
@@ -174,6 +174,52 @@ function WindowItem({
             title="Spotify music player"
             sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"
           ></iframe>
+        );
+      }
+      case 'windowMusicPlaylist': {
+        const rawUrls = win.spotifyUrlFolder || [];
+        const finalUrls = rawUrls.map(rawUrl => {
+          let finalUrl = rawUrl;
+
+          try {
+            const parsed = new URL(rawUrl);
+            const match = parsed.pathname.match(
+              /(track|album|playlist|artist|show|episode)\/([a-zA-Z0-9]+)/
+            );
+
+            if (match && !rawUrl.includes('/embed/')) {
+              const type = match[1];
+              const idTrack = match[2];
+              finalUrl = `https://open.spotify.com/embed/${type}/${idTrack}`;
+            }
+          } catch (e) {
+            console.error('Lien Spotify invalide');
+          }
+
+          return finalUrl;
+        });
+
+        return (
+          <div className="flex flex-row gap-2 md:w-[40vw] lg:w-[35vw]">
+            {finalUrls.length > 0 ? (
+              finalUrls.map((url, idx) => (
+                <iframe
+                  key={idx}
+                  className="h-[152px] rounded-md w-full"
+                  src={url}
+                  frameBorder="0"
+                  allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                  loading="lazy"
+                  title={`Spotify music player ${idx + 1}`}
+                  sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"
+                ></iframe>
+              ))
+            ) : (
+              <p className="text-blackCustom">
+                Aucune playlist Spotify disponible.
+              </p>
+            )}
+          </div>
         );
       }
 
@@ -275,6 +321,37 @@ function WindowItem({
             ) : (
               <div className="w-full h-full block">{imageComponent}</div>
             )}
+          </div>
+        );
+      }
+      case 'windowImageFolder': {
+        const images = win.imageFolder || [];
+        if (images.length === 0) {
+          return (
+            <div className="w-full h-full flex items-center justify-center text-black rounded-md">
+              Aucune image disponible
+            </div>
+          );
+        }
+        return (
+          <div className="flex flex-row gap-2 w-[85vw] md:w-[40vw] lg:w-[30vw]">
+            {images.map((img, idx) => {
+              const imageUrl = img ? buildSanityImageUrl(img) : heroImage;
+              return (
+                <div
+                  key={idx}
+                  className="w-full h-full aspect-square overflow-hidden rounded-md"
+                >
+                  <Image
+                    src={imageUrl}
+                    alt={`${titre} - Image ${idx + 1}`}
+                    width={400}
+                    height={400}
+                    className="w-full h-full object-cover rounded-md cursor-pointer hover:opacity-90 transition-opacity active:cursor-pointer"
+                  />
+                </div>
+              );
+            })}
           </div>
         );
       }
