@@ -70,7 +70,6 @@ export default {
   preview: {
     select: {
       title: 'title.fr',
-      subtitle: 'windowColor.colorName.fr',
     },
   },
 };

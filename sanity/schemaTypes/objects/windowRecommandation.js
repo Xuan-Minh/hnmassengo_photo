@@ -74,5 +74,18 @@ export default {
       type: 'number',
       validation: Rule => Rule.min(0).max(100),
     },
+    {
+      name: 'positionY',
+      title: 'Position Verticale (De haut en bas)',
+      description:
+        'Exemple : 0 = Tout en haut, 50 = Au milieu, 80 = Presque tout en bas. Laissez vide pour un placement automatique.',
+      type: 'number',
+      validation: Rule => Rule.min(0).max(100),
+    },
   ],
+  preview: {
+    select: {
+      title: 'title.fr',
+    },
+  },
 };
