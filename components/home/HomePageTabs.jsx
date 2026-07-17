@@ -133,8 +133,8 @@ function WindowItem({
                 )
               )}
             </div>
-            <div className="p-4 w-[60%] h-auto flex">
-              <ul className="list-disc list-inside flex justify-around flex-col text-[18px] md:text-[16px] lg:text-[14px] xl:text-[16px] 2xl:text-[18px] font-bold">
+            <div className=" w-[60%] h-auto flex">
+              <ul className=" flex justify-around flex-col text-[18px] md:text-[16px] lg:text-[14px] xl:text-[14px] 2xl:text-[18px] font-bold">
                 <li>Name : {win.name || 'Han-Noah MASSENGO'}</li>
                 <li>Age : {calculateAge()} ans</li>
                 <li>Location : {win.location || 'Augsbourg / Paris '} 📌</li>
