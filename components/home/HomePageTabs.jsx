@@ -207,6 +207,32 @@ function WindowItem({
           </p>
         );
       }
+      case 'windowRecommandation': {
+        const reco = win.recommandation || [];
+        return (
+          <div className="flex flex-col gap-2 w-[85vw] md:w-[40vw] lg:w-[30vw]">
+            <ul className="list-disc list-inside text-[14px] 2xl:text-[18px] text-blackCustom">
+              {reco.length > 0 ? (
+                reco.map((rec, idx) => (
+                  <a
+                    key={idx}
+                    href={rec.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="underline hover:no-underline underline-offset-2 break-all"
+                  >
+                    <li>{rec.title || rec.url}</li>
+                  </a>
+                ))
+              ) : (
+                <p className="text-blackCustom">
+                  Aucune recommandation disponible.
+                </p>
+              )}
+            </ul>
+          </div>
+        );
+      }
 
       case 'windowImage': {
         const imageUrl = win.photo ? buildSanityImageUrl(win.photo) : heroImage;
