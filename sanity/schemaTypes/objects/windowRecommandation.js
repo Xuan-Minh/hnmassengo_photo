@@ -40,7 +40,23 @@ export default {
       name: 'recommandation',
       title: 'Recommandation',
       type: 'array',
-      of: [{ type: 'string' }],
+      of: [
+        {
+          type: 'object',
+          fields: [
+            {
+              name: 'title',
+              title: 'Titre',
+              type: 'string',
+            },
+            {
+              name: 'url',
+              title: 'Lien URL',
+              type: 'url',
+            },
+          ],
+        },
+      ],
     },
     {
       name: 'startsOnTop',

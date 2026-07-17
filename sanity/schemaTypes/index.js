@@ -8,8 +8,8 @@ import { newsletterCampaign } from './newsletterCampaign';
 import homePage from './homePage';
 import windowBio from './objects/windowBio';
 import windowMusic from './objects/windowMusic';
-import windowMusicPlaylist from './objects/windowMusicPlaylist';
-import windowRecommandation from './objects/windowRecommandation';
+import windowMusicFolder from './objects/windowMusicFolder';
+import windowecommandation from './objects/windowRecommandation';
 import windowText from './objects/windowText';
 import windowVideo from './objects/windowVideo';
 import teamColor from './teamColor';
@@ -26,8 +26,7 @@ export const schema = {
     homePage,
     windowBio,
     windowMusic,
-    windowMusicPlaylist,
-    windowRecommandation,
+    windowMusicFolder,
     windowText,
     windowVideo,
     newsletterSubscriber,
