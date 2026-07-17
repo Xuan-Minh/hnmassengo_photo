@@ -108,7 +108,7 @@ function WindowItem({
           'Soccer / Photographer'
         );
         return (
-          <div className="z-50 flex flex-nowrap justify-around gap-2 w-[90vw] md:w-[40vw] lg:w-[25vw]">
+          <div className="z-50 flex flex-nowrap justify-around gap-2 w-[90vw] md:w-[40vw] lg:w-[25vw] 2xl:w-[30vw]">
             <div className="w-[30%] h-auto inline-block">
               {win.photo ? (
                 <Image
