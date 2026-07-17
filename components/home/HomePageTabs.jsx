@@ -88,7 +88,7 @@ function WindowItem({
 
   // -- Calcul des Dimensions --
   let baseWidth = 25;
-  if (win.windowSize === 'small') baseWidth = 18;
+  if (win.windowSize === 'small') baseWidth = 18.25;
   if (win.windowSize === 'large') baseWidth = 35;
 
   let width = `clamp(180px, ${baseWidth}vw, 500px)`;
