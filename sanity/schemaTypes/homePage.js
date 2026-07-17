@@ -17,10 +17,12 @@ export default {
       of: [
         { type: 'windowBio' },
         { type: 'windowMusic' },
+        { type: 'windowMusicPlaylist' },
         { type: 'windowText' },
         { type: 'windowVideo' },
         { type: 'windowImage' },
         { type: 'windowImageFolder' },
+        { type: 'windowRecommandation' },
       ],
     },
   ],
