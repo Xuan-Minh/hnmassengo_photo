@@ -202,7 +202,7 @@ function WindowItem({
         const plainText = portableTextToPlain(rawBlocks);
 
         return (
-          <p className="bg-current/15 overflow-scroll-y whitespace-pre-line font-liberation italic leading-[1.3] text-blackCustom text-[16px] 2xl:text-[20px] w-[85vw] md:w-[35vw] lg:w-[35vw] h-[30vh] lg:h-[30vw]">
+          <p className="bg-current/15 overflow-scroll-y whitespace-pre-line font-liberation italic leading-[1.3] text-blackCustom text-[16px] 2xl:text-[18px] w-[85vw] md:w-[35vw] lg:w-[35vw] xl:w-[40vw] h-[30vh] lg:h-[35vw] xl:h-[30vw] 2xl:h-[25vw]">
             {plainText}
           </p>
         );
