@@ -19,11 +19,6 @@ import { buildSanityImageUrl } from '../../lib/imageUtils';
 // VARIABLES GLOBALES & UTILITAIRES
 // ==========================================
 
-const dateFormatter = new Intl.DateTimeFormat('en-EN', {
-  dateStyle: 'short',
-  timeStyle: 'short',
-});
-
 const teamColorsFALLBACK = ['#BB3430', '#44724B', '#FED52A', '#FFFFFF'];
 
 async function getGlobalLastUpdate() {
@@ -34,7 +29,9 @@ async function getGlobalLastUpdate() {
     if (!lastUpdateDate) return null;
 
     const date = new Date(lastUpdateDate);
-    return dateFormatter.format(date);
+    const utcDateOnly = date.toUTCString().split(' ').slice(0, 4).join(' ');
+
+    return utcDateOnly;
   } catch (error) {
     console.error('Erreur lors de la récupération de la date:', error);
     return null;
@@ -111,7 +108,7 @@ function WindowItem({
           'Soccer / Photographer'
         );
         return (
-          <div className="z-50 flex flex-nowrap justify-between gap-4 w-[90vw] md:w-[50vw] lg:w-[30vw]">
+          <div className="z-50 flex flex-nowrap justify-around gap-2 w-[90vw] md:w-[40vw] lg:w-[25vw]">
             <div className="w-[30%] h-auto inline-block">
               {win.photo ? (
                 <Image
@@ -134,12 +131,12 @@ function WindowItem({
               )}
             </div>
             <div className=" w-[60%] h-auto flex">
-              <ul className=" flex justify-around flex-col text-[18px] md:text-[16px] lg:text-[14px] xl:text-[14px] 2xl:text-[18px] font-bold">
+              <ul className=" flex justify-around flex-col text-[18px] md:text-[16px] lg:text-[13px] xl:text-[13px] 2xl:text-[14px] font-bold">
                 <li>Name : {win.name || 'Han-Noah MASSENGO'}</li>
                 <li>Age : {calculateAge()} ans</li>
                 <li>Location : {win.location || 'Augsbourg / Paris '} 📌</li>
                 <li>Occupation : {occupation}</li>
-                <li>Last seen : {lastSeen}</li>
+                <li>Connected : {lastSeen}</li>
               </ul>
             </div>
           </div>
@@ -205,7 +202,7 @@ function WindowItem({
         const plainText = portableTextToPlain(rawBlocks);
 
         return (
-          <p className="bg-current/15 overflow-scroll-y whitespace-pre-line font-liberation italic leading-[1.3] text-blackCustom text-[18px] 2xl:text-[20px] w-[85vw] md:w-[35vw] lg:w-[30vw] h-[30vh] lg:h-[20vw]">
+          <p className="bg-current/15 overflow-scroll-y whitespace-pre-line font-liberation italic leading-[1.3] text-blackCustom text-[16px] 2xl:text-[20px] w-[85vw] md:w-[35vw] lg:w-[35vw] h-[30vh] lg:h-[30vw]">
             {plainText}
           </p>
         );
