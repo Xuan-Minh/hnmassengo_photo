@@ -43,7 +43,178 @@ function localizeField(value, locale, fallback = '') {
   if (typeof value === 'string') return value;
   return value?.[locale] || value?.fr || value?.en || value?.de || fallback;
 }
+// ==========================================
+// SOUS-COMPOSANTS CARROUSELS
+// ==========================================
 
+const ArrowLeft = () => (
+  <svg
+    width="32"
+    height="32"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.5"
+    className="cursor-pointer active:cursor-pointing"
+  >
+    <polyline points="15 18 9 12 15 6"></polyline>
+  </svg>
+);
+
+const ArrowRight = () => (
+  <svg
+    width="32"
+    height="32"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.5"
+    className="cursor-pointer active:cursor-pointing"
+  >
+    <polyline points="9 18 15 12 9 6"></polyline>
+  </svg>
+);
+function ImageFolderCarousel({ images, titre, heroImage }) {
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  if (!images || images.length === 0) {
+    return (
+      <div className="w-full h-full flex items-center justify-center text-black rounded-md bg-gray-200">
+        Aucune image disponible
+      </div>
+    );
+  }
+
+  const handlePrev = e => {
+    e.stopPropagation(); // Évite de déclencher le drag de la fenêtre
+    setCurrentIndex(prev => (prev === 0 ? images.length - 1 : prev - 1));
+  };
+
+  const handleNext = e => {
+    e.stopPropagation();
+    setCurrentIndex(prev => (prev === images.length - 1 ? 0 : prev + 1));
+  };
+
+  const currentImage = images[currentIndex];
+  const imageUrl = currentImage ? buildSanityImageUrl(currentImage) : heroImage;
+
+  return (
+    <div className="relative w-[85vw] md:w-[40vw] lg:w-[20vw] aspect-square rounded-md overflow-hidden group bg-blackCustom">
+      <Image
+        src={imageUrl}
+        alt={`${titre} - Image ${currentIndex + 1}`}
+        fill
+        className="object-cover cursor-pointer hover:opacity-90 transition-opacity"
+      />
+
+      {images.length > 1 && (
+        <>
+          <button
+            onClick={handlePrev}
+            className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/10 backdrop-blur-sm text-white w-8 h-8 flex items-center justify-center rounded-full hover:bg-black/50 transition-colors-opacity opacity-0 group-hover:opacity-100 z-10"
+          >
+            <ArrowLeft />
+          </button>
+          <button
+            onClick={handleNext}
+            className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/10 backdrop-blur-sm text-white w-8 h-8 flex items-center justify-center rounded-full hover:bg-black/50 transition-colors-opacity opacity-0 group-hover:opacity-100 z-10"
+          >
+            <ArrowRight />
+          </button>
+          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1 z-10">
+            {images.map((_, idx) => (
+              <div
+                key={idx}
+                className={`w-3 h-1 transition-colors ${
+                  idx === currentIndex ? 'bg-white' : 'bg-white/40'
+                }`}
+              />
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+function MusicPlaylistCarousel({ rawUrls }) {
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  // Nettoyage des URLs
+  const finalUrls = useMemo(() => {
+    return (rawUrls || []).map(rawUrl => {
+      let finalUrl = rawUrl;
+      try {
+        const parsed = new URL(rawUrl);
+        const match = parsed.pathname.match(
+          /(track|album|playlist|artist|show|episode)\/([a-zA-Z0-9]+)/
+        );
+        if (match && !rawUrl.includes('/embed/')) {
+          finalUrl = `https://open.spotify.com/embed/${match[1]}/${match[2]}`;
+        }
+      } catch (e) {
+        console.error('Lien Spotify invalide');
+      }
+      return finalUrl;
+    });
+  }, [rawUrls]);
+
+  if (finalUrls.length === 0) {
+    return <p className="text-blackCustom">Aucune playlist disponible.</p>;
+  }
+
+  const handlePrev = e => {
+    e.stopPropagation();
+    setCurrentIndex(prev => (prev === 0 ? finalUrls.length - 1 : prev - 1));
+  };
+
+  const handleNext = e => {
+    e.stopPropagation();
+    setCurrentIndex(prev => (prev === finalUrls.length - 1 ? 0 : prev + 1));
+  };
+
+  return (
+    <div className="relative w-[85vw] md:w-[40vw] lg:w-[35vw] h-[152px] group flex items-center">
+      {finalUrls.length > 1 && (
+        <button
+          onClick={handlePrev}
+          className="absolute -left-4 z-10 bg-black/10 backdrop-blur-sm text-white w-8 h-8 flex items-center justify-center rounded-full hover:bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity-colors shadow-md"
+        >
+          <ArrowLeft />
+        </button>
+      )}
+
+      <iframe
+        className="h-[152px] rounded-md w-full relative z-0"
+        src={finalUrls[currentIndex]}
+        frameBorder="0"
+        allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+        loading="lazy"
+        title={`Spotify music player ${currentIndex + 1}`}
+        sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"
+      ></iframe>
+
+      {finalUrls.length > 1 && (
+        <button
+          onClick={handleNext}
+          className="absolute -right-4 z-10 bg-black/10 backdrop-blur-sm text-white w-8 h-8 flex items-center justify-center rounded-full hover:bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity-colors shadow-md"
+        >
+          <ArrowRight />
+        </button>
+      )}
+      <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1 z-10">
+        {finalUrls.map((_, idx) => (
+          <div
+            key={idx}
+            className={`w-3 h-1 transition-colors ${
+              idx === currentIndex ? 'bg-white' : 'bg-white/40'
+            }`}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
 // ==========================================
 // SOUS-COMPOSANT : GESTION D'UNE FENÊTRE
 // ==========================================
@@ -176,52 +347,6 @@ function WindowItem({
           ></iframe>
         );
       }
-      case 'windowMusicPlaylist': {
-        const rawUrls = win.spotifyUrlFolder || [];
-        const finalUrls = rawUrls.map(rawUrl => {
-          let finalUrl = rawUrl;
-
-          try {
-            const parsed = new URL(rawUrl);
-            const match = parsed.pathname.match(
-              /(track|album|playlist|artist|show|episode)\/([a-zA-Z0-9]+)/
-            );
-
-            if (match && !rawUrl.includes('/embed/')) {
-              const type = match[1];
-              const idTrack = match[2];
-              finalUrl = `https://open.spotify.com/embed/${type}/${idTrack}`;
-            }
-          } catch (e) {
-            console.error('Lien Spotify invalide');
-          }
-
-          return finalUrl;
-        });
-
-        return (
-          <div className="flex flex-row gap-2 md:w-[40vw] lg:w-[35vw]">
-            {finalUrls.length > 0 ? (
-              finalUrls.map((url, idx) => (
-                <iframe
-                  key={idx}
-                  className="h-[152px] rounded-md w-full"
-                  src={url}
-                  frameBorder="0"
-                  allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-                  loading="lazy"
-                  title={`Spotify music player ${idx + 1}`}
-                  sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"
-                ></iframe>
-              ))
-            ) : (
-              <p className="text-blackCustom">
-                Aucune playlist Spotify disponible.
-              </p>
-            )}
-          </div>
-        );
-      }
 
       case 'windowVideo': {
         const videoId = extractIdYoutube(win.content);
@@ -324,35 +449,17 @@ function WindowItem({
           </div>
         );
       }
+      case 'windowMusicPlaylist': {
+        return <MusicPlaylistCarousel rawUrls={win.spotifyUrlFolder} />;
+      }
+
       case 'windowImageFolder': {
-        const images = win.imageFolder || [];
-        if (images.length === 0) {
-          return (
-            <div className="w-full h-full flex items-center justify-center text-black rounded-md">
-              Aucune image disponible
-            </div>
-          );
-        }
         return (
-          <div className="flex flex-row gap-2 w-[85vw] md:w-[40vw] lg:w-[30vw]">
-            {images.map((img, idx) => {
-              const imageUrl = img ? buildSanityImageUrl(img) : heroImage;
-              return (
-                <div
-                  key={idx}
-                  className="w-full h-full aspect-square overflow-hidden rounded-md"
-                >
-                  <Image
-                    src={imageUrl}
-                    alt={`${titre} - Image ${idx + 1}`}
-                    width={400}
-                    height={400}
-                    className="w-full h-full object-cover rounded-md cursor-pointer hover:opacity-90 transition-opacity active:cursor-pointer"
-                  />
-                </div>
-              );
-            })}
-          </div>
+          <ImageFolderCarousel
+            images={win.imageFolder}
+            titre={titre}
+            heroImage={heroImage}
+          />
         );
       }
       default:
@@ -445,7 +552,13 @@ export default function HomePageTabs() {
     // 1. Extraction des fenêtres spécifiques
     const bioWin = orderedWindows.find(w => w._type === 'windowBio');
     const textWin = orderedWindows.find(w => w._type === 'windowText');
-    const imageWin = orderedWindows.find(w => w._type === 'windowImage');
+    const imageWin = orderedWindows.find(
+      w => w._type === 'windowImage' || w._type === 'windowImageFolder'
+    );
+    const musicWin = orderedWindows.find(
+      w => w._type === 'windowMusic' || w._type === 'windowMusicPlaylist'
+    );
+    // Puis gère l'affichage en conséquence dans ton JSX mobile.
     const videoWin = orderedWindows.find(w => w._type === 'windowVideo'); // <-- Remplacement ici
 
     // 2. Fonction utilitaire pour récupérer la bonne couleur (Sanity ou Fallback)
