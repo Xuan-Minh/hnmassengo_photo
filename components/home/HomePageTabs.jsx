@@ -49,13 +49,14 @@ function localizeField(value, locale, fallback = '') {
 
 const ArrowLeft = () => (
   <svg
-    width="32"
-    height="32"
+    width="24"
+    height="24"
     viewBox="0 0 24 24"
     fill="none"
     stroke="currentColor"
-    strokeWidth="1.5"
-    className="cursor-pointer active:cursor-pointing"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
   >
     <polyline points="15 18 9 12 15 6"></polyline>
   </svg>
@@ -63,17 +64,19 @@ const ArrowLeft = () => (
 
 const ArrowRight = () => (
   <svg
-    width="32"
-    height="32"
+    width="24"
+    height="24"
     viewBox="0 0 24 24"
     fill="none"
     stroke="currentColor"
-    strokeWidth="1.5"
-    className="cursor-pointer active:cursor-pointing"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
   >
     <polyline points="9 18 15 12 9 6"></polyline>
   </svg>
 );
+
 function ImageFolderCarousel({ images, titre, heroImage }) {
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -86,7 +89,7 @@ function ImageFolderCarousel({ images, titre, heroImage }) {
   }
 
   const handlePrev = e => {
-    e.stopPropagation(); // Évite de déclencher le drag de la fenêtre
+    e.stopPropagation();
     setCurrentIndex(prev => (prev === 0 ? images.length - 1 : prev - 1));
   };
 
@@ -95,38 +98,49 @@ function ImageFolderCarousel({ images, titre, heroImage }) {
     setCurrentIndex(prev => (prev === images.length - 1 ? 0 : prev + 1));
   };
 
-  const currentImage = images[currentIndex];
-  const imageUrl = currentImage ? buildSanityImageUrl(currentImage) : heroImage;
-
   return (
     <div className="relative w-[85vw] md:w-[40vw] lg:w-[20vw] aspect-square rounded-md overflow-hidden group bg-blackCustom">
-      <Image
-        src={imageUrl}
-        alt={`${titre} - Image ${currentIndex + 1}`}
-        fill
-        className="object-cover cursor-pointer hover:opacity-90 transition-opacity"
-      />
+      {/* PISTE DE GLISSEMENT (SLIDER) */}
+      <div
+        className="flex w-full h-full transition-transform duration-500 ease-in-out"
+        style={{ transform: `translateX(-${currentIndex * 100}%)` }}
+      >
+        {images.map((img, idx) => {
+          const imageUrl = img ? buildSanityImageUrl(img) : heroImage;
+          return (
+            <div key={idx} className="relative w-full h-full shrink-0">
+              <Image
+                src={imageUrl}
+                alt={`${titre} - Image ${idx + 1}`}
+                fill
+                className="object-cover"
+              />
+            </div>
+          );
+        })}
+      </div>
 
+      {/* CONTRÔLES */}
       {images.length > 1 && (
         <>
           <button
             onClick={handlePrev}
-            className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/10 backdrop-blur-sm text-white w-8 h-8 flex items-center justify-center rounded-full hover:bg-black/50 transition-colors-opacity opacity-0 group-hover:opacity-100 z-10"
+            className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/30 backdrop-blur-md text-white w-8 h-8 flex items-center justify-center rounded-full hover:bg-black/80 transition-all duration-300 ease-in-out opacity-100 lg:opacity-0 lg:group-hover:opacity-100 z-10 shadow-md cursor-pointer active:cursor-pointing"
           >
             <ArrowLeft />
           </button>
           <button
             onClick={handleNext}
-            className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/10 backdrop-blur-sm text-white w-8 h-8 flex items-center justify-center rounded-full hover:bg-black/50 transition-colors-opacity opacity-0 group-hover:opacity-100 z-10"
+            className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/30 backdrop-blur-md text-white w-8 h-8 flex items-center justify-center rounded-full hover:bg-black/80 transition-all duration-300 ease-in-out opacity-100 lg:opacity-0 lg:group-hover:opacity-100 z-10 shadow-md cursor-pointer active:cursor-pointing"
           >
             <ArrowRight />
           </button>
-          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1 z-10">
+          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
             {images.map((_, idx) => (
               <div
                 key={idx}
-                className={`w-3 h-1 transition-colors ${
-                  idx === currentIndex ? 'bg-white' : 'bg-white/40'
+                className={`h-1.5 rounded-full transition-all duration-300 ease-in-out ${
+                  idx === currentIndex ? 'w-4 bg-white' : 'w-1.5 bg-white/50'
                 }`}
               />
             ))}
@@ -140,7 +154,6 @@ function ImageFolderCarousel({ images, titre, heroImage }) {
 function MusicPlaylistCarousel({ rawUrls }) {
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  // Nettoyage des URLs
   const finalUrls = useMemo(() => {
     return (rawUrls || []).map(rawUrl => {
       let finalUrl = rawUrl;
@@ -174,44 +187,54 @@ function MusicPlaylistCarousel({ rawUrls }) {
   };
 
   return (
-    <div className="relative w-[85vw] md:w-[40vw] lg:w-[35vw] h-[152px] group flex items-center">
-      {finalUrls.length > 1 && (
-        <button
-          onClick={handlePrev}
-          className="absolute -left-4 z-10 bg-black/10 backdrop-blur-sm text-white w-8 h-8 flex items-center justify-center rounded-full hover:bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity-colors shadow-md"
-        >
-          <ArrowLeft />
-        </button>
-      )}
-
-      <iframe
-        className="h-[152px] rounded-md w-full relative z-0"
-        src={finalUrls[currentIndex]}
-        frameBorder="0"
-        allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-        loading="lazy"
-        title={`Spotify music player ${currentIndex + 1}`}
-        sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"
-      ></iframe>
-
-      {finalUrls.length > 1 && (
-        <button
-          onClick={handleNext}
-          className="absolute -right-4 z-10 bg-black/10 backdrop-blur-sm text-white w-8 h-8 flex items-center justify-center rounded-full hover:bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity-colors shadow-md"
-        >
-          <ArrowRight />
-        </button>
-      )}
-      <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1 z-10">
+    <div className="relative w-[85vw] md:w-[40vw] lg:w-[35vw] h-[152px] group rounded-md overflow-hidden bg-blackCustom/5">
+      {/* PISTE DE GLISSEMENT SPOTIFY */}
+      <div
+        className="flex w-full h-full transition-transform duration-500 ease-in-out"
+        style={{ transform: `translateX(-${currentIndex * 100}%)` }}
+      >
+        {finalUrls.map((url, idx) => (
+          <div key={idx} className="w-full shrink-0 h-full">
+            <iframe
+              className="w-full h-full"
+              src={url}
+              frameBorder="0"
+              allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+              loading="lazy"
+              title={`Spotify music player ${idx + 1}`}
+              sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"
+            ></iframe>
+          </div>
+        ))}
+      </div>
+      <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
         {finalUrls.map((_, idx) => (
           <div
             key={idx}
-            className={`w-3 h-1 transition-colors ${
-              idx === currentIndex ? 'bg-white' : 'bg-white/40'
+            className={`h-1.5 rounded-full transition-all duration-300 ease-in-out ${
+              idx === currentIndex ? 'w-4 bg-white' : 'w-1.5 bg-white/50'
             }`}
           />
         ))}
       </div>
+
+      {/* CONTRÔLES */}
+      {finalUrls.length > 1 && (
+        <>
+          <button
+            onClick={handlePrev}
+            className="absolute left-1 top-1/2 -translate-y-1/2 bg-black/30 backdrop-blur-md text-white w-7 h-7 flex items-center justify-center rounded-full hover:bg-black/80 transition-all duration-300 ease-in-out opacity-100 lg:opacity-0 lg:group-hover:opacity-100 z-10 shadow-md cursor-pointer active:cursor-pointing"
+          >
+            <ArrowLeft />
+          </button>
+          <button
+            onClick={handleNext}
+            className="absolute right-1 top-1/2 -translate-y-1/2 bg-black/30 backdrop-blur-md text-white w-7 h-7 flex items-center justify-center rounded-full hover:bg-black/80 transition-all duration-300 ease-in-out opacity-100 lg:opacity-0 lg:group-hover:opacity-100 z-10 shadow-md cursor-pointer active:cursor-pointing"
+          >
+            <ArrowRight />
+          </button>
+        </>
+      )}
     </div>
   );
 }
@@ -354,7 +377,7 @@ function WindowItem({
           <iframe
             src={`https://www.youtube.com/embed/${videoId}`}
             title="YouTube video player"
-            style={{ borderRadius: '0.375rem' }}
+            style={{ Radius: '0.375rem' }}
             className="rounded-md w-[85vw] md:w-[40vw] lg:w-[26vw] aspect-video"
             frameBorder="0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
@@ -579,7 +602,7 @@ export default function HomePageTabs() {
         {bioWin && (
           <div className="flex col-span-2 w-full h-fit flex-col text-white gap-1 shadow-lg">
             <div
-              className="flex items-center justify-between border border-black gap-2 p-2 cursor-grab active:cursor-grabbing rounded-t-md"
+              className="flex items-center justify-between  -black gap-2 p-2 cursor-grab active:cursor-grabbing rounded-t-md"
               style={{ backgroundColor: getTabColor(bioWin) }}
             >
               <h3 className="text-md font-bold px-2">
@@ -587,8 +610,8 @@ export default function HomePageTabs() {
               </h3>
             </div>
 
-            <div className="border border-black bg-background flex rounded-b-md overflow-hidden">
-              <div className="w-[40%] flex-shrink-0 border-r border-blackCustom/20 flex items-center">
+            <div className=" -black bg-background flex rounded-b-md overflow-hidden">
+              <div className="w-[40%] flex-shrink-0 -r border-blackCustom/20 flex items-center">
                 <Image
                   src={
                     bioWin.photo ? buildSanityImageUrl(bioWin.photo) : heroImage
