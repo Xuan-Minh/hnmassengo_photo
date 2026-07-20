@@ -1,7 +1,15 @@
 /* eslint-disable react-doctor/no-event-handler */
 'use client';
 
-import { useEffect, useMemo, useRef, useCallback, useReducer } from 'react';
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useCallback,
+  useReducer,
+  useState,
+} from 'react';
+import { createPortal } from 'react-dom';
 import Image from 'next/image';
 import { m } from 'framer-motion';
 import { buildSanityImageUrl } from '../../../lib/imageUtils';
@@ -458,11 +466,20 @@ export default function CustomLightbox({
     getDisplaySrcForIndex,
   } = useLightboxLogic(open, onClose, images, initialIndex);
 
-  if (!open) return null;
+  // État pour s'assurer que le composant est monté côté client (navigateur)
+  const [mounted, setMounted] = useState(false);
 
-  return (
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Si pas ouvert OU pas encore monté sur le client, on ne retourne rien
+  if (!open || !mounted) return null;
+
+  // On téléporte la div directement dans le document.body
+  return createPortal(
     <m.div
-      className="fixed inset-0 h-[100dvh] w-full z-[200] bg-blackCustom text-[#e5e5e5] font-liberation flex flex-col overflow-hidden"
+      className="fixed top-0 left-0 w-screen h-[100dvh] z-[9999] bg-blackCustom text-[#e5e5e5] font-liberation flex flex-col overflow-hidden"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
@@ -492,6 +509,7 @@ export default function CustomLightbox({
         hasCurrentError={hasCurrentError}
         dispatch={dispatch}
       />
-    </m.div>
+    </m.div>,
+    document.body
   );
 }

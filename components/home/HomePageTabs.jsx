@@ -14,6 +14,8 @@ import {
   portableTextToPlain,
 } from '../../lib/utils';
 import { buildSanityImageUrl } from '../../lib/imageUtils';
+import { AnimatePresence } from 'framer-motion';
+import CustomLightbox from '../gallery/cartel/CustomLightbox';
 
 // ==========================================
 // VARIABLES GLOBALES & UTILITAIRES
@@ -80,6 +82,10 @@ const ArrowRight = () => (
 function ImageFolderCarousel({ images, titre, heroImage }) {
   const [currentIndex, setCurrentIndex] = useState(0);
 
+  // Nouveaux states pour gérer la Lightbox
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
+
   if (!images || images.length === 0) {
     return (
       <div className="w-full h-full flex items-center justify-center text-black rounded-md bg-gray-200">
@@ -89,7 +95,7 @@ function ImageFolderCarousel({ images, titre, heroImage }) {
   }
 
   const handlePrev = e => {
-    e.stopPropagation();
+    e.stopPropagation(); // Évite de déclencher le drag de la fenêtre
     setCurrentIndex(prev => (prev === 0 ? images.length - 1 : prev - 1));
   };
 
@@ -98,59 +104,82 @@ function ImageFolderCarousel({ images, titre, heroImage }) {
     setCurrentIndex(prev => (prev === images.length - 1 ? 0 : prev + 1));
   };
 
-  return (
-    <div className="relative w-[85vw] md:w-[40vw] lg:w-[20vw] aspect-square rounded-md overflow-hidden group bg-blackCustom">
-      {/* PISTE DE GLISSEMENT (SLIDER) */}
-      <div
-        className="flex w-full h-full transition-transform duration-500 ease-in-out"
-        style={{ transform: `translateX(-${currentIndex * 100}%)` }}
-      >
-        {images.map((img, idx) => {
-          const imageUrl = img ? buildSanityImageUrl(img) : heroImage;
-          return (
-            <div key={idx} className="relative w-full h-full shrink-0">
-              <Image
-                src={imageUrl}
-                alt={`${titre} - Image ${idx + 1}`}
-                fill
-                className="object-cover"
-              />
-            </div>
-          );
-        })}
-      </div>
+  // Fonction pour ouvrir la lightbox au bon index
+  const openLightbox = (idx, e) => {
+    e.stopPropagation(); // Évite le drag de la fenêtre quand on clique
+    setLightboxIndex(idx);
+    setLightboxOpen(true);
+  };
 
-      {/* CONTRÔLES */}
-      {images.length > 1 && (
-        <>
-          <button
-            onClick={handlePrev}
-            className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/30 backdrop-blur-md text-white w-8 h-8 flex items-center justify-center rounded-full hover:bg-black/80 transition-all duration-300 ease-in-out opacity-100 lg:opacity-0 lg:group-hover:opacity-100 z-10 shadow-md cursor-pointer active:cursor-pointing"
-          >
-            <ArrowLeft />
-          </button>
-          <button
-            onClick={handleNext}
-            className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/30 backdrop-blur-md text-white w-8 h-8 flex items-center justify-center rounded-full hover:bg-black/80 transition-all duration-300 ease-in-out opacity-100 lg:opacity-0 lg:group-hover:opacity-100 z-10 shadow-md cursor-pointer active:cursor-pointing"
-          >
-            <ArrowRight />
-          </button>
-          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
-            {images.map((_, idx) => (
+  return (
+    <>
+      <div className="relative w-[85vw] md:w-[40vw] lg:w-[20vw] aspect-square rounded-md overflow-hidden group bg-blackCustom">
+        {/* PISTE DE GLISSEMENT (SLIDER) */}
+        <div
+          className="flex w-full h-full transition-transform duration-500 ease-in-out"
+          style={{ transform: `translateX(-${currentIndex * 100}%)` }}
+        >
+          {images.map((img, idx) => {
+            const imageUrl = img ? buildSanityImageUrl(img) : heroImage;
+            return (
               <div
                 key={idx}
-                className={`h-1.5 rounded-full transition-all duration-300 ease-in-out ${
-                  idx === currentIndex ? 'w-4 bg-white' : 'w-1.5 bg-white/50'
-                }`}
-              />
-            ))}
-          </div>
-        </>
+                className="relative w-full h-full shrink-0 cursor-pointer"
+                onClick={e => openLightbox(idx, e)} // <-- Événement au clic
+              >
+                <Image
+                  src={imageUrl}
+                  alt={`${titre} - Image ${idx + 1}`}
+                  fill
+                  className="object-cover hover:opacity-90 transition-opacity"
+                />
+              </div>
+            );
+          })}
+        </div>
+
+        {/* CONTRÔLES */}
+        {images.length > 1 && (
+          <>
+            <button
+              onClick={handlePrev}
+              className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/30 backdrop-blur-md text-white w-8 h-8 flex items-center justify-center rounded-full hover:bg-black/80 transition-all duration-300 ease-in-out opacity-100 lg:opacity-0 lg:group-hover:opacity-100 z-10 shadow-md cursor-pointer active:cursor-pointing"
+            >
+              <ArrowLeft />
+            </button>
+            <button
+              onClick={handleNext}
+              className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/30 backdrop-blur-md text-white w-8 h-8 flex items-center justify-center rounded-full hover:bg-black/80 transition-all duration-300 ease-in-out opacity-100 lg:opacity-0 lg:group-hover:opacity-100 z-10 shadow-md cursor-pointer active:cursor-pointing"
+            >
+              <ArrowRight />
+            </button>
+            <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
+              {images.map((_, idx) => (
+                <div
+                  key={idx}
+                  className={`h-1.5 rounded-full transition-all duration-300 ease-in-out ${
+                    idx === currentIndex ? 'w-4 bg-white' : 'w-1.5 bg-white/50'
+                  }`}
+                />
+              ))}
+            </div>
+          </>
+        )}
+      </div>
+
+      {/* LIGHTBOX (Placée en dehors du conteneur overflow-hidden) */}
+      {lightboxOpen && (
+        <CustomLightbox
+          open={lightboxOpen}
+          initialIndex={lightboxIndex}
+          onClose={() => setLightboxOpen(false)}
+          images={images}
+          project={{ title: titre }} // Simulation d'un objet project pour éviter les crashs si ta lightbox attend un titre
+        />
       )}
-    </div>
+    </>
   );
 }
-
 function MusicPlaylistCarousel({ rawUrls }) {
   const [currentIndex, setCurrentIndex] = useState(0);
 
