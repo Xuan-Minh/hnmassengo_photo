@@ -14,8 +14,9 @@ import {
   portableTextToPlain,
 } from '../../lib/utils';
 import { buildSanityImageUrl } from '../../lib/imageUtils';
-import { AnimatePresence } from 'framer-motion';
+import { AnimatePresence, m } from 'framer-motion';
 import CustomLightbox from '../gallery/cartel/CustomLightbox';
+import { createPortal } from 'react-dom';
 
 // ==========================================
 // VARIABLES GLOBALES & UTILITAIRES
@@ -81,21 +82,25 @@ const ArrowRight = () => (
 
 function ImageFolderCarousel({ images, titre, heroImage }) {
   const [currentIndex, setCurrentIndex] = useState(0);
-
-  // Nouveaux states pour gérer la Lightbox
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
+  const [mounted, setMounted] = useState(false);
+
+  // Évite les erreurs côté serveur avec createPortal
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   if (!images || images.length === 0) {
     return (
-      <div className="w-full h-full flex items-center justify-center text-black rounded-md bg-gray-200">
+      <div className="w-[85vw] md:w-[40vw] lg:w-[25vw] p-4 flex items-center justify-center text-black rounded-md bg-gray-200">
         Aucune image disponible
       </div>
     );
   }
 
   const handlePrev = e => {
-    e.stopPropagation(); // Évite de déclencher le drag de la fenêtre
+    e.stopPropagation();
     setCurrentIndex(prev => (prev === 0 ? images.length - 1 : prev - 1));
   };
 
@@ -104,56 +109,59 @@ function ImageFolderCarousel({ images, titre, heroImage }) {
     setCurrentIndex(prev => (prev === images.length - 1 ? 0 : prev + 1));
   };
 
-  // Fonction pour ouvrir la lightbox au bon index
   const openLightbox = (idx, e) => {
-    e.stopPropagation(); // Évite le drag de la fenêtre quand on clique
+    e.stopPropagation();
     setLightboxIndex(idx);
     setLightboxOpen(true);
   };
 
   return (
     <>
-      <div className="relative w-[85vw] md:w-[40vw] lg:w-[20vw] aspect-square rounded-md overflow-hidden group bg-blackCustom">
-        {/* PISTE DE GLISSEMENT (SLIDER) */}
-        <div
-          className="flex w-full h-full transition-transform duration-500 ease-in-out"
-          style={{ transform: `translateX(-${currentIndex * 100}%)` }}
-        >
+      <div className="relative w-[85vw] md:w-[40vw] lg:w-[20vw] h-auto rounded-md overflow-hidden group bg-blackCustom/5">
+        <AnimatePresence initial={false} mode="wait">
           {images.map((img, idx) => {
+            if (idx !== currentIndex) return null; // On ne rend que l'image active
+
             const imageUrl = img ? buildSanityImageUrl(img) : heroImage;
+
             return (
-              <div
-                key={idx}
-                className="relative w-full h-full shrink-0 cursor-pointer"
-                onClick={e => openLightbox(idx, e)} // <-- Événement au clic
+              <m.div
+                key={idx} // La clé est cruciale pour que Motion détecte le changement
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.4, ease: 'easeInOut' }} // Durée et courbe de fluidité
+                className="w-full h-auto cursor-pointer"
+                onClick={e => openLightbox(idx, e)}
               >
                 <Image
                   src={imageUrl}
                   alt={`${titre} - Image ${idx + 1}`}
-                  fill
-                  className="object-cover hover:opacity-90 transition-opacity"
+                  width={1000}
+                  height={1000}
+                  className="w-full h-auto object-contain"
                 />
-              </div>
+              </m.div>
             );
           })}
-        </div>
+        </AnimatePresence>
 
         {/* CONTRÔLES */}
         {images.length > 1 && (
           <>
             <button
               onClick={handlePrev}
-              className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/30 backdrop-blur-md text-white w-8 h-8 flex items-center justify-center rounded-full hover:bg-black/80 transition-all duration-300 ease-in-out opacity-100 lg:opacity-0 lg:group-hover:opacity-100 z-10 shadow-md cursor-pointer active:cursor-pointing"
+              className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/40 backdrop-blur-md text-white w-8 h-8 flex items-center justify-center rounded-full hover:bg-black/80 transition-all duration-300 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 z-20 shadow-md cursor-pointer"
             >
               <ArrowLeft />
             </button>
             <button
               onClick={handleNext}
-              className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/30 backdrop-blur-md text-white w-8 h-8 flex items-center justify-center rounded-full hover:bg-black/80 transition-all duration-300 ease-in-out opacity-100 lg:opacity-0 lg:group-hover:opacity-100 z-10 shadow-md cursor-pointer active:cursor-pointing"
+              className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/40 backdrop-blur-md text-white w-8 h-8 flex items-center justify-center rounded-full hover:bg-black/80 transition-all duration-300 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 z-20 shadow-md cursor-pointer"
             >
               <ArrowRight />
             </button>
-            <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
+            <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 z-20">
               {images.map((_, idx) => (
                 <div
                   key={idx}
@@ -166,17 +174,19 @@ function ImageFolderCarousel({ images, titre, heroImage }) {
           </>
         )}
       </div>
-
-      {/* LIGHTBOX (Placée en dehors du conteneur overflow-hidden) */}
-      {lightboxOpen && (
-        <CustomLightbox
-          open={lightboxOpen}
-          initialIndex={lightboxIndex}
-          onClose={() => setLightboxOpen(false)}
-          images={images}
-          project={{ title: titre }} // Simulation d'un objet project pour éviter les crashs si ta lightbox attend un titre
-        />
-      )}
+      {/* LIGHTBOX EN PORTAL */}
+      {mounted &&
+        lightboxOpen &&
+        createPortal(
+          <CustomLightbox
+            open={lightboxOpen}
+            initialIndex={lightboxIndex}
+            onClose={() => setLightboxOpen(false)}
+            images={images}
+            project={{ name: titre }} // Évite les crashs si la lightbox attend "project.name"
+          />,
+          document.body
+        )}
     </>
   );
 }
@@ -216,8 +226,7 @@ function MusicPlaylistCarousel({ rawUrls }) {
   };
 
   return (
-    <div className="relative w-[85vw] md:w-[40vw] lg:w-[35vw] h-[152px] group rounded-md overflow-hidden bg-blackCustom/5">
-      {/* PISTE DE GLISSEMENT SPOTIFY */}
+    <div className="relative w-[85vw] md:w-[40vw] lg:w-[20vw] h-[152px] group rounded-md overflow-hidden bg-blackCustom/5">
       <div
         className="flex w-full h-full transition-transform duration-500 ease-in-out"
         style={{ transform: `translateX(-${currentIndex * 100}%)` }}
@@ -511,6 +520,8 @@ function WindowItem({
             images={win.imageFolder}
             titre={titre}
             heroImage={heroImage}
+            width={width}
+            aspectRatio={aspectRatio}
           />
         );
       }

@@ -118,7 +118,7 @@ export default function WindowsTab({
         <m.div
           variants={childrenVariants}
           animate={isDragging ? 'dragging' : 'idle'}
-          className={`flex-1 p-4 border border-black bg-background flex rounded-b-md overflow-auto ${
+          className={`flex-1 p-4 border border-black bg-background flex items-center justify-center rounded-b-md overflow-auto ${
             isDragging
               ? 'pointer-events-none select-none'
               : 'pointer-events-auto'
