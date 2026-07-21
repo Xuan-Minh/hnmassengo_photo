@@ -131,7 +131,7 @@ function ImageFolderCarousel({ images, titre, heroImage }) {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.4, ease: 'easeInOut' }} // Durée et courbe de fluidité
-                className="w-full h-auto cursor-pointer"
+                className="w-full h-auto cursor-pointer "
                 onClick={e => openLightbox(idx, e)}
               >
                 <Image
@@ -139,7 +139,7 @@ function ImageFolderCarousel({ images, titre, heroImage }) {
                   alt={`${titre} - Image ${idx + 1}`}
                   width={1000}
                   height={1000}
-                  className="w-full h-auto object-contain"
+                  className="w-full h-auto object-contain hover:opacity-50 transition-opacity active:cursor-pointing"
                 />
               </m.div>
             );
