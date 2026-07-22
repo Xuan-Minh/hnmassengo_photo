@@ -7,7 +7,7 @@ import {
   getSanityImageDeliveryUrl,
   isSanityCdnUrl,
 } from '../../lib/imageUtils';
-import AnimatedUnderlineLink from '../ui/AnimatedUnderlineLink';
+import GalleryViewToggle from './GalleryViewToggle';
 // ==========================================
 // 1. CONSTANTES & UTILITAIRES
 // ==========================================
@@ -80,10 +80,12 @@ function Sidebar({
   t,
   onSidebarHover,
   onImageClick,
+  view,
+  onViewChange,
 }) {
   return (
     <div className="w-48 flex flex-col pt-8 shrink-0 overflow-y-auto no-scrollbar pb-16">
-      {/* --- SECTION FILTRES --- */}
+      <GalleryViewToggle view={view} onViewChange={onViewChange} />
       <div className="flex flex-col gap-2 mb-12">
         {FILTERS.map(f => (
           <button
@@ -98,7 +100,6 @@ function Sidebar({
               dispatch({ type: 'UPDATE_STATE', payload: { filter: f.value } })
             }
           >
-            {/* Remplacement du lien par un span stylisé */}
             <span
               className="inline box-decoration-clone bg-[linear-gradient(currentColor,currentColor)] bg-no-repeat [background-position:0_100%] transition-[background-size,color] duration-300 ease-in-out"
               style={{ backgroundSize: 'var(--bg-size, 0% 1px)' }}
@@ -109,7 +110,6 @@ function Sidebar({
         ))}
       </div>
 
-      {/* --- SECTION LISTE DES PROJETS --- */}
       <ul className="flex flex-col gap-2">
         {filteredProjects.map(p => (
           <li key={p.id}>
@@ -134,7 +134,6 @@ function Sidebar({
                 });
               }}
             >
-              {/* Remplacement du lien par un span stylisé */}
               <span
                 className="inline box-decoration-clone bg-[linear-gradient(currentColor,currentColor)] bg-no-repeat [background-position:0_100%] transition-[background-size,color] duration-300 ease-in-out"
                 style={{ backgroundSize: 'var(--bg-size, 0% 1px)' }}
@@ -164,7 +163,7 @@ function MasonryGrid({
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.98 }}
         transition={{ duration: 0.4, ease: 'easeInOut' }}
-        className="flex w-full gap-2 pb-16 pr-8"
+        className="flex w-full gap-2"
       >
         {masonryCols.map((col, colIdx) => (
           <div key={`col-${colIdx}`} className="flex flex-col flex-1 gap-2">
@@ -241,10 +240,10 @@ function CustomCursorOverlay({
   return (
     <AnimatePresence>
       <m.div
-        className="fixed pointer-events-none z-[200] text-whiteCustom font-liberation italic text-lg"
+        className="fixed pointer-events-none text-whiteCustom font-liberation italic text-lg z-50 mix-blend-difference"
         style={{
-          left: cursorPos.x + 10,
-          top: cursorPos.y + 10,
+          left: cursorPos.x + 15,
+          top: cursorPos.y + 15,
           transform: 'translate(-50%, -50%)',
         }}
         initial={{ opacity: 0, scale: 0.8 }}
@@ -284,13 +283,10 @@ function useGalleryGridData(projects, filter, colsCount) {
   const allImages = useMemo(() => {
     return filteredProjects.flatMap(p => {
       if (!p.images) return [];
-
       return p.images.flatMap((img, idx) => {
         if (!img) return [];
-
         const src = getSanityImageDeliveryUrl(img, { w: 640, q: 70 });
         if (!src) return [];
-
         return [
           {
             projectId: p.id,
@@ -431,7 +427,13 @@ function useGalleryInteractions(
 // 5. COMPOSANT PRINCIPAL
 // ==========================================
 
-export default function GalleryGridMore({ onClose, onProjectClick, projects }) {
+export default function GalleryGridMore({
+  projects,
+  onProjectSelect,
+  setActiveCoord,
+  view,
+  onViewChange,
+}) {
   const t = useTranslations('gallery');
   const scrollContainerRef = useRef(null);
 
@@ -460,32 +462,24 @@ export default function GalleryGridMore({ onClose, onProjectClick, projects }) {
 
   const hoveredProject = projectsRecentFirst.find(p => p.id === hoveredId);
 
+  // Remonter les coordonnées actives au parent (Gallery.jsx)
+  useEffect(() => {
+    if (setActiveCoord) {
+      setActiveCoord(hoveredProject ? hoveredProject.coords : '');
+    }
+  }, [hoveredProject, setActiveCoord]);
+
   return (
+    // Remplacement de `fixed inset-0` par `w-full h-full relative` pour s'insérer proprement
     <m.div
-      layout
-      className="fixed inset-0 bg-background z-[100] flex flex-col"
-      initial={{ x: '100%' }}
-      animate={{ x: 0 }}
-      exit={{ x: '100%' }}
-      transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+      className="w-full h-full flex flex-col relative"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.3 }}
     >
-      <div className="absolute top-8 left-8 md:top-16 md:left-16 z-50">
-        <button
-          type="button"
-          onClick={onClose}
-          className="text-lg font-liberation text-accent hover:text-blackCustom transition-colors"
-        >
-          back
-        </button>
-      </div>
-
-      <div className="relative w-full h-24 flex items-center justify-center px-8 md:px-16 shrink-0">
-        <h2 className="text-4xl font-liberation italic text-blackCustom/20">
-          {t('title')}
-        </h2>
-      </div>
-
-      <div className="flex-1 flex overflow-hidden px-8 md:px-16 pb-16">
+      <div className="flex-1 flex overflow-hidden w-full h-full">
+        {/* SIDEBAR FILTRES */}
         <Sidebar
           filter={filter}
           filteredProjects={filteredProjects}
@@ -493,24 +487,27 @@ export default function GalleryGridMore({ onClose, onProjectClick, projects }) {
           dispatch={dispatch}
           t={t}
           onSidebarHover={handleSidebarHover}
-          onImageClick={onProjectClick}
+          onImageClick={onProjectSelect}
+          view={view}
+          onViewChange={onViewChange}
         />
 
-        <div className="flex-1 overflow-y-auto pl-8" ref={scrollContainerRef}>
+        {/* GRILLE D'IMAGES */}
+        <div
+          className="flex-1 overflow-y-auto pl-4 lg:pl-8 no-scrollbar"
+          ref={scrollContainerRef}
+        >
           <MasonryGrid
             filter={filter}
             masonryCols={masonryCols}
             hoveredId={hoveredId}
             dispatch={dispatch}
-            onImageClick={onProjectClick}
+            onImageClick={onProjectSelect} // Changement du prop pour matcher
           />
         </div>
       </div>
 
-      <div className="absolute bottom-8 left-8 md:left-16 text-xl font-liberation italic text-blackCustom pointer-events-none">
-        {hoveredProject ? hoveredProject.coords : ''}
-      </div>
-
+      {/* OVERLAY CURSEUR */}
       <CustomCursorOverlay
         showCustomCursor={showCustomCursor}
         hoveredId={hoveredId}

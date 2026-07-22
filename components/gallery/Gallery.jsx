@@ -150,13 +150,13 @@ export default function Gallery() {
         <div
           className={`relative flex flex-col justify-center items-start  ${
             view === 'grid'
-              ? 'h-[75vh] lg:h-[90vh] w-[min(1100px,90vw)] 2xl:w-[min(1800px,90vw)]'
+              ? 'h-[75vh] lg:h-[90vh] w-[min(1400px,90vw)] xl:w-[min(1600px,90vw)]'
               : 'h-full w-[min(1100px,90vw)] 2xl:w-[min(1800px,90vw)]p-6'
           }`}
         >
           <AnimatePresence mode="wait">
             {view === 'grid' ? (
-              <GalleryGrid
+              <GalleryGridMore
                 key="grid"
                 projects={projectsRecentFirst}
                 view={view}
@@ -192,32 +192,11 @@ export default function Gallery() {
                   payload: { overlayOpen: true },
                 })
               }
-            >
-              <span
-                className="inline box-decoration-clone bg-[linear-gradient(currentColor,currentColor)] bg-no-repeat [background-position:0_100%] transition-[background-size,color] duration-300 ease-in-out"
-                style={{ backgroundSize: 'var(--bg-size, 0% 1px)' }}
-              >
-                {t('seeMore')}
-              </span>
-            </button>
+            ></button>
           )}
         </div>
       </section>
-      {/* Overlays Globaux */}
-      <AnimatePresence>
-        {overlayOpen && (
-          <GalleryGridMore
-            onClose={() =>
-              dispatch({
-                type: 'UPDATE_STATE',
-                payload: { overlayOpen: false },
-              })
-            }
-            onProjectClick={handleProjectSelect}
-            projects={projects}
-          />
-        )}
-      </AnimatePresence>
+
       <AnimatePresence>
         {selectedProject && (
           <GalleryProjetCartel
