@@ -226,7 +226,7 @@ function MusicPlaylistCarousel({ rawUrls }) {
   };
 
   return (
-    <div className="relative w-[85vw] md:w-[40vw] lg:w-[19vw] h-[152px] group rounded-md overflow-hidden bg-blackCustom/5">
+    <div className="relative w-[85vw] md:w-[40vw] lg:w-[20vw] h-[152px] group rounded-md overflow-hidden bg-blackCustom/5">
       <div
         className="flex w-full h-full transition-transform duration-500 ease-in-out"
         style={{ transform: `translateX(-${currentIndex * 100}%)` }}
