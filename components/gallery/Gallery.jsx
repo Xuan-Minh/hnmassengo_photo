@@ -1,5 +1,4 @@
 'use client';
-import { useTranslations } from 'next-intl';
 import { useEffect, useMemo, useReducer, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import client from '../../lib/sanity.client';
@@ -7,7 +6,6 @@ import { getOptimizedImageParams } from '../../lib/hooks';
 import { buildSanityImageUrl } from '../../lib/imageUtils';
 import { AnimatePresence } from 'framer-motion';
 
-import GalleryGrid from './GalleryGrid';
 import GalleryList from './GalleryList';
 import GalleryGridMore from './GalleryGridMore';
 import GalleryProjetCartel from './GalleryProjetCartel';
@@ -37,7 +35,6 @@ function reducer(state, action) {
 }
 
 export default function Gallery() {
-  const t = useTranslations('gallery');
   const { locale } = useParams();
 
   const [state, dispatch] = useReducer(reducer, initialState);
@@ -134,6 +131,17 @@ export default function Gallery() {
   // Mémorisation des callbacks pour éviter les boucles de rendu infinies
   const handleViewChange = useCallback(v => {
     dispatch({ type: 'UPDATE_STATE', payload: { view: v } });
+
+    const scrollRoot = document.getElementById('scroll-root');
+    const worksSection = document.getElementById('works');
+    if (!scrollRoot || !worksSection) return;
+
+    const top =
+      scrollRoot.scrollTop +
+      (worksSection.getBoundingClientRect().top -
+        scrollRoot.getBoundingClientRect().top);
+
+    scrollRoot.scrollTo({ top, behavior: 'smooth' });
   }, []);
 
   const handleProjectSelect = useCallback(p => {

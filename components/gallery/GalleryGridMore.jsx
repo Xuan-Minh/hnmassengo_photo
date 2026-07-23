@@ -341,7 +341,6 @@ function useGalleryInteractions(
     }
   }, [filter, scrollContainerRef]);
 
-  // Handle sidebar hover sync to masonry grid
   const handleSidebarHover = projectId => {
     dispatch({
       type: 'UPDATE_STATE',
@@ -470,7 +469,6 @@ export default function GalleryGridMore({
   }, [hoveredProject, setActiveCoord]);
 
   return (
-    // Remplacement de `fixed inset-0` par `w-full h-full relative` pour s'insérer proprement
     <m.div
       className="w-full h-full flex flex-col relative"
       initial={{ opacity: 0 }}
@@ -493,10 +491,7 @@ export default function GalleryGridMore({
         />
 
         {/* GRILLE D'IMAGES */}
-        <div
-          className="flex-1 overflow-y-auto pl-4 lg:pl-8 no-scrollbar"
-          ref={scrollContainerRef}
-        >
+        <div className="flex-1 overflow-y-auto" ref={scrollContainerRef}>
           <MasonryGrid
             filter={filter}
             masonryCols={masonryCols}
