@@ -110,7 +110,7 @@ export default function BlogPostItem({
   return (
     <button
       type="button"
-      className="w-full lg:border-b lg:border-whiteCustom/20 py-2  lg:py-12 cursor-pointer group lg:hover:border-l-4 lg:hover:border-l-white lg:pl-8 transition-all duration-300"
+      className="w-full lg:border-b lg:border-whiteCustom/20 py-2 lg:py-12 cursor-pointer group lg:hover:border-l-4 lg:hover:border-l-white lg:pl-8 transition-colors duration-300"
       onClick={onClick}
       onKeyPress={e => {
         if (e.key === 'Enter') onClick();
@@ -125,7 +125,7 @@ export default function BlogPostItem({
               alt={displayTitle || ''}
               width={400}
               height={300}
-              className="w-full h-auto xl:max-h-[150px] 2xl:max-h-[300px] object-contain lg:grayscale group-hover:grayscale-0 transition-all duration-500"
+              className="w-full h-auto xl:max-h-[150px] 2xl:max-h-[300px] object-contain lg:grayscale group-hover:grayscale-0 transition-colors duration-500"
               sizes="(max-width: 768px) 100vw, 400px"
               priority={false}
             />
@@ -171,7 +171,7 @@ export default function BlogPostItem({
               alt={displayTitle || ''}
               width={400}
               height={300}
-              className="w-full h-auto max-h-[300px] lg:max-h-[150px] object-contain lg:grayscale group-hover:grayscale-0 transition-all duration-500"
+              className="w-full h-auto max-h-[300px] lg:max-h-[150px] object-contain lg:grayscale group-hover:grayscale-0 transition-colors duration-500"
               sizes="(max-width: 768px) 100vw, 400px"
               priority={false}
             />

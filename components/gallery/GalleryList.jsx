@@ -94,7 +94,7 @@ const MainViewer = ({
       <button
         type="button"
         onClick={navigateListPrev}
-        className="absolute left-2 md:left-12 z-20 opacity-60 hover:opacity-100 transition-all p-2 shrink-0 text-blackCustom hover:text-whiteCustom"
+        className="absolute left-2 md:left-12 z-20 opacity-60 hover:opacity-100 p-2 shrink-0 text-blackCustom hover:text-whiteCustom transition-all"
       >
         <ArrowLeft />
       </button>
@@ -118,7 +118,7 @@ const MainViewer = ({
           alt={project?.name || ''}
           fill
           sizes="(max-width: 1024px) 100vw, 70vw"
-          className={`object-contain transition-all group-hover:scale-[1.02] ${
+          className={`object-contain transition-transform group-hover:scale-[1.02] ${
             isMobile ? 'duration-150' : 'duration-300'
           } ${
             isTransitioning || (!isListImageLoaded && !listImageError)

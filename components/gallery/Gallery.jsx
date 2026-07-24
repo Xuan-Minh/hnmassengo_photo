@@ -235,18 +235,6 @@ export default function Gallery() {
           <div className="h-8 text-xl italic font-liberation text-blackCustom">
             {activeCoord}
           </div>
-          {view === 'grid' && (
-            <button
-              type="button"
-              className="justify-self-center px-4 py-2 text-xl italic font-liberation text-blackCustom hover:text-accent  fade-in hover:[--bg-size:100%_1px]"
-              onClick={() =>
-                dispatch({
-                  type: 'UPDATE_STATE',
-                  payload: { overlayOpen: true },
-                })
-              }
-            ></button>
-          )}
         </div>
       </section>
 

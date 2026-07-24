@@ -195,7 +195,7 @@ export default function ContactForm({
         </label>
         <button
           type="submit"
-          className="px-4 py-2 text-sm font-medium font-liberation text-whiteCustom/85 hover:text-whiteCustom transition-all duration-300 border border-whiteCustom/60"
+          className="px-4 py-2 text-sm font-medium font-liberation text-whiteCustom/85 hover:text-whiteCustom transition-colors duration-300 border border-whiteCustom/60"
         >
           <span>{t('form.send')}</span>
         </button>
