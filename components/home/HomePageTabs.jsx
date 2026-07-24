@@ -442,8 +442,8 @@ function WindowItem({
       case 'windowRecommandation': {
         const reco = win.recommandation || [];
         return (
-          <div className="flex flex-col gap-2 w-[85vw] md:w-[40vw] lg:w-[30vw]">
-            <ul className="list-disc list-inside text-[14px] 2xl:text-[18px] text-blackCustom">
+          <div className="flex flex-col gap-2 w-[85vw] md:w-[40vw] lg:w-[30vw] xl:w-[27.5vw]">
+            <ul className="list-disc list-inside text-[14px] 2xl:text-[16px] text-blackCustom">
               {reco.length > 0 ? (
                 reco.map((rec, idx) => (
                   <a
