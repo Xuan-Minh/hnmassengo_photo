@@ -118,7 +118,7 @@ const MainViewer = ({
           alt={project?.name || ''}
           fill
           sizes="(max-width: 1024px) 100vw, 70vw"
-          className={`object-contain transition-transform group-hover:scale-[1.02] ${
+          className={`object-contain transition-transform group-hover:scale-[1.02] hover:opacity-70 ${
             isMobile ? 'duration-150' : 'duration-300'
           } ${
             isTransitioning || (!isListImageLoaded && !listImageError)
