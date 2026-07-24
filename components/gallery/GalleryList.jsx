@@ -1,8 +1,6 @@
-/* eslint-disable react-doctor/exhaustive-deps */
 'use client';
 
 import { useEffect, useRef, useCallback, useMemo, useReducer } from 'react';
-import { m } from 'framer-motion';
 import Image from 'next/image';
 import { buildSanityImageUrl } from '../../lib/imageUtils';
 import {
@@ -493,11 +491,7 @@ export default function GalleryList({
   } = state;
 
   return (
-    <m.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      className="w-full h-full flex flex-col justify-between"
-    >
+    <div className="w-full h-full flex flex-col justify-between">
       <DesktopNav
         view={view}
         onViewChange={onViewChange}
@@ -530,6 +524,6 @@ export default function GalleryList({
         currentProjectIndex={currentProjectIndex}
         navigateToImage={navigateToImage}
       />
-    </m.div>
+    </div>
   );
 }

@@ -476,13 +476,7 @@ export default function GalleryGridMore({
   }, [hoveredProject, setActiveCoord]);
 
   return (
-    <m.div
-      className="w-full h-full flex flex-col relative"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.3 }}
-    >
+    <div className="w-full h-full flex flex-col relative">
       <div className="flex-1 flex overflow-hidden w-full h-full">
         {/* SIDEBAR FILTRES */}
         <Sidebar
@@ -516,6 +510,6 @@ export default function GalleryGridMore({
         cursorPos={cursorPos}
         projectsRecentFirst={projectsRecentFirst}
       />
-    </m.div>
+    </div>
   );
 }

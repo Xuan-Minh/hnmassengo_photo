@@ -10,6 +10,8 @@ import GalleryList from './GalleryList';
 import GalleryGridMore from './GalleryGridMore';
 import GalleryProjetCartel from './GalleryProjetCartel';
 
+const VIEW_SWITCH_FADE_MS = 180;
+
 function getProjectDateMs(project) {
   const raw = project?.date;
   if (!raw) return null;
@@ -20,6 +22,8 @@ function getProjectDateMs(project) {
 const initialState = {
   projects: [],
   view: 'grid',
+  pendingView: null,
+  isViewSwitching: false,
   selectedProject: null,
   overlayOpen: false,
   activeCoord: '',
@@ -38,7 +42,15 @@ export default function Gallery() {
   const { locale } = useParams();
 
   const [state, dispatch] = useReducer(reducer, initialState);
-  const { projects, view, selectedProject, overlayOpen, activeCoord } = state;
+  const {
+    projects,
+    view,
+    pendingView,
+    isViewSwitching,
+    selectedProject,
+    overlayOpen,
+    activeCoord,
+  } = state;
 
   // Gérer le scroll quand un overlay est ouvert
   useEffect(() => {
@@ -129,20 +141,45 @@ export default function Gallery() {
   }, [projectsChrono]);
 
   // Mémorisation des callbacks pour éviter les boucles de rendu infinies
-  const handleViewChange = useCallback(v => {
-    dispatch({ type: 'UPDATE_STATE', payload: { view: v } });
+  const handleViewChange = useCallback(
+    v => {
+      if (v === view || isViewSwitching) return;
+
+      dispatch({
+        type: 'UPDATE_STATE',
+        payload: { isViewSwitching: true, pendingView: v },
+      });
+    },
+    [view, isViewSwitching]
+  );
+
+  useEffect(() => {
+    if (!isViewSwitching || !pendingView) return;
 
     const scrollRoot = document.getElementById('scroll-root');
     const worksSection = document.getElementById('works');
-    if (!scrollRoot || !worksSection) return;
+    if (scrollRoot && worksSection) {
+      const top =
+        scrollRoot.scrollTop +
+        (worksSection.getBoundingClientRect().top -
+          scrollRoot.getBoundingClientRect().top);
 
-    const top =
-      scrollRoot.scrollTop +
-      (worksSection.getBoundingClientRect().top -
-        scrollRoot.getBoundingClientRect().top);
+      scrollRoot.scrollTo({ top, behavior: 'smooth' });
+    }
 
-    scrollRoot.scrollTo({ top, behavior: 'smooth' });
-  }, []);
+    const timer = setTimeout(() => {
+      dispatch({
+        type: 'UPDATE_STATE',
+        payload: {
+          view: pendingView,
+          pendingView: null,
+          isViewSwitching: false,
+        },
+      });
+    }, VIEW_SWITCH_FADE_MS);
+
+    return () => clearTimeout(timer);
+  }, [isViewSwitching, pendingView]);
 
   const handleProjectSelect = useCallback(p => {
     dispatch({ type: 'UPDATE_STATE', payload: { selectedProject: p } });
@@ -162,27 +199,35 @@ export default function Gallery() {
               : 'h-full w-[min(1100px,90vw)] 2xl:w-[min(1800px,90vw)]p-6'
           }`}
         >
-          <AnimatePresence mode="wait">
-            {view === 'grid' ? (
-              <GalleryGridMore
-                key="grid"
-                projects={projectsRecentFirst}
-                view={view}
-                onViewChange={handleViewChange}
-                onProjectSelect={handleProjectSelect}
-                setActiveCoord={handleSetActiveCoord}
-              />
-            ) : (
-              <GalleryList
-                key="list"
-                projects={projectsChrono}
-                view={view}
-                onViewChange={handleViewChange}
-                onProjectSelect={handleProjectSelect}
-                setActiveCoord={handleSetActiveCoord}
-              />
-            )}
-          </AnimatePresence>
+          <div
+            className={`w-full h-full transition-[opacity,transform] duration-[180ms] ease-in-out ${
+              isViewSwitching
+                ? 'opacity-0 scale-[0.995] pointer-events-none'
+                : 'opacity-100 scale-100'
+            }`}
+          >
+            <AnimatePresence mode="wait">
+              {view === 'grid' ? (
+                <GalleryGridMore
+                  key="grid"
+                  projects={projectsRecentFirst}
+                  view={view}
+                  onViewChange={handleViewChange}
+                  onProjectSelect={handleProjectSelect}
+                  setActiveCoord={handleSetActiveCoord}
+                />
+              ) : (
+                <GalleryList
+                  key="list"
+                  projects={projectsChrono}
+                  view={view}
+                  onViewChange={handleViewChange}
+                  onProjectSelect={handleProjectSelect}
+                  setActiveCoord={handleSetActiveCoord}
+                />
+              )}
+            </AnimatePresence>
+          </div>
         </div>
 
         {/* Footer */}
