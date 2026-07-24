@@ -154,12 +154,9 @@ export default function LegalOverlay({
 
     const root = document.getElementById('scroll-root');
     const prevOverflow = root ? root.style.overflow : undefined;
-    const prevPaddingRight = root ? root.style.paddingRight : undefined;
 
     if (root) {
-      const scrollbarWidth = root.offsetWidth - root.clientWidth;
       root.style.overflow = 'hidden';
-      root.style.paddingRight = `${scrollbarWidth}px`;
     }
 
     const focusSelectors = [
@@ -202,7 +199,6 @@ export default function LegalOverlay({
       window.removeEventListener('keydown', onKeyDown);
       if (root) {
         root.style.overflow = prevOverflow || '';
-        root.style.paddingRight = prevPaddingRight || '';
       }
     };
   }, [open]);

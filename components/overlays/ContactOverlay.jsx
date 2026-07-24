@@ -54,12 +54,9 @@ export default function ContactOverlay({
 
     const root = document.getElementById('scroll-root');
     const prevOverflow = root ? root.style.overflow : undefined;
-    const prevPaddingRight = root ? root.style.paddingRight : undefined;
 
     if (root) {
-      const scrollbarWidth = root.offsetWidth - root.clientWidth;
       root.style.overflow = 'hidden';
-      root.style.paddingRight = `${scrollbarWidth}px`;
     }
 
     const focusSelectors = [
@@ -112,7 +109,6 @@ export default function ContactOverlay({
       window.removeEventListener('keydown', onKeyDown);
       if (root) {
         root.style.overflow = prevOverflow || '';
-        root.style.paddingRight = prevPaddingRight || '';
       }
     };
   }, [open]);
@@ -149,8 +145,8 @@ export default function ContactOverlay({
             onClick={e => e.stopPropagation()}
             ref={panelRef}
           >
-            <div className="flex-1 overflow-y-auto min-h-0">
-              <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 lg:px-12 pt-6 sm:pt-8 md:pt-10 lg:pt-12 pb-6 sm:pb-8 md:pb-10 lg:pb-12">
+            <div className="flex-1">
+              <div className="max-w-7xl mx-auto h-[75vh] px-4 sm:px-6 md:px-8 lg:px-12 pt-6 sm:pt-8 md:pt-10 lg:pt-12 pb-6 sm:pb-8 md:pb-10 lg:pb-14 xl:pb-16 w-screen overflow-y-auto">
                 <ContactContent
                   idSuffix="-overlay"
                   headingId="contact-title-overlay"
@@ -158,7 +154,7 @@ export default function ContactOverlay({
                   defaultSubject={defaultSubject}
                   onOpenLegal={handleOpenLegal}
                 />
-                <ContactMarquee mode="inline" />
+                <ContactMarquee mode="inline w-screen" />
               </div>
             </div>
           </m.div>

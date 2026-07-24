@@ -414,9 +414,6 @@ export default function Menu() {
 
   if (!hydrated || !active) return null;
 
-  // On garde la logique de disparition UNIQUEMENT pour le desktop
-  const isHiddenState = active === 'home';
-
   if (isMobile) {
     return (
       <MobileMenu
@@ -435,7 +432,6 @@ export default function Menu() {
 
   return (
     <DesktopMenu
-      shouldHideDesktopMenu={isHiddenState}
       desktopItems={desktopItems}
       active={active}
       isDarkBg={isDarkBg}
