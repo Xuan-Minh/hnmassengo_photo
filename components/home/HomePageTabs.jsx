@@ -50,9 +50,35 @@ function localizeField(value, locale, fallback = '') {
 // SOUS-COMPOSANTS CARROUSELS
 // ==========================================
 
-const ArrowLeft = () => <div>previous</div>;
+const ArrowLeft = () => (
+  <svg
+    width="36"
+    height="36"
+    viewBox="0 0 36 36"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <polyline points="15 18 9 12 15 6"></polyline>
+  </svg>
+);
 
-const ArrowRight = () => <div>next</div>;
+const ArrowRight = () => (
+  <svg
+    width="36"
+    height="36"
+    viewBox="0 0 36 36"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <polyline points="9 18 15 12 9 6"></polyline>
+  </svg>
+);
 
 const ArrowButton = ({ side, onClick, children }) => {
   const isLeft = side === 'left';
@@ -422,7 +448,7 @@ function WindowItem({
       case 'windowRecommandation': {
         const reco = win.recommandation || [];
         return (
-          <div className="flex flex-col gap-2 w-[85vw] md:w-[40vw] lg:w-[30vw] xl:w-[27.5vw]">
+          <div className="flex flex-col gap-2 w-[85vw] md:w-[40vw] lg:w-[30vw] xl:w-[30vw]">
             <ul className="list-disc list-inside text-[14px] 2xl:text-[16px] text-blackCustom">
               {reco.length > 0 ? (
                 reco.map((rec, idx) => (
