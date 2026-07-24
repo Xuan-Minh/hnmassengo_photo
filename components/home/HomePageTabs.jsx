@@ -52,9 +52,9 @@ function localizeField(value, locale, fallback = '') {
 
 const ArrowLeft = () => (
   <svg
-    width="36"
-    height="36"
-    viewBox="0 0 36 36"
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
     fill="none"
     stroke="currentColor"
     strokeWidth="2"
@@ -67,9 +67,9 @@ const ArrowLeft = () => (
 
 const ArrowRight = () => (
   <svg
-    width="36"
-    height="36"
-    viewBox="0 0 36 36"
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
     fill="none"
     stroke="currentColor"
     strokeWidth="2"
@@ -167,12 +167,18 @@ function ImageFolderCarousel({ images, titre, heroImage }) {
         {/* CONTRÔLES */}
         {images.length > 1 && (
           <>
-            <ArrowButton side="left" onClick={handlePrev}>
+            <button
+              onClick={handlePrev}
+              className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/40 backdrop-blur-md text-white w-8 h-8 flex items-center justify-center rounded-full hover:bg-black/80 transition-all duration-300 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 z-20 shadow-md cursor-pointer"
+            >
               <ArrowLeft />
-            </ArrowButton>
-            <ArrowButton side="right" onClick={handleNext}>
+            </button>
+            <button
+              onClick={handleNext}
+              className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/40 backdrop-blur-md text-white w-8 h-8 flex items-center justify-center rounded-full hover:bg-black/80 transition-all duration-300 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 z-20 shadow-md cursor-pointer"
+            >
               <ArrowRight />
-            </ArrowButton>
+            </button>
             <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 z-20">
               {images.map((_, idx) => (
                 <div
@@ -271,12 +277,18 @@ function MusicPlaylistCarousel({ rawUrls }) {
       {/* CONTRÔLES */}
       {finalUrls.length > 1 && (
         <>
-          <ArrowButton side="left" onClick={handlePrev}>
+          <button
+            onClick={handlePrev}
+            className="absolute left-1 top-1/2 -translate-y-1/2 bg-black/30 backdrop-blur-md text-white w-7 h-7 flex items-center justify-center rounded-full hover:bg-black/80 transition-all duration-300 ease-in-out opacity-100 lg:opacity-0 lg:group-hover:opacity-100 z-10 shadow-md cursor-pointer active:cursor-pointing"
+          >
             <ArrowLeft />
-          </ArrowButton>
-          <ArrowButton side="right" onClick={handleNext}>
+          </button>
+          <button
+            onClick={handleNext}
+            className="absolute right-1 top-1/2 -translate-y-1/2 bg-black/30 backdrop-blur-md text-white w-7 h-7 flex items-center justify-center rounded-full hover:bg-black/80 transition-all duration-300 ease-in-out opacity-100 lg:opacity-0 lg:group-hover:opacity-100 z-10 shadow-md cursor-pointer active:cursor-pointing"
+          >
             <ArrowRight />
-          </ArrowButton>
+          </button>
         </>
       )}
     </div>
