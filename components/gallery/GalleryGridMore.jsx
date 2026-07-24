@@ -280,6 +280,15 @@ function useGalleryGridData(projects, filter, colsCount) {
       return bm - am;
     });
   }, [projects]);
+  const projectsChrono = useMemo(() => {
+    return projects.toSorted((a, b) => {
+    return projectsChrono.filter(p => filter === 'all' || p.type === filter);
+  }, [projectsChrono, filter]);
+      if (am === null) return 1;
+      if (bm === null) return -1;
+      return am - bm;
+    });
+  }, [projects]);
 
   const filteredProjects = useMemo(() => {
     return projectsRecentFirst.filter(
