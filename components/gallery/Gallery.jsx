@@ -181,9 +181,66 @@ export default function Gallery() {
     return () => clearTimeout(timer);
   }, [isViewSwitching, pendingView]);
 
-  const handleProjectSelect = useCallback(p => {
-    dispatch({ type: 'UPDATE_STATE', payload: { selectedProject: p } });
+  const centerWorksSectionOnScreen = useCallback(() => {
+    const scrollRoot = document.getElementById('scroll-root');
+    const worksSection = document.getElementById('works');
+
+    if (!scrollRoot || !worksSection) return;
+
+    const containerRect = scrollRoot.getBoundingClientRect();
+    const worksRect = worksSection.getBoundingClientRect();
+    const top =
+      scrollRoot.scrollTop +
+      (worksRect.top - containerRect.top) -
+      containerRect.height / 2 +
+      worksRect.height / 2;
+
+    scrollRoot.scrollTo({ top, behavior: 'smooth' });
   }, []);
+
+  const handleProjectSelect = useCallback(
+    p => {
+      dispatch({ type: 'UPDATE_STATE', payload: { selectedProject: p } });
+      centerWorksSectionOnScreen();
+    },
+    [centerWorksSectionOnScreen]
+  );
+
+  useEffect(() => {
+    if (selectedProject) {
+      dispatch({ type: 'UPDATE_STATE', payload: { overlayOpen: true } });
+    } else {
+      dispatch({ type: 'UPDATE_STATE', payload: { overlayOpen: false } });
+    }
+  }, [selectedProject]);
+
+  useEffect(() => {
+    if (!isViewSwitching || !pendingView) return;
+
+    const scrollRoot = document.getElementById('scroll-root');
+    const worksSection = document.getElementById('works');
+    if (scrollRoot && worksSection) {
+      const top =
+        scrollRoot.scrollTop +
+        (worksSection.getBoundingClientRect().top -
+          scrollRoot.getBoundingClientRect().top);
+
+      scrollRoot.scrollTo({ top, behavior: 'smooth' });
+    }
+
+    const timer = setTimeout(() => {
+      dispatch({
+        type: 'UPDATE_STATE',
+        payload: {
+          view: pendingView,
+          pendingView: null,
+          isViewSwitching: false,
+        },
+      });
+    }, VIEW_SWITCH_FADE_MS);
+
+    return () => clearTimeout(timer);
+  }, [isViewSwitching, pendingView]);
 
   const handleSetActiveCoord = useCallback(coord => {
     dispatch({ type: 'UPDATE_STATE', payload: { activeCoord: coord } });

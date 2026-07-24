@@ -101,6 +101,7 @@ const MainViewer = ({
 
       <button
         type="button"
+        id={project?.id ? `project-start-${project.id}` : undefined}
         onClick={() => onProjectSelect(project)}
         className="relative w-full aspect-[4/5] md:aspect-auto md:h-full cursor-pointer px-10 md:px-24 flex-row group"
         tabIndex={0}
