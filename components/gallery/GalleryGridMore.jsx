@@ -86,7 +86,7 @@ function Sidebar({
   return (
     <div className="w-48 flex flex-col pt-8 shrink-0 overflow-y-auto no-scrollbar pb-16">
       <GalleryViewToggle view={view} onViewChange={onViewChange} />
-      <div className="flex flex-col gap-2 mb-12">
+      <div className="flex flex-col gap-2 my-6 pb-4">
         {FILTERS.map(f => (
           <button
             type="button"
@@ -111,38 +111,45 @@ function Sidebar({
       </div>
 
       <ul className="flex flex-col gap-2">
-        {filteredProjects.map(p => (
-          <li key={p.id}>
-            <button
-              type="button"
-              className={`text-sm md:text-base text-left font-liberation transition-colors duration-300 relative group hover:[--bg-size:100%_1px] ${
-                gridHoveredProjectId === p.id
-                  ? 'text-blackCustom'
-                  : 'text-accent/30 hover:text-blackCustom'
-              }`}
-              onClick={() => onImageClick(p)}
-              onMouseEnter={() => onSidebarHover(p.id)}
-              onMouseLeave={() => {
-                dispatch(state => {
-                  if (!state.isHoverSourceGrid) {
-                    return {
-                      type: 'UPDATE_STATE',
-                      payload: { hoveredId: null },
-                    };
-                  }
-                  return { type: 'UPDATE_STATE', payload: {} };
-                });
-              }}
-            >
-              <span
-                className="inline box-decoration-clone bg-[linear-gradient(currentColor,currentColor)] bg-no-repeat [background-position:0_100%] transition-[background-size,color] duration-300 ease-in-out"
-                style={{ backgroundSize: 'var(--bg-size, 0% 1px)' }}
+        {filteredProjects.map(p => {
+          const isProjectHovered = gridHoveredProjectId === p.id;
+
+          return (
+            <li key={p.id} className="group">
+              <button
+                type="button"
+                className={`text-sm md:text-base text-left font-liberation transition-colors duration-300 relative group hover:[--bg-size:100%_1px] ${
+                  isProjectHovered
+                    ? 'text-blackCustom'
+                    : 'text-accent/30 hover:text-blackCustom'
+                }`}
+                onClick={() => onImageClick(p)}
+                onMouseEnter={() => onSidebarHover(p.id)}
+                onMouseLeave={() => {
+                  dispatch(state => {
+                    if (!state.isHoverSourceGrid) {
+                      return {
+                        type: 'UPDATE_STATE',
+                        payload: { hoveredId: null },
+                      };
+                    }
+                    return { type: 'UPDATE_STATE', payload: {} };
+                  });
+                }}
               >
-                {p.name}
-              </span>
-            </button>
-          </li>
-        ))}
+                <span
+                  className={`inline box-decoration-clone bg-[linear-gradient(currentColor,currentColor)] bg-no-repeat [background-position:0_100%] transition-[background-size,color] duration-300 ease-in-out ${
+                    isProjectHovered
+                      ? '[background-size:100%_1px]'
+                      : '[background-size:0%_1px] group-hover:[background-size:100%_1px]'
+                  }`}
+                >
+                  {p.name}
+                </span>
+              </button>
+            </li>
+          );
+        })}
       </ul>
     </div>
   );

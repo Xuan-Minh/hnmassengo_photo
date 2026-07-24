@@ -186,7 +186,6 @@ const MobileNavTop = ({ projects, currentProjectIndex, navigateToImage }) => {
               type="button"
               key={p.id}
               onClick={() => navigateToImage(idx, 0)}
-              // On retire le `underline` natif de Tailwind, et on garde juste l'opacité/graisse
               className={`text-[13px] font-liberation whitespace-nowrap transition-all ${
                 isActive ? 'font-bold opacity-100' : 'opacity-40'
               }`}
