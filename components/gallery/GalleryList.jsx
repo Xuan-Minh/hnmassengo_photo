@@ -99,13 +99,17 @@ const MainViewer = ({
         <ArrowLeft />
       </button>
 
-      <div
+      <button
+        type="button"
         onClick={() => onProjectSelect(project)}
         className="relative w-full aspect-[4/5] md:aspect-auto md:h-full cursor-pointer px-10 md:px-24 flex-row group"
-        role="button"
         tabIndex={0}
+        aria-pressed="false"
         onKeyPress={e => {
-          if (e.key === 'Enter') onProjectSelect(project);
+          if (e.key === 'Enter' || e.key === 'Space') {
+            e.preventDefault();
+            onProjectSelect(project);
+          }
         }}
       >
         <Image
@@ -132,7 +136,7 @@ const MainViewer = ({
         <div className="absolute bottom-8 right-2 z-10 bg-whiteCustom backdrop-blur-md text-blackCustom px-3 py-1.5 rounded-sm shadow-sm text-[10px] font-bold uppercase tracking-widest pointer-events-none transition-all duration-300 opacity-100 md:group-hover:opacity-100">
           the project &#62;
         </div>
-      </div>
+      </button>
 
       {/* Flèche droite */}
       <button
