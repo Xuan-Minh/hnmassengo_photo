@@ -35,31 +35,9 @@ function reducer(state, action) {
 // 2. SOUS-COMPOSANTS UI
 // ==========================================
 
-const ArrowLeft = () => (
-  <svg
-    width="32"
-    height="32"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="1.5"
-  >
-    <polyline points="15 18 9 12 15 6"></polyline>
-  </svg>
-);
+const ArrowLeft = () => <div className="text-lg italic">previous</div>;
 
-const ArrowRight = () => (
-  <svg
-    width="32"
-    height="32"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="1.5"
-  >
-    <polyline points="9 18 15 12 9 6"></polyline>
-  </svg>
-);
+const ArrowRight = () => <div className="text-lg italic">next</div>;
 
 const DesktopNav = ({
   view,
@@ -116,7 +94,7 @@ const MainViewer = ({
       <button
         type="button"
         onClick={navigateListPrev}
-        className="absolute left-2 md:left-12 z-20 opacity-60 hover:opacity-100 transition-opacity p-2 shrink-0 text-blackCustom"
+        className="absolute left-2 md:left-12 z-20 opacity-60 hover:opacity-100 transition-all p-2 shrink-0 text-blackCustom hover:text-whiteCustom"
       >
         <ArrowLeft />
       </button>
@@ -160,7 +138,7 @@ const MainViewer = ({
       <button
         type="button"
         onClick={navigateListNext}
-        className="absolute right-2 md:right-12 z-20 opacity-60 hover:opacity-100 transition-opacity p-2 shrink-0 drop-shadow-[0_0_8px_rgba(0,0,0,0.8)] text-white"
+        className="absolute right-2 md:right-12 z-20 opacity-60 hover:opacity-100 transition-all p-2 shrink-0 drop-shadow-[0_0_8px_rgba(0,0,0,0.8)] text-accent hover:text-whiteCustom"
       >
         <ArrowRight />
       </button>

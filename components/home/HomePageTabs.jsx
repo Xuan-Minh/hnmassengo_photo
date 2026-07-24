@@ -50,35 +50,27 @@ function localizeField(value, locale, fallback = '') {
 // SOUS-COMPOSANTS CARROUSELS
 // ==========================================
 
-const ArrowLeft = () => (
-  <svg
-    width="24"
-    height="24"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <polyline points="15 18 9 12 15 6"></polyline>
-  </svg>
-);
+const ArrowLeft = () => <div>previous</div>;
 
-const ArrowRight = () => (
-  <svg
-    width="24"
-    height="24"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <polyline points="9 18 15 12 9 6"></polyline>
-  </svg>
-);
+const ArrowRight = () => <div>next</div>;
+
+const ArrowButton = ({ side, onClick, children }) => {
+  const isLeft = side === 'left';
+
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`absolute top-1/2 -translate-y-1/2 z-20 transition-all p-2 shrink-0 opacity-0 hover:opacity-100 italic ${
+        isLeft
+          ? 'left-1 md:left-1 text-blackCustom hover:text-whiteCustom'
+          : 'right-1 md:right-1 drop-shadow-[0_0_8px_rgba(0,0,0,0.8)] text-accent hover:text-whiteCustom'
+      }`}
+    >
+      {children}
+    </button>
+  );
+};
 
 function ImageFolderCarousel({ images, titre, heroImage }) {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -149,18 +141,12 @@ function ImageFolderCarousel({ images, titre, heroImage }) {
         {/* CONTRÔLES */}
         {images.length > 1 && (
           <>
-            <button
-              onClick={handlePrev}
-              className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/40 backdrop-blur-md text-white w-8 h-8 flex items-center justify-center rounded-full hover:bg-black/80 transition-all duration-300 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 z-20 shadow-md cursor-pointer"
-            >
+            <ArrowButton side="left" onClick={handlePrev}>
               <ArrowLeft />
-            </button>
-            <button
-              onClick={handleNext}
-              className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/40 backdrop-blur-md text-white w-8 h-8 flex items-center justify-center rounded-full hover:bg-black/80 transition-all duration-300 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 z-20 shadow-md cursor-pointer"
-            >
+            </ArrowButton>
+            <ArrowButton side="right" onClick={handleNext}>
               <ArrowRight />
-            </button>
+            </ArrowButton>
             <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 z-20">
               {images.map((_, idx) => (
                 <div
@@ -259,18 +245,12 @@ function MusicPlaylistCarousel({ rawUrls }) {
       {/* CONTRÔLES */}
       {finalUrls.length > 1 && (
         <>
-          <button
-            onClick={handlePrev}
-            className="absolute left-1 top-1/2 -translate-y-1/2 bg-black/30 backdrop-blur-md text-white w-7 h-7 flex items-center justify-center rounded-full hover:bg-black/80 transition-all duration-300 ease-in-out opacity-100 lg:opacity-0 lg:group-hover:opacity-100 z-10 shadow-md cursor-pointer active:cursor-pointing"
-          >
+          <ArrowButton side="left" onClick={handlePrev}>
             <ArrowLeft />
-          </button>
-          <button
-            onClick={handleNext}
-            className="absolute right-1 top-1/2 -translate-y-1/2 bg-black/30 backdrop-blur-md text-white w-7 h-7 flex items-center justify-center rounded-full hover:bg-black/80 transition-all duration-300 ease-in-out opacity-100 lg:opacity-0 lg:group-hover:opacity-100 z-10 shadow-md cursor-pointer active:cursor-pointing"
-          >
+          </ArrowButton>
+          <ArrowButton side="right" onClick={handleNext}>
             <ArrowRight />
-          </button>
+          </ArrowButton>
         </>
       )}
     </div>
