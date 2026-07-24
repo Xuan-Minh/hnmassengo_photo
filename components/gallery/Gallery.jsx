@@ -214,34 +214,6 @@ export default function Gallery() {
     }
   }, [selectedProject]);
 
-  useEffect(() => {
-    if (!isViewSwitching || !pendingView) return;
-
-    const scrollRoot = document.getElementById('scroll-root');
-    const worksSection = document.getElementById('works');
-    if (scrollRoot && worksSection) {
-      const top =
-        scrollRoot.scrollTop +
-        (worksSection.getBoundingClientRect().top -
-          scrollRoot.getBoundingClientRect().top);
-
-      scrollRoot.scrollTo({ top, behavior: 'smooth' });
-    }
-
-    const timer = setTimeout(() => {
-      dispatch({
-        type: 'UPDATE_STATE',
-        payload: {
-          view: pendingView,
-          pendingView: null,
-          isViewSwitching: false,
-        },
-      });
-    }, VIEW_SWITCH_FADE_MS);
-
-    return () => clearTimeout(timer);
-  }, [isViewSwitching, pendingView]);
-
   const handleSetActiveCoord = useCallback(coord => {
     dispatch({ type: 'UPDATE_STATE', payload: { activeCoord: coord } });
   }, []);
