@@ -86,7 +86,7 @@ function Sidebar({
   return (
     <div className="w-48 flex flex-col pt-8 shrink-0 overflow-y-auto no-scrollbar pb-16">
       <GalleryViewToggle view={view} onViewChange={onViewChange} />
-      <div className="flex flex-col gap-2 my-6 pb-4">
+      <div className="flex flex-col my-6">
         {FILTERS.map(f => (
           <button
             type="button"
