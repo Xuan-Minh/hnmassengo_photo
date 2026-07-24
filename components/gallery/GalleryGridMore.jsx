@@ -173,7 +173,10 @@ function MasonryGrid({
         className="flex w-full gap-2"
       >
         {masonryCols.map((col, colIdx) => (
-          <div key={`col-${colIdx}`} className="flex flex-col flex-1 gap-2">
+          <div
+            key={`col-${colIdx}`}
+            className="flex flex-col flex-1 gap-2 overscroll-y-contain"
+          >
             {col.map(imgData => {
               const isHovered = hoveredId === imgData.projectId;
               return (
@@ -291,10 +294,8 @@ function useGalleryGridData(projects, filter, colsCount) {
   }, [projects]);
 
   const filteredProjects = useMemo(() => {
-    return projectsRecentFirst.filter(
-      p => filter === 'all' || p.type === filter
-    );
-  }, [projectsRecentFirst, filter]);
+    return projectsChrono.filter(p => filter === 'all' || p.type === filter);
+  }, [projectsChrono, filter]);
 
   const allImages = useMemo(() => {
     return filteredProjects.flatMap(p => {
