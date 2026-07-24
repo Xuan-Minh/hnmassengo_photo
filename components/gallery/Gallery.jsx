@@ -158,7 +158,7 @@ export default function Gallery() {
         <div
           className={`relative flex flex-col justify-center items-start  ${
             view === 'grid'
-              ? 'h-[75vh] lg:h-[90vh] w-[min(1400px,90vw)] xl:w-[min(1600px,90vw)]'
+              ? 'h-[75vh] lg:h-[85vh] w-[min(1400px,90vw)] xl:w-[min(1600px,90vw)]'
               : 'h-full w-[min(1100px,90vw)] 2xl:w-[min(1800px,90vw)]p-6'
           }`}
         >
