@@ -285,8 +285,10 @@ function useGalleryGridData(projects, filter, colsCount) {
   }, [projects]);
   const projectsChrono = useMemo(() => {
     return projects.toSorted((a, b) => {
-    return projectsChrono.filter(p => filter === 'all' || p.type === filter);
-  }, [projectsChrono, filter]);
+      const am = getProjectDateMs(a);
+      const bm = getProjectDateMs(b);
+      if (am === null && bm === null)
+        return (a?.name || '').localeCompare(b?.name || '');
       if (am === null) return 1;
       if (bm === null) return -1;
       return am - bm;
