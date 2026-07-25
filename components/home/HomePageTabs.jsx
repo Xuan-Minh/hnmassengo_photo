@@ -349,7 +349,7 @@ function WindowItem({
         );
         return (
           <div className="z-50 flex flex-nowrap justify-around gap-2 w-[90vw] md:w-[40vw] lg:w-[25vw] 2xl:w-[30vw]">
-            <div className="w-[30%] h-auto inline-block">
+            <div className="w-[25%] h-auto inline-block">
               {win.photo ? (
                 <Image
                   src={buildSanityImageUrl(win.photo)}
@@ -370,8 +370,8 @@ function WindowItem({
                 )
               )}
             </div>
-            <div className=" w-[60%] h-auto flex">
-              <ul className=" flex justify-around flex-col text-[18px] md:text-[16px] lg:text-[13px] xl:text-[13px] 2xl:text-[14px] font-bold">
+            <div className=" w-[70%] h-auto flex">
+              <ul className=" flex justify-around flex-col text-[18px] md:text-[16px] lg:text-[13px] xl:text-[12px] 2xl:text-[13px] font-bold">
                 <li>Name : {win.name || 'Han-Noah MASSENGO'}</li>
                 <li>Age : {calculateAge()} ans</li>
                 <li>Location : {win.location || 'Augsbourg / Paris '} 📌</li>
