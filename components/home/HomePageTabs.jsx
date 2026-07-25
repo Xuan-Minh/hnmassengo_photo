@@ -263,16 +263,6 @@ function MusicPlaylistCarousel({ rawUrls }) {
           </div>
         ))}
       </div>
-      <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
-        {finalUrls.map((_, idx) => (
-          <div
-            key={idx}
-            className={`h-1.5 rounded-full transition-all duration-300 ease-in-out ${
-              idx === currentIndex ? 'w-4 bg-white' : 'w-1.5 bg-white/50'
-            }`}
-          />
-        ))}
-      </div>
 
       {/* CONTRÔLES */}
       {finalUrls.length > 1 && (
