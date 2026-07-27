@@ -348,8 +348,8 @@ function WindowItem({
           'Soccer / Photographer'
         );
         return (
-          <div className="z-50 flex flex-nowrap justify-around gap-2 w-[90vw] md:w-[40vw] lg:w-[25vw] 2xl:w-[30vw]">
-            <div className="w-[25%] h-auto inline-block">
+          <div className="z-50 flex flex-nowrap justify-around gap-2 w-[90vw] md:w-[40vw] lg:w-[25vw] 2xl:w-[25vw]">
+            <div className="w-[25%] 2xl:w-[20%] h-auto inline-block">
               {win.photo ? (
                 <Image
                   src={buildSanityImageUrl(win.photo)}
