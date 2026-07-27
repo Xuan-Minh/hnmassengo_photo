@@ -8,6 +8,7 @@ import {
   isSanityCdnUrl,
 } from '../../lib/imageUtils';
 import GalleryViewToggle from './GalleryViewToggle';
+
 // ==========================================
 // 1. CONSTANTES & UTILITAIRES
 // ==========================================
@@ -161,6 +162,9 @@ function MasonryGrid({
   hoveredId,
   dispatch,
   onImageClick,
+  hasDragged,
+  isDragging,
+  isScrolling,
 }) {
   return (
     <AnimatePresence mode="wait">
@@ -173,10 +177,7 @@ function MasonryGrid({
         className="flex w-full gap-2"
       >
         {masonryCols.map((col, colIdx) => (
-          <div
-            key={`col-${colIdx}`}
-            className="flex flex-col flex-1 gap-2 overscroll-y-contain"
-          >
+          <div key={`col-${colIdx}`} className="flex flex-col flex-1 gap-2">
             {col.map(imgData => {
               const isHovered = hoveredId === imgData.projectId;
               return (
@@ -191,6 +192,8 @@ function MasonryGrid({
                   className="relative group cursor-pointer w-full overflow-hidden"
                   style={{ aspectRatio: imgData.ratio }}
                   onMouseEnter={() => {
+                    if (isDragging?.current || isScrolling?.current) return;
+
                     dispatch({
                       type: 'UPDATE_STATE',
                       payload: {
@@ -201,6 +204,8 @@ function MasonryGrid({
                     });
                   }}
                   onMouseLeave={() => {
+                    if (isDragging?.current || isScrolling?.current) return;
+
                     dispatch({
                       type: 'UPDATE_STATE',
                       payload: {
@@ -210,7 +215,14 @@ function MasonryGrid({
                       },
                     });
                   }}
-                  onClick={() => onImageClick(imgData.project)}
+                  onClick={e => {
+                    if (hasDragged && hasDragged.current) {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      return;
+                    }
+                    onImageClick(imgData.project);
+                  }}
                   onKeyPress={e => {
                     if (e.key === 'Enter') onImageClick(imgData.project);
                   }}
@@ -353,7 +365,6 @@ function useGalleryInteractions(
   scrollContainerRef,
   projectsRecentFirst
 ) {
-  // Reset scroll on filter change
   useEffect(() => {
     if (scrollContainerRef.current) {
       scrollContainerRef.current.scrollTo({ top: 0, behavior: 'smooth' });
@@ -387,7 +398,6 @@ function useGalleryInteractions(
     }
   };
 
-  // Mouse move tracker for custom cursor
   useEffect(() => {
     let rafId = null;
     const handleMouseMove = e => {
@@ -407,7 +417,6 @@ function useGalleryInteractions(
     };
   }, [dispatch]);
 
-  // Cursor visibility toggle
   useEffect(() => {
     if (!hoveredId || !isHoverSourceGrid) {
       document.body.style.cursor = 'default';
@@ -427,7 +436,6 @@ function useGalleryInteractions(
     };
   }, [hoveredId, projectsRecentFirst, isHoverSourceGrid, dispatch]);
 
-  // Responsive columns update
   useEffect(() => {
     const updateCols = () =>
       dispatch({
@@ -439,6 +447,98 @@ function useGalleryInteractions(
   }, [dispatch]);
 
   return { handleSidebarHover };
+}
+
+function useGridScroll(scrollContainerRef) {
+  const scrollSpeed = useRef(0);
+  const scrollRaf = useRef(null);
+  const isDragging = useRef(false);
+  const isScrolling = useRef(false); // NOUVEAU: Traque si l'edge scroll est actif
+  const hasDragged = useRef(false);
+  const startY = useRef(0);
+  const startScrollTop = useRef(0);
+
+  const handleGridMouseMove = e => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+
+    // 1. DRAG & DROP
+    if (isDragging.current) {
+      const y = e.pageY - container.offsetTop;
+      const walk = (y - startY.current) * 1.5;
+
+      if (Math.abs(walk) > 5) {
+        hasDragged.current = true;
+      }
+
+      container.scrollTop = startScrollTop.current - walk;
+      return;
+    }
+
+    // 2. EDGE SCROLL
+    const { top, bottom, height } = container.getBoundingClientRect();
+    const y = e.clientY;
+    const threshold = height * 0.15;
+    const maxSpeed = 9;
+
+    if (y < top + threshold) {
+      const proximity = (top + threshold - y) / threshold;
+      scrollSpeed.current = -(proximity * maxSpeed);
+      isScrolling.current = true; // On signale que ça scrolle
+    } else if (y > bottom - threshold) {
+      const proximity = (y - (bottom - threshold)) / threshold;
+      scrollSpeed.current = proximity * maxSpeed;
+      isScrolling.current = true; // On signale que ça scrolle
+    } else {
+      scrollSpeed.current = 0;
+      isScrolling.current = false; // On arrête
+    }
+
+    if (scrollSpeed.current !== 0 && !scrollRaf.current) {
+      const scrollLoop = () => {
+        if (scrollSpeed.current !== 0 && scrollContainerRef.current) {
+          scrollContainerRef.current.scrollTop += scrollSpeed.current;
+          scrollRaf.current = requestAnimationFrame(scrollLoop);
+        } else {
+          scrollRaf.current = null;
+        }
+      };
+      scrollRaf.current = requestAnimationFrame(scrollLoop);
+    }
+  };
+
+  const handleGridMouseDown = e => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+
+    isDragging.current = true;
+    hasDragged.current = false;
+    startY.current = e.pageY - container.offsetTop;
+    startScrollTop.current = container.scrollTop;
+    scrollSpeed.current = 0;
+
+    document.body.classList.add('is-dragging-gallery');
+  };
+
+  const handleGridMouseUpOrLeave = () => {
+    isDragging.current = false;
+    scrollSpeed.current = 0;
+    if (scrollRaf.current) {
+      cancelAnimationFrame(scrollRaf.current);
+      scrollRaf.current = null;
+    }
+
+    document.body.classList.remove('is-dragging-gallery');
+  };
+
+  return {
+    handleGridMouseMove,
+    handleGridMouseDown,
+    handleGridMouseUpOrLeave,
+    hasDragged,
+    isDragging, // EXPORT
+    isScrolling, // EXPORT
+  };
 }
 
 // ==========================================
@@ -480,16 +580,25 @@ export default function GalleryGridMore({
 
   const hoveredProject = projectsRecentFirst.find(p => p.id === hoveredId);
 
-  // Remonter les coordonnées actives au parent (Gallery.jsx)
   useEffect(() => {
     if (setActiveCoord) {
       setActiveCoord(hoveredProject ? hoveredProject.coords : '');
     }
   }, [hoveredProject, setActiveCoord]);
 
+  // Initialisation de la logique de défilement unifié
+  const {
+    handleGridMouseMove,
+    handleGridMouseDown,
+    handleGridMouseUpOrLeave,
+    hasDragged,
+    isDragging,
+    isScrolling,
+  } = useGridScroll(scrollContainerRef);
+
   return (
     <div className="w-full h-full flex flex-col relative">
-      <div className="flex-1 flex overflow-hidden w-full h-full">
+      <div className="flex-1 flex w-full h-full">
         {/* SIDEBAR FILTRES */}
         <Sidebar
           filter={filter}
@@ -504,13 +613,23 @@ export default function GalleryGridMore({
         />
 
         {/* GRILLE D'IMAGES */}
-        <div className="flex-1 overflow-y-auto" ref={scrollContainerRef}>
+        <div
+          className="flex-1 overflow-y-hidden select-none touch-none " // select-none et touch-none fiabilisent le drag
+          ref={scrollContainerRef}
+          onMouseMove={handleGridMouseMove}
+          onMouseDown={handleGridMouseDown}
+          onMouseUp={handleGridMouseUpOrLeave}
+          onMouseLeave={handleGridMouseUpOrLeave}
+        >
           <MasonryGrid
             filter={filter}
             masonryCols={masonryCols}
             hoveredId={hoveredId}
             dispatch={dispatch}
-            onImageClick={onProjectSelect} // Changement du prop pour matcher
+            onImageClick={onProjectSelect}
+            hasDragged={hasDragged}
+            isDragging={isDragging}
+            isScrolling={isScrolling}
           />
         </div>
       </div>

@@ -127,7 +127,10 @@ a:focus-visible,
   textarea {
     cursor: url('/cursor/Handwriting Light.cur'), text !important;
   }
-
+  .is-dragging-gallery,
+  .is-dragging-gallery * {
+    cursor: url('/cursor/Move.cur'), grabbing !important;
+  }
   /* Scrollbar styling */
   ::-webkit-scrollbar {
     width: 8px;
