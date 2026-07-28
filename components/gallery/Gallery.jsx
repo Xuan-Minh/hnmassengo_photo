@@ -244,6 +244,7 @@ export default function Gallery() {
                   onViewChange={handleViewChange}
                   onProjectSelect={handleProjectSelect}
                   setActiveCoord={handleSetActiveCoord}
+                  onFilterClick={centerWorksSectionOnScreen}
                 />
               ) : (
                 <GalleryList

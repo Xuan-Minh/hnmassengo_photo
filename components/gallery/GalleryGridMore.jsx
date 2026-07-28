@@ -83,6 +83,7 @@ function Sidebar({
   onImageClick,
   view,
   onViewChange,
+  onFilterClick,
 }) {
   return (
     <div className="w-48 flex flex-col pt-8 shrink-0 overflow-y-auto no-scrollbar pb-16">
@@ -97,9 +98,10 @@ function Sidebar({
                 ? 'font-bold opacity-100 text-blackCustom'
                 : 'opacity-60 hover:opacity-100 text-accent hover:text-blackCustom'
             }`}
-            onClick={() =>
-              dispatch({ type: 'UPDATE_STATE', payload: { filter: f.value } })
-            }
+            onClick={() => {
+              dispatch({ type: 'UPDATE_STATE', payload: { filter: f.value } });
+              if (onFilterClick) onFilterClick(true);
+            }}
           >
             <span
               className="inline box-decoration-clone bg-[linear-gradient(currentColor,currentColor)] bg-no-repeat [background-position:0_100%] transition-[background-size,color] duration-300 ease-in-out"
@@ -551,6 +553,7 @@ export default function GalleryGridMore({
   setActiveCoord,
   view,
   onViewChange,
+  onFilterClick,
 }) {
   const t = useTranslations('gallery');
   const scrollContainerRef = useRef(null);
@@ -610,6 +613,7 @@ export default function GalleryGridMore({
           onImageClick={onProjectSelect}
           view={view}
           onViewChange={onViewChange}
+          onFilterClick={onFilterClick}
         />
 
         {/* GRILLE D'IMAGES */}
