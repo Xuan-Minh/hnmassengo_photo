@@ -646,7 +646,7 @@ export default function HomePageTabs() {
     return (
       <section
         id="home"
-        className="grid grid-cols-2 place-content-center h-screen p-2 gap-2 md:gap-4 lg:gap-6 w-screen bg-background"
+        className="grid grid-cols-2 place-content-around h-screen p-2 gap-2 md:gap-4 lg:gap-6 w-screen bg-background"
       >
         {/* --- CARTE 1 : BIO --- */}
         {bioWin && (
@@ -659,57 +659,45 @@ export default function HomePageTabs() {
                 {bioWin.name || 'Han-Noah MASSENGO'}
               </h3>
             </div>
-
-            <div className=" -black bg-background flex rounded-b-md overflow-hidden">
-              <div className="w-[40%] flex-shrink-0 -r border-blackCustom/20 flex items-center">
-                <Image
-                  src={
+            <div className="border border-blackCustom p-2 bg-background flex flex-col rounded-b-md overflow-hidden">
+              <div className="flex flex-row items-stretch">
+                <div className="w-[40%] flex-shrink-0 flex items-center">
+                  <Image
+                    src={
                       bioWin.photo
                         ? buildSanityImageUrl(bioWin.photo)
                         : heroImage
-                  }
-                  alt="Portrait"
-                  width={400}
-                  height={400}
+                    }
+                    alt="Portrait"
+                    width={400}
+                    height={400}
                     className="w-full h-auto"
-                />
-              </div>
+                  />
+                </div>
 
-              {/* Colonne Texte */}
-              <div className="text-blackCustom p-3 flex flex-col justify-center w-[60%]">
-                <ul className="flex flex-col gap-2 text-[14px] ">
-                  <li>Age : {calculateAge()} ans</li>
+                {/* Colonne Texte */}
+                <div className="text-blackCustom p-3 flex flex-col justify-center w-[60%]">
+                  <ul className="flex flex-col text-[14px] ">
+                    <li>Age : {calculateAge()} ans</li>
                     <li className="truncate">
                       {bioWin.location || 'Paris'} 📌
                     </li>
                     <li>
                       Last seen : <br />
                       {lastSeen}
-                  </li>
-                  <li>Last seen : {lastSeen}</li>
-                </ul>
+                    </li>
+                  </ul>
+                </div>
               </div>
-            </div>
-          </div>
-        )}
-
-        {/* --- CARTE 2 : TEXTE --- */}
-        {textWin && (
-          <div className="flex col-span-2 w-full h-[25vh] flex-col text-white gap-1 shadow-lg">
-            <div
-              className="flex items-center justify-between border border-black gap-2 p-2 cursor-grab active:cursor-grabbing rounded-t-md"
-              style={{ backgroundColor: getTabColor(textWin) }}
-            >
-              <h3 className="text-md font-bold px-2">
-                {localizeField(textWin.title, locale, 'Histoire')}
-              </h3>
-            </div>
-            <div className="p-2 border border-black bg-background flex rounded-b-md overflow-scroll preserve-lines whitespace-pre-line">
-              <p className="text-blackCustom text-sm">
-                {portableTextToPlain(
-                  localizeField(textWin.content, locale, [])
-                )}
-              </p>
+              {textWin && (
+                <div className="p-2 h-[20vh] bg-background overflow-scroll preserve-lines whitespace-pre-line">
+                  <p className="text-blackCustom text-sm">
+                    {portableTextToPlain(
+                      localizeField(textWin.content, locale, [])
+                    )}
+                  </p>
+                </div>
+              )}
             </div>
           </div>
         )}
