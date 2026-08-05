@@ -375,7 +375,6 @@ function WindowItem({
                 <li>Name : {win.name || 'Han-Noah MASSENGO'}</li>
                 <li>Age : {calculateAge()} ans</li>
                 <li>Location : {win.location || 'Augsbourg / Paris '} 📌</li>
-                <li>Occupation : {occupation}</li>
                 <li>Connected : {lastSeen}</li>
               </ul>
             </div>
@@ -631,6 +630,9 @@ export default function HomePageTabs() {
     );
     // Puis gère l'affichage en conséquence dans ton JSX mobile.
     const videoWin = orderedWindows.find(w => w._type === 'windowVideo'); // <-- Remplacement ici
+    const recoWin = orderedWindows.find(
+      w => w._type === 'windowRecommandation'
+    );
 
     // 2. Fonction utilitaire pour récupérer la bonne couleur (Sanity ou Fallback)
     const getTabColor = win => {
