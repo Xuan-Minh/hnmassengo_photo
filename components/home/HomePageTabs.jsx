@@ -767,6 +767,40 @@ export default function HomePageTabs() {
             </div>
           </div>
         )}
+
+        {recoWin && (
+          <div className="flex col-span-1 w-full h-full flex-col text-white gap-1 shadow-lg">
+            <div
+              className="flex items-center justify-between border border-blackCustom gap-2 p-2 cursor-grab active:cursor-grabbing rounded-t-md"
+              style={{ backgroundColor: getTabColor(recoWin) }}
+            >
+              <h3 className="text-sm font-bold px-2 truncate">
+                {localizeField(recoWin.title, locale, 'Recommandation')}
+              </h3>
+            </div>
+            <div className="p-2 border border-blackCustom bg-background flex rounded-b-md h-auto items-center justify-center aspect-square">
+              <ul className="text-[12px] text-blackCustom">
+                {recoWin.recommandation && recoWin.recommandation.length > 0 ? (
+                  recoWin.recommandation.map((rec, idx) => (
+                    <a
+                      key={idx}
+                      href={rec.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="underline hover:no-underline underline-offset-2 break-all cursor-pointer active:cursor-pointing"
+                    >
+                      <li>{rec.title || rec.url}</li>
+                    </a>
+                  ))
+                ) : (
+                  <p className="text-blackCustom">
+                    Aucune recommandation disponible.
+                  </p>
+                )}
+              </ul>
+            </div>
+          </div>
+        )}
       </section>
     );
   }
