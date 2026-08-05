@@ -111,7 +111,7 @@ function ImageFolderCarousel({ images, titre, heroImage }) {
 
   if (!images || images.length === 0) {
     return (
-      <div className="w-[85vw] md:w-[40vw] lg:w-[25vw] p-4 flex items-center justify-center text-black rounded-md bg-gray-200">
+      <div className="w-[85vw] md:w-[40vw] lg:w-[25vw] p-4 flex items-center justify-center text-blackCustom rounded-md bg-gray-200">
         Aucune image disponible
       </div>
     );
@@ -169,13 +169,13 @@ function ImageFolderCarousel({ images, titre, heroImage }) {
           <>
             <button
               onClick={handlePrev}
-              className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/40 backdrop-blur-md text-white w-8 h-8 flex items-center justify-center rounded-full hover:bg-black/80 transition-all duration-300 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 z-20 shadow-md cursor-pointer"
+              className="absolute left-2 top-1/2 -translate-y-1/2 bg-blackCustom/40 backdrop-blur-md text-white w-8 h-8 flex items-center justify-center rounded-full hover:bg-black/80 transition-all duration-300 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 z-20 shadow-md cursor-pointer"
             >
               <ArrowLeft />
             </button>
             <button
               onClick={handleNext}
-              className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/40 backdrop-blur-md text-white w-8 h-8 flex items-center justify-center rounded-full hover:bg-black/80 transition-all duration-300 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 z-20 shadow-md cursor-pointer"
+              className="absolute right-2 top-1/2 -translate-y-1/2 bg-blackCustom/40 backdrop-blur-md text-white w-8 h-8 flex items-center justify-center rounded-full hover:bg-black/80 transition-all duration-300 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 z-20 shadow-md cursor-pointer"
             >
               <ArrowRight />
             </button>
@@ -269,13 +269,13 @@ function MusicPlaylistCarousel({ rawUrls }) {
         <>
           <button
             onClick={handlePrev}
-            className="absolute left-1 top-1/2 -translate-y-1/2 bg-black/30 backdrop-blur-md text-white w-7 h-7 flex items-center justify-center rounded-full hover:bg-black/80 transition-all duration-300 ease-in-out opacity-100 lg:opacity-0 lg:group-hover:opacity-100 z-10 shadow-md cursor-pointer active:cursor-pointing"
+            className="absolute left-1 top-1/2 -translate-y-1/2 bg-blackCustom/30 backdrop-blur-md text-white w-7 h-7 flex items-center justify-center rounded-full hover:bg-black/80 transition-all duration-300 ease-in-out opacity-100 lg:opacity-0 lg:group-hover:opacity-100 z-10 shadow-md cursor-pointer active:cursor-pointing"
           >
             <ArrowLeft />
           </button>
           <button
             onClick={handleNext}
-            className="absolute right-1 top-1/2 -translate-y-1/2 bg-black/30 backdrop-blur-md text-white w-7 h-7 flex items-center justify-center rounded-full hover:bg-black/80 transition-all duration-300 ease-in-out opacity-100 lg:opacity-0 lg:group-hover:opacity-100 z-10 shadow-md cursor-pointer active:cursor-pointing"
+            className="absolute right-1 top-1/2 -translate-y-1/2 bg-blackCustom/30 backdrop-blur-md text-white w-7 h-7 flex items-center justify-center rounded-full hover:bg-black/80 transition-all duration-300 ease-in-out opacity-100 lg:opacity-0 lg:group-hover:opacity-100 z-10 shadow-md cursor-pointer active:cursor-pointing"
           >
             <ArrowRight />
           </button>
@@ -652,7 +652,7 @@ export default function HomePageTabs() {
         {bioWin && (
           <div className="flex col-span-2 w-full h-fit flex-col text-white gap-1 shadow-lg">
             <div
-              className="flex items-center justify-between  -black gap-2 p-2 cursor-grab active:cursor-grabbing rounded-t-md"
+              className="flex items-center justify-between border border-blackCustom gap-2 p-2 cursor-grab active:cursor-grabbing rounded-t-md"
               style={{ backgroundColor: getTabColor(bioWin) }}
             >
               <h3 className="text-md font-bold px-2">
@@ -664,12 +664,14 @@ export default function HomePageTabs() {
               <div className="w-[40%] flex-shrink-0 -r border-blackCustom/20 flex items-center">
                 <Image
                   src={
-                    bioWin.photo ? buildSanityImageUrl(bioWin.photo) : heroImage
+                      bioWin.photo
+                        ? buildSanityImageUrl(bioWin.photo)
+                        : heroImage
                   }
                   alt="Portrait"
                   width={400}
                   height={400}
-                  className="w-full h-auto rounded-bl-md"
+                    className="w-full h-auto"
                 />
               </div>
 
@@ -677,10 +679,12 @@ export default function HomePageTabs() {
               <div className="text-blackCustom p-3 flex flex-col justify-center w-[60%]">
                 <ul className="flex flex-col gap-2 text-[14px] ">
                   <li>Age : {calculateAge()} ans</li>
-                  <li className="truncate">{bioWin.location || 'Paris'} 📌</li>
-                  <li className="break-words leading-snug">
-                    {' '}
-                    {localizeField(bioWin.occupation, locale, 'Soccer')}
+                    <li className="truncate">
+                      {bioWin.location || 'Paris'} 📌
+                    </li>
+                    <li>
+                      Last seen : <br />
+                      {lastSeen}
                   </li>
                   <li>Last seen : {lastSeen}</li>
                 </ul>
@@ -714,14 +718,14 @@ export default function HomePageTabs() {
         {imageWin && (
           <div className="flex col-span-1 w-full h-full flex-col text-white gap-1 shadow-lg">
             <div
-              className="flex items-center justify-between border border-black gap-2 p-2 cursor-grab active:cursor-grabbing rounded-t-md"
+              className="flex items-center justify-between border border-blackCustom gap-2 p-2 cursor-grab active:cursor-grabbing rounded-t-md"
               style={{ backgroundColor: getTabColor(imageWin) }}
             >
               <h3 className="text-sm font-bold px-2 truncate">
                 {localizeField(imageWin.title, locale, 'Galerie')}
               </h3>
             </div>
-            <div className="p-2 border border-black bg-background flex rounded-b-md h-full">
+            <div className="p-2 border border-blackCustom bg-background flex rounded-b-md h-full">
               <Image
                 src={
                   imageWin.photo
@@ -741,14 +745,14 @@ export default function HomePageTabs() {
         {videoWin && (
           <div className="flex col-span-1 w-full h-full flex-col text-white gap-1 shadow-lg">
             <div
-              className="flex items-center justify-between border border-black gap-2 p-2 cursor-grab active:cursor-grabbing rounded-t-md"
+              className="flex items-center justify-between border border-blackCustom gap-2 p-2 cursor-grab active:cursor-grabbing rounded-t-md"
               style={{ backgroundColor: getTabColor(videoWin) }}
             >
               <h3 className="text-sm font-bold px-2 truncate">
                 {localizeField(videoWin.title, locale, 'Vidéo')}
               </h3>
             </div>
-            <div className="p-2 border border-black bg-background flex rounded-b-md h-full items-center justify-center aspect-square">
+            <div className="p-2 border border-blackCustom bg-background flex rounded-b-md h-full items-center justify-center aspect-square">
               {extractIdYoutube(videoWin.content) ? (
                 <iframe
                   className="w-full aspect-square rounded-sm"
