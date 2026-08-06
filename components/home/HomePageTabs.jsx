@@ -631,6 +631,7 @@ export default function HomePageTabs() {
         {/* --- CARTE 1 : BIO --- */}
         {bioWin && (
           <div className="flex col-span-2 w-full h-fit flex-col text-white gap-1 shadow-lg">
+            {/* Header de la fenêtre */}
             <div
               className="flex items-center justify-between border border-blackCustom gap-2 p-2 cursor-grab active:cursor-grabbing rounded-t-md"
               style={{ backgroundColor: getTabColor(bioWin) }}
@@ -641,7 +642,7 @@ export default function HomePageTabs() {
             </div>
 
             <div className="border border-blackCustom bg-background rounded-b-md overflow-hidden">
-              <div className="p-4 h-[30vh] overflow-y-auto scrollbar-hide">
+              <div className="p-4 h-[35vh] overflow-y-auto scrollbar-hide">
                 <div className="float-left w-[40%] mr-4 mb-2">
                   <Image
                     src={
@@ -652,37 +653,23 @@ export default function HomePageTabs() {
                     alt="Portrait"
                     width={400}
                     height={400}
-                    className="w-full h-auto"
+                    className="w-full h-auto rounded-md"
                   />
                 </div>
 
-                {/* Colonne Texte */}
-                <div className="text-blackCustom p-3 flex flex-col justify-center w-[60%]">
-                  <ul className="flex flex-col text-[14px] ">
-                    <li>Age : {calculateAge()} ans</li>
-                    <li className="truncate">
-                      {bioWin.location || 'Paris'} 📌
-                    </li>
-                    <li>
-                      Last seen : <br />
-                      {lastSeen}
-                    </li>
-                  </ul>
-                </div>
-              </div>
-              {textWin && (
-                <div className="text-blackCustom text-sm leading-relaxed text-left preserve-lines whitespace-pre-line">
-                  {portableTextToPlain(
-                    localizeField(textWin.content, locale, [])
-                  )}
-                </div>
-              )}
+                {textWin && (
+                  <div className="text-blackCustom text-sm leading-relaxed text-justify preserve-lines whitespace-pre-line">
+                    {portableTextToPlain(
+                      localizeField(textWin.content, locale, [])
+                    )}
+                  </div>
+                )}
 
-              <div className="clear-both"></div>
+                <div className="clear-both"></div>
+              </div>
             </div>
           </div>
         )}
-
         {/* --- CARTE 3 : IMAGE --- */}
         {imageWin && (
           <div className="flex col-span-1 w-full h-full flex-col text-white gap-1 shadow-lg">
@@ -709,7 +696,6 @@ export default function HomePageTabs() {
             </div>
           </div>
         )}
-
         {recoWin && (
           <div className="flex col-span-1 w-full h-full flex-col text-white gap-1 shadow-lg">
             <div
