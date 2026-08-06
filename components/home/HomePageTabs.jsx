@@ -710,37 +710,6 @@ export default function HomePageTabs() {
           </div>
         )}
 
-        {/* --- CARTE 4 : VIDEO (YOUTUBE) --- */}
-        {videoWin && (
-          <div className="flex col-span-1 w-full h-full flex-col text-white gap-1 shadow-lg">
-            <div
-              className="flex items-center justify-between border border-blackCustom gap-2 p-2 cursor-grab active:cursor-grabbing rounded-t-md"
-              style={{ backgroundColor: getTabColor(videoWin) }}
-            >
-              <h3 className="text-sm font-bold px-2 truncate">
-                {localizeField(videoWin.title, locale, 'Vidéo')}
-              </h3>
-            </div>
-            <div className="p-2 border border-blackCustom bg-background flex rounded-b-md h-full items-center justify-center aspect-square">
-              {extractIdYoutube(videoWin.content) ? (
-                <iframe
-                  className="w-full aspect-square rounded-sm"
-                  src={`https://www.youtube.com/embed/${extractIdYoutube(videoWin.content)}`}
-                  title="YouTube video player"
-                  frameBorder="0"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                  allowFullScreen
-                  sandbox="allow-scripts allow-same-origin allow-presentation allow-popups allow-popups-to-escape-sandbox"
-                ></iframe>
-              ) : (
-                <div className="text-blackCustom text-xs text-center w-full">
-                  Vidéo indisponible
-                </div>
-              )}
-            </div>
-          </div>
-        )}
-
         {recoWin && (
           <div className="flex col-span-1 w-full h-full flex-col text-white gap-1 shadow-lg">
             <div
