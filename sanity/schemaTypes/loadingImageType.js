@@ -1,10 +1,18 @@
 import { defineField, defineType } from 'sanity';
+import {
+  orderRankField,
+  orderRankOrdering,
+} from '@sanity/orderable-document-list';
 
 export const loadingImageType = defineType({
   name: 'loadingImageDesktop',
   title: 'Image de Chargement - DESKTOP',
   type: 'document',
+  orderings: [orderRankOrdering], // On active le tri du plugin
   fields: [
+    // Le nouveau champ caché pour le drag & drop
+    orderRankField({ type: 'loadingImageDesktop' }),
+
     defineField({
       name: 'image',
       title: 'Image',
@@ -39,26 +47,27 @@ export const loadingImageType = defineType({
         },
       ],
     }),
+    // L'ancien champ conservé temporairement
     defineField({
       name: 'order',
-      title: "Ordre d'affichage",
+      title: "ANCIEN Ordre d'affichage (À SUPPRIMER BIENTÔT)",
       type: 'number',
-      description:
-        "Numéro pour définir l'ordre (1 = première, 2 = deuxième, etc.)",
-      validation: Rule => Rule.required().min(1),
+      description: 'Sert uniquement de repère pour le drag & drop',
     }),
   ],
   preview: {
     select: {
       title: 'alt.fr',
+      order: 'order', // On sélectionne l'ancien numéro
       media: 'image',
     },
-  },
-  orderings: [
-    {
-      title: "Ordre d'affichage",
-      name: 'orderAsc',
-      by: [{ field: 'order', direction: 'asc' }],
+    prepare(selection) {
+      const { title, order, media } = selection;
+      // On affiche l'ancien numéro directement dans le titre de la liste
+      return {
+        title: `[Ancien n° ${order || '?'}] ${title || 'Sans titre'}`,
+        media: media,
+      };
     },
-  ],
+  },
 });

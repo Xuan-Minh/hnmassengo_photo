@@ -177,34 +177,23 @@ function AnimatedTitle({ titleX, titleY }) {
 
 function useOverlayImages(initialImages) {
   return useMemo(() => {
-    // Ensure deterministic order by sorting using the 'order' field defined in Sanity.
-    // If 'order' is missing or equal, fall back to _createdAt then _id for stability.
-    const compareByOrder = (a = {}, b = {}) => {
-      const ao = typeof a.order === 'number' ? a.order : Infinity;
-      const bo = typeof b.order === 'number' ? b.order : Infinity;
-      if (ao !== bo) return ao - bo;
-      if (a._createdAt && b._createdAt) return a._createdAt.localeCompare(b._createdAt);
-      return (a._id || '').localeCompare(b._id || '');
-    };
+    // Plus besoin de fonction de tri complexe !
+    // Les données `initialImages` arrivent déjà dans le bon ordre
+    // à condition que la requête GROQ contienne `| order(orderRank)`
 
-    const desktopData = (initialImages || [])
+    const desktopSrcs = (initialImages || [])
       .filter(img => img?._type === 'loadingImageDesktop')
-      .slice()
-      .sort(compareByOrder);
-    const mobileData = (initialImages || [])
+      .flatMap(img => {
+        const src = getImageSource(img, 1920);
+        return src ? [src] : [];
+      });
+
+    const mobileSrcs = (initialImages || [])
       .filter(img => img?._type === 'loadingImageMobile')
-      .slice()
-      .sort(compareByOrder);
-
-    const desktopSrcs = desktopData.flatMap(img => {
-      const src = getImageSource(img, 1920);
-      return src ? [src] : [];
-    });
-
-    const mobileSrcs = mobileData.flatMap(img => {
-      const src = getImageSource(img, 1080);
-      return src ? [src] : [];
-    });
+      .flatMap(img => {
+        const src = getImageSource(img, 1080);
+        return src ? [src] : [];
+      });
 
     return { desktopSrcs, mobileSrcs };
   }, [initialImages]);

@@ -1,15 +1,35 @@
-// sanity/structure.js
-export const structure = S =>
+import { orderableDocumentListDeskItem } from '@sanity/orderable-document-list';
+
+// Ajout du paramètre 'context' ici 👇
+export const structure = (S, context) =>
   S.list()
     .title('Content')
     .items([
-      S.listItem().title("Onglets - Page d'accueil").id('homePage').child(
-        S.editor()
-          .id('homePage')
-          .schemaType('homePage') // Le type de votre document
-          .documentId('c9ea024d-7509-446d-9e7f-afda42528d38') // L'ID exact du document retrouvé !
-      ),
+      S.listItem()
+        .title("Onglets - Page d'accueil")
+        .id('homePage')
+        .child(
+          S.editor()
+            .id('homePage')
+            .schemaType('homePage')
+            .documentId('c9ea024d-7509-446d-9e7f-afda42528d38')
+        ),
       ...S.documentTypeListItems().filter(
-        listItem => listItem.getId() !== 'homePage'
+        listItem =>
+          !['homePage', 'loadingImageDesktop', 'loadingImageMobile'].includes(
+            listItem.getId()
+          )
       ),
+      orderableDocumentListDeskItem({
+        type: 'loadingImageDesktop',
+        title: 'Images Desktop (Ordonnables)',
+        S,
+        context,
+      }),
+      orderableDocumentListDeskItem({
+        type: 'loadingImageMobile',
+        title: 'Images Mobile (Ordonnables)',
+        S,
+        context,
+      }),
     ]);

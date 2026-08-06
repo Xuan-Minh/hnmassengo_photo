@@ -98,31 +98,21 @@ export default async function LocaleLayout({ children, params }) {
 
   let loadingImages = [];
   try {
-    const data = await client.fetch(
-      `*[_type == "loadingImageDesktop" || _type == "loadingImageMobile"] {
+    // 1. On ajoute `| order(orderRank)` directement dans la requête GROQ
+    // 2. On assigne directement le résultat à `loadingImages` sans retraitement JS
+    loadingImages = await client.fetch(
+      `*[_type in ["loadingImageDesktop", "loadingImageMobile"]] | order(orderRank) {
         _type,
         image {
           asset->,
           crop,
           hotspot
         },
-        "url": image.asset->url,
-        order
+        "url": image.asset->url
       }`,
       {},
       { next: { revalidate: 60 } }
     );
-    // Tri séparé pour chaque type
-    // Tri ascendant puis ré-attribution séquentielle du champ order
-    const desktopImages = (data || [])
-      .filter(img => img._type === 'loadingImageDesktop')
-      .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
-      .map((img, idx) => ({ ...img, order: idx + 1 }));
-    const mobileImages = (data || [])
-      .filter(img => img._type === 'loadingImageMobile')
-      .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
-      .map((img, idx) => ({ ...img, order: idx + 1 }));
-    loadingImages = [...desktopImages, ...mobileImages];
   } catch {
     // Ignore loading overlay fetch errors and fall back to empty images.
   }

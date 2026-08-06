@@ -671,16 +671,14 @@ export default function HomePageTabs() {
                 </div>
               </div>
               {textWin && (
-                  <div className="text-blackCustom text-sm leading-relaxed text-left preserve-lines whitespace-pre-line">
-                    {portableTextToPlain(
-                      localizeField(textWin.content, locale, [])
-                    )}
-                  </p>
+                <div className="text-blackCustom text-sm leading-relaxed text-left preserve-lines whitespace-pre-line">
+                  {portableTextToPlain(
+                    localizeField(textWin.content, locale, [])
+                  )}
                 </div>
               )}
 
-                <div className="clear-both"></div>
-              </div>
+              <div className="clear-both"></div>
             </div>
           </div>
         )}
