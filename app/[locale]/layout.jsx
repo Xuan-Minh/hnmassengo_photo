@@ -101,7 +101,7 @@ export default async function LocaleLayout({ children, params }) {
     // 1. On ajoute `| order(orderRank)` directement dans la requête GROQ
     // 2. On assigne directement le résultat à `loadingImages` sans retraitement JS
     loadingImages = await client.fetch(
-      `*[_type in ["loadingImageDesktop", "loadingImageMobile"]] | order(orderRank) {
+      `*[_type in ["loadingImageDesktop", "loadingImageMobile"]] | order(orderRank asc) {
         _type,
         image {
           asset->,
@@ -111,7 +111,7 @@ export default async function LocaleLayout({ children, params }) {
         "url": image.asset->url
       }`,
       {},
-      { next: { revalidate: 60 } }
+      { cache: 'no-store' }
     );
   } catch {
     // Ignore loading overlay fetch errors and fall back to empty images.
