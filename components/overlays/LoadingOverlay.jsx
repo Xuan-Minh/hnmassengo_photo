@@ -158,8 +158,8 @@ function AnimatedTitle({ titleX, titleY }) {
       >
         <div style={{ transform: 'translate(-50%, -50%)' }}>
           <h2 className="text-whiteCustom/60 flex flex-row items-baseline justify-center gap-2 md:gap-4 text-3xl md:text-4xl lg:text-5xl xl:text-6xl 2xl:text-6xl mb-0 drop-shadow-title whitespace-nowrap">
-            <span className="font-liberation italic leading-none">
-              Han-Noah
+            <span className="font-liberation font-bold leading-none">
+              HAN-NOAH
             </span>
             <span className="font-liberation font-bold leading-none">
               MASSENGO
