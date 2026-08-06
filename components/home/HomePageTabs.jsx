@@ -80,24 +80,6 @@ const ArrowRight = () => (
   </svg>
 );
 
-const ArrowButton = ({ side, onClick, children }) => {
-  const isLeft = side === 'left';
-
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`absolute top-1/2 -translate-y-1/2 z-20 transition-all p-2 shrink-0 opacity-0 hover:opacity-100 italic ${
-        isLeft
-          ? 'left-1 md:left-1 text-blackCustom hover:text-whiteCustom'
-          : 'right-1 md:right-1 drop-shadow-[0_0_8px_rgba(0,0,0,0.8)] text-accent hover:text-whiteCustom'
-      }`}
-    >
-      {children}
-    </button>
-  );
-};
-
 function ImageFolderCarousel({ images, titre, heroImage }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
@@ -628,8 +610,6 @@ export default function HomePageTabs() {
     const musicWin = orderedWindows.find(
       w => w._type === 'windowMusic' || w._type === 'windowMusicPlaylist'
     );
-    // Puis gère l'affichage en conséquence dans ton JSX mobile.
-    const videoWin = orderedWindows.find(w => w._type === 'windowVideo'); // <-- Remplacement ici
     const recoWin = orderedWindows.find(
       w => w._type === 'windowRecommandation'
     );
@@ -659,9 +639,10 @@ export default function HomePageTabs() {
                 {bioWin.name || 'Han-Noah MASSENGO'}
               </h3>
             </div>
-            <div className="border border-blackCustom p-2 bg-background flex flex-col rounded-b-md overflow-hidden">
-              <div className="flex flex-row items-stretch">
-                <div className="w-[40%] flex-shrink-0 flex items-center">
+
+            <div className="border border-blackCustom bg-background rounded-b-md overflow-hidden">
+              <div className="p-4 h-[30vh] overflow-y-auto scrollbar-hide">
+                <div className="float-left w-[40%] mr-4 mb-2">
                   <Image
                     src={
                       bioWin.photo
@@ -690,14 +671,16 @@ export default function HomePageTabs() {
                 </div>
               </div>
               {textWin && (
-                <div className="p-2 h-[20vh] bg-background overflow-scroll preserve-lines whitespace-pre-line">
-                  <p className="text-blackCustom text-sm">
+                  <div className="text-blackCustom text-sm leading-relaxed text-left preserve-lines whitespace-pre-line">
                     {portableTextToPlain(
                       localizeField(textWin.content, locale, [])
                     )}
                   </p>
                 </div>
               )}
+
+                <div className="clear-both"></div>
+              </div>
             </div>
           </div>
         )}
