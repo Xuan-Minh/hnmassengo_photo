@@ -177,12 +177,24 @@ function AnimatedTitle({ titleX, titleY }) {
 
 function useOverlayImages(initialImages) {
   return useMemo(() => {
-    const desktopData = (initialImages || []).filter(
-      img => img?._type === 'loadingImageDesktop'
-    );
-    const mobileData = (initialImages || []).filter(
-      img => img?._type === 'loadingImageMobile'
-    );
+    // Ensure deterministic order by sorting using the 'order' field defined in Sanity.
+    // If 'order' is missing or equal, fall back to _createdAt then _id for stability.
+    const compareByOrder = (a = {}, b = {}) => {
+      const ao = typeof a.order === 'number' ? a.order : Infinity;
+      const bo = typeof b.order === 'number' ? b.order : Infinity;
+      if (ao !== bo) return ao - bo;
+      if (a._createdAt && b._createdAt) return a._createdAt.localeCompare(b._createdAt);
+      return (a._id || '').localeCompare(b._id || '');
+    };
+
+    const desktopData = (initialImages || [])
+      .filter(img => img?._type === 'loadingImageDesktop')
+      .slice()
+      .sort(compareByOrder);
+    const mobileData = (initialImages || [])
+      .filter(img => img?._type === 'loadingImageMobile')
+      .slice()
+      .sort(compareByOrder);
 
     const desktopSrcs = desktopData.flatMap(img => {
       const src = getImageSource(img, 1920);
