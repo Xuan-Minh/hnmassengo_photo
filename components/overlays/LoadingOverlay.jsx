@@ -177,23 +177,15 @@ function AnimatedTitle({ titleX, titleY }) {
 
 function useOverlayImages(initialImages) {
   return useMemo(() => {
-    // Plus besoin de fonction de tri complexe !
-    // Les données `initialImages` arrivent déjà dans le bon ordre
-    // à condition que la requête GROQ contienne `| order(orderRank)`
+    const desktopSrcs = (initialImages?.desktop || []).flatMap(img => {
+      const src = getImageSource(img, 1920);
+      return src ? [src] : [];
+    });
 
-    const desktopSrcs = (initialImages || [])
-      .filter(img => img?._type === 'loadingImageDesktop')
-      .flatMap(img => {
-        const src = getImageSource(img, 1920);
-        return src ? [src] : [];
-      });
-
-    const mobileSrcs = (initialImages || [])
-      .filter(img => img?._type === 'loadingImageMobile')
-      .flatMap(img => {
-        const src = getImageSource(img, 1080);
-        return src ? [src] : [];
-      });
+    const mobileSrcs = (initialImages?.mobile || []).flatMap(img => {
+      const src = getImageSource(img, 1080);
+      return src ? [src] : [];
+    });
 
     return { desktopSrcs, mobileSrcs };
   }, [initialImages]);

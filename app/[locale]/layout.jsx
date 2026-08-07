@@ -96,27 +96,35 @@ export default async function LocaleLayout({ children, params }) {
   setRequestLocale(locale);
   const messages = await getMessages();
 
-  let loadingImages = [];
+  let loadingImages = { desktop: [], mobile: [] };
+
   try {
-    // 1. On ajoute `| order(orderRank)` directement dans la requête GROQ
-    // 2. On assigne directement le résultat à `loadingImages` sans retraitement JS
-    loadingImages = await client.fetch(
-      `*[_type in ["loadingImageDesktop", "loadingImageMobile"]] | order(orderRank asc) {
-        _type,
-        image {
+    const data = await client.fetch(
+      `{
+        "desktop": *[_id == "singleton-loading-desktop"][0].imagesList[]{
           asset->,
           crop,
-          hotspot
+          hotspot,
+          "url": asset->url
         },
-        "url": image.asset->url
+        "mobile": *[_id == "singleton-loading-mobile"][0].imagesList[]{
+          asset->,
+          crop,
+          hotspot,
+          "url": asset->url
+        }
       }`,
       {},
-      { cache: 'no-store' }
+      { cache: 'no-store' } // Tu pourras remettre { next: { revalidate: 60 } } une fois tes tests finis
     );
-  } catch {
-    // Ignore loading overlay fetch errors and fall back to empty images.
-  }
 
+    loadingImages = {
+      desktop: data?.desktop || [],
+      mobile: data?.mobile || [],
+    };
+  } catch {
+    // Ignore loading overlay fetch errors
+  }
   return (
     <NextIntlClientProvider locale={locale} messages={messages}>
       <ErrorBoundary>
