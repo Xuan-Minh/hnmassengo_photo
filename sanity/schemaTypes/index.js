@@ -12,9 +12,9 @@ import windowMusicPlaylist from './objects/windowMusicPlaylist';
 import windowRecommandation from './objects/windowRecommandation';
 import windowText from './objects/windowText';
 import windowVideo from './objects/windowVideo';
-import teamColor from './teamColor';
 import windowImage from './objects/windowImage';
 import windowImageFolder from './objects/windowImageFolder';
+import { teamColorType } from './teamColor'; // L'import correct
 
 export const schema = {
   types: [
@@ -32,8 +32,8 @@ export const schema = {
     windowVideo,
     newsletterSubscriber,
     newsletterCampaign,
-    teamColor,
     windowImage,
     windowImageFolder,
+    teamColorType, // L'export correct
   ],
 };

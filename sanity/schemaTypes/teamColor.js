@@ -3,12 +3,12 @@ import { defineField, defineType } from 'sanity';
 
 export const teamColorType = defineType({
   name: 'teamColor',
-  title: "Couleurs d'équipe",
+  title: "Couleur de l'équipe",
   type: 'document',
   fields: [
     defineField({
       name: 'teamName',
-      title: "Nom de l'équipe",
+      title: 'Couleur',
       type: 'string',
     }),
     defineField({
