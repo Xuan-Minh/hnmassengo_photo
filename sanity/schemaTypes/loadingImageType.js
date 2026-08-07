@@ -1,72 +1,72 @@
 import { defineField, defineType } from 'sanity';
-import {
-  orderRankField,
-  orderRankOrdering,
-} from '@sanity/orderable-document-list';
 
 export const loadingImageType = defineType({
-  name: 'loadingImageDesktop',
-  title: 'Image de Chargement - DESKTOP',
+  name: 'loadingImagesDesktop', // J'ai mis au pluriel car c'est un groupe
+  title: 'Images de Chargement - DESKTOP',
   type: 'document',
-  orderings: [orderRankOrdering], // On active le tri du plugin
   fields: [
-    // Le nouveau champ caché pour le drag & drop
-    orderRankField({ type: 'loadingImageDesktop' }),
-
     defineField({
-      name: 'image',
-      title: 'Image',
-      type: 'image',
+      name: 'imagesList',
+      title: 'Liste des images Desktop',
+      type: 'array',
       options: {
-        hotspot: true,
+        layout: 'grid', // C'est ça qui active la belle grille native comme pour tes projets !
       },
-      validation: Rule => Rule.required(),
-    }),
-    defineField({
-      name: 'alt',
-      title: 'Texte alternatif',
-      type: 'object',
-      fields: [
+      of: [
         {
-          name: 'fr',
-          title: 'Français',
-          type: 'string',
-          validation: Rule => Rule.required(),
-        },
-        {
-          name: 'en',
-          title: 'Anglais',
-          type: 'string',
-          validation: Rule => Rule.required(),
-        },
-        {
-          name: 'de',
-          title: 'Allemand',
-          type: 'string',
-          validation: Rule => Rule.required(),
+          type: 'image',
+          options: {
+            hotspot: true,
+          },
+          fields: [
+            {
+              name: 'alt',
+              title: 'Texte alternatif',
+              type: 'object',
+              fields: [
+                {
+                  name: 'fr',
+                  title: 'Français',
+                  type: 'string',
+                  validation: Rule => Rule.required(),
+                },
+                {
+                  name: 'en',
+                  title: 'Anglais',
+                  type: 'string',
+                  validation: Rule => Rule.required(),
+                },
+                {
+                  name: 'de',
+                  title: 'Allemand',
+                  type: 'string',
+                  validation: Rule => Rule.required(),
+                },
+              ],
+            },
+          ],
+
+          preview: {
+            select: {
+              title: 'alt.fr',
+              media: 'asset',
+            },
+            prepare(selection) {
+              const { title, media } = selection;
+              return {
+                title: title || 'Image sans texte alternatif',
+                media: media,
+              };
+            },
+          },
         },
       ],
     }),
-    // L'ancien champ conservé temporairement
-    defineField({
-      name: 'order',
-      title: "ANCIEN Ordre d'affichage (À SUPPRIMER BIENTÔT)",
-      type: 'number',
-      description: 'Sert uniquement de repère pour le drag & drop',
-    }),
   ],
   preview: {
-    select: {
-      title: 'alt.fr',
-      order: 'order', // On sélectionne l'ancien numéro
-      media: 'image',
-    },
-    prepare(selection) {
-      const { title, order, media } = selection;
-      // On affiche l'ancien numéro directement dans le titre de la liste
+    prepare() {
       return {
-        title: `[Ancien n° ${order || '?'}] ${title || 'Sans titre'}`,
-        media: media,
+        title: 'Images de Chargement - DESKTOP',
       };
     },
   },
