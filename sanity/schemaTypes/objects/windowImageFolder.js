@@ -75,7 +75,7 @@ export default {
       const { title } = selection;
       return {
         title: title || "Fenêtre Dossier d'Images",
-        media: () => '🖼️', // Affiche une image dans le Studio !
+        media: () => '🖼️',
       };
     },
   },

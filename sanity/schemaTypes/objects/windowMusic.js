@@ -74,7 +74,7 @@ export default {
       const { title } = selection;
       return {
         title: title || 'Fenêtre Musique',
-        media: () => '🎵', // Affiche une note de musique dans le Studio !
+        media: () => '🎵',
       };
     },
   },

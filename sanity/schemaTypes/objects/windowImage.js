@@ -7,7 +7,7 @@ export default {
       name: 'photo',
       type: 'image',
       options: {
-        hotspot: true, // Permet de définir le point focal
+        hotspot: true,
       },
     },
     {

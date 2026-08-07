@@ -91,7 +91,7 @@ export default {
       const { title } = selection;
       return {
         title: title || 'Fenêtre Recommandation',
-        media: () => '⭐', // Affiche une étoile dans le Studio !
+        media: () => '⭐',
       };
     },
   },

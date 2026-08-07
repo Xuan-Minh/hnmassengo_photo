@@ -8,7 +8,7 @@ export default {
       title: 'Photo de la bio',
       type: 'image',
       options: {
-        hotspot: true, // Permet de définir le point focal
+        hotspot: true,
       },
     },
     {
@@ -108,9 +108,9 @@ export default {
   ],
   preview: {
     select: {
-      titreFr: 'title.fr', // On va chercher le texte dans l'objet title
+      titreFr: 'title.fr',
       nomUtilisateur: 'name',
-      photoBio: 'photo', // On sélectionne l'image pour la miniature
+      photoBio: 'photo',
     },
     prepare(selection) {
       const { titreFr, nomUtilisateur, photoBio } = selection;
