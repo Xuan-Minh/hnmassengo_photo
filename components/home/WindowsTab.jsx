@@ -25,6 +25,7 @@ export default function WindowsTab({
   fontColor,
   style, // Contient toujours { top: '...', left: '...' } de HomePageTabs
   constraintsRef,
+  subtitle,
 }) {
   const color = couleur || 'bg-gray-300';
   const textColor = fontColor || fontColorTab(couleur);
@@ -89,23 +90,32 @@ export default function WindowsTab({
         }}
         variants={childrenVariants}
         animate={isDragging ? 'dragging' : 'idle'}
-        className={`flex items-center justify-between w-full border border-black gap-2 p-2 ${
+        className={`flex items-center justify-between w-full border border-black gap-2 p-2 cursor-grab active:cursor-grabbing ${
           isMinimized ? 'rounded-md' : 'rounded-t-md'
         }`}
       >
-        <h3
-          className="text-lg text-center font-bold px-2 pointer-events-none"
-          style={{ color: textColor }}
-        >
-          {titre}
-        </h3>
+        {/* GROUPE TITRE + SOUS-TITRE */}
+        <div className="flex flex-col pointer-events-none">
+          <h3 className="text-lg font-bold px-2" style={{ color: textColor }}>
+            {titre}
+          </h3>
+          {subtitle && (
+            <div
+              className="text-[10px] px-2 mt-[-2px] opacity-80"
+              style={{ color: textColor }}
+            >
+              {subtitle}
+            </div>
+          )}
+        </div>
 
+        {/* BOUTON MINIMISER */}
         <button
           onClick={e => {
             e.stopPropagation();
             setIsMinimized(!isMinimized);
           }}
-          className="p-1 hover:bg-white/20 rounded-sm pointer-events-auto cursor-pointer"
+          className="p-1 hover:bg-black/10 rounded-sm pointer-events-auto cursor-pointer"
           aria-label="Réduire la fenêtre"
           type="button"
           style={{ color: textColor }}

@@ -46,6 +46,7 @@ function localizeField(value, locale, fallback = '') {
   if (typeof value === 'string') return value;
   return value?.[locale] || value?.fr || value?.en || value?.de || fallback;
 }
+
 // ==========================================
 // SOUS-COMPOSANTS CARROUSELS
 // ==========================================
@@ -86,7 +87,6 @@ function ImageFolderCarousel({ images, titre, heroImage }) {
   const [lightboxIndex, setLightboxIndex] = useState(0);
   const [mounted, setMounted] = useState(false);
 
-  // Évite les erreurs côté serveur avec createPortal
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -120,17 +120,17 @@ function ImageFolderCarousel({ images, titre, heroImage }) {
       <div className="relative w-[85vw] md:w-[40vw] lg:w-[20vw] h-auto rounded-md overflow-hidden group bg-blackCustom/5">
         <AnimatePresence initial={false} mode="wait">
           {images.map((img, idx) => {
-            if (idx !== currentIndex) return null; // On ne rend que l'image active
+            if (idx !== currentIndex) return null;
 
             const imageUrl = img ? buildSanityImageUrl(img) : heroImage;
 
             return (
               <m.div
-                key={idx} // La clé est cruciale pour que Motion détecte le changement
+                key={idx}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                transition={{ duration: 0.4, ease: 'easeInOut' }} // Durée et courbe de fluidité
+                transition={{ duration: 0.4, ease: 'easeInOut' }}
                 className="w-full h-auto cursor-pointer "
                 onClick={e => openLightbox(idx, e)}
               >
@@ -146,7 +146,6 @@ function ImageFolderCarousel({ images, titre, heroImage }) {
           })}
         </AnimatePresence>
 
-        {/* CONTRÔLES */}
         {images.length > 1 && (
           <>
             <button
@@ -174,7 +173,6 @@ function ImageFolderCarousel({ images, titre, heroImage }) {
           </>
         )}
       </div>
-      {/* LIGHTBOX EN PORTAL */}
       {mounted &&
         lightboxOpen &&
         createPortal(
@@ -183,13 +181,14 @@ function ImageFolderCarousel({ images, titre, heroImage }) {
             initialIndex={lightboxIndex}
             onClose={() => setLightboxOpen(false)}
             images={images}
-            project={{ name: titre }} // Évite les crashs si la lightbox attend "project.name"
+            project={{ name: titre }}
           />,
           document.body
         )}
     </>
   );
 }
+
 function MusicPlaylistCarousel({ rawUrls }) {
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -226,7 +225,7 @@ function MusicPlaylistCarousel({ rawUrls }) {
   };
 
   return (
-    <div className="relative w-[85vw] md:w-[40vw] lg:w-[20vw] h-[152px] group rounded-md overflow-hidden bg-blackCustom/5">
+    <div className="relative w-[85vw] md:w-[40vw] lg:w-[20vw] sm:h-[352px] lg:h-[152px] group rounded-md overflow-hidden bg-blackCustom/5">
       <div
         className="flex w-full h-full transition-transform duration-500 ease-in-out"
         style={{ transform: `translateX(-${currentIndex * 100}%)` }}
@@ -234,7 +233,7 @@ function MusicPlaylistCarousel({ rawUrls }) {
         {finalUrls.map((url, idx) => (
           <div key={idx} className="w-full shrink-0 h-full">
             <iframe
-              className="w-full h-full"
+              className="sm:h-[352px] md:h-[352px] lg:h-[152px] sm:w-full md:w-full"
               src={url}
               frameBorder="0"
               allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
@@ -246,7 +245,6 @@ function MusicPlaylistCarousel({ rawUrls }) {
         ))}
       </div>
 
-      {/* CONTRÔLES */}
       {finalUrls.length > 1 && (
         <>
           <button
@@ -266,6 +264,7 @@ function MusicPlaylistCarousel({ rawUrls }) {
     </div>
   );
 }
+
 // ==========================================
 // SOUS-COMPOSANT : GESTION D'UNE FENÊTRE
 // ==========================================
@@ -277,6 +276,7 @@ function WindowItem({
   locale,
   lastSeen,
   heroImage,
+  textWin,
   ...props
 }) {
   const originalIndex = win._originalIndex;
@@ -284,6 +284,7 @@ function WindowItem({
   const couleur =
     win.windowColor?.colorValue?.hex || teamColorsFALLBACK[originalIndex % 4];
   const id = win._key || `tab${originalIndex}`;
+
   // -- Calcul des Positions --
   const cols = Math.ceil(Math.sqrt(totalWindows));
   const rows = Math.ceil(totalWindows / cols);
@@ -311,55 +312,40 @@ function WindowItem({
   if (win.windowSize === 'large') baseWidth = 35;
 
   let width = `clamp(180px, ${baseWidth}vw, 500px)`;
-  let aspectRatio = '1 / 0.66'; // Ratio Paysage par défaut
+  let aspectRatio = '1 / 0.66';
 
   if (win.windowOrientation === 'portrait') {
     width = `clamp(140px, ${baseWidth * 0.66}vw, 350px)`;
-    aspectRatio = '0.66 / 1'; // Ratio Portrait
+    aspectRatio = '0.66 / 1';
   } else if (win.windowOrientation === 'square') {
     width = `clamp(200px, ${baseWidth * 0.8}vw, 400px)`;
-    aspectRatio = '1 / 1'; // Ratio Carré parfait
+    aspectRatio = '1 / 1';
   }
 
   const windowContent = useMemo(() => {
     switch (win._type) {
       case 'windowBio': {
-        const occupation = localizeField(
-          win.occupation,
-          locale,
-          'Soccer / Photographer'
-        );
         return (
-          <div className="z-50 flex flex-nowrap justify-around gap-2 w-[90vw] md:w-[40vw] lg:w-[25vw] 2xl:w-[25vw]">
-            <div className="w-[25%] h-auto inline-block">
-              {win.photo ? (
-                <Image
-                  src={buildSanityImageUrl(win.photo)}
-                  alt="Portrait Bio"
-                  width={400}
-                  height={400}
-                  className="w-full h-auto object-cover rounded-md"
-                />
-              ) : (
-                heroImage && (
-                  <Image
-                    src={heroImage}
-                    alt="Portrait par défaut"
-                    width={400}
-                    height={400}
-                    className="w-full h-auto object-cover rounded-md"
-                  />
-                )
-              )}
+          <div className="p-4 overflow-y-auto scrollbar-hide text-blackCustom w-[85vw] md:w-[35vw] lg:w-[35vw] xl:w-[40vw] lg:h-[50vw] xl:h-[47.5vw] 2xl:h-[40vw]">
+            <div className="float-left w-[35%] mr-4 mb-2">
+              <Image
+                src={win.photo ? buildSanityImageUrl(win.photo) : heroImage}
+                alt="Portrait Bio"
+                width={400}
+                height={400}
+                className="w-full h-auto object-cover rounded-md shadow-sm"
+              />
             </div>
-            <div className=" w-[70%] h-auto flex">
-              <ul className=" flex justify-around flex-col text-[18px] md:text-[16px] lg:text-[13px] xl:text-[12px] 2xl:text-[13px] font-bold">
-                <li>Name : {win.name || 'Han-Noah MASSENGO'}</li>
-                <li>Age : {calculateAge()} ans</li>
-                <li>Location : {win.location || 'Augsbourg / Paris '} 📌</li>
-                <li>Connected : {lastSeen}</li>
-              </ul>
-            </div>
+
+            {textWin && (
+              <div className="md:text-sm lg:text-[15px] 2xl:text-base leading-relaxed text-justify preserve-lines whitespace-pre-line font-liberation italic">
+                {portableTextToPlain(
+                  localizeField(textWin.content, locale, [])
+                )}
+              </div>
+            )}
+
+            <div className="clear-both"></div>
           </div>
         );
       }
@@ -379,7 +365,7 @@ function WindowItem({
           if (match && !rawUrl.includes('/embed/')) {
             const type = match[1];
             const idTrack = match[2];
-            finalUrl = `https://open.spotify.com/embed/${type}/${idTrack}`; // Lien Spotify corrigé et propre
+            finalUrl = `https://open.spotify.com/embed/${type}/${idTrack}`;
           }
         } catch (e) {
           console.error('Lien Spotify invalide');
@@ -423,11 +409,12 @@ function WindowItem({
         const plainText = portableTextToPlain(rawBlocks);
 
         return (
-          <p className="bg-current/15 overflow-scroll-y whitespace-pre-line font-liberation italic leading-[1.3] text-blackCustom text-[16px] 2xl:text-[18px] w-[85vw] md:w-[35vw] lg:w-[35vw] xl:w-[40vw] h-[30vh] lg:h-[35vw] xl:h-[30vw] 2xl:h-[25vw]">
+          <div className="bg-background overflow-y-auto whitespace-pre-line font-liberation italic leading-[1.3] text-blackCustom text-[16px] 2xl:text-[18px] w-[85vw] md:w-[35vw] lg:w-[35vw] xl:w-[40vw] h-[30vh] lg:h-[35vw] xl:h-[30vw] 2xl:h-[25vw]">
             {plainText}
-          </p>
+          </div>
         );
       }
+
       case 'windowRecommandation': {
         const reco = win.recommandation || [];
         return (
@@ -479,9 +466,9 @@ function WindowItem({
             className="flex items-center justify-center p-0 m-0 w-full"
             style={{
               width: width,
-              height: 'auto', // Laisse le ratio calculer la hauteur
-              aspectRatio: aspectRatio, // Maintient la forme (carré, portrait, etc.)
-              minWidth: '100%', // Force l'image à remplir l'espace si le titre est très long
+              height: 'auto',
+              aspectRatio: aspectRatio,
+              minWidth: '100%',
             }}
           >
             {win.externalLink ? (
@@ -517,7 +504,7 @@ function WindowItem({
       default:
         return null;
     }
-  }, [win, locale, lastSeen, heroImage, width, aspectRatio, titre]);
+  }, [win, locale, heroImage, width, aspectRatio, titre, textWin]);
 
   return (
     <WindowsTab
@@ -526,6 +513,7 @@ function WindowItem({
       couleur={couleur}
       style={windowStyle}
       contenu={windowContent}
+      subtitle={win._type === 'windowBio' ? `Last seen: ${lastSeen}` : null}
       {...props}
     />
   );
@@ -579,12 +567,10 @@ export default function HomePageTabs() {
   });
   const heroImage = homeImages[0] || '';
 
-  // Sauvegarde l'index original avant de trier
   const windowsWithIndex = useMemo(() => {
     return windows.map((w, i) => ({ ...w, _originalIndex: i }));
   }, [windows]);
 
-  // Utilisation de .toSorted() optimisé
   const orderedWindows = useMemo(() => {
     return windowsWithIndex.toSorted((a, b) => {
       const aPriority = a.startsOnTop ? 1 : 0;
@@ -600,29 +586,35 @@ export default function HomePageTabs() {
       </div>
     );
   }
+
+  // 1. 👈 EXTRACTION INTELLIGENTE DES DONNEES
+  const bioWin = orderedWindows.find(w => w._type === 'windowBio');
+
+  // On récupère TOUS les textes
+  const allTextWindows = orderedWindows.filter(w => w._type === 'windowText');
+  const textWin = allTextWindows[0]; // Le TOUT PREMIER texte (pour la Bio)
+  const extraTextWindows = allTextWindows.slice(1); // TOUS LES AUTRES textes
+
+  const imageWin = orderedWindows.find(
+    w => w._type === 'windowImage' || w._type === 'windowImageFolder'
+  );
+  const musicWin = orderedWindows.find(
+    w => w._type === 'windowMusic' || w._type === 'windowMusicPlaylist'
+  );
+  const recoWin = orderedWindows.find(w => w._type === 'windowRecommandation');
+
+  // 2. 👈 FILTRE DESKTOP : On ne retire que le premier texte ! Les autres resteront.
+  const desktopWindows = orderedWindows.filter(w => w._key !== textWin?._key);
+
+  const getTabColor = win => {
+    if (!win) return '#000000';
+    return (
+      win.windowColor?.colorValue?.hex ||
+      teamColorsFALLBACK[win._originalIndex % 4]
+    );
+  };
+
   if (isMobile) {
-    // 1. Extraction des fenêtres spécifiques
-    const bioWin = orderedWindows.find(w => w._type === 'windowBio');
-    const textWin = orderedWindows.find(w => w._type === 'windowText');
-    const imageWin = orderedWindows.find(
-      w => w._type === 'windowImage' || w._type === 'windowImageFolder'
-    );
-    const musicWin = orderedWindows.find(
-      w => w._type === 'windowMusic' || w._type === 'windowMusicPlaylist'
-    );
-    const recoWin = orderedWindows.find(
-      w => w._type === 'windowRecommandation'
-    );
-
-    // 2. Fonction utilitaire pour récupérer la bonne couleur (Sanity ou Fallback)
-    const getTabColor = win => {
-      if (!win) return '#000000';
-      return (
-        win.windowColor?.colorValue?.hex ||
-        teamColorsFALLBACK[win._originalIndex % 4]
-      );
-    };
-
     return (
       <section
         id="home"
@@ -631,14 +623,18 @@ export default function HomePageTabs() {
         {/* --- CARTE 1 : BIO --- */}
         {bioWin && (
           <div className="flex col-span-2 w-full h-fit flex-col text-white gap-1 shadow-lg">
-            {/* Header de la fenêtre */}
             <div
               className="flex items-center justify-between border border-blackCustom gap-2 p-2 cursor-grab active:cursor-grabbing rounded-t-md"
               style={{ backgroundColor: getTabColor(bioWin) }}
             >
-              <h3 className="text-md font-bold px-2">
-                {bioWin.name || 'Han-Noah MASSENGO'}
-              </h3>
+              <div className="flex flex-col">
+                <h3 className="text-md font-bold px-2">
+                  {localizeField(bioWin.title, locale, 'about me')}
+                </h3>
+                <div className="text-[10px] text-gray-300 px-2">
+                  Last seen: {lastSeen}
+                </div>
+              </div>
             </div>
 
             <div className="border border-blackCustom bg-background rounded-b-md overflow-hidden">
@@ -658,7 +654,7 @@ export default function HomePageTabs() {
                 </div>
 
                 {textWin && (
-                  <div className="text-blackCustom text-sm leading-relaxed text-justify preserve-lines whitespace-pre-line">
+                  <div className="text-blackCustom text-sm leading-relaxed text-justify preserve-lines whitespace-pre-line font-liberation italic">
                     {portableTextToPlain(
                       localizeField(textWin.content, locale, [])
                     )}
@@ -696,6 +692,23 @@ export default function HomePageTabs() {
             </div>
           </div>
         )}
+        {/* --- CARTE 4 : MUSIQUE --- */}
+        {musicWin && (
+          <div className="flex col-span-1 w-full h-full flex-col text-white gap-1 shadow-lg">
+            <div
+              className="flex items-center justify-between border border-blackCustom gap-2 p-2 cursor-grab active:cursor-grabbing rounded-t-md"
+              style={{ backgroundColor: getTabColor(musicWin) }}
+            >
+              <h3 className="text-sm font-bold px-2 truncate">
+                {localizeField(musicWin.title, locale, 'Musique')}
+              </h3>
+            </div>
+            <div className="p-2 border border-blackCustom bg-background flex rounded-b-md h-auto items-center justify-center aspect-square">
+              <MusicPlaylistCarousel rawUrls={musicWin.spotifyUrlFolder} />
+            </div>
+          </div>
+        )}
+        {/* --- CARTE 5 : RECOMMANDATION --- */}
         {recoWin && (
           <div className="flex col-span-1 w-full h-full flex-col text-white gap-1 shadow-lg">
             <div
@@ -729,21 +742,46 @@ export default function HomePageTabs() {
             </div>
           </div>
         )}
+
+        {/* 👈 NOUVEAU : CARTES SUPPLEMENTAIRES (LES AUTRES TEXTES) */}
+        {extraTextWindows.map((extraText, idx) => (
+          <div
+            key={`extra-text-mobile-${idx}`}
+            className="flex col-span-2 w-full h-full flex-col text-white gap-1 shadow-lg"
+          >
+            <div
+              className="flex items-center justify-between border border-blackCustom gap-2 p-2 rounded-t-md"
+              style={{ backgroundColor: getTabColor(extraText) }}
+            >
+              <h3 className="text-sm font-bold px-2 truncate">
+                {localizeField(extraText.title, locale, 'Texte')}
+              </h3>
+            </div>
+            <div className="p-4 border border-blackCustom bg-background rounded-b-md overflow-y-auto h-[25vh]">
+              <div className="text-blackCustom text-sm leading-relaxed whitespace-pre-line font-liberation italic">
+                {portableTextToPlain(
+                  localizeField(extraText.content, locale, [])
+                )}
+              </div>
+            </div>
+          </div>
+        ))}
       </section>
     );
   }
 
   return (
     <WindowsManager>
-      {orderedWindows.map((win, index) => (
+      {desktopWindows.map((win, index) => (
         <WindowItem
           key={win._key || `tab${win._originalIndex}`}
           win={win}
           index={index}
-          totalWindows={windows.length}
+          totalWindows={desktopWindows.length}
           locale={locale}
           lastSeen={lastSeen}
           heroImage={heroImage}
+          textWin={textWin}
         />
       ))}
     </WindowsManager>
