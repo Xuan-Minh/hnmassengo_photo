@@ -93,7 +93,7 @@ function ImageFolderCarousel({ images, titre, heroImage }) {
 
   if (!images || images.length === 0) {
     return (
-      <div className="w-[85vw] md:w-[40vw] lg:w-[25vw] p-4 flex items-center justify-center text-blackCustom rounded-md bg-gray-200">
+      <div className="w-full h-full p-4 flex items-center justify-center text-blackCustom rounded-md bg-gray-200">
         Aucune image disponible
       </div>
     );
@@ -131,7 +131,7 @@ function ImageFolderCarousel({ images, titre, heroImage }) {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.4, ease: 'easeInOut' }}
-                className="w-full h-auto cursor-pointer "
+                className="w-full h-full cursor-pointer absolute inset-0"
                 onClick={e => openLightbox(idx, e)}
               >
                 <Image
@@ -139,7 +139,7 @@ function ImageFolderCarousel({ images, titre, heroImage }) {
                   alt={`${titre} - Image ${idx + 1}`}
                   width={1000}
                   height={1000}
-                  className="w-full h-auto object-contain hover:opacity-50 transition-opacity active:cursor-pointing"
+                  className="w-full h-full object-cover hover:opacity-50 transition-opacity active:cursor-pointing"
                 />
               </m.div>
             );
@@ -279,11 +279,18 @@ function WindowItem({
   textWin,
   ...props
 }) {
-  const originalIndex = win._originalIndex;
+  const originalIndex = win._originalIndex || index;
   const titre = localizeField(win.title, locale, 'Fenêtre');
   const couleur =
     win.windowColor?.colorValue?.hex || teamColorsFALLBACK[originalIndex % 4];
   const id = win._key || `tab${originalIndex}`;
+
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // -- Calcul des Positions --
   const cols = Math.ceil(Math.sqrt(totalWindows));
@@ -291,19 +298,18 @@ function WindowItem({
   const col = index % cols;
   const row = Math.floor(index / cols);
 
-  const leftPos =
-    typeof win.positionX === 'number'
-      ? `${win.positionX}vw`
-      : `${col * (90 / cols) + 5}vw`;
+  const baseLeft =
+    typeof win.positionX === 'number' ? win.positionX : col * (90 / cols) + 5;
 
-  const topPos =
-    typeof win.positionY === 'number'
-      ? `${win.positionY}vh`
-      : `${row * (80 / rows) + 5}vh`;
+  const baseTop =
+    typeof win.positionY === 'number' ? win.positionY : row * (80 / rows) + 5;
+
+  const finalLeft = baseLeft + (win.offsetX || 0);
+  const finalTop = baseTop + (win.offsetY || 0);
 
   const windowStyle = useMemo(
-    () => ({ top: topPos, left: leftPos }),
-    [topPos, leftPos]
+    () => ({ top: `${finalTop}vh`, left: `${finalLeft}vw` }),
+    [finalTop, finalLeft]
   );
 
   // -- Calcul des Dimensions --
@@ -312,6 +318,9 @@ function WindowItem({
   if (win.windowSize === 'large') baseWidth = 35;
 
   let width = `clamp(180px, ${baseWidth}vw, 500px)`;
+  if (win._type === 'windowImageFolderItem') {
+    width = `clamp(90px, ${baseWidth / 2}vw, 250px)`;
+  }
   let aspectRatio = '1 / 0.66';
 
   if (win.windowOrientation === 'portrait') {
@@ -409,7 +418,7 @@ function WindowItem({
         const plainText = portableTextToPlain(rawBlocks);
 
         return (
-          <div className="bg-background overflow-y-auto whitespace-pre-line font-liberation italic leading-[1.3] text-blackCustom text-[16px] 2xl:text-[18px] w-[85vw] md:w-[35vw] lg:w-[35vw] xl:w-[40vw] h-[30vh] lg:h-[35vw] xl:h-[30vw] 2xl:h-[25vw]">
+          <div className="bg-background overflow-y-auto p-4 whitespace-pre-line font-liberation italic leading-[1.3] text-blackCustom text-[16px] 2xl:text-[18px] w-[85vw] md:w-[35vw] lg:w-[35vw] xl:w-[40vw] h-[30vh] lg:h-[35vw] xl:h-[30vw] 2xl:h-[25vw]">
             {plainText}
           </div>
         );
@@ -418,7 +427,7 @@ function WindowItem({
       case 'windowRecommandation': {
         const reco = win.recommandation || [];
         return (
-          <div className="flex flex-col gap-2 w-[85vw] md:w-[40vw] lg:w-[30vw] xl:w-[30vw]">
+          <div className="flex flex-col gap-2 w-[85vw] md:w-[40vw] lg:w-[30vw] xl:w-[30vw] p-4">
             <ul className="list-disc list-inside text-[14px] 2xl:text-[16px] text-blackCustom">
               {reco.length > 0 ? (
                 reco.map((rec, idx) => (
@@ -453,7 +462,7 @@ function WindowItem({
             alt={titre}
             width={800}
             height={800}
-            className={`w-full h-full object-cover rounded-md block ${interactiveImageClasses}`}
+            className={`w-full h-auto rounded-md block ${interactiveImageClasses}`}
           />
         ) : (
           <div className="w-full h-full bg-gray-200 flex items-center justify-center text-black rounded-md">
@@ -467,7 +476,6 @@ function WindowItem({
             style={{
               width: width,
               height: 'auto',
-              aspectRatio: aspectRatio,
               minWidth: '100%',
             }}
           >
@@ -486,25 +494,66 @@ function WindowItem({
           </div>
         );
       }
+
       case 'windowMusicPlaylist': {
         return <MusicPlaylistCarousel rawUrls={win.spotifyUrlFolder} />;
       }
 
-      case 'windowImageFolder': {
+      case 'windowImageFolderItem': {
+        const imageUrl = win.photo ? buildSanityImageUrl(win.photo) : heroImage;
+
         return (
-          <ImageFolderCarousel
-            images={win.imageFolder}
-            titre={titre}
-            heroImage={heroImage}
-            width={width}
-            aspectRatio={aspectRatio}
-          />
+          <>
+            <div
+              className="flex items-center justify-center p-0 m-0 w-full cursor-pointer hover:opacity-90 transition-opacity active:cursor-pointing"
+              style={{ width, height: 'auto', minWidth: '100%' }}
+              onClick={() => setLightboxOpen(true)}
+            >
+              {imageUrl ? (
+                <Image
+                  src={imageUrl}
+                  alt={titre}
+                  width={400}
+                  height={400}
+                  className="w-full h-auto rounded-md block"
+                />
+              ) : (
+                <div className="w-full h-full bg-gray-200 flex items-center justify-center text-black">
+                  Image indisponible
+                </div>
+              )}
+            </div>
+
+            {mounted &&
+              lightboxOpen &&
+              createPortal(
+                <CustomLightbox
+                  open={lightboxOpen}
+                  initialIndex={win.imageIndex}
+                  onClose={() => setLightboxOpen(false)}
+                  images={win.fullFolder}
+                  project={{ name: titre }}
+                />,
+                document.body
+              )}
+          </>
         );
       }
+
       default:
         return null;
     }
-  }, [win, locale, heroImage, width, aspectRatio, titre, textWin]);
+  }, [
+    win,
+    locale,
+    heroImage,
+    width,
+    aspectRatio,
+    titre,
+    textWin,
+    lightboxOpen,
+    mounted,
+  ]);
 
   return (
     <WindowsTab
@@ -579,6 +628,26 @@ export default function HomePageTabs() {
     });
   }, [windowsWithIndex]);
 
+  const expandedWindows = useMemo(() => {
+    if (isMobile) return orderedWindows;
+
+    return orderedWindows.flatMap(win => {
+      if (win._type === 'windowImageFolder' && win.imageFolder?.length > 0) {
+        return win.imageFolder.map((img, idx) => ({
+          ...win,
+          _type: 'windowImageFolderItem',
+          photo: img,
+          imageIndex: idx,
+          fullFolder: win.imageFolder,
+          _key: `${win._key || win._id}-img-${idx}`,
+          offsetX: idx * 3,
+          offsetY: idx * 4,
+        }));
+      }
+      return win;
+    });
+  }, [orderedWindows, isMobile]);
+
   if (!windows || windows.length === 0) {
     return (
       <div className="flex h-screen w-screen items-center justify-center text-whiteCustom bg-blackCustom">
@@ -587,24 +656,28 @@ export default function HomePageTabs() {
     );
   }
 
-  // 1. 👈 EXTRACTION INTELLIGENTE DES DONNEES
-  const bioWin = orderedWindows.find(w => w._type === 'windowBio');
+  // ==========================================
+  // EXTRACTION DES DONNÉES
+  // ==========================================
 
-  // On récupère TOUS les textes
-  const allTextWindows = orderedWindows.filter(w => w._type === 'windowText');
-  const textWin = allTextWindows[0]; // Le TOUT PREMIER texte (pour la Bio)
-  const extraTextWindows = allTextWindows.slice(1); // TOUS LES AUTRES textes
+  const bioWin = expandedWindows.find(w => w._type === 'windowBio');
+  const allTextWindows = expandedWindows.filter(w => w._type === 'windowText');
+  const textWin = allTextWindows[0];
+  const extraTextWindows = allTextWindows.slice(1);
 
-  const imageWin = orderedWindows.find(
-    w => w._type === 'windowImage' || w._type === 'windowImageFolder'
+  const imageWindows = expandedWindows.filter(
+    w =>
+      w._type === 'windowImage' ||
+      w._type === 'windowImageFolder' ||
+      w._type === 'windowImageFolderItem'
   );
-  const musicWin = orderedWindows.find(
+
+  const musicWin = expandedWindows.find(
     w => w._type === 'windowMusic' || w._type === 'windowMusicPlaylist'
   );
-  const recoWin = orderedWindows.find(w => w._type === 'windowRecommandation');
+  const recoWin = expandedWindows.find(w => w._type === 'windowRecommandation');
 
-  // 2. 👈 FILTRE DESKTOP : On ne retire que le premier texte ! Les autres resteront.
-  const desktopWindows = orderedWindows.filter(w => w._key !== textWin?._key);
+  const desktopWindows = expandedWindows.filter(w => w._key !== textWin?._key);
 
   const getTabColor = win => {
     if (!win) return '#000000';
@@ -614,17 +687,21 @@ export default function HomePageTabs() {
     );
   };
 
+  // ==========================================
+  // RENDU MOBILE
+  // ==========================================
+
   if (isMobile) {
     return (
       <section
         id="home"
-        className="grid grid-cols-2 place-content-around h-screen p-2 gap-2 md:gap-4 lg:gap-6 w-screen bg-background"
+        className="grid grid-cols-2 place-content-around h-screen p-2 gap-2 md:gap-4 lg:gap-6 w-screen bg-background overflow-y-auto"
       >
         {/* --- CARTE 1 : BIO --- */}
         {bioWin && (
           <div className="flex col-span-2 w-full h-fit flex-col text-white gap-1 shadow-lg">
             <div
-              className="flex items-center justify-between border border-blackCustom gap-2 p-2 cursor-grab active:cursor-grabbing rounded-t-md"
+              className="flex items-center justify-between border border-blackCustom gap-2 p-2 rounded-t-md"
               style={{ backgroundColor: getTabColor(bioWin) }}
             >
               <div className="flex flex-col">
@@ -660,43 +737,55 @@ export default function HomePageTabs() {
                     )}
                   </div>
                 )}
-
                 <div className="clear-both"></div>
               </div>
             </div>
           </div>
         )}
-        {/* --- CARTE 3 : IMAGE --- */}
-        {imageWin && (
-          <div className="flex col-span-1 w-full h-full flex-col text-white gap-1 shadow-lg">
+
+        {/* --- CARTES IMAGES MULTIPLES --- */}
+        {imageWindows.map((imgWin, idx) => (
+          <div
+            key={`img-mob-${idx}`}
+            className="flex col-span-1 w-full h-full flex-col text-white gap-1 shadow-lg"
+          >
             <div
-              className="flex items-center justify-between border border-blackCustom gap-2 p-2 cursor-grab active:cursor-grabbing rounded-t-md"
-              style={{ backgroundColor: getTabColor(imageWin) }}
+              className="flex items-center justify-between border border-blackCustom gap-2 p-2 rounded-t-md"
+              style={{ backgroundColor: getTabColor(imgWin) }}
             >
               <h3 className="text-sm font-bold px-2 truncate">
-                {localizeField(imageWin.title, locale, 'Galerie')}
+                {localizeField(imgWin.title, locale, 'Galerie')}
               </h3>
             </div>
-            <div className="p-2 border border-blackCustom bg-background flex rounded-b-md h-full">
-              <Image
-                src={
-                  imageWin.photo
-                    ? buildSanityImageUrl(imageWin.photo)
-                    : heroImage
-                }
-                alt="Image mobile"
-                width={400}
-                height={400}
-                className="w-full h-full object-cover aspect-square"
-              />
+            <div className="p-2 border border-blackCustom bg-background flex rounded-b-md h-full w-full">
+              {imgWin._type === 'windowImageFolder' ? (
+                <div className="w-full h-full relative aspect-square">
+                  <ImageFolderCarousel
+                    images={imgWin.imageFolder}
+                    titre={localizeField(imgWin.title, locale, 'Galerie')}
+                    heroImage={heroImage}
+                  />
+                </div>
+              ) : (
+                <Image
+                  src={
+                    imgWin.photo ? buildSanityImageUrl(imgWin.photo) : heroImage
+                  }
+                  alt="Image mobile"
+                  width={400}
+                  height={400}
+                  className="w-full h-auto object-contain rounded-sm"
+                />
+              )}
             </div>
           </div>
-        )}
-        {/* --- CARTE 4 : MUSIQUE --- */}
+        ))}
+
+        {/* --- CARTE MUSIQUE --- */}
         {musicWin && (
           <div className="flex col-span-1 w-full h-full flex-col text-white gap-1 shadow-lg">
             <div
-              className="flex items-center justify-between border border-blackCustom gap-2 p-2 cursor-grab active:cursor-grabbing rounded-t-md"
+              className="flex items-center justify-between border border-blackCustom gap-2 p-2 rounded-t-md"
               style={{ backgroundColor: getTabColor(musicWin) }}
             >
               <h3 className="text-sm font-bold px-2 truncate">
@@ -708,11 +797,12 @@ export default function HomePageTabs() {
             </div>
           </div>
         )}
-        {/* --- CARTE 5 : RECOMMANDATION --- */}
+
+        {/* --- CARTE RECOMMANDATION --- */}
         {recoWin && (
           <div className="flex col-span-1 w-full h-full flex-col text-white gap-1 shadow-lg">
             <div
-              className="flex items-center justify-between border border-blackCustom gap-2 p-2 cursor-grab active:cursor-grabbing rounded-t-md"
+              className="flex items-center justify-between border border-blackCustom gap-2 p-2 rounded-t-md"
               style={{ backgroundColor: getTabColor(recoWin) }}
             >
               <h3 className="text-sm font-bold px-2 truncate">
@@ -743,6 +833,7 @@ export default function HomePageTabs() {
           </div>
         )}
 
+        {/* --- CARTES AUTRES TEXTES --- */}
         {extraTextWindows.map((extraText, idx) => (
           <div
             key={`extra-text-mobile-${idx}`}
@@ -769,11 +860,15 @@ export default function HomePageTabs() {
     );
   }
 
+  // ==========================================
+  // RENDU DESKTOP
+  // ==========================================
+
   return (
     <WindowsManager>
       {desktopWindows.map((win, index) => (
         <WindowItem
-          key={win._key || `tab${win._originalIndex}`}
+          key={win._key || `tab${win._originalIndex}-${index}`}
           win={win}
           index={index}
           totalWindows={desktopWindows.length}
