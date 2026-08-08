@@ -23,7 +23,7 @@ export default function WindowsTab({
   zIndex,
   bringToFront,
   fontColor,
-  style, // Contient toujours { top: '...', left: '...' } de HomePageTabs
+  style,
   constraintsRef,
   subtitle,
 }) {

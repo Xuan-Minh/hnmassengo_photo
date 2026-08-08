@@ -743,7 +743,6 @@ export default function HomePageTabs() {
           </div>
         )}
 
-        {/* 👈 NOUVEAU : CARTES SUPPLEMENTAIRES (LES AUTRES TEXTES) */}
         {extraTextWindows.map((extraText, idx) => (
           <div
             key={`extra-text-mobile-${idx}`}
