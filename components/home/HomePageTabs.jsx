@@ -117,7 +117,7 @@ function ImageFolderCarousel({ images, titre, heroImage }) {
 
   return (
     <>
-      <div className="relative w-[85vw] md:w-[40vw] lg:w-[20vw] h-auto rounded-md overflow-hidden group bg-blackCustom/5">
+      <div className="relative w-full h-full rounded-md overflow-hidden group bg-blackCustom/5">
         <AnimatePresence initial={false} mode="wait">
           {images.map((img, idx) => {
             if (idx !== currentIndex) return null;
@@ -137,9 +137,8 @@ function ImageFolderCarousel({ images, titre, heroImage }) {
                 <Image
                   src={imageUrl}
                   alt={`${titre} - Image ${idx + 1}`}
-                  width={1000}
-                  height={1000}
-                  className="w-full h-full object-cover hover:opacity-50 transition-opacity active:cursor-pointing"
+                  fill
+                  className="object-cover hover:opacity-50 transition-opacity active:cursor-pointing"
                 />
               </m.div>
             );
@@ -318,9 +317,6 @@ function WindowItem({
   if (win.windowSize === 'large') baseWidth = 35;
 
   let width = `clamp(180px, ${baseWidth}vw, 500px)`;
-  if (win._type === 'windowImageFolderItem') {
-    width = `clamp(90px, ${baseWidth / 2}vw, 250px)`;
-  }
   let aspectRatio = '1 / 0.66';
 
   if (win.windowOrientation === 'portrait') {
@@ -330,7 +326,9 @@ function WindowItem({
     width = `clamp(200px, ${baseWidth * 0.8}vw, 400px)`;
     aspectRatio = '1 / 1';
   }
-
+  if (win._type === 'windowImageFolderItem') {
+    width = `clamp(90px, ${baseWidth / 2}vw, 250px)`;
+  }
   const windowContent = useMemo(() => {
     switch (win._type) {
       case 'windowBio': {
@@ -513,8 +511,8 @@ function WindowItem({
                 <Image
                   src={imageUrl}
                   alt={titre}
-                  width={400}
-                  height={400}
+                  width={800}
+                  height={800}
                   className="w-full h-auto rounded-md block"
                 />
               ) : (
@@ -747,7 +745,7 @@ export default function HomePageTabs() {
         {imageWindows.map((imgWin, idx) => (
           <div
             key={`img-mob-${idx}`}
-            className="flex col-span-1 w-full h-full flex-col text-white gap-1 shadow-lg"
+            className="flex col-span-1 w-full flex-col text-white gap-1 shadow-lg"
           >
             <div
               className="flex items-center justify-between border border-blackCustom gap-2 p-2 rounded-t-md"
@@ -755,28 +753,33 @@ export default function HomePageTabs() {
             >
               <h3 className="text-sm font-bold px-2 truncate">
                 {localizeField(imgWin.title, locale, 'Galerie')}
+                {imgWin._type === 'windowImageFolderItem'
+                  ? ` (${imgWin.imageIndex + 1})`
+                  : ''}
               </h3>
             </div>
-            <div className="p-2 border border-blackCustom bg-background flex rounded-b-md h-full w-full">
-              {imgWin._type === 'windowImageFolder' ? (
-                <div className="w-full h-full relative aspect-square">
+            {/* Conteneur sécurisé pour empêcher l'écrasement de la hauteur */}
+            <div className="p-2 border border-blackCustom bg-background rounded-b-md w-full">
+              <div className="w-full aspect-square relative">
+                {imgWin._type === 'windowImageFolder' ? (
                   <ImageFolderCarousel
                     images={imgWin.imageFolder}
                     titre={localizeField(imgWin.title, locale, 'Galerie')}
                     heroImage={heroImage}
                   />
-                </div>
-              ) : (
-                <Image
-                  src={
-                    imgWin.photo ? buildSanityImageUrl(imgWin.photo) : heroImage
-                  }
-                  alt="Image mobile"
-                  width={400}
-                  height={400}
-                  className="w-full h-auto object-contain rounded-sm"
-                />
-              )}
+                ) : (
+                  <Image
+                    src={
+                      imgWin.photo
+                        ? buildSanityImageUrl(imgWin.photo)
+                        : heroImage
+                    }
+                    alt="Image mobile"
+                    fill
+                    className="object-cover rounded-sm"
+                  />
+                )}
+              </div>
             </div>
           </div>
         ))}
