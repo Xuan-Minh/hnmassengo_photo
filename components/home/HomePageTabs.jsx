@@ -159,7 +159,6 @@ function ImageFolderCarousel({ images, titre, heroImage }) {
           })}
         </div>
 
-        {/* CONTRÔLES */}
         {images.length > 1 && (
           <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 z-20 pointer-events-none">
               {images.map((_, idx) => (
@@ -171,7 +170,6 @@ function ImageFolderCarousel({ images, titre, heroImage }) {
                 />
               ))}
             </div>
-          </>
         )}
       </div>
 
@@ -246,7 +244,6 @@ function MusicPlaylistCarousel({ rawUrls }) {
         ))}
       </div>
 
-      {/* CONTRÔLES */}
       {finalUrls.length > 1 && (
         <>
           <button
@@ -287,13 +284,6 @@ function WindowItem({
   const couleur =
     win.windowColor?.colorValue?.hex || teamColorsFALLBACK[originalIndex % 4];
   const id = win._key || `tab${originalIndex}`;
-
-  const [lightboxOpen, setLightboxOpen] = useState(false);
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   // -- Calcul des Positions --
   const cols = Math.ceil(Math.sqrt(totalWindows));
@@ -530,19 +520,6 @@ function WindowItem({
                 </div>
               )}
             </div>
-
-            {mounted &&
-              createPortal(
-                <CustomLightbox
-                  open={lightboxOpen}
-                  initialIndex={win.imageIndex}
-                  onClose={() => setLightboxOpen(false)}
-                  images={win.fullFolder || win.imageFolder}
-                  project={{ name: titre }}
-                />,
-                document.body
-              )}
-          </>
         );
       }
 
