@@ -11,7 +11,7 @@ import {
 } from 'react';
 import { createPortal } from 'react-dom';
 import Image from 'next/image';
-import { m } from 'framer-motion';
+import { m, AnimatePresence } from 'framer-motion';
 import { buildSanityImageUrl } from '../../../lib/imageUtils';
 import { getOptimizedImageParams, useEffectEvent } from '../../../lib/hooks';
 
@@ -474,42 +474,47 @@ export default function CustomLightbox({
   }, []);
 
   // Si pas ouvert OU pas encore monté sur le client, on ne retourne rien
-  if (!open || !mounted) return null;
+  if (!mounted) return null;
 
   // On téléporte la div directement dans le document.body
   return createPortal(
-    <m.div
-      className="fixed top-0 left-0 w-screen h-[100dvh] z-[9999] bg-blackCustom text-[#e5e5e5] font-liberation flex flex-col overflow-hidden"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.3 }}
-    >
-      <MobileLightbox
-        onClose={onClose}
-        goToIndex={goToIndex}
-        currentIndex={currentIndex}
-        images={images}
-        project={project}
-        currentDisplaySrc={currentDisplaySrc}
-        isCurrentLoaded={isCurrentLoaded}
-        hasCurrentError={hasCurrentError}
-        dispatch={dispatch}
-      />
+    <AnimatePresence>
+      {open && (
+        <m.div
+          key="lightbox"
+          className="fixed top-0 left-0 w-screen h-[100dvh] z-[9999] bg-blackCustom text-[#e5e5e5] font-liberation flex flex-col overflow-hidden"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.3 }}
+        >
+          <MobileLightbox
+            onClose={onClose}
+            goToIndex={goToIndex}
+            currentIndex={currentIndex}
+            images={images}
+            project={project}
+            currentDisplaySrc={currentDisplaySrc}
+            isCurrentLoaded={isCurrentLoaded}
+            hasCurrentError={hasCurrentError}
+            dispatch={dispatch}
+          />
 
-      <DesktopLightbox
-        onClose={onClose}
-        goToIndex={goToIndex}
-        currentIndex={currentIndex}
-        images={images}
-        project={project}
-        currentDisplaySrc={currentDisplaySrc}
-        getDisplaySrcForIndex={getDisplaySrcForIndex}
-        isCurrentLoaded={isCurrentLoaded}
-        hasCurrentError={hasCurrentError}
-        dispatch={dispatch}
-      />
-    </m.div>,
+          <DesktopLightbox
+            onClose={onClose}
+            goToIndex={goToIndex}
+            currentIndex={currentIndex}
+            images={images}
+            project={project}
+            currentDisplaySrc={currentDisplaySrc}
+            getDisplaySrcForIndex={getDisplaySrcForIndex}
+            isCurrentLoaded={isCurrentLoaded}
+            hasCurrentError={hasCurrentError}
+            dispatch={dispatch}
+          />
+        </m.div>
+      )}
+    </AnimatePresence>,
     document.body
   );
 }

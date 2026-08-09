@@ -118,20 +118,17 @@ function ImageFolderCarousel({ images, titre, heroImage }) {
   return (
     <>
       <div className="relative w-full h-full rounded-md overflow-hidden group bg-blackCustom/5">
-        <AnimatePresence initial={false} mode="wait">
+        <div
+          className="flex w-full h-full transition-transform duration-500 ease-in-out"
+          style={{ transform: `translateX(-${currentIndex * 100}%)` }}
+        >
           {images.map((img, idx) => {
-            if (idx !== currentIndex) return null;
-
             const imageUrl = img ? buildSanityImageUrl(img) : heroImage;
 
             return (
-              <m.div
+              <div
                 key={idx}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.4, ease: 'easeInOut' }}
-                className="w-full h-full cursor-pointer absolute inset-0"
+                className="w-full h-full shrink-0 relative cursor-pointer"
                 onClick={e => openLightbox(idx, e)}
               >
                 <Image
@@ -140,11 +137,12 @@ function ImageFolderCarousel({ images, titre, heroImage }) {
                   fill
                   className="object-cover hover:opacity-50 transition-opacity active:cursor-pointing"
                 />
-              </m.div>
+              </div>
             );
           })}
-        </AnimatePresence>
+        </div>
 
+        {/* CONTRÔLES */}
         {images.length > 1 && (
           <>
             <button
@@ -172,14 +170,14 @@ function ImageFolderCarousel({ images, titre, heroImage }) {
           </>
         )}
       </div>
+
       {mounted &&
-        lightboxOpen &&
         createPortal(
           <CustomLightbox
             open={lightboxOpen}
-            initialIndex={lightboxIndex}
+            initialIndex={lightboxIndex} // ou win.imageIndex selon le composant
             onClose={() => setLightboxOpen(false)}
-            images={images}
+            images={images} // ou win.fullFolder selon le composant
             project={{ name: titre }}
           />,
           document.body
@@ -244,6 +242,7 @@ function MusicPlaylistCarousel({ rawUrls }) {
         ))}
       </div>
 
+      {/* CONTRÔLES */}
       {finalUrls.length > 1 && (
         <>
           <button
@@ -523,13 +522,12 @@ function WindowItem({
             </div>
 
             {mounted &&
-              lightboxOpen &&
               createPortal(
                 <CustomLightbox
                   open={lightboxOpen}
                   initialIndex={win.imageIndex}
                   onClose={() => setLightboxOpen(false)}
-                  images={win.fullFolder}
+                  images={win.fullFolder || win.imageFolder}
                   project={{ name: titre }}
                 />,
                 document.body
@@ -745,7 +743,7 @@ export default function HomePageTabs() {
         {imageWindows.map((imgWin, idx) => (
           <div
             key={`img-mob-${idx}`}
-            className="flex col-span-1 w-full flex-col text-white gap-1 shadow-lg"
+            className="flex col-span-1 w-full h-fit flex-col text-white gap-1 shadow-lg"
           >
             <div
               className="flex items-center justify-between border border-blackCustom gap-2 p-2 rounded-t-md"
@@ -758,9 +756,8 @@ export default function HomePageTabs() {
                   : ''}
               </h3>
             </div>
-            {/* Conteneur sécurisé pour empêcher l'écrasement de la hauteur */}
             <div className="p-2 border border-blackCustom bg-background rounded-b-md w-full">
-              <div className="w-full aspect-square relative">
+              <div className="w-full aspect-square relative rounded-sm overflow-hidden">
                 {imgWin._type === 'windowImageFolder' ? (
                   <ImageFolderCarousel
                     images={imgWin.imageFolder}
@@ -776,7 +773,7 @@ export default function HomePageTabs() {
                     }
                     alt="Image mobile"
                     fill
-                    className="object-cover rounded-sm"
+                    className="object-cover"
                   />
                 )}
               </div>
