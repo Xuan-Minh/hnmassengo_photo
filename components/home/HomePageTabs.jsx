@@ -86,6 +86,7 @@ function ImageFolderCarousel({ images, titre, heroImage }) {
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
   const [mounted, setMounted] = useState(false);
+  const [touchStartX, setTouchStartX] = useState(null);
 
   useEffect(() => {
     setMounted(true);
@@ -99,14 +100,26 @@ function ImageFolderCarousel({ images, titre, heroImage }) {
     );
   }
 
-  const handlePrev = e => {
-    e.stopPropagation();
-    setCurrentIndex(prev => (prev === 0 ? images.length - 1 : prev - 1));
+  const handleTouchStart = e => {
+    setTouchStartX(e.touches[0].clientX);
   };
 
-  const handleNext = e => {
-    e.stopPropagation();
+  const handleTouchEnd = e => {
+    if (touchStartX === null) return;
+
+    const touchEndX = e.changedTouches[0].clientX;
+    const diff = touchStartX - touchEndX;
+
+    // Si on a glissé de plus de 50 pixels vers la gauche
+    if (diff > 50) {
     setCurrentIndex(prev => (prev === images.length - 1 ? 0 : prev + 1));
+    }
+    // Si on a glissé de plus de 50 pixels vers la droite
+    else if (diff < -50) {
+      setCurrentIndex(prev => (prev === 0 ? images.length - 1 : prev - 1));
+    }
+
+    setTouchStartX(null); // On réinitialise
   };
 
   const openLightbox = (idx, e) => {
@@ -117,7 +130,11 @@ function ImageFolderCarousel({ images, titre, heroImage }) {
 
   return (
     <>
-      <div className="relative w-full h-full rounded-md overflow-hidden group bg-blackCustom/5">
+      <div
+        className="relative w-full h-full rounded-md overflow-hidden group bg-blackCustom/5"
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+      >
         <div
           className="flex w-full h-full transition-transform duration-500 ease-in-out"
           style={{ transform: `translateX(-${currentIndex * 100}%)` }}
@@ -144,20 +161,7 @@ function ImageFolderCarousel({ images, titre, heroImage }) {
 
         {/* CONTRÔLES */}
         {images.length > 1 && (
-          <>
-            <button
-              onClick={handlePrev}
-              className="absolute left-2 top-1/2 -translate-y-1/2 bg-blackCustom/40 backdrop-blur-md text-white w-8 h-8 flex items-center justify-center rounded-full hover:bg-black/80 transition-all duration-300 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 z-20 shadow-md cursor-pointer"
-            >
-              <ArrowLeft />
-            </button>
-            <button
-              onClick={handleNext}
-              className="absolute right-2 top-1/2 -translate-y-1/2 bg-blackCustom/40 backdrop-blur-md text-white w-8 h-8 flex items-center justify-center rounded-full hover:bg-black/80 transition-all duration-300 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 z-20 shadow-md cursor-pointer"
-            >
-              <ArrowRight />
-            </button>
-            <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 z-20">
+          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 z-20 pointer-events-none">
               {images.map((_, idx) => (
                 <div
                   key={idx}
@@ -175,9 +179,9 @@ function ImageFolderCarousel({ images, titre, heroImage }) {
         createPortal(
           <CustomLightbox
             open={lightboxOpen}
-            initialIndex={lightboxIndex} // ou win.imageIndex selon le composant
+            initialIndex={lightboxIndex}
             onClose={() => setLightboxOpen(false)}
-            images={images} // ou win.fullFolder selon le composant
+            images={images}
             project={{ name: titre }}
           />,
           document.body
@@ -230,7 +234,7 @@ function MusicPlaylistCarousel({ rawUrls }) {
         {finalUrls.map((url, idx) => (
           <div key={idx} className="w-full shrink-0 h-full">
             <iframe
-              className="sm:h-[152px] lg:h-[152px] sm:w-full md:w-full"
+              className="w-full h-[152px]"
               src={url}
               frameBorder="0"
               allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
@@ -275,6 +279,7 @@ function WindowItem({
   lastSeen,
   heroImage,
   textWin,
+  onOpenLightbox,
   ...props
 }) {
   const originalIndex = win._originalIndex || index;
@@ -500,18 +505,23 @@ function WindowItem({
         const imageUrl = win.photo ? buildSanityImageUrl(win.photo) : heroImage;
 
         return (
-          <>
             <div
               className="flex items-center justify-center p-0 m-0 w-full cursor-pointer hover:opacity-90 transition-opacity active:cursor-pointing"
               style={{ width, height: 'auto', minWidth: '100%' }}
-              onClick={() => setLightboxOpen(true)}
+            onClick={() =>
+              onOpenLightbox(
+                win.fullFolder || win.imageFolder,
+                win.imageIndex,
+                titre
+              )
+            }
             >
               {imageUrl ? (
                 <Image
                   src={imageUrl}
                   alt={titre}
-                  width={800}
-                  height={800}
+                width={400}
+                height={400}
                   className="w-full h-auto rounded-md block"
                 />
               ) : (
@@ -547,8 +557,7 @@ function WindowItem({
     aspectRatio,
     titre,
     textWin,
-    lightboxOpen,
-    mounted,
+    onOpenLightbox,
   ]);
 
   return (
@@ -573,6 +582,15 @@ export default function HomePageTabs() {
   const [lastSeen, setLastSeen] = useState('...');
   const [windows, setWindows] = useState([]);
   const isMobile = useIsMobile(768);
+
+  const [desktopLightbox, setDesktopLightbox] = useState({
+    open: false,
+    images: [],
+    index: 0,
+    title: '',
+  });
+
+  const [recoModalOpen, setRecoModalOpen] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -864,6 +882,7 @@ export default function HomePageTabs() {
   // ==========================================
 
   return (
+    <>
     <WindowsManager>
       {desktopWindows.map((win, index) => (
         <WindowItem
@@ -875,8 +894,20 @@ export default function HomePageTabs() {
           lastSeen={lastSeen}
           heroImage={heroImage}
           textWin={textWin}
+            onOpenLightbox={(images, idx, title) =>
+              setDesktopLightbox({ open: true, images, index: idx, title })
+            }
         />
       ))}
     </WindowsManager>
+
+      <CustomLightbox
+        open={desktopLightbox.open}
+        initialIndex={desktopLightbox.index}
+        onClose={() => setDesktopLightbox(prev => ({ ...prev, open: false }))}
+        images={desktopLightbox.images}
+        project={{ name: desktopLightbox.title }}
+      />
+    </>
   );
 }
