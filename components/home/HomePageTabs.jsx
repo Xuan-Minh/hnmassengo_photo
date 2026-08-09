@@ -112,7 +112,7 @@ function ImageFolderCarousel({ images, titre, heroImage }) {
 
     // Si on a glissé de plus de 50 pixels vers la gauche
     if (diff > 50) {
-    setCurrentIndex(prev => (prev === images.length - 1 ? 0 : prev + 1));
+      setCurrentIndex(prev => (prev === images.length - 1 ? 0 : prev + 1));
     }
     // Si on a glissé de plus de 50 pixels vers la droite
     else if (diff < -50) {
@@ -161,15 +161,15 @@ function ImageFolderCarousel({ images, titre, heroImage }) {
 
         {images.length > 1 && (
           <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 z-20 pointer-events-none">
-              {images.map((_, idx) => (
-                <div
-                  key={idx}
-                  className={`h-1.5 rounded-full transition-all duration-300 ease-in-out ${
-                    idx === currentIndex ? 'w-4 bg-white' : 'w-1.5 bg-white/50'
-                  }`}
-                />
-              ))}
-            </div>
+            {images.map((_, idx) => (
+              <div
+                key={idx}
+                className={`h-1.5 rounded-full transition-all duration-300 ease-in-out ${
+                  idx === currentIndex ? 'w-4 bg-white' : 'w-1.5 bg-white/50'
+                }`}
+              />
+            ))}
+          </div>
         )}
       </div>
 
@@ -495,9 +495,9 @@ function WindowItem({
         const imageUrl = win.photo ? buildSanityImageUrl(win.photo) : heroImage;
 
         return (
-            <div
-              className="flex items-center justify-center p-0 m-0 w-full cursor-pointer hover:opacity-90 transition-opacity active:cursor-pointing"
-              style={{ width, height: 'auto', minWidth: '100%' }}
+          <div
+            className="flex items-center justify-center p-0 m-0 w-full cursor-pointer hover:opacity-90 transition-opacity active:cursor-pointing"
+            style={{ width, height: 'auto', minWidth: '100%' }}
             onClick={() =>
               onOpenLightbox(
                 win.fullFolder || win.imageFolder,
@@ -505,21 +505,21 @@ function WindowItem({
                 titre
               )
             }
-            >
-              {imageUrl ? (
-                <Image
-                  src={imageUrl}
-                  alt={titre}
+          >
+            {imageUrl ? (
+              <Image
+                src={imageUrl}
+                alt={titre}
                 width={400}
                 height={400}
-                  className="w-full h-auto rounded-md block"
-                />
-              ) : (
-                <div className="w-full h-full bg-gray-200 flex items-center justify-center text-black">
-                  Image indisponible
-                </div>
-              )}
-            </div>
+                className="w-full h-auto rounded-md block"
+              />
+            ) : (
+              <div className="w-full h-full bg-gray-200 flex items-center justify-center text-black">
+                Image indisponible
+              </div>
+            )}
+          </div>
         );
       }
 
@@ -738,7 +738,7 @@ export default function HomePageTabs() {
         {imageWindows.map((imgWin, idx) => (
           <div
             key={`img-mob-${idx}`}
-            className="flex col-span-1 w-full h-fit flex-col text-white gap-1 shadow-lg"
+            className="flex col-span-1 w-full h-full flex-col text-white gap-1 shadow-lg"
           >
             <div
               className="flex items-center justify-between border border-blackCustom gap-2 p-2 rounded-t-md"
@@ -751,7 +751,7 @@ export default function HomePageTabs() {
                   : ''}
               </h3>
             </div>
-            <div className="p-2 border border-blackCustom bg-background rounded-b-md w-full">
+            <div className="p-2 border border-blackCustom bg-background rounded-b-md w-full flex-1">
               <div className="w-full aspect-square relative rounded-sm overflow-hidden">
                 {imgWin._type === 'windowImageFolder' ? (
                   <ImageFolderCarousel
@@ -775,41 +775,110 @@ export default function HomePageTabs() {
             </div>
           </div>
         ))}
-
         {/* --- CARTE RECOMMANDATION --- */}
         {recoWin && (
-          <div className="flex col-span-1 w-full max-h-[5vh] flex-col text-white gap-1 shadow-lg">
+          <>
             <div
-              className="flex items-center justify-between border border-blackCustom gap-2 p-2 rounded-t-md"
-              style={{ backgroundColor: getTabColor(recoWin) }}
+              className="flex col-span-1 w-full h-full flex-col text-white gap-1 shadow-lg cursor-pointer hover:opacity-95 transition-opacity"
+              onClick={() => setRecoModalOpen(true)}
             >
-              <h3 className="text-sm font-bold px-2 truncate">
-                {localizeField(recoWin.title, locale, 'Recommandation')}
-              </h3>
+              <div
+                className="flex items-center justify-between border border-blackCustom gap-2 p-2 rounded-t-md"
+                style={{ backgroundColor: getTabColor(recoWin) }}
+              >
+                <h3 className="text-sm font-bold px-2 truncate">
+                  {localizeField(recoWin.title, locale, 'Recommandation')}
+                </h3>
+              </div>
+
+              <div className="p-2 border border-blackCustom bg-background rounded-b-md w-full flex-1">
+                <div className="w-full aspect-square relative rounded-sm overflow-hidden p-1">
+                  <ul className="text-sm text-blackCustom w-full flex flex-col gap-1.5 h-full relative z-10">
+                    {recoWin.recommandation &&
+                    recoWin.recommandation.length > 0 ? (
+                      recoWin.recommandation.map((rec, idx) => (
+                        <li key={idx} className="truncate shrink-0">
+                          {rec.title || rec.url}
+                        </li>
+                      ))
+                    ) : (
+                      <p className="text-blackCustom">
+                        Aucune recommandation disponible.
+                      </p>
+                    )}
+                  </ul>
+                  {/* Le dégradé reste par-dessus (z-20) */}
+                  <div className="absolute bottom-0 left-0 w-full h-10 bg-gradient-to-t from-background to-transparent pointer-events-none z-20" />
+                </div>
+              </div>
             </div>
-            <div className="p-2 border border-blackCustom bg-background flex rounded-b-md h-auto items-center justify-center aspect-square">
-              <ul className="text-[12px] text-blackCustom">
-                {recoWin.recommandation && recoWin.recommandation.length > 0 ? (
-                  recoWin.recommandation.map((rec, idx) => (
-                    <a
-                      key={idx}
-                      href={rec.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="underline hover:no-underline underline-offset-2 break-all cursor-pointer active:cursor-pointing"
+
+            <AnimatePresence>
+              {recoModalOpen && (
+                <m.div
+                  className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-blackCustom/40 backdrop-blur-sm gap-1"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                  onClick={() => setRecoModalOpen(false)}
+                >
+                  <m.div
+                    // 1. Le conteneur parent devient transparent, on lui donne juste le gap-1
+                    className="w-full max-w-sm max-h-[70vh] flex flex-col gap-1 shadow-2xl"
+                    initial={{ y: 20, scale: 0.95 }}
+                    animate={{ y: 0, scale: 1 }}
+                    exit={{ y: 20, scale: 0.95 }}
+                    transition={{ duration: 0.2 }}
+                    onClick={e => e.stopPropagation()}
+                  >
+                    {/* 2. Le Header (avec ses propres bordures et son rounded-t-md) */}
+                    <div
+                      className="flex items-center justify-between border border-blackCustom gap-2 p-2 rounded-t-md shrink-0"
+                      style={{ backgroundColor: getTabColor(recoWin) }}
                     >
-                      <li>{rec.title || rec.url}</li>
-                    </a>
-                  ))
-                ) : (
-                  <p className="text-blackCustom">
-                    Aucune recommandation disponible.
-                  </p>
-                )}
-              </ul>
-            </div>
-          </div>
+                      <h3 className="text-[12px] font-bold px-2 text-white">
+                        {localizeField(recoWin.title, locale, 'Recommandation')}
+                      </h3>
+                      <button
+                        onClick={() => setRecoModalOpen(false)}
+                        className="text-white hover:opacity-70 px-2 font-bold text-lg leading-none"
+                      >
+                        close
+                      </button>
+                    </div>
+
+                    {/* 3. Le Contenu (avec ses propres bordures, son fond, et son rounded-b-md) */}
+                    <div className="p-4 overflow-y-auto border border-blackCustom bg-background rounded-b-md">
+                      <ul className="list-disc list-inside text-[14px] text-blackCustom flex flex-col gap-4">
+                        {recoWin.recommandation &&
+                        recoWin.recommandation.length > 0 ? (
+                          recoWin.recommandation.map((rec, idx) => (
+                            <li key={idx}>
+                              <a
+                                href={rec.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="underline hover:no-underline underline-offset-2 break-all active:text-gray-500"
+                              >
+                                {rec.title || rec.url}
+                              </a>
+                            </li>
+                          ))
+                        ) : (
+                          <p className="text-blackCustom">
+                            Aucune recommandation disponible.
+                          </p>
+                        )}
+                      </ul>
+                    </div>
+                  </m.div>
+                </m.div>
+              )}
+            </AnimatePresence>
+          </>
         )}
+
         {/* --- CARTE MUSIQUE --- */}
         {musicWin && (
           <div className="flex col-span-2 w-full h-auto flex-col text-white gap-1 shadow-lg">
@@ -821,7 +890,7 @@ export default function HomePageTabs() {
                 {localizeField(musicWin.title, locale, 'Musique')}
               </h3>
             </div>
-            <div className="p-2 border border-blackCustom bg-background flex rounded-b-md h-auto items-center justify-center ">
+            <div className="p-2 border border-blackCustom bg-background flex rounded-b-md h-auto items-center justify-center">
               <MusicPlaylistCarousel rawUrls={musicWin.spotifyUrlFolder} />
             </div>
           </div>
@@ -860,23 +929,23 @@ export default function HomePageTabs() {
 
   return (
     <>
-    <WindowsManager>
-      {desktopWindows.map((win, index) => (
-        <WindowItem
-          key={win._key || `tab${win._originalIndex}-${index}`}
-          win={win}
-          index={index}
-          totalWindows={desktopWindows.length}
-          locale={locale}
-          lastSeen={lastSeen}
-          heroImage={heroImage}
-          textWin={textWin}
+      <WindowsManager>
+        {desktopWindows.map((win, index) => (
+          <WindowItem
+            key={win._key || `tab${win._originalIndex}-${index}`}
+            win={win}
+            index={index}
+            totalWindows={desktopWindows.length}
+            locale={locale}
+            lastSeen={lastSeen}
+            heroImage={heroImage}
+            textWin={textWin}
             onOpenLightbox={(images, idx, title) =>
               setDesktopLightbox({ open: true, images, index: idx, title })
             }
-        />
-      ))}
-    </WindowsManager>
+          />
+        ))}
+      </WindowsManager>
 
       <CustomLightbox
         open={desktopLightbox.open}
