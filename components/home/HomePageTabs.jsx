@@ -222,7 +222,7 @@ function MusicPlaylistCarousel({ rawUrls }) {
   };
 
   return (
-    <div className="relative w-[85vw] md:w-[40vw] lg:w-[20vw] sm:h-[352px] lg:h-[152px] group rounded-md overflow-hidden bg-blackCustom/5">
+    <div className="relative sm:w-full md:w-[40vw] lg:w-[20vw] group rounded-md overflow-hidden bg-blackCustom/5">
       <div
         className="flex w-full h-full transition-transform duration-500 ease-in-out"
         style={{ transform: `translateX(-${currentIndex * 100}%)` }}
@@ -230,7 +230,7 @@ function MusicPlaylistCarousel({ rawUrls }) {
         {finalUrls.map((url, idx) => (
           <div key={idx} className="w-full shrink-0 h-full">
             <iframe
-              className="sm:h-[352px] md:h-[352px] lg:h-[152px] sm:w-full md:w-full"
+              className="sm:h-[152px] lg:h-[152px] sm:w-full md:w-full"
               src={url}
               frameBorder="0"
               allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
@@ -781,26 +781,9 @@ export default function HomePageTabs() {
           </div>
         ))}
 
-        {/* --- CARTE MUSIQUE --- */}
-        {musicWin && (
-          <div className="flex col-span-1 w-full h-full flex-col text-white gap-1 shadow-lg">
-            <div
-              className="flex items-center justify-between border border-blackCustom gap-2 p-2 rounded-t-md"
-              style={{ backgroundColor: getTabColor(musicWin) }}
-            >
-              <h3 className="text-sm font-bold px-2 truncate">
-                {localizeField(musicWin.title, locale, 'Musique')}
-              </h3>
-            </div>
-            <div className="p-2 border border-blackCustom bg-background flex rounded-b-md h-auto items-center justify-center aspect-square">
-              <MusicPlaylistCarousel rawUrls={musicWin.spotifyUrlFolder} />
-            </div>
-          </div>
-        )}
-
         {/* --- CARTE RECOMMANDATION --- */}
         {recoWin && (
-          <div className="flex col-span-1 w-full h-full flex-col text-white gap-1 shadow-lg">
+          <div className="flex col-span-1 w-full max-h-[5vh] flex-col text-white gap-1 shadow-lg">
             <div
               className="flex items-center justify-between border border-blackCustom gap-2 p-2 rounded-t-md"
               style={{ backgroundColor: getTabColor(recoWin) }}
@@ -829,6 +812,22 @@ export default function HomePageTabs() {
                   </p>
                 )}
               </ul>
+            </div>
+          </div>
+        )}
+        {/* --- CARTE MUSIQUE --- */}
+        {musicWin && (
+          <div className="flex col-span-2 w-full h-auto flex-col text-white gap-1 shadow-lg">
+            <div
+              className="flex items-center justify-between border border-blackCustom gap-2 p-2 rounded-t-md"
+              style={{ backgroundColor: getTabColor(musicWin) }}
+            >
+              <h3 className="text-sm font-bold px-2 truncate">
+                {localizeField(musicWin.title, locale, 'Musique')}
+              </h3>
+            </div>
+            <div className="p-2 border border-blackCustom bg-background flex rounded-b-md h-auto items-center justify-center ">
+              <MusicPlaylistCarousel rawUrls={musicWin.spotifyUrlFolder} />
             </div>
           </div>
         )}
