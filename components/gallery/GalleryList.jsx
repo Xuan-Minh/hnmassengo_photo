@@ -119,7 +119,7 @@ const MainViewer = ({
           alt={project?.name || ''}
           fill
           sizes="(max-width: 1024px) 100vw, 70vw"
-          className={`object-contain transition-transform group-hover:scale-[1.02] hover:opacity-70 ${
+          className={`object-contain transition-all group-hover:scale-[1.02] hover:opacity-70 ${
             isMobile ? 'duration-150' : 'duration-300'
           } ${
             isTransitioning || (!isListImageLoaded && !listImageError)
@@ -134,9 +134,6 @@ const MainViewer = ({
           }
           priority={!isMobile}
         />
-        <div className="absolute bottom-8 right-2 z-10 bg-whiteCustom backdrop-blur-md text-blackCustom px-3 py-1.5 rounded-sm shadow-sm text-[10px] font-bold uppercase tracking-widest pointer-events-none transition-all duration-300 opacity-100 md:group-hover:opacity-100">
-          the project &#62;
-        </div>
       </button>
 
       {/* Flèche droite */}
