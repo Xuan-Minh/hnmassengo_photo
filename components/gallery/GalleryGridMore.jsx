@@ -391,15 +391,17 @@ function useGalleryInteractions(
     if (targetEl && container) {
       const containerRect = container.getBoundingClientRect();
       const targetRect = targetEl.getBoundingClientRect();
-      const scrollPos =
-        container.scrollTop +
-        (targetRect.top - containerRect.top) -
-        containerRect.height / 2 +
-        targetRect.height / 2;
-      container.scrollTo({ top: scrollPos, behavior: 'smooth' });
+
+      const distanceToTop = targetRect.top - containerRect.top;
+
+      const scrollPos = container.scrollTop + distanceToTop - 60;
+
+      container.scrollTo({
+        top: scrollPos,
+        behavior: 'smooth',
+      });
     }
   };
-
   useEffect(() => {
     let rafId = null;
     const handleMouseMove = e => {
