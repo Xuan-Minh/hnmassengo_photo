@@ -110,7 +110,7 @@ export default function BlogPostItem({
   return (
     <button
       type="button"
-      className="w-full lg:border-b lg:border-whiteCustom/20 py-2 lg:py-12 cursor-pointer group lg:hover:border-l-4 lg:hover:border-l-white lg:pl-8 transition-colors duration-300"
+      className="w-full lg:border-b lg:border-whiteCustom/20 py-4 lg:py-12 cursor-pointer group lg:hover:border-l-4 lg:hover:border-l-white lg:pl-8 transition-colors duration-300 border-b border-whiteCustom/20"
       onClick={onClick}
       onKeyPress={e => {
         if (e.key === 'Enter') onClick();
@@ -133,13 +133,13 @@ export default function BlogPostItem({
           <div className="flex-1 text-whiteCustom flex flex-col justify-start">
             <h3
               ref={titleRef}
-              className="text-3xl lg:text-3xl font-liberation italic mb-2"
+              className="text-xl lg:text-3xl font-liberation italic mb-2"
             >
               &ldquo;{displayTitle}&rdquo;
             </h3>
             <div
               ref={metaRef}
-              className="text-lg text-whiteCustom/80 lg:text-base font-liberation mb-4"
+              className="text-sm text-whiteCustom/80 lg:text-base font-liberation mb-4"
             >
               - {post.date}
             </div>
@@ -153,13 +153,13 @@ export default function BlogPostItem({
           <div className="flex-1 text-whiteCustom order-2 lg:order-1 flex flex-col justify-start">
             <h3
               ref={titleRef}
-              className="text-3xl lg:text-3xl font-liberation italic mb-2"
+              className="text-xl lg:text-3xl font-liberation italic mb-2"
             >
               &ldquo;{displayTitle}&rdquo;
             </h3>
             <div
               ref={metaRef}
-              className="text-lg text-whiteCustom/80 lg:text-base font-liberation mb-4"
+              className="text-sm  text-whiteCustom/80 lg:text-base font-liberation mb-4"
             >
               - {post.date}
             </div>
@@ -181,16 +181,16 @@ export default function BlogPostItem({
 
       {(post.layout === 'text-only' || !post.image) && (
         <div className="text-whiteCustom">
-          <div className="flex flex-col mb-4">
+          <div className="flex flex-col mb-4 ">
             <h3
               ref={titleRef}
-              className="text-3xl lg:text-3xl font-liberation italic mb-2"
+              className="text-xl lg:text-3xl font-liberation italic mb-2"
             >
               &ldquo;{displayTitle}&rdquo;
             </h3>
             <span
               ref={metaRef}
-              className="text-whiteCustom/80 text-lg lg:text-base font-liberation"
+              className="text-whiteCustom/80 text-sm lg:text-base font-liberation"
             >
               - {post.date}
             </span>

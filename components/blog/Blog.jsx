@@ -143,15 +143,8 @@ export default function Blog() {
     return () => window.removeEventListener('popstate', handlePopState);
   }, []);
 
-  const latestPosts = posts.slice(0, isMobile ? 1 : CONTENT.BLOG_PREVIEW_COUNT);
-
-  const handleOpenPost = () => {
-    if (latestPosts.length > 0) {
-      const currentPost = latestPosts[0];
-      replacePostParam(currentPost.id);
-      setSelectedPostId(currentPost.id);
-    }
-  };
+  // On utilise toujours le nombre d'articles par défaut, peu importe l'écran
+  const latestPosts = posts.slice(0, CONTENT.BLOG_PREVIEW_COUNT);
   return (
     <>
       <section
@@ -189,22 +182,6 @@ export default function Blog() {
               </span>
             </button>
           </div>
-          {isMobile && (
-            <div className="w-full flex justify-center mt-6 lg:hidden">
-              <button
-                type="button"
-                onClick={handleOpenPost}
-                className="text-lg font-liberation italic text-whiteCustom/60 hover:text-whiteCustom transition-colors hover:[--bg-size:100%_1px]"
-              >
-                <span
-                  className={`inline box-decoration-clone bg-[linear-gradient(currentColor,currentColor)] bg-no-repeat [background-position:0_100%] transition-[background-size,color] duration-300 ease-in-out`}
-                  style={{ backgroundSize: 'var(--bg-size, 0% 1px)' }}
-                >
-                  {t('suite')}
-                </span>
-              </button>
-            </div>
-          )}
         </div>
       </section>
 
