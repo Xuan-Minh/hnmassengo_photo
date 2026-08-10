@@ -11,6 +11,7 @@ export default function BlogPostItem({
   onClick,
   postCount = 1,
   isMobile = false,
+  isLast = false,
 }) {
   const locale = useLocale();
   const { headline: autoHeadline, rest: textRemainder } = post.title
@@ -110,7 +111,11 @@ export default function BlogPostItem({
   return (
     <button
       type="button"
-      className="w-full lg:border-b lg:border-whiteCustom/20 py-4 lg:py-12 cursor-pointer group lg:hover:border-l-4 lg:hover:border-l-white lg:pl-8 transition-colors duration-300 border-b border-whiteCustom/20"
+      className={`w-full py-4 lg:py-12 cursor-pointer group lg:hover:border-l-4 lg:hover:border-l-white lg:pl-8 transition-colors duration-300 ${
+        !isLast
+          ? 'border-b border-whiteCustom/20 lg:border-b lg:border-whiteCustom/20'
+          : ''
+      }`}
       onClick={onClick}
       onKeyPress={e => {
         if (e.key === 'Enter') onClick();
@@ -229,4 +234,5 @@ BlogPostItem.propTypes = {
   onClick: PropTypes.func.isRequired,
   postCount: PropTypes.number,
   isMobile: PropTypes.bool,
+  isLast: PropTypes.bool,
 };

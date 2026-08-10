@@ -156,12 +156,13 @@ export default function Blog() {
           style={{ width: 'min(1000px, 85vw)' }}
           className="flex flex-col justify-center h-full max-h-full 2xl:max-w-5xl"
         >
-          {latestPosts.map(post => (
+          {latestPosts.map((post, index) => (
             <BlogPostItem
               key={post.id}
               post={post}
               postCount={latestPosts.length}
               isMobile={isMobile}
+              isLast={index === latestPosts.length - 1}
               onClick={() => {
                 replacePostParam(post.id);
                 setSelectedPostId(post.id);
