@@ -216,7 +216,7 @@ function MobileMenu({
       {/* Bouton Menu (Volant)*/}
       <button
         type="button"
-        className={`fixed top-4 right-8 z-50 text-xl font-liberation italic tracking-wider transition-opacity duration-300 opacity-100 ${
+        className={`fixed top-6 right-8 z-50 text-xl font-liberation italic tracking-wider transition-opacity duration-300 opacity-100 ${
           isDarkBg ? 'text-whiteCustom' : 'text-blackCustom'
         }`}
         onClick={() =>
