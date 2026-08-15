@@ -544,7 +544,7 @@ function WindowItem({
       couleur={couleur}
       style={windowStyle}
       contenu={windowContent}
-      subtitle={win._type === 'windowBio' ? `Last seen: ${lastSeen}` : null}
+      subtitle={win._type === 'windowBio' ? `Last visited: ${lastSeen}` : null}
       {...props}
     />
   );
