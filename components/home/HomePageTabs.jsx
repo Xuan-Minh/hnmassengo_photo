@@ -700,7 +700,7 @@ export default function HomePageTabs() {
                   {localizeField(bioWin.title, locale, 'about me')}
                 </h3>
                 <div className="text-[10px] text-gray-300 px-2">
-                  Last seen: {lastSeen}
+                  Last visited: {lastSeen}
                 </div>
               </div>
             </div>
