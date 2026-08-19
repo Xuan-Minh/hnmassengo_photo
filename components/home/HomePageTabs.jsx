@@ -8,11 +8,7 @@ import WindowsManager from './WindowsManager';
 import { HOME_FALLBACK_IMAGES } from '../../lib/constants';
 import client from '../../lib/sanity.client';
 import { useSanityImages, useIsMobile } from '../../lib/hooks';
-import {
-  extractIdYoutube,
-  calculateAge,
-  portableTextToPlain,
-} from '../../lib/utils';
+import { extractIdYoutube, portableTextToPlain } from '../../lib/utils';
 import { buildSanityImageUrl } from '../../lib/imageUtils';
 import { AnimatePresence, m } from 'framer-motion';
 import CustomLightbox from '../gallery/cartel/CustomLightbox';
