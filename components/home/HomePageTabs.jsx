@@ -544,7 +544,7 @@ function WindowItem({
       couleur={couleur}
       style={windowStyle}
       contenu={windowContent}
-      subtitle={win._type === 'windowBio' ? `Last seen: ${lastSeen}` : null}
+      subtitle={win._type === 'windowBio' ? `Last visited: ${lastSeen}` : null}
       {...props}
     />
   );
@@ -568,6 +568,7 @@ export default function HomePageTabs() {
   });
 
   const [recoModalOpen, setRecoModalOpen] = useState(false);
+  const [bioModalOpen, setBioModalOpen] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -690,7 +691,12 @@ export default function HomePageTabs() {
       >
         {/* --- CARTE 1 : BIO --- */}
         {bioWin && (
-          <div className="flex col-span-2 w-full h-fit flex-col text-white gap-1 shadow-lg">
+          <div
+            className="flex col-span-2 w-full h-fit flex-col text-white gap-1 shadow-lg"
+            onClick={() => {
+              setBioModalOpen(true);
+            }}
+          >
             <div
               className="flex items-center justify-between border border-blackCustom gap-2 p-2 rounded-t-md"
               style={{ backgroundColor: getTabColor(bioWin) }}
@@ -700,7 +706,7 @@ export default function HomePageTabs() {
                   {localizeField(bioWin.title, locale, 'about me')}
                 </h3>
                 <div className="text-[10px] text-gray-300 px-2">
-                  Last seen: {lastSeen}
+                  Last visited: {lastSeen}
                 </div>
               </div>
             </div>
@@ -731,6 +737,76 @@ export default function HomePageTabs() {
                 <div className="clear-both"></div>
               </div>
             </div>
+            <AnimatePresence>
+              {bioModalOpen && (
+                <m.div
+                  className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-blackCustom/40 backdrop-blur-sm gap-1"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                  onClick={() => setBioModalOpen(false)}
+                >
+                  <m.div
+                    // 1. Le conteneur parent devient transparent, on lui donne juste le gap-1
+                    className="w-full max-w-sm max-h-[70vh] flex flex-col gap-1 shadow-2xl"
+                    initial={{ y: 20, scale: 0.95 }}
+                    animate={{ y: 0, scale: 1 }}
+                    exit={{ y: 20, scale: 0.95 }}
+                    transition={{ duration: 0.2 }}
+                    onClick={e => e.stopPropagation()}
+                  >
+                    {/* 2. Le Header (avec ses propres bordures et son rounded-t-md) */}
+                    <div
+                      className="flex items-center justify-between border border-blackCustom gap-2 p-2 rounded-t-md shrink-0"
+                      style={{ backgroundColor: getTabColor(bioWin) }}
+                    >
+                      <div className="flex flex-col">
+                        <h3 className="text-[12px] font-bold px-2 text-white">
+                          {localizeField(bioWin.title, locale, 'Biographie')}
+                        </h3>
+                        <div className="text-[10px] text-gray-300 px-2">
+                          Last visited: {lastSeen}
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => setBioModalOpen(false)}
+                        className="text-white hover:opacity-70 px-2 font-bold text-lg leading-none"
+                      >
+                        close
+                      </button>
+                    </div>
+
+                    {/* 3. Le Contenu (avec ses propres bordures, son fond, et son rounded-b-md) */}
+                    <div className="p-4 overflow-y-auto border border-blackCustom bg-background rounded-b-md">
+                      <div className="float-left w-[35%] mr-4 mb-2">
+                        <Image
+                          src={
+                            bioWin.photo
+                              ? buildSanityImageUrl(bioWin.photo)
+                              : heroImage
+                          }
+                          alt="Portrait Bio"
+                          width={400}
+                          height={400}
+                          className="w-full h-auto object-cover rounded-md shadow-sm"
+                        />
+                      </div>
+
+                      {textWin && (
+                        <div className="md:text-sm lg:text-[14px] text-blackCustom  leading-relaxed text-justify preserve-lines whitespace-pre-line font-liberation italic">
+                          {portableTextToPlain(
+                            localizeField(textWin.content, locale, [])
+                          )}
+                        </div>
+                      )}
+
+                      <div className="clear-both"></div>
+                    </div>
+                  </m.div>
+                </m.div>
+              )}
+            </AnimatePresence>
           </div>
         )}
 
