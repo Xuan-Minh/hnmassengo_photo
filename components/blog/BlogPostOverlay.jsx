@@ -212,7 +212,7 @@ export default function BlogPostOverlay({ post, onClose, onPrevious, onNext }) {
               {/* Extras au début */}
               {extrasPosition === 'start' && <ExtrasBlock extras={extras} />}
 
-              <div className="text-base md:text-lg leading-relaxed text-whiteCustom space-y-4 max-w-2xl mx-auto">
+              <div className="text-base md:text-lg leading-relaxed text-whiteCustom space-y-4 mx-auto">
                 {displayText?.split('\n\n').map((paragraph, idx, item) => (
                   <p
                     key={item.id + '-' + idx}
