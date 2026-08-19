@@ -8,6 +8,7 @@ import BaseOverlay from '../overlays/BaseOverlay';
 import { useTranslations, useLocale } from 'next-intl';
 import { extractFirstSentence } from '../../lib/utils';
 import AnimatedUnderlineLink from '../ui/AnimatedUnderlineLink';
+import { isMobile } from '../../lib/hooks';
 
 function ExtrasBlock({ extras }) {
   if (!Array.isArray(extras) || extras.length === 0) return null;
@@ -181,7 +182,10 @@ export default function BlogPostOverlay({ post, onClose, onPrevious, onNext }) {
 
               {/* Contact Button */}
               <div className="mt-8 flex justify-end max-w-2xl mx-auto">
-                <AnimatedUnderlineLink>
+                <AnimatedUnderlineLink
+                  href="#"
+                  onClick={() => setContactOpen(true)}
+                >
                   <button
                     type="button"
                     onClick={() => setContactOpen(true)}
