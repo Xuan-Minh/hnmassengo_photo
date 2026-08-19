@@ -124,17 +124,19 @@ export default function BlogPostItem({
     >
       {post.layout === 'image-left' && post.image && (
         <div className="flex flex-col lg:flex-row gap-8 sm:items-start lg:items-center ">
-          <div className="w-full lg:w-1/3 flex items-center justify-center">
-            <Image
-              src={post.image}
-              alt={displayTitle || ''}
-              width={400}
-              height={300}
-              className="w-full h-auto xl:max-h-[150px] 2xl:max-h-[300px] object-contain lg:grayscale group-hover:grayscale-0 transition-colors duration-500"
-              sizes="(max-width: 768px) 100vw, 400px"
-              priority={false}
-            />
-          </div>
+          {!isMobile && (
+            <div className="w-full lg:w-1/3 flex items-center justify-center">
+              <Image
+                src={post.image}
+                alt={displayTitle || ''}
+                width={400}
+                height={300}
+                className="w-full h-auto xl:max-h-[150px] 2xl:max-h-[300px] object-contain lg:grayscale group-hover:grayscale-0 transition-colors duration-500"
+                sizes="(max-width: 768px) 100vw, 400px"
+                priority={false}
+              />
+            </div>
+          )}
           <div className="flex-1 text-whiteCustom flex flex-col justify-start">
             <h3
               ref={titleRef}
@@ -170,17 +172,19 @@ export default function BlogPostItem({
             </div>
             {textPreviewNode}
           </div>
-          <div className="w-full lg:w-1/3 flex items-center justify-center order-1 lg:order-2">
-            <Image
-              src={post.image}
-              alt={displayTitle || ''}
-              width={400}
-              height={300}
-              className="w-full h-auto max-h-[300px] lg:max-h-[150px] object-contain lg:grayscale group-hover:grayscale-0 transition-colors duration-500"
-              sizes="(max-width: 768px) 100vw, 400px"
-              priority={false}
-            />
-          </div>
+          {!isMobile && (
+            <div className="w-full lg:w-1/3 flex items-center justify-center order-1 lg:order-2">
+              <Image
+                src={post.image}
+                alt={displayTitle || ''}
+                width={400}
+                height={300}
+                className="w-full h-auto max-h-[300px] lg:max-h-[150px] object-contain lg:grayscale group-hover:grayscale-0 transition-colors duration-500"
+                sizes="(max-width: 768px) 100vw, 400px"
+                priority={false}
+              />
+            </div>
+          )}
         </div>
       )}
 
