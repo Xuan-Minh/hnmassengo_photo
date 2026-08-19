@@ -1,7 +1,7 @@
 import { defineField, defineType } from 'sanity';
 
 export const loadingImageType = defineType({
-  name: 'loadingImagesDesktop', // J'ai mis au pluriel car c'est un groupe
+  name: 'loadingImagesDesktop',
   title: 'Images de Chargement - DESKTOP',
   type: 'document',
   fields: [
@@ -10,7 +10,7 @@ export const loadingImageType = defineType({
       title: 'Liste des images Desktop',
       type: 'array',
       options: {
-        layout: 'grid', // C'est ça qui active la belle grille native comme pour tes projets !
+        layout: 'grid',
       },
       of: [
         {

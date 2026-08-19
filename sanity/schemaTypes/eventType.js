@@ -106,7 +106,7 @@ export const eventType = defineType({
       options: {
         list: [
           { title: 'En haut', value: 'image-top' },
-          { tile: 'En bas', value: 'image-bot' },
+          { title: 'En bas', value: 'image-bottom' },
         ],
       },
       initialValue: 'image-top',

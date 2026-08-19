@@ -45,7 +45,6 @@ export const loadingImageMobileType = defineType({
               ],
             },
           ],
-          // Ça, c'est le preview pour chaque petite image DANS la grille
           preview: {
             select: {
               title: 'alt.fr',

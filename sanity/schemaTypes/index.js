@@ -14,7 +14,7 @@ import windowText from './objects/windowText';
 import windowVideo from './objects/windowVideo';
 import windowImage from './objects/windowImage';
 import windowImageFolder from './objects/windowImageFolder';
-import { teamColorType } from './teamColor'; // L'import correct
+import { teamColorType } from './teamColor';
 
 export const schema = {
   types: [
@@ -34,6 +34,6 @@ export const schema = {
     newsletterCampaign,
     windowImage,
     windowImageFolder,
-    teamColorType, // L'export correct
+    teamColorType,
   ],
 };
