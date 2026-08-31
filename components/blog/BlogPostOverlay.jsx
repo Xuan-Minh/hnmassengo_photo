@@ -151,7 +151,7 @@ export default function BlogPostOverlay({ post, onClose, onPrevious, onNext }) {
               {extrasPosition === 'start' && <ExtrasBlock extras={extras} />}
 
               {/* Content - Left aligned and justified */}
-              <div className="text-sm md:text-lg leading-relaxed text-whiteCustom space-y-4 max-w-2xl mx-auto">
+              <div className="text-sm md:text-lg leading-relaxed text-whiteCustom space-y-4 mx-auto">
                 {displayText?.split('\n\n').map((paragraph, idx, item) => (
                   <p
                     key={item.id + '-' + idx}
