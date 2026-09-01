@@ -13,10 +13,15 @@ import GalleryProjetCartel from './GalleryProjetCartel';
 const VIEW_SWITCH_FADE_MS = 180;
 
 function getProjectDateMs(project) {
-  const raw =
+  let raw =
     typeof project?.date === 'object' ? project?.date?.start : project?.date;
 
   if (!raw) return null;
+
+  if (typeof raw === 'string' && raw.length === 7 && raw.includes('-')) {
+    raw = `${raw}-01`;
+  }
+
   const ms = new Date(raw).getTime();
   return Number.isFinite(ms) ? ms : null;
 }

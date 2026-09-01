@@ -14,12 +14,18 @@ import GalleryViewToggle from './GalleryViewToggle';
 // ==========================================
 
 function getProjectDateMs(project) {
-  const raw = project?.date;
+  let raw =
+    typeof project?.date === 'object' ? project?.date?.start : project?.date;
+
   if (!raw) return null;
+
+  if (typeof raw === 'string' && raw.length === 7 && raw.includes('-')) {
+    raw = `${raw}-01`;
+  }
+
   const ms = new Date(raw).getTime();
   return Number.isFinite(ms) ? ms : null;
 }
-
 function getInitialCols() {
   if (typeof window === 'undefined') return 6;
   const width = window.innerWidth;
@@ -86,7 +92,7 @@ function Sidebar({
   onFilterClick,
 }) {
   return (
-    <div className="w-48 flex flex-col pt-8 shrink-0 overflow-y-auto no-scrollbar pb-16">
+    <div className="w-48 flex flex-col pt-8 mx-4 shrink-0 overflow-y-auto no-scrollbar pb-16">
       <GalleryViewToggle view={view} onViewChange={onViewChange} />
       <div className="flex flex-col my-6">
         {FILTERS.map(f => (
