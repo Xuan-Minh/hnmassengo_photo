@@ -130,11 +130,11 @@ export const projectType = defineType({
     }),
     defineField({
       name: 'date',
-      title: 'Date de Réalisation',
+      title: 'Période de Réalisation',
       description:
-        'Date de prise de vue ou de réalisation (remplie automatiquement à la création)',
-      type: 'date',
-      initialValue: () => new Date().toISOString().slice(0, 10),
+        'Période de réalisation du projet - Format : (sept 2022 - janv 2023) ou (2022 - 2023)',
+      type: 'string',
+      validation: Rule => Rule.required(),
     }),
   ],
 });

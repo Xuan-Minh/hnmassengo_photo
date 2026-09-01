@@ -180,9 +180,17 @@ export default function GalleryProjetCartel({ project, onClose }) {
           </div>
 
           <section className="flex flex-col items-start justify-center my-8">
-            <h2 id="project-title" className="text-5xl font-liberation mb-8">
-              {project.name}
-            </h2>
+            <div className="font-liberation text-lg italic text-blackCustom mb-4">
+              <h2 id="project-title" className="text-5xl font-liberation ">
+                {project.name}
+              </h2>
+              <div className="font-liberation text-md italic text-accent flex-shrink-0">
+                {project.date}
+              </div>
+              <div className="font-liberation text-md italic text-accent flex-shrink-0">
+                {project.coords}
+              </div>
+            </div>
             <div className="font-liberation text-lg 2xl:text-xl max-w-2xl 2xl:max-w-6xl  leading-relaxed space-y-4">
               {paragraphs.map((p, i) => (
                 <p className="text-sm md:text-lg" key={`paragraph-${i}`}>
@@ -191,10 +199,6 @@ export default function GalleryProjetCartel({ project, onClose }) {
               ))}
             </div>
           </section>
-
-          <div className="font-liberation text-xl italic text-blackCustom flex-shrink-0">
-            {project.coords}
-          </div>
         </main>
 
         {/* Colonne de droite : Carrousel (desktop uniquement) */}
