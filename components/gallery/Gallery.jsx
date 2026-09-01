@@ -98,7 +98,8 @@ export default function Gallery() {
             return acc;
           }, []),
         coords: p.coords,
-        dateDisplay: p.date?.display || '',
+        dateDisplay: typeof p.date === 'object' ? p.date?.display : p.date,
+        date: p.date,
         description:
           p.description?.[locale] ||
           p.description?.fr ||
