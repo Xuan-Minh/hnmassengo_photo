@@ -131,10 +131,24 @@ export const projectType = defineType({
     defineField({
       name: 'date',
       title: 'Période de Réalisation',
-      description:
-        'Période de réalisation du projet - Format : (sept 2022 - janv 2023) ou (2022 - 2023)',
-      type: 'string',
-      validation: Rule => Rule.required(),
+      type: 'object',
+      fields: [
+        defineField({
+          name: 'start',
+          title: 'Date de début (Sert UNIQUEMENT pour le tri chronologique)',
+          type: 'date',
+          options: {
+            dateFormat: 'YYYY-MM',
+          },
+        }),
+        defineField({
+          name: 'display',
+          title: 'Texte à afficher sur le site',
+          description:
+            'ex: "août 2019 - jan. 2023" ou "juillet 2025 - actuellement"',
+          type: 'string',
+        }),
+      ],
     }),
   ],
 });

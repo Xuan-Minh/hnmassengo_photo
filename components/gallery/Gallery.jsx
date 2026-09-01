@@ -13,7 +13,9 @@ import GalleryProjetCartel from './GalleryProjetCartel';
 const VIEW_SWITCH_FADE_MS = 180;
 
 function getProjectDateMs(project) {
-  const raw = project?.date;
+  const raw =
+    typeof project?.date === 'object' ? project?.date?.start : project?.date;
+
   if (!raw) return null;
   const ms = new Date(raw).getTime();
   return Number.isFinite(ms) ? ms : null;
@@ -96,7 +98,7 @@ export default function Gallery() {
             return acc;
           }, []),
         coords: p.coords,
-        date: p.date,
+        dateDisplay: p.date?.display || '',
         description:
           p.description?.[locale] ||
           p.description?.fr ||

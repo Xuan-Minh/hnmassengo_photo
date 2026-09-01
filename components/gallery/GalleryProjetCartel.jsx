@@ -147,7 +147,12 @@ export default function GalleryProjetCartel({ project, onClose }) {
           <div className="border-t border-blackCustom/20 flex-shrink-0"></div>
 
           <div className="flex-1 overflow-y-auto p-6">
-            <div className="font-liberation text-lg italic text-blackCustom mb-4">
+            {project.dateDisplay && (
+              <div className="font-liberation text-base italic text-accent mb-1">
+                {project.dateDisplay}
+              </div>
+            )}
+            <div className="font-liberation text-base italic text-accent mb-4">
               {project.coords}
             </div>
             <h2
@@ -180,18 +185,23 @@ export default function GalleryProjetCartel({ project, onClose }) {
           </div>
 
           <section className="flex flex-col items-start justify-center my-8">
-            <div className="font-liberation text-lg italic text-blackCustom mb-4">
-              <h2 id="project-title" className="text-5xl font-liberation ">
+            <div className="mb-8">
+              <h2 id="project-title" className="text-5xl font-liberation mb-2">
                 {project.name}
               </h2>
-              <div className="font-liberation text-md italic text-accent flex-shrink-0">
-                {project.date}
-              </div>
-              <div className="font-liberation text-md italic text-accent flex-shrink-0">
-                {project.coords}
+              <div className="flex flex-col gap-1">
+                {project.dateDisplay && (
+                  <div className="font-liberation text-base italic text-accent">
+                    {project.dateDisplay}
+                  </div>
+                )}
+                <div className="font-liberation text-base italic text-accent">
+                  {project.coords}
+                </div>
               </div>
             </div>
-            <div className="font-liberation text-lg 2xl:text-xl max-w-2xl 2xl:max-w-6xl  leading-relaxed space-y-4">
+
+            <div className="font-liberation text-lg 2xl:text-xl max-w-2xl 2xl:max-w-6xl leading-relaxed space-y-4">
               {paragraphs.map((p, i) => (
                 <p className="text-sm md:text-lg" key={`paragraph-${i}`}>
                   {p}
@@ -242,6 +252,7 @@ GalleryProjetCartel.propTypes = {
     images: PropTypes.arrayOf(PropTypes.any).isRequired,
     coords: PropTypes.string.isRequired,
     description: PropTypes.string.isRequired,
+    dateDisplay: PropTypes.string,
   }).isRequired,
   onClose: PropTypes.func.isRequired,
 };
