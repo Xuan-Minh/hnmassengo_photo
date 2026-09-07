@@ -175,22 +175,18 @@ export default function GalleryProjetCartel({ project, onClose }) {
       </m.section>
 
       {/* Lightbox */}
-      <AnimatePresence>
-        {lightboxOpen && (
-          <CustomLightbox
-            open={lightboxOpen}
-            initialIndex={lightboxIndex}
-            onClose={() =>
-              dispatch({
-                type: 'UPDATE_STATE',
-                payload: { lightboxOpen: false },
-              })
-            }
-            images={project.images}
-            project={project}
-          />
-        )}
-      </AnimatePresence>
+      <CustomLightbox
+        open={lightboxOpen}
+        initialIndex={lightboxIndex}
+        onClose={() =>
+          dispatch({
+            type: 'UPDATE_STATE',
+            payload: { lightboxOpen: false },
+          })
+        }
+        images={project.images}
+        project={project}
+      />
     </m.div>
   );
 }

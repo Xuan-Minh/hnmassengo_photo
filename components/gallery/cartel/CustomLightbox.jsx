@@ -60,18 +60,21 @@ function DesktopLightbox({
 }) {
   return (
     <>
-      <div className="flex flex-col flex-1 min-h-0 w-full  lg:pt-16 px-16">
+      <div className="flex flex-col flex-1 min-h-0 w-full relative">
         <button
           type="button"
           onClick={onClose}
-          className="absolute top-16 left-16 lg:top-16 lg:left-16 z-[100] font-liberation text-lg hover:text-white transition-colors"
+          className="absolute top-6 left-6 lg:top-16 lg:left-16 z-[100] font-liberation text-lg hover:text-white transition-colors"
         >
           back
         </button>
 
-        <div className="flex-1 relative flex items-center justify-center overflow-hidden">
-          {/* Image précédente */}
-          <div className="absolute left-0 top-1/2 -translate-y-1/2 h-[50%] w-[15%] opacity-40 blur-[2px] pointer-events-none">
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-[100] font-liberation text-sm tracking-widest text-white/70 lg:hidden pointer-events-none">
+          {currentIndex + 1} / {images?.length}
+        </div>
+
+        <div className="flex-1 relative flex items-center justify-center overflow-hidden w-full h-full">
+          <div className="hidden lg:block absolute left-16 top-1/2 -translate-y-1/2 h-[50%] w-[15%] opacity-40 blur-[2px] pointer-events-none">
             <Image
               src={getDisplaySrcForIndex(
                 (currentIndex - 1 + images.length) % images.length
@@ -86,57 +89,61 @@ function DesktopLightbox({
             />
           </div>
 
-          {/* Image centrale */}
-          <div className="relative z-10 h-[60%] w-full max-w-[60%] flex items-center justify-center">
+          <div className="relative z-10 w-full h-full lg:w-auto lg:h-auto flex items-center justify-center p-6 pb-16 lg:p-0">
             <m.div
               key={currentIndex}
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.3 }}
+              className="relative flex items-center justify-center w-fullr h-full lg:w-auto lg:h-auto"
             >
-              <div className="relative">
-                {!isCurrentLoaded && !hasCurrentError && (
-                  <div className="absolute inset-0 bg-white/5 animate-pulse" />
-                )}
-                {hasCurrentError && (
-                  <div className="absolute inset-0 flex items-center justify-center text-white/70">
-                    image unavailable
-                  </div>
-                )}
-                <Image
-                  src={currentDisplaySrc}
-                  alt={`${project.name} - Image ${currentIndex + 1} sur ${images.length}`}
-                  width={1100}
-                  height={800}
-                  className={`max-h-[75vh] max-w-[60vw] object-contain transition-opacity duration-300 ${
-                    isCurrentLoaded && !hasCurrentError
-                      ? 'opacity-100'
-                      : 'opacity-0'
-                  }`}
-                  sizes="(max-width: 1200px) 70vw, 1100px"
-                  unoptimized
-                  fetchPriority="high"
-                  decoding="async"
-                  onError={() =>
-                    dispatch({
-                      type: 'UPDATE_STATE',
-                      payload: { hasCurrentError: true },
-                    })
-                  }
-                  onLoad={() =>
-                    dispatch({
-                      type: 'UPDATE_STATE',
-                      payload: { isCurrentLoaded: true },
-                    })
-                  }
-                  priority
-                />
-              </div>
+              {!isCurrentLoaded && !hasCurrentError && (
+                <div className="absolute inset-0 bg-white/5 animate-pulse rounded-lg" />
+              )}
+              {hasCurrentError && (
+                <div className="absolute inset-0 flex items-center justify-center text-white/70">
+                  image unavailable
+                </div>
+              )}
+
+              {/* 
+                L'image principale : 
+                - Mobile : w-full h-full (Anti-crop absolu)
+                - Desktop (lg:) : On annule le w-full/h-full avec "auto" et on restaure tes classes d'origine (max-h-[75vh] max-w-[60vw]) ! 
+              */}
+              <Image
+                src={currentDisplaySrc}
+                alt={`${project.name} - Image ${currentIndex + 1} sur ${images.length}`}
+                width={1100}
+                height={800}
+                className={`w-full h-full lg:w-auto lg:h-auto lg:max-h-[75vh] lg:max-w-[60vw] object-contain transition-opacity duration-300 ${
+                  isCurrentLoaded && !hasCurrentError
+                    ? 'opacity-100'
+                    : 'opacity-0'
+                }`}
+                sizes="(max-width: 1024px) 100vw, 60vw"
+                unoptimized
+                fetchPriority="high"
+                decoding="async"
+                onError={() =>
+                  dispatch({
+                    type: 'UPDATE_STATE',
+                    payload: { hasCurrentError: true },
+                  })
+                }
+                onLoad={() =>
+                  dispatch({
+                    type: 'UPDATE_STATE',
+                    payload: { isCurrentLoaded: true },
+                  })
+                }
+                priority
+              />
             </m.div>
           </div>
 
-          {/* Image suivante (floutée) */}
-          <div className="absolute right-0 top-1/2 -translate-y-1/2 h-[50%] w-[15%] opacity-40 blur-[2px] pointer-events-none">
+          {/* Image suivante (floutée) : cachée sur mobile avec hidden lg:block */}
+          <div className="hidden lg:block absolute right-16 top-1/2 -translate-y-1/2 h-[50%] w-[15%] opacity-40 blur-[2px] pointer-events-none">
             <Image
               src={getDisplaySrcForIndex((currentIndex + 1) % images.length)}
               alt="suivante"
@@ -150,7 +157,7 @@ function DesktopLightbox({
           </div>
 
           <button
-            className="absolute left-0 top-0 h-full w-[20%] z-30 flex items-center justify-start pl-8 md:pl-0 group cursor-pointer"
+            className="absolute left-4 top-0 h-full w-[20%] z-30 flex items-center justify-start pl-8 md:pl-0 group cursor-pointer"
             onClick={() => goToIndex(currentIndex - 1)}
             tabIndex={0}
             type="button"
@@ -162,7 +169,7 @@ function DesktopLightbox({
 
           <button
             type="button"
-            className="absolute right-0 top-0 h-full w-[20%] z-30 flex items-center justify-end pr-8 md:pr-0 group cursor-pointer"
+            className="absolute right-4 top-0 h-full w-[20%] z-30 flex items-center justify-end pr-8 md:pr-0 group cursor-pointer"
             onClick={() => goToIndex(currentIndex + 1)}
             tabIndex={0}
           >
