@@ -94,7 +94,13 @@ const MainViewer = ({
       <button
         type="button"
         onClick={navigateListPrev}
-        className="absolute left-2 md:left-12 z-20 opacity-60 hover:opacity-100 p-2 shrink-0 text-blackCustom hover:text-whiteCustom transition-all"
+        onKeyDown={e => {
+          if (e.key === 'Enter' || e.key === 'Space') {
+            e.preventDefault();
+            navigateListPrev();
+          }
+        }}
+        className="absolute left-2 md:left-12 xl:left-32 z-20 opacity-60 hover:opacity-100 p-2 shrink-0 text-blackCustom hover:text-whiteCustom transition-all"
       >
         <ArrowLeft />
       </button>
@@ -106,7 +112,7 @@ const MainViewer = ({
         className="relative w-full aspect-[4/5] md:aspect-auto md:h-full cursor-pointer px-10 md:px-24 flex-row group"
         tabIndex={0}
         aria-pressed="false"
-        onKeyPress={e => {
+        onKeyDown={e => {
           if (e.key === 'Enter' || e.key === 'Space') {
             e.preventDefault();
             onProjectSelect(project);
@@ -140,7 +146,7 @@ const MainViewer = ({
       <button
         type="button"
         onClick={navigateListNext}
-        className="absolute right-2 md:right-12 z-20 opacity-60 hover:opacity-100 transition-all p-2 shrink-0 drop-shadow-[0_0_8px_rgba(0,0,0,0.8)] text-accent hover:text-whiteCustom"
+        className="absolute right-2 md:right-12 xl:right-32 z-20 opacity-60 hover:opacity-100 transition-all p-2 shrink-0  text-accent hover:text-whiteCustom"
       >
         <ArrowRight />
       </button>
