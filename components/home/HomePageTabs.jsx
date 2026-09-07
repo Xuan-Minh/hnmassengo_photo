@@ -522,16 +522,7 @@ function WindowItem({
       default:
         return null;
     }
-  }, [
-    win,
-    locale,
-    heroImage,
-    width,
-    aspectRatio,
-    titre,
-    textWin,
-    onOpenLightbox,
-  ]);
+  }, [win, locale, heroImage, width, titre, textWin, onOpenLightbox]);
 
   return (
     <WindowsTab
