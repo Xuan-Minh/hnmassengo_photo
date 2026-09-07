@@ -120,7 +120,7 @@ export default function GalleryProjetCartel({ project, onClose }) {
         role="dialog"
         aria-labelledby="project-title"
       >
-        <main className="flex w-[55%] h-full border-r border-blackCustom p-16 flex-col justify-between overflow-y-auto">
+        <main className="flex w-[55%] h-full border-r border-blackCustom p-16 flex-col overflow-y-auto">
           <div>
             <button
               type="button"
@@ -132,7 +132,7 @@ export default function GalleryProjetCartel({ project, onClose }) {
             </button>
           </div>
 
-          <section className="flex flex-col items-start justify-center my-8">
+          <section className="flex flex-col items-start my-8">
             <div className="mb-8">
               <h2
                 id="project-title"
