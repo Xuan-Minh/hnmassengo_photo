@@ -157,7 +157,7 @@ function DesktopLightbox({
           </div>
 
           <button
-            className="absolute left-4 top-0 h-full w-[20%] z-30 flex items-center justify-start pl-8 md:pl-0 group cursor-pointer"
+            className="absolute left-32 top-0 h-full w-[20%] z-30 flex items-center justify-start pl-8 md:pl-0 group cursor-pointer"
             onClick={() => goToIndex(currentIndex - 1)}
             tabIndex={0}
             type="button"
@@ -169,7 +169,7 @@ function DesktopLightbox({
 
           <button
             type="button"
-            className="absolute right-4 top-0 h-full w-[20%] z-30 flex items-center justify-end pr-8 md:pr-0 group cursor-pointer"
+            className="absolute right-32 top-0 h-full w-[20%] z-30 flex items-center justify-end pr-8 md:pr-0 group cursor-pointer"
             onClick={() => goToIndex(currentIndex + 1)}
             tabIndex={0}
           >
