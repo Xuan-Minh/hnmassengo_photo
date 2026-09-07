@@ -8,7 +8,6 @@ import { useTranslations } from 'next-intl';
 import { useEffectEvent } from '../../lib/hooks';
 
 import CustomLightbox from './cartel/CustomLightbox';
-import ImageMarqueeHorizontal from './cartel/ImageMarqueeHorizontal';
 import ImageMarquee from './cartel/ImageMarquee';
 
 const initialState = {
@@ -121,58 +120,7 @@ export default function GalleryProjetCartel({ project, onClose }) {
         role="dialog"
         aria-labelledby="project-title"
       >
-        {/* Version Mobile */}
-        <div className="lg:hidden w-full h-full flex flex-col relative">
-          <button
-            type="button"
-            onClick={handleRequestClose}
-            className="absolute top-6 left-6 z-10 font-liberation text-lg text-accent hover:text-blackCustom transition-colors"
-            aria-label={t('project.closeOverlayLabel')}
-          >
-            back
-          </button>
-
-          <div className="h-[50vh] flex-shrink-0 flex items-center">
-            <ImageMarqueeHorizontal
-              images={project.images}
-              onClick={idx =>
-                dispatch({
-                  type: 'UPDATE_STATE',
-                  payload: { lightboxOpen: true, lightboxIndex: idx },
-                })
-              }
-            />
-          </div>
-
-          <div className="border-t border-blackCustom/20 flex-shrink-0"></div>
-
-          <div className="flex-1 overflow-y-auto p-6">
-            {project.dateDisplay && (
-              <div className="font-liberation text-base italic text-accent mb-1">
-                {project.dateDisplay}
-              </div>
-            )}
-            <div className="font-liberation text-base italic text-accent mb-4">
-              {project.coords}
-            </div>
-            <h2
-              id="project-title"
-              className="text-2xl md:text-3xl font-liberation italic mb-6"
-            >
-              {project.name}
-            </h2>
-            <div className="font-liberation leading-relaxed space-y-4">
-              {paragraphs.map((p, i) => (
-                <p className="text-sm md:text-lg" key={`paragraph-${i}`}>
-                  {p}
-                </p>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Version Desktop */}
-        <main className="hidden lg:flex w-[55%] h-full border-r border-blackCustom p-16 flex-col justify-between overflow-y-auto">
+        <main className="flex w-[55%] h-full border-r border-blackCustom p-16 flex-col justify-between overflow-y-auto">
           <div>
             <button
               type="button"
@@ -186,24 +134,27 @@ export default function GalleryProjetCartel({ project, onClose }) {
 
           <section className="flex flex-col items-start justify-center my-8">
             <div className="mb-8">
-              <h2 id="project-title" className="text-5xl font-liberation mb-2">
+              <h2
+                id="project-title"
+                className="text-4xl lg:text-5xl font-liberation mb-2"
+              >
                 {project.name}
               </h2>
               <div className="flex flex-col gap-1">
                 {project.dateDisplay && (
-                  <div className="font-liberation text-base italic text-accent">
+                  <div className="font-liberation text-sm lg:text-base italic text-accent">
                     {project.dateDisplay}
                   </div>
                 )}
-                <div className="font-liberation text-base italic text-accent">
+                <div className="font-liberation text-sm lg:text-base italic text-accent">
                   {project.coords}
                 </div>
               </div>
             </div>
 
-            <div className="font-liberation text-lg 2xl:text-xl max-w-2xl 2xl:max-w-6xl leading-relaxed space-y-4">
+            <div className="font-liberation  lg:text-lg 2xl:text-xl max-w-2xl 2xl:max-w-6xl leading-relaxed space-y-4">
               {paragraphs.map((p, i) => (
-                <p className="text-sm md:text-lg" key={`paragraph-${i}`}>
+                <p className="text-[14px] lg:text-lg" key={`paragraph-${i}`}>
                   {p}
                 </p>
               ))}

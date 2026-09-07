@@ -46,108 +46,6 @@ function reducer(state, action) {
 // 2. SOUS-COMPOSANTS UI
 // ==========================================
 
-function MobileLightbox({
-  onClose,
-  goToIndex,
-  currentIndex,
-  images,
-  project,
-  currentDisplaySrc,
-  isCurrentLoaded,
-  hasCurrentError,
-  dispatch,
-}) {
-  return (
-    <>
-      <div className="absolute top-8 landscape:top-2 left-8 z-40 md:hidden">
-        <button
-          type="button"
-          onClick={onClose}
-          className="text-lg hover:text-white transition-colors"
-        >
-          back
-        </button>
-      </div>
-
-      <div className="flex-1 flex flex-col w-full relative bg-blackCustom md:hidden min-h-0">
-        <button
-          aria-label="previous image"
-          type="button"
-          className="absolute left-0 top-14 bottom-12 w-[20%] z-30"
-          onClick={() => goToIndex(currentIndex - 1)}
-          tabIndex={0}
-        />
-        <button
-          aria-label="next image"
-          type="button"
-          className="absolute right-0 top-14 bottom-12 w-[20%] z-30"
-          onClick={() => goToIndex(currentIndex + 1)}
-          tabIndex={0}
-        />
-
-        <div
-          className="flex-1 min-h-0 flex items-center justify-center px-4 pt-14 landscape:pt-2 landscape:pb-1"
-          style={{
-            paddingLeft: 'max(1rem, env(safe-area-inset-left, 0px))',
-            paddingRight: 'max(1rem, env(safe-area-inset-right, 0px))',
-          }}
-        >
-          <m.div
-            key={currentIndex}
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.3 }}
-            className="w-full h-full flex items-center justify-center"
-          >
-            <Image
-              src={currentDisplaySrc}
-              alt={`${project.name} - Image ${currentIndex + 1} of ${images.length}`}
-              width={1200}
-              height={1200}
-              className="max-w-full max-h-full w-auto h-auto object-contain"
-              sizes="100vw"
-              unoptimized
-              fetchPriority="high"
-              decoding="async"
-              onError={() =>
-                dispatch({
-                  type: 'UPDATE_STATE',
-                  payload: { hasCurrentError: true },
-                })
-              }
-              onLoad={() =>
-                dispatch({
-                  type: 'UPDATE_STATE',
-                  payload: { isCurrentLoaded: true },
-                })
-              }
-              priority
-            />
-          </m.div>
-        </div>
-
-        <div
-          className="flex-shrink-0 text-center italic text-sm py-3 landscape:py-1"
-          style={{
-            paddingBottom: 'calc(env(safe-area-inset-bottom, 12px) + 14px)',
-          }}
-        >
-          {currentIndex + 1} / {images.length}
-        </div>
-
-        {!isCurrentLoaded && !hasCurrentError && (
-          <div className="absolute inset-0 bg-white/5 animate-pulse" />
-        )}
-        {hasCurrentError && (
-          <div className="absolute inset-0 flex items-center justify-center text-white/70">
-            image unavailable
-          </div>
-        )}
-      </div>
-    </>
-  );
-}
-
 function DesktopLightbox({
   onClose,
   goToIndex,
@@ -162,16 +60,14 @@ function DesktopLightbox({
 }) {
   return (
     <>
-      <div className="hidden md:flex flex-col flex-1 min-h-0 w-full pt-16 pr-16 pl-16">
-        <div>
-          <button
-            type="button"
-            onClick={onClose}
-            className="font-liberation text-lg hover:text-white transition-colors"
-          >
-            back
-          </button>
-        </div>
+      <div className="flex flex-col flex-1 min-h-0 w-full  lg:pt-16 px-16">
+        <button
+          type="button"
+          onClick={onClose}
+          className="absolute top-16 left-16 lg:top-16 lg:left-16 z-[100] font-liberation text-lg hover:text-white transition-colors"
+        >
+          back
+        </button>
 
         <div className="flex-1 relative flex items-center justify-center overflow-hidden">
           {/* Image précédente */}
@@ -277,7 +173,7 @@ function DesktopLightbox({
         </div>
       </div>
 
-      <footer className="hidden md:flex w-full flex-shrink-0 border-t border-whiteCustom/20 px-8 md:px-16 py-6 items-center justify-between mt-auto">
+      <footer className="hidden lg:flex w-full flex-shrink-0 border-t border-whiteCustom/20 px-8 md:px-16 py-6 items-center justify-between mt-auto">
         <div className="text-xl italic">{project.coords}</div>
         <div className="text-xl">{project.name}</div>
       </footer>
@@ -488,18 +384,6 @@ export default function CustomLightbox({
           exit={{ opacity: 0 }}
           transition={{ duration: 0.3 }}
         >
-          <MobileLightbox
-            onClose={onClose}
-            goToIndex={goToIndex}
-            currentIndex={currentIndex}
-            images={images}
-            project={project}
-            currentDisplaySrc={currentDisplaySrc}
-            isCurrentLoaded={isCurrentLoaded}
-            hasCurrentError={hasCurrentError}
-            dispatch={dispatch}
-          />
-
           <DesktopLightbox
             onClose={onClose}
             goToIndex={goToIndex}
