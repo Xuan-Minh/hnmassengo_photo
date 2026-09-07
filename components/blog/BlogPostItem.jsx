@@ -111,7 +111,7 @@ export default function BlogPostItem({
   return (
     <button
       type="button"
-      className={`w-full py-4 lg:py-12 cursor-pointer group lg:hover:border-l-4 lg:hover:border-l-white lg:pl-8 transition-colors duration-300 ${
+      className={`w-full py-4 lg:py-12 cursor-pointer group lg:hover:border-l-4 lg:hover:border-l-white  transition-colors duration-300 ${
         !isLast
           ? 'border-b border-whiteCustom/20 lg:border-b lg:border-whiteCustom/20'
           : ''
@@ -148,7 +148,7 @@ export default function BlogPostItem({
               ref={metaRef}
               className="text-sm text-whiteCustom/80 lg:text-base font-liberation mb-4"
             >
-              - {post.date}
+              {post.date}
             </div>
             {textPreviewNode}
           </div>
@@ -168,7 +168,7 @@ export default function BlogPostItem({
               ref={metaRef}
               className="text-sm  text-whiteCustom/80 lg:text-base font-liberation mb-4"
             >
-              - {post.date}
+              {post.date}
             </div>
             {textPreviewNode}
           </div>
@@ -189,8 +189,8 @@ export default function BlogPostItem({
       )}
 
       {(post.layout === 'text-only' || !post.image) && (
-        <div className="text-whiteCustom">
-          <div className="flex flex-col mb-4 ">
+        <div className="text-whiteCustom flex flex-col items-center w-full text-center">
+          <div className="flex flex-col mb-4 items-center">
             <h3
               ref={titleRef}
               className="text-xl lg:text-3xl font-liberation italic mb-2"
@@ -201,7 +201,7 @@ export default function BlogPostItem({
               ref={metaRef}
               className="text-whiteCustom/80 text-sm lg:text-base font-liberation"
             >
-              - {post.date}
+              {post.date}
             </span>
           </div>
           {textPreviewNode}
