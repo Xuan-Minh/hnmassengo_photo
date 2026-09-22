@@ -107,7 +107,7 @@ export default function GalleryProjetCartel({ project, onClose }) {
           </section>
         </main>
 
-        {/* Colonne de droite : Carrousel (desktop uniquement) */}
+        {/* Colonne de droite : Carrousel (desktop uniquement test) */}
         <ImageMarquee
           images={project.images}
           onClick={idx => {
