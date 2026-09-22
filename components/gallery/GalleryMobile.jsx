@@ -1,17 +1,23 @@
 'use client';
 
-import { useEffect, useRef, useCallback, useMemo, useReducer } from 'react';
+import {
+  useEffect,
+  useRef,
+  useCallback,
+  useMemo,
+  useReducer,
+  useState, // <-- N'oublie pas le useState ici
+} from 'react';
 import Image from 'next/image';
 import { buildSanityImageUrl } from '../../lib/imageUtils';
 import {
   getOptimizedImageParams,
   useEffectEvent,
   useIsMobile,
-  useOrientation, // <-- AJOUT DE L'IMPORT ICI
 } from '../../lib/hooks';
 
 // ==========================================
-// 1. ÉTAT ET REDUCER (Ton code est parfait, on n'y touche pas)
+// 1. ÉTAT ET REDUCER
 // ==========================================
 const ArrowLeft = () => (
   <svg
@@ -65,9 +71,8 @@ function reducer(state, action) {
 }
 
 // ==========================================
-// 2. SOUS-COMPOSANTS UI (Ton code, préservé)
+// 2. SOUS-COMPOSANTS UI : LE VIEWER (AVEC SWIPE)
 // ==========================================
-
 const MainViewer = ({
   currentListDisplaySrc,
   project,
@@ -81,10 +86,45 @@ const MainViewer = ({
   navigateListNext,
   onProjectSelect,
 }) => {
+  // === LOGIQUE DE SWIPE ===
+  const [touchStart, setTouchStart] = useState({ x: null, y: null });
+
+  const handleTouchStart = e => {
+    setTouchStart({
+      x: e.touches[0].clientX,
+      y: e.touches[0].clientY,
+    });
+  };
+
+  const handleTouchEnd = e => {
+    if (!touchStart.x || !touchStart.y) return;
+
+    const deltaX = touchStart.x - e.changedTouches[0].clientX;
+    const deltaY = touchStart.y - e.changedTouches[0].clientY;
+
+    // Si on a glissé sur le côté (plus de 40px)
+    if (Math.abs(deltaX) > 40 && Math.abs(deltaX) > Math.abs(deltaY)) {
+      if (deltaX > 0)
+        navigateListNext(); // Swipe gauche -> Image suivante
+      else navigateListPrev(); // Swipe droite -> Image précédente
+    }
+    // Si on a glissé vers le HAUT (plus de 40px) -> Ouvre le projet
+    else if (deltaY > 40) {
+      onProjectSelect(project);
+    }
+
+    setTouchStart({ x: null, y: null });
+  };
+  // ========================
+
   if (!currentListDisplaySrc) return null;
 
   return (
-    <div className="relative w-full h-full flex items-center justify-center">
+    <div
+      className="relative w-full h-full flex items-center justify-center"
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+    >
       <button
         type="button"
         onClick={navigateListPrev}
@@ -139,7 +179,7 @@ const MainViewer = ({
       <button
         type="button"
         onClick={navigateListNext}
-        className="absolute right-2 md:right-12 xl:right-32 z-20 opacity-60 hover:opacity-100 transition-all p-2 shrink-0  text-accent hover:text-whiteCustom"
+        className="absolute right-2 md:right-12 xl:right-32 z-20 opacity-60 hover:opacity-100 transition-all p-2 shrink-0 text-accent hover:text-whiteCustom"
       >
         <ArrowRight />
       </button>
@@ -149,7 +189,6 @@ const MainViewer = ({
 
 const MobileNavTop = ({ projects, currentProjectIndex, navigateToImage }) => {
   const midIndex = Math.ceil(projects.length / 2);
-
   return (
     <div className="lg:hidden w-full mt-10 mb-2">
       <div className="flex flex-wrap justify-center gap-x-6 gap-y-3">
@@ -185,7 +224,6 @@ const MobileNavBottom = ({
   navigateToImage,
 }) => {
   const midIndex = Math.ceil(projects.length / 2);
-
   return (
     <div className="lg:hidden w-full px-4 mt-2 mb-8">
       <div className="flex flex-wrap justify-center gap-x-6 gap-y-3">
@@ -216,9 +254,8 @@ const MobileNavBottom = ({
 };
 
 // ==========================================
-// 3. CUSTOM HOOK : LOGIQUE DE GALERIE (Ton code, préservé)
+// 3. CUSTOM HOOK : LOGIQUE DE GALERIE
 // ==========================================
-
 function useGalleryLogic(projects, setActiveCoord) {
   const isMobile = useIsMobile(1024);
   const [state, dispatch] = useReducer(reducer, initialState);
@@ -438,7 +475,6 @@ function useGalleryLogic(projects, setActiveCoord) {
 // ==========================================
 
 export default function GalleryMobile({
-  // <-- Changé de GalleryList à GalleryMobile
   projects,
   onProjectSelect,
   setActiveCoord,
@@ -461,41 +497,6 @@ export default function GalleryMobile({
     listImageError,
   } = state;
 
-  const isLandscape = useOrientation(); // <-- Appel de ton hook
-
-  if (!isLandscape) {
-    return (
-      <div className="fixed inset-0 z-[100] w-full h-[100dvh] flex flex-col items-center justify-center bg-background text-blackCustom text-center px-6">
-        <div className="mb-6 text-blackCustom animate-[spin_3s_ease-in-out_infinite]">
-          <svg
-            width="48"
-            height="48"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <rect x="5" y="2" width="14" height="20" rx="2" ry="2" />
-            <path d="M12 18h.01" />
-            <path d="M20.5 12a8.5 8.5 0 0 1-8.5 8.5" />
-          </svg>
-        </div>
-        <h2 className="text-2xl lg:text-3xl font-liberation italic mb-4">
-          Pivoter pour accéder
-        </h2>
-        <p className="text-blackCustom/70 font-liberation text-sm md:text-base max-w-xs">
-          L'expérience de cette galerie a été pensée pour un affichage
-          horizontal.
-        </p>
-      </div>
-    );
-  }
-
-  // ==========================================
-  // TON RENDU D'ORIGINE : LA GALERIE (en paysage)
-  // ==========================================
   return (
     <div className="w-full h-[100dvh] flex flex-col justify-between">
       <MobileNavTop

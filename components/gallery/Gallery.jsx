@@ -2,7 +2,11 @@
 import { useEffect, useMemo, useReducer, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import client from '../../lib/sanity.client';
-import { getOptimizedImageParams } from '../../lib/hooks';
+import {
+  getOptimizedImageParams,
+  useIsMobile,
+  useOrientation,
+} from '../../lib/hooks';
 import { buildSanityImageUrl } from '../../lib/imageUtils';
 import { AnimatePresence } from 'framer-motion';
 
@@ -16,13 +20,10 @@ const VIEW_SWITCH_FADE_MS = 180;
 function getProjectDateMs(project) {
   let raw =
     typeof project?.date === 'object' ? project?.date?.start : project?.date;
-
   if (!raw) return null;
-
   if (typeof raw === 'string' && raw.length === 7 && raw.includes('-')) {
     raw = `${raw}-01`;
   }
-
   const ms = new Date(raw).getTime();
   return Number.isFinite(ms) ? ms : null;
 }
@@ -48,6 +49,12 @@ function reducer(state, action) {
 
 export default function Gallery() {
   const { locale } = useParams();
+
+  // ==========================================
+  // HOOKS D'ORIENTATION ET D'ÉCRAN
+  // ==========================================
+  const isMobile = useIsMobile(1024); // Capte les tel même en paysage
+  const isLandscape = useOrientation();
 
   const [state, dispatch] = useReducer(reducer, initialState);
   const {
@@ -136,7 +143,7 @@ export default function Gallery() {
     return () => window.removeEventListener('resize', handleResize);
   }, [view]);
 
-  // Tri global des données (Calculé une seule fois ici)
+  // Tri global des données
   const projectsChrono = useMemo(() => {
     const arr = [...projects];
     arr.sort((a, b) => {
@@ -155,11 +162,10 @@ export default function Gallery() {
     return [...projectsChrono].reverse();
   }, [projectsChrono]);
 
-  // Mémorisation des callbacks pour éviter les boucles de rendu infinies
+  // Callbacks
   const handleViewChange = useCallback(
     v => {
       if (v === view || isViewSwitching) return;
-
       dispatch({
         type: 'UPDATE_STATE',
         payload: { isViewSwitching: true, pendingView: v },
@@ -235,12 +241,55 @@ export default function Gallery() {
 
   return (
     <>
-      <section className="relative flex flex-col items-center justify-center w-full h-screen overflow-hidden bg-background">
+      {/* ========================================== */}
+      {/* LE BOUCLIER (Hors de l'AnimatePresence = disparition instantanée) */}
+      {/* ========================================== */}
+      {isMobile && !isLandscape && (
+        <div className="fixed inset-0 z-[100000] flex flex-col items-center justify-center bg-[#e5e5e5] text-blackCustom text-center px-6">
+          <div className="mb-6 animate-[spin_3s_ease-in-out_infinite]">
+            <svg
+              width="48"
+              height="48"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <rect x="5" y="2" width="14" height="20" rx="2" ry="2" />
+              <path d="M12 18h.01" />
+              <path d="M20.5 12a8.5 8.5 0 0 1-8.5 8.5" />
+            </svg>
+          </div>
+          <h2 className="text-2xl lg:text-3xl font-liberation italic mb-4">
+            Pivoter pour accéder
+          </h2>
+          <p className="text-blackCustom/70 font-liberation text-sm md:text-base max-w-xs">
+            L'expérience de cette galerie a été pensée pour un affichage
+            horizontal.
+          </p>
+        </div>
+      )}
+
+      {/* ========================================== */}
+      {/* LA SECTION WORKS (Reste normale) */}
+      {/* ========================================== */}
+      <section
+        id="works"
+        className={`flex flex-col items-center justify-center w-full overflow-hidden bg-background ${
+          isMobile && isLandscape
+            ? 'fixed inset-0 z-[9999] h-[100dvh]'
+            : 'relative h-screen'
+        }`}
+      >
         <div
-          className={`relative flex flex-col justify-center items-start  ${
+          className={`relative flex flex-col justify-center items-start ${
             view === 'grid'
               ? 'h-[75vh] lg:h-[85vh] w-[min(1400px,90vw)] xl:w-[min(1800px,95vw)]'
-              : 'h-full w-[min(1100px,90vw)] 2xl:w-[min(1800px,90vw)]'
+              : isMobile && isLandscape
+                ? 'h-full w-full'
+                : 'h-full w-[min(1100px,90vw)] 2xl:w-[min(1800px,90vw)]'
           }`}
         >
           <div
@@ -279,13 +328,13 @@ export default function Gallery() {
                   view={view}
                   onViewChange={handleViewChange}
                   onProjectSelect={handleProjectSelect}
+                  setActiveCoord={handleSetActiveCoord}
                 />
               )}
             </AnimatePresence>
           </div>
         </div>
 
-        {/* Footer */}
         <div className="hidden lg:grid lg:grid-cols-3 md:grid-cols-1 items-center mt-16 lg:mt-4 w-[min(1024px,90vw)]">
           <div className="h-8 text-xl italic font-liberation text-blackCustom">
             {activeCoord}
