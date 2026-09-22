@@ -7,10 +7,11 @@ import {
   getOptimizedImageParams,
   useEffectEvent,
   useIsMobile,
+  useOrientation, // <-- AJOUT DE L'IMPORT ICI
 } from '../../lib/hooks';
 
 // ==========================================
-// 1. ÉTAT ET REDUCER
+// 1. ÉTAT ET REDUCER (Ton code est parfait, on n'y touche pas)
 // ==========================================
 const ArrowLeft = () => (
   <svg
@@ -64,7 +65,7 @@ function reducer(state, action) {
 }
 
 // ==========================================
-// 2. SOUS-COMPOSANTS UI
+// 2. SOUS-COMPOSANTS UI (Ton code, préservé)
 // ==========================================
 
 const MainViewer = ({
@@ -84,7 +85,6 @@ const MainViewer = ({
 
   return (
     <div className="relative w-full h-full flex items-center justify-center">
-      {/* Flèche gauche */}
       <button
         type="button"
         onClick={navigateListPrev}
@@ -136,7 +136,6 @@ const MainViewer = ({
         />
       </button>
 
-      {/* Flèche droite */}
       <button
         type="button"
         onClick={navigateListNext}
@@ -156,9 +155,7 @@ const MobileNavTop = ({ projects, currentProjectIndex, navigateToImage }) => {
       <div className="flex flex-wrap justify-center gap-x-6 gap-y-3">
         {projects.map((p, idx) => {
           if (idx >= midIndex) return null;
-
           const isActive = idx === currentProjectIndex;
-
           return (
             <button
               type="button"
@@ -194,9 +191,7 @@ const MobileNavBottom = ({
       <div className="flex flex-wrap justify-center gap-x-6 gap-y-3">
         {projects.map((p, idx) => {
           if (idx < midIndex) return null;
-
           const isActive = idx === currentProjectIndex;
-
           return (
             <button
               type="button"
@@ -221,7 +216,7 @@ const MobileNavBottom = ({
 };
 
 // ==========================================
-// 3. CUSTOM HOOK : LOGIQUE DE GALERIE
+// 3. CUSTOM HOOK : LOGIQUE DE GALERIE (Ton code, préservé)
 // ==========================================
 
 function useGalleryLogic(projects, setActiveCoord) {
@@ -286,7 +281,6 @@ function useGalleryLogic(projects, setActiveCoord) {
     }
   }, [currentProjectIndex, currentImageIndex, projects, navigateToImage]);
 
-  // Slideshow
   useEffect(() => {
     const timers = listTimersRef.current;
     if (timers.tick) clearTimeout(timers.tick);
@@ -354,7 +348,6 @@ function useGalleryLogic(projects, setActiveCoord) {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
-  // Image formatting
   const galleryParams = getOptimizedImageParams('gallery', isMobile);
   const imageParams = useMemo(
     () => ({
@@ -379,7 +372,6 @@ function useGalleryLogic(projects, setActiveCoord) {
     currentImageIndex
   );
 
-  // Preloading
   useEffect(() => {
     if (projects.length === 0 || typeof window === 'undefined') return;
     const currentImages = projects[currentProjectIndex]?.images || [];
@@ -445,7 +437,8 @@ function useGalleryLogic(projects, setActiveCoord) {
 // 4. COMPOSANT PRINCIPAL
 // ==========================================
 
-export default function GalleryList({
+export default function GalleryMobile({
+  // <-- Changé de GalleryList à GalleryMobile
   projects,
   onProjectSelect,
   setActiveCoord,
@@ -468,14 +461,52 @@ export default function GalleryList({
     listImageError,
   } = state;
 
+  const isLandscape = useOrientation(); // <-- Appel de ton hook
+
+  // ==========================================
+  // LA NOUVELLE RÈGLE : LE BOUCLIER PORTRAIT
+  // ==========================================
+  if (!isLandscape) {
+    return (
+      <div className="w-full h-[100dvh] flex flex-col items-center justify-center bg-blackCustom text-[#e5e5e5] text-center px-6">
+        <div className="mb-6 text-whiteCustom animate-[spin_3s_ease-in-out_infinite]">
+          <svg
+            width="48"
+            height="48"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <rect x="5" y="2" width="14" height="20" rx="2" ry="2" />
+            <path d="M12 18h.01" />
+            <path d="M20.5 12a8.5 8.5 0 0 1-8.5 8.5" />
+          </svg>
+        </div>
+        <h2 className="text-2xl lg:text-3xl font-liberation italic mb-4">
+          Pivoter pour accéder
+        </h2>
+        <p className="text-whiteCustom/70 font-liberation text-sm md:text-base max-w-xs">
+          L'expérience de cette galerie a été pensée pour un affichage
+          horizontal.
+        </p>
+      </div>
+    );
+  }
+
+  // ==========================================
+  // TON RENDU D'ORIGINE : LA GALERIE (en paysage)
+  // ==========================================
   return (
-    <div className="w-full h-full flex flex-col justify-between">
+    <div className="w-full h-[100dvh] flex flex-col justify-between">
       <MobileNavTop
         projects={projects}
         currentProjectIndex={currentProjectIndex}
         navigateToImage={navigateToImage}
-      />{' '}
-      <div className="flex-1  relative w-full h-full flex items-center justify-center overflow-hidden">
+      />
+      <div className="flex-1 relative w-full h-full flex items-center justify-center overflow-hidden">
         <MainViewer
           currentListDisplaySrc={currentListDisplaySrc}
           project={projects[currentProjectIndex]}
