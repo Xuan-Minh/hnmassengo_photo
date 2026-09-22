@@ -463,13 +463,10 @@ export default function GalleryMobile({
 
   const isLandscape = useOrientation(); // <-- Appel de ton hook
 
-  // ==========================================
-  // LA NOUVELLE RÈGLE : LE BOUCLIER PORTRAIT
-  // ==========================================
   if (!isLandscape) {
     return (
-      <div className="w-full h-[100dvh] flex flex-col items-center justify-center bg-blackCustom text-[#e5e5e5] text-center px-6">
-        <div className="mb-6 text-whiteCustom animate-[spin_3s_ease-in-out_infinite]">
+      <div className="fixed inset-0 z-[100] w-full h-[100dvh] flex flex-col items-center justify-center bg-background text-blackCustom text-center px-6">
+        <div className="mb-6 text-blackCustom animate-[spin_3s_ease-in-out_infinite]">
           <svg
             width="48"
             height="48"
@@ -488,7 +485,7 @@ export default function GalleryMobile({
         <h2 className="text-2xl lg:text-3xl font-liberation italic mb-4">
           Pivoter pour accéder
         </h2>
-        <p className="text-whiteCustom/70 font-liberation text-sm md:text-base max-w-xs">
+        <p className="text-blackCustom/70 font-liberation text-sm md:text-base max-w-xs">
           L'expérience de cette galerie a été pensée pour un affichage
           horizontal.
         </p>
