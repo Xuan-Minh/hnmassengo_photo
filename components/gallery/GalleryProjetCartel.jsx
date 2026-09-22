@@ -1,85 +1,26 @@
 /* eslint-disable react-doctor/no-array-index-as-key */
 'use client';
 
-import { useEffect, useRef, useCallback, useReducer } from 'react';
+import { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { AnimatePresence, m } from 'framer-motion';
+import { m } from 'framer-motion';
 import { useTranslations } from 'next-intl';
 import { useEffectEvent } from '../../lib/hooks';
 
 import CustomLightbox from './cartel/CustomLightbox';
 import ImageMarquee from './cartel/ImageMarquee';
 
-const initialState = {
-  lightboxOpen: false,
-  lightboxIndex: 0,
-  isClosing: false,
-};
-
-function reducer(state, action) {
-  switch (action.type) {
-    case 'UPDATE_STATE':
-      return { ...state, ...action.payload };
-    default:
-      return state;
-  }
-}
-
 export default function GalleryProjetCartel({ project, onClose }) {
   const t = useTranslations('gallery');
 
-  const [state, dispatch] = useReducer(reducer, initialState);
-  const { lightboxOpen, lightboxIndex, isClosing } = state;
+  // Remplacement du useReducer complexe par des états simples
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
 
-  const closeTimerRef = useRef(null);
-  const hasFinalizedCloseRef = useRef(false);
-
-  const finalizeClose = useCallback(() => {
-    if (hasFinalizedCloseRef.current) return;
-    hasFinalizedCloseRef.current = true;
-    onClose();
-  }, [onClose]);
-
-  const handleRequestClose = useCallback(() => {
-    if (isClosing) return;
-    hasFinalizedCloseRef.current = false;
-    dispatch({ type: 'UPDATE_STATE', payload: { isClosing: true } });
-  }, [isClosing]);
-
-  useEffect(() => {
-    if (closeTimerRef.current) {
-      clearTimeout(closeTimerRef.current);
-      closeTimerRef.current = null;
-    }
-    hasFinalizedCloseRef.current = false;
-    dispatch({
-      type: 'UPDATE_STATE',
-      payload: { isClosing: false, lightboxOpen: false },
-    });
-  }, [project?.id]);
-
-  const onFinalizeClose = useEffectEvent(() => {
-    finalizeClose();
-  });
-
-  useEffect(() => {
-    if (!isClosing) return;
-
-    closeTimerRef.current = setTimeout(() => {
-      onFinalizeClose();
-    }, 1150);
-
-    return () => {
-      if (closeTimerRef.current) {
-        clearTimeout(closeTimerRef.current);
-        closeTimerRef.current = null;
-      }
-    };
-  }, [isClosing]);
-
+  // Fermeture avec la touche Echap
   const onKeyDown = useEffectEvent(event => {
     if (event.key === 'Escape' && !lightboxOpen) {
-      handleRequestClose();
+      onClose(); // Appel direct, plus de délai manuel !
     }
   });
 
@@ -96,35 +37,39 @@ export default function GalleryProjetCartel({ project, onClose }) {
   const paragraphs = description.split('\n\n');
 
   return (
+    // Ce div englobant a un z-[90000] pour passer par-dessus la galerie
     <m.div
       key="gallery-cartel-wrapper"
-      exit={{ opacity: 0, transition: { duration: 1, delay: 0.2 } }}
+      className="fixed inset-0 z-[90000]"
+      exit={{ opacity: 0, transition: { duration: 0.5 } }}
     >
+      {/* Fond flouté */}
       <m.div
-        className={`fixed inset-0 bg-background/80 backdrop-blur-sm z-[140] ${isClosing ? 'pointer-events-none' : ''}`}
+        className="absolute inset-0 bg-background/80 backdrop-blur-sm"
         initial={{ opacity: 0 }}
-        animate={{ opacity: isClosing ? 0 : 1 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
         transition={{ duration: 0.35, ease: 'easeInOut' }}
-        onClick={handleRequestClose}
+        onClick={onClose} // Un clic à côté ferme instantanément
         aria-hidden="true"
       ></m.div>
+
+      {/* Panneau du cartel */}
       <m.section
-        className={`fixed inset-0 h-[100dvh] w-full bg-background z-[150] flex flex-col md:flex-row shadow-2xl ${isClosing ? 'pointer-events-none' : ''}`}
+        className="absolute inset-0 h-[100dvh] w-full bg-background flex flex-col md:flex-row shadow-2xl pointer-events-auto"
         initial={{ x: '100%' }}
-        animate={{ x: isClosing ? '100%' : 0 }}
-        transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
-        onAnimationComplete={() => {
-          if (isClosing) finalizeClose();
-        }}
+        animate={{ x: 0 }}
+        exit={{ x: '100%' }}
+        transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
         aria-modal="true"
         role="dialog"
         aria-labelledby="project-title"
       >
-        <main className="flex w-[55%] h-full border-r border-blackCustom p-16 flex-col overflow-y-auto">
+        <main className="flex w-full md:w-[55%] h-full border-r border-blackCustom p-8 md:p-16 flex-col overflow-y-auto bg-background relative z-10">
           <div>
             <button
               type="button"
-              onClick={handleRequestClose}
+              onClick={onClose} // Appel direct à la fermeture
               className="font-liberation text-lg text-accent hover:text-blackCustom transition-colors"
               aria-label={t('project.closeOverlayLabel')}
             >
@@ -152,7 +97,7 @@ export default function GalleryProjetCartel({ project, onClose }) {
               </div>
             </div>
 
-            <div className="font-liberation  lg:text-lg 2xl:text-xl max-w-2xl 2xl:max-w-6xl leading-relaxed space-y-4">
+            <div className="font-liberation lg:text-lg 2xl:text-xl max-w-2xl 2xl:max-w-6xl leading-relaxed space-y-4">
               {paragraphs.map((p, i) => (
                 <p className="text-[14px] lg:text-lg" key={`paragraph-${i}`}>
                   {p}
@@ -165,12 +110,10 @@ export default function GalleryProjetCartel({ project, onClose }) {
         {/* Colonne de droite : Carrousel (desktop uniquement) */}
         <ImageMarquee
           images={project.images}
-          onClick={idx =>
-            dispatch({
-              type: 'UPDATE_STATE',
-              payload: { lightboxOpen: true, lightboxIndex: idx },
-            })
-          }
+          onClick={idx => {
+            setLightboxIndex(idx);
+            setLightboxOpen(true);
+          }}
         />
       </m.section>
 
@@ -178,12 +121,7 @@ export default function GalleryProjetCartel({ project, onClose }) {
       <CustomLightbox
         open={lightboxOpen}
         initialIndex={lightboxIndex}
-        onClose={() =>
-          dispatch({
-            type: 'UPDATE_STATE',
-            payload: { lightboxOpen: false },
-          })
-        }
+        onClose={() => setLightboxOpen(false)}
         images={project.images}
         project={project}
       />

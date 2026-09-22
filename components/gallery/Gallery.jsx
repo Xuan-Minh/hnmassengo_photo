@@ -202,6 +202,20 @@ export default function Gallery() {
     return () => clearTimeout(timer);
   }, [isViewSwitching, pendingView]);
 
+  // Gérer le retour à la homepage si on pivote en portrait pendant que le cartel est ouvert
+  useEffect(() => {
+    if (isMobile && !isLandscape && selectedProject) {
+      // 1. On ferme le cartel
+      dispatch({ type: 'UPDATE_STATE', payload: { selectedProject: null } });
+
+      // 2. On scroll tout en haut du site (la homepage)
+      const scrollRoot = document.getElementById('scroll-root');
+      if (scrollRoot) {
+        scrollRoot.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }
+  }, [isLandscape, isMobile, selectedProject]);
+
   const centerWorksSectionOnScreen = useCallback(() => {
     const scrollRoot = document.getElementById('scroll-root');
     const worksSection = document.getElementById('works');
