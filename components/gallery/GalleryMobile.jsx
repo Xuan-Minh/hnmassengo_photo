@@ -86,7 +86,6 @@ const MainViewer = ({
   navigateListNext,
   onProjectSelect,
 }) => {
-  // === LOGIQUE DE SWIPE ===
   const [touchStart, setTouchStart] = useState({ x: null, y: null });
 
   const handleTouchStart = e => {
@@ -102,15 +101,10 @@ const MainViewer = ({
     const deltaX = touchStart.x - e.changedTouches[0].clientX;
     const deltaY = touchStart.y - e.changedTouches[0].clientY;
 
-    // Si on a glissé sur le côté (plus de 40px)
-    if (Math.abs(deltaX) > 40 && Math.abs(deltaX) > Math.abs(deltaY)) {
+    if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 40) {
       if (deltaX > 0)
-        navigateListNext(); // Swipe gauche -> Image suivante
-      else navigateListPrev(); // Swipe droite -> Image précédente
-    }
-    // Si on a glissé vers le HAUT (plus de 40px) -> Ouvre le projet
-    else if (deltaY > 40) {
-      onProjectSelect(project);
+        navigateListNext(); // Swipe vers la gauche (Suivant)
+      else navigateListPrev(); // Swipe vers la droite (Précédent)
     }
 
     setTouchStart({ x: null, y: null });

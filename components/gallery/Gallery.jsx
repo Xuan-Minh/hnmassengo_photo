@@ -242,10 +242,13 @@ export default function Gallery() {
   return (
     <>
       {/* ========================================== */}
-      {/* LE BOUCLIER (Hors de l'AnimatePresence = disparition instantanée) */}
+      {/* CAS 1 : MOBILE PORTRAIT -> LE BOUCLIER DANS LE FLUX NORMAL */}
       {/* ========================================== */}
       {isMobile && !isLandscape && (
-        <div className="fixed inset-0 z-[100000] flex flex-col items-center justify-center bg-[#e5e5e5] text-blackCustom text-center px-6">
+        <section
+          id="works"
+          className="w-full h-[100vh] lg:h-[80vh] flex flex-col items-center justify-center bg-background text-blackCustom text-center px-6"
+        >
           <div className="mb-6 animate-[spin_3s_ease-in-out_infinite]">
             <svg
               width="48"
@@ -265,96 +268,105 @@ export default function Gallery() {
           <h2 className="text-2xl lg:text-3xl font-liberation italic mb-4">
             Pivoter pour accéder
           </h2>
-          <p className="text-blackCustom/70 font-liberation text-sm md:text-base max-w-xs">
+          <p className="text-blackCustom/70 font-liberation text-sm max-w-xs">
             L'expérience de cette galerie a été pensée pour un affichage
             horizontal.
           </p>
-        </div>
+        </section>
       )}
 
       {/* ========================================== */}
-      {/* LA SECTION WORKS (Reste normale) */}
+      {/* CAS 2 & 3 : DESKTOP ou MOBILE PAYSAGE -> LA GALERIE */}
       {/* ========================================== */}
-      <section
-        id="works"
-        className={`flex flex-col items-center justify-center w-full overflow-hidden bg-background ${
-          isMobile && isLandscape
-            ? 'fixed inset-0 z-[9999] h-[100dvh]'
-            : 'relative h-screen'
-        }`}
-      >
-        <div
-          className={`relative flex flex-col justify-center items-start ${
-            view === 'grid'
-              ? 'h-[75vh] lg:h-[85vh] w-[min(1400px,90vw)] xl:w-[min(1800px,95vw)]'
-              : isMobile && isLandscape
-                ? 'h-full w-full'
-                : 'h-full w-[min(1100px,90vw)] 2xl:w-[min(1800px,90vw)]'
+      {(!isMobile || isLandscape) && (
+        <section
+          id="works"
+          // La galerie passe en z-[100] au lieu de z-[9999]
+          className={`flex flex-col items-center justify-center w-full overflow-hidden bg-background ${
+            isMobile && isLandscape
+              ? 'fixed inset-0 z-[100] h-[100dvh]'
+              : 'relative h-screen'
           }`}
         >
           <div
-            className={`w-full h-full transition-[opacity,transform] duration-[180ms] ease-in-out ${
-              isViewSwitching && !isMobile
-                ? 'opacity-0 scale-[0.995] pointer-events-none'
-                : 'opacity-100 scale-100'
+            className={`relative flex flex-col justify-center items-start ${
+              view === 'grid'
+                ? 'h-[75vh] lg:h-[85vh] w-[min(1400px,90vw)] xl:w-[min(1800px,95vw)]'
+                : isMobile && isLandscape
+                  ? 'h-full w-full'
+                  : 'h-full w-[min(1100px,90vw)] 2xl:w-[min(1800px,90vw)]'
             }`}
           >
-            <AnimatePresence mode="wait">
-              {view === 'grid' && (
-                <GalleryGridMore
-                  key="grid"
-                  projects={projectsChrono}
-                  view={view}
-                  onViewChange={handleViewChange}
-                  onProjectSelect={handleProjectSelect}
-                  setActiveCoord={handleSetActiveCoord}
-                  onFilterClick={centerWorksSectionOnScreen}
-                />
-              )}
-              {view === 'list' && (
-                <GalleryList
-                  key="list"
-                  projects={projectsChrono}
-                  view={view}
-                  onViewChange={handleViewChange}
-                  onProjectSelect={handleProjectSelect}
-                  setActiveCoord={handleSetActiveCoord}
-                />
-              )}
-              {view === 'mobile' && (
-                <GalleryMobile
-                  key="mobile"
-                  projects={projectsRecentFirst}
-                  view={view}
-                  onViewChange={handleViewChange}
-                  onProjectSelect={handleProjectSelect}
-                  setActiveCoord={handleSetActiveCoord}
-                />
-              )}
-            </AnimatePresence>
+            <div
+              // On désactive la transition d'opacité sur mobile pour éviter le "fade out" fantôme
+              className={`w-full h-full ease-in-out ${
+                isViewSwitching && !isMobile
+                  ? 'transition-[opacity,transform] duration-[180ms] opacity-0 scale-[0.995] pointer-events-none'
+                  : 'transition-none opacity-100 scale-100'
+              }`}
+            >
+              <AnimatePresence mode="wait">
+                {view === 'grid' && (
+                  <GalleryGridMore
+                    key="grid"
+                    projects={projectsChrono}
+                    view={view}
+                    onViewChange={handleViewChange}
+                    onProjectSelect={handleProjectSelect}
+                    setActiveCoord={handleSetActiveCoord}
+                    onFilterClick={centerWorksSectionOnScreen}
+                  />
+                )}
+                {view === 'list' && (
+                  <GalleryList
+                    key="list"
+                    projects={projectsChrono}
+                    view={view}
+                    onViewChange={handleViewChange}
+                    onProjectSelect={handleProjectSelect}
+                    setActiveCoord={handleSetActiveCoord}
+                  />
+                )}
+                {view === 'mobile' && (
+                  <GalleryMobile
+                    key="mobile"
+                    projects={projectsRecentFirst}
+                    view={view}
+                    onViewChange={handleViewChange}
+                    onProjectSelect={handleProjectSelect}
+                    setActiveCoord={handleSetActiveCoord}
+                  />
+                )}
+              </AnimatePresence>
+            </div>
           </div>
-        </div>
 
-        <div className="hidden lg:grid lg:grid-cols-3 md:grid-cols-1 items-center mt-16 lg:mt-4 w-[min(1024px,90vw)]">
-          <div className="h-8 text-xl italic font-liberation text-blackCustom">
-            {activeCoord}
+          <div className="hidden lg:grid lg:grid-cols-3 md:grid-cols-1 items-center mt-16 lg:mt-4 w-[min(1024px,90vw)]">
+            <div className="h-8 text-xl italic font-liberation text-blackCustom">
+              {activeCoord}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
-      <AnimatePresence>
-        {selectedProject && (
-          <GalleryProjetCartel
-            project={selectedProject}
-            onClose={() =>
-              dispatch({
-                type: 'UPDATE_STATE',
-                payload: { selectedProject: null },
-              })
-            }
-          />
-        )}
-      </AnimatePresence>
+      {/* ========================================== */}
+      {/* LE CARTEL (Z-INDEX 200 POUR PASSER AU-DESSUS) */}
+      {/* ========================================== */}
+      <div className="relative z-[200]">
+        <AnimatePresence>
+          {selectedProject && (
+            <GalleryProjetCartel
+              project={selectedProject}
+              onClose={() =>
+                dispatch({
+                  type: 'UPDATE_STATE',
+                  payload: { selectedProject: null },
+                })
+              }
+            />
+          )}
+        </AnimatePresence>
+      </div>
     </>
   );
 }
