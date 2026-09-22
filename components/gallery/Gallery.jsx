@@ -9,6 +9,7 @@ import { AnimatePresence } from 'framer-motion';
 import GalleryList from './GalleryList';
 import GalleryGridMore from './GalleryGridMore';
 import GalleryProjetCartel from './GalleryProjetCartel';
+import GalleryMobile from './GalleryMobile';
 
 const VIEW_SWITCH_FADE_MS = 180;
 
@@ -117,11 +118,17 @@ export default function Gallery() {
     fetchProjects();
   }, [locale]);
 
-  // Basculement automatique en vue liste sur mobile
+  // Basculement automatique des vues selon la taille de l'écran
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth < 1024 && view !== 'list') {
+      const width = window.innerWidth;
+
+      if (width < 768 && view !== 'mobile') {
+        dispatch({ type: 'UPDATE_STATE', payload: { view: 'mobile' } });
+      } else if (width >= 768 && width < 1024 && view !== 'list') {
         dispatch({ type: 'UPDATE_STATE', payload: { view: 'list' } });
+      } else if (width >= 1024 && view === 'mobile') {
+        dispatch({ type: 'UPDATE_STATE', payload: { view: 'grid' } });
       }
     };
     handleResize();
@@ -232,8 +239,8 @@ export default function Gallery() {
         <div
           className={`relative flex flex-col justify-center items-start  ${
             view === 'grid'
-              ? 'h-[75vh] lg:h-[85vh] w-[min(1400px,90vw)] xl:w-[min(1600px,90vw)]'
-              : 'h-full w-[min(1100px,90vw)] 2xl:w-[min(1800px,90vw)]p-6'
+              ? 'h-[75vh] lg:h-[85vh] w-[min(1400px,90vw)] xl:w-[min(1800px,95vw)]'
+              : 'h-full w-[min(1100px,90vw)] 2xl:w-[min(1800px,90vw)]'
           }`}
         >
           <div
@@ -244,17 +251,18 @@ export default function Gallery() {
             }`}
           >
             <AnimatePresence mode="wait">
-              {view === 'grid' ? (
+              {view === 'grid' && (
                 <GalleryGridMore
                   key="grid"
-                  projects={projectsRecentFirst}
+                  projects={projectsChrono}
                   view={view}
                   onViewChange={handleViewChange}
                   onProjectSelect={handleProjectSelect}
                   setActiveCoord={handleSetActiveCoord}
                   onFilterClick={centerWorksSectionOnScreen}
                 />
-              ) : (
+              )}
+              {view === 'list' && (
                 <GalleryList
                   key="list"
                   projects={projectsChrono}
@@ -262,6 +270,15 @@ export default function Gallery() {
                   onViewChange={handleViewChange}
                   onProjectSelect={handleProjectSelect}
                   setActiveCoord={handleSetActiveCoord}
+                />
+              )}
+              {view === 'mobile' && (
+                <GalleryMobile
+                  key="mobile"
+                  projects={projectsRecentFirst}
+                  view={view}
+                  onViewChange={handleViewChange}
+                  onProjectSelect={handleProjectSelect}
                 />
               )}
             </AnimatePresence>
