@@ -1,6 +1,13 @@
 'use client';
 
-import { useEffect, useRef, useCallback, useMemo, useReducer } from 'react';
+import {
+  useEffect,
+  useRef,
+  useCallback,
+  useMemo,
+  useReducer,
+  useState,
+} from 'react';
 import Image from 'next/image';
 import { buildSanityImageUrl } from '../../lib/imageUtils';
 import {
@@ -86,10 +93,44 @@ const MainViewer = ({
   navigateListNext,
   onProjectSelect,
 }) => {
+  const [touchStart, setTouchStart] = useState({ x: null, y: null });
+
+  const handleTouchStart = e => {
+    setTouchStart({
+      x: e.touches[0].clientX,
+      y: e.touches[0].clientY,
+    });
+  };
+
+  const handleTouchEnd = e => {
+    if (!touchStart.x || !touchStart.y) return;
+
+    const deltaX = touchStart.x - e.changedTouches[0].clientX;
+    const deltaY = touchStart.y - e.changedTouches[0].clientY;
+
+    // Tolérance de 40px pour éviter les déclenchements accidentels
+    // On vérifie si le mouvement est plus horizontal que vertical
+    if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 40) {
+      if (deltaX > 0)
+        navigateListNext(); // Swipe vers la gauche (Suivant)
+      else navigateListPrev(); // Swipe vers la droite (Précédent)
+    }
+    // Sinon, si le mouvement est plus vertical (vers le haut)
+    else if (Math.abs(deltaY) > Math.abs(deltaX) && deltaY > 40) {
+      onProjectSelect(project); // Swipe vers le haut (Ouvre le cartel)
+    }
+
+    setTouchStart({ x: null, y: null });
+  };
+
   if (!currentListDisplaySrc) return null;
 
   return (
-    <div className="relative w-full h-full flex items-center justify-center">
+    <div
+      className="relative w-full h-full flex items-center justify-center"
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+    >
       {/* Flèche gauche */}
       <button
         type="button"

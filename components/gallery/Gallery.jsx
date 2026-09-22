@@ -294,7 +294,7 @@ export default function Gallery() {
         >
           <div
             className={`w-full h-full transition-[opacity,transform] duration-[180ms] ease-in-out ${
-              isViewSwitching
+              isViewSwitching && !isMobile
                 ? 'opacity-0 scale-[0.995] pointer-events-none'
                 : 'opacity-100 scale-100'
             }`}
